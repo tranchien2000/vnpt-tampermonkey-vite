@@ -1,0 +1,6 @@
+node_modules/
+temp_vnpt*.js
+source.js
+original_script.js
+.env
+.DS_Store
