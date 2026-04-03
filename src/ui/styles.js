@@ -35,8 +35,8 @@ export function injectStyles() {
         .vnpt-control-group label { display: block; font-weight: 600; font-size: 12px; color: #444; margin-bottom: 4px; }
         .vnpt-control-group input[type="file"], .vnpt-control-group input[type="text"] { width: 100%; box-sizing: border-box; padding: 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px;}
 
-        .btn-row { display: flex; gap: 6px; margin-bottom: 8px; }
-        .vnpt-btn-action { flex: 1; border: none; padding: 7px 5px; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 5px; transition: background 0.2s;}
+        .btn-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .vnpt-btn-action { border: none; padding: 7px 12px; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 5px; transition: background 0.2s; white-space: nowrap;}
 
         .btn-scan { background: #fbbc04; color: #000; } .btn-scan:hover { background: #f2a500; }
         .btn-toggle-id { background: #e0f7fa; color: #00838f; } .btn-toggle-id:hover { background: #b2ebf2; }
