@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         VNPT Word Automation (Vite)
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  Tool tự động lấy dữ liệu trên portal VNPT, bọc qua Vite
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
 // @require      https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js
 // @require      https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.js
+// @updateURL    https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
+// @downloadURL  https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
 // @grant        GM_addStyle
 // ==/UserScript==
 (function(){"use strict";const de={info:(...e)=>console.log("[Tampermonkey Script] INFO:",...e),error:(...e)=>console.error("[Tampermonkey Script] ERROR:",...e),warn:(...e)=>console.warn("[Tampermonkey Script] WARN:",...e)};function Be(){GM_addStyle(`
