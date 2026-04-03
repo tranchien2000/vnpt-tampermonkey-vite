@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch",
+    "serve": "npx serve dist --cors -p 8788",
+    "dev:all": "npx concurrently \"vite build --watch\" \"npx serve dist --cors -p 8788\"",
     "build": "vite build"
   },
   "devDependencies": {

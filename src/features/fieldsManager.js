@@ -1,6 +1,8 @@
 // src/features/fieldsManager.js
 import { AppState } from '../core/state.js';
 import { LOCAL_KEY_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constants.js';
+import { setPageField } from '../utils/domHelper.js';
+import { showToast } from '../ui/toast.js';
 
 export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
@@ -31,27 +33,43 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
         }
 
         const row = document.createElement('div');
-        row.className = 'vnpt-field-row';
+        row.className = 'vnpt-field-row row-item';
         row.setAttribute('draggable', 'true');
+
         row.innerHTML = `
-            <span class="row-drag-handle" title="Kéo thả để sắp xếp">☰</span>
+            <input type="checkbox" class="row-chk" title="Chọn để thao tác hàng loạt" style="margin: 0 4px 0 2px;" />
             <input type="text" class="f-label" placeholder="Nhãn..." value="${labelText}" />
             <input type="text" class="f-key" placeholder="Mã biến" value="${keyText}" />
             <span>=</span>
             <input type="text" class="f-val" placeholder="Giá trị" value="${valueText}" />
-            <button class="vnpt-btn-del" title="Xóa">X</button>
         `;
         // Bắt sự kiện thay đổi dữ liệu để Lưu
         row.querySelector('.f-key').addEventListener('keyup', saveFieldsToLocal);
         row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
-        row.querySelector('.f-val').addEventListener('keyup', saveFieldsToLocal);
+        const fVal = row.querySelector('.f-val');
+        fVal.addEventListener('keyup', saveFieldsToLocal);
 
-        row.querySelector('.vnpt-btn-del').addEventListener('click', function () {
-            row.remove();
-            saveFieldsToLocal(); // Lưu lại khi xóa hàng
-        });
+        // ==== MASK LOGIC ====
+        const kLow = keyText.toLowerCase();
+        if (kLow.includes('cmnd') || kLow.includes('cccd') || kLow.includes('sdt') || kLow.includes('dienthoai')) {
+            fVal.addEventListener('input', function() {
+                this.value = this.value.replace(/[^\\d]/g, '');
+            });
+        }
+        if (kLow.includes('ngaysinh') || kLow.includes('ngaycap')) {
+            fVal.placeholder = "dd/mm/yyyy";
+            fVal.addEventListener('input', function(e) {
+                if (e.inputType === 'deleteContentBackward') return;
+                let v = this.value.replace(/[^\\d]/g, '');
+                if (v.length > 8) v = v.substring(0, 8);
+                let formatted = v;
+                if (v.length > 4) formatted = v.substring(0, 2) + '/' + v.substring(2, 4) + '/' + v.substring(4);
+                else if (v.length > 2) formatted = v.substring(0, 2) + '/' + v.substring(2);
+                this.value = formatted;
+            });
+        }
 
-        // Logic kéo thả sắp xếp (Drag & Drop)
+        // Logic kéo thả sắp xếp (Drag & Drop) - Giờ kéo ngay trên checkbox hoặc nhãn
         row.addEventListener('dragstart', function (e) {
             AppState.draggedRowForVNPT = this;
             e.dataTransfer.effectAllowed = 'move';
@@ -145,14 +163,27 @@ export function initFieldsManager() {
         AppState.fieldsContainer.classList.toggle('show-ids');
     });
 
-    // 👉 LOGIC 1.5: XÓA DỮ LIỆU (CLEAN)
-    document.getElementById('vnpt-btn-clean').addEventListener('click', function () {
+    // 👉 LOGIC BATCH XÓA
+    document.getElementById('vnpt-btn-batch-del').addEventListener('click', function () {
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
+        let checkedCount = 0;
         rows.forEach(row => {
-            const valInput = row.querySelector('.f-val');
-            if (valInput) valInput.value = '';
+            const chk = row.querySelector('.row-chk');
+            if (chk && chk.checked) {
+                row.remove();
+                checkedCount++;
+            }
         });
-        saveFieldsToLocal();
+        if (checkedCount === 0) {
+            if (confirm("Xóa TOÀN BỘ dữ liệu các trường?")) {
+                rows.forEach(r => r.remove());
+                showToast("🗑️ Đã xóa toàn bộ", "#ff5252");
+                saveFieldsToLocal();
+            }
+        } else {
+            showToast(`🗑️ Đã xóa ${checkedCount} trường`, "#ff5252");
+            saveFieldsToLocal();
+        }
     });
 
     // 👉 LOGIC 2: THÊM TAY
@@ -160,5 +191,27 @@ export function initFieldsManager() {
         const uniqueNumber = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row').length + 1;
         addOrUpdateFieldRow('bien_moi_' + uniqueNumber, '', '');
         saveFieldsToLocal();
+    });
+
+    // 👉 LOGIC 3: ĐIỀN NGƯỢC (REVERSE FILL)
+    document.getElementById('vnpt-btn-fill-back').addEventListener('click', function() {
+        const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
+        let count = 0;
+        rows.forEach(row => {
+            const key = row.querySelector('.f-key').value.trim();
+            const val = row.querySelector('.f-val').value;
+            if (key) {
+                const el = document.getElementById(key) || document.getElementsByName(key)[0];
+                if (el) {
+                    setPageField(key, val);
+                    count++;
+                }
+            }
+        });
+        if (count > 0) {
+            showToast(`✅ Đã điền ngược ${count} trường vào web`, '#198754');
+        } else {
+            showToast(`⚠️ Không có trường nào khớp`, '#ffc107');
+        }
     });
 }

@@ -1,41 +1,49 @@
 // src/ui/widget.js
 import { AppState } from '../core/state.js';
+import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
 
 export function initWidget() {
     const widget = document.createElement('div');
     widget.id = 'vnpt-docx-widget'; // Widget bọc ngoài cùng
     widget.innerHTML = `
-        <div id="vnpt-export-panel">
+        <button id="vnpt-toggle-btn" title="Mở/Đóng UI Hợp đồng" class="btn-closed">📄</button>
+
+        <div id="vnpt-export-panel" style="display: none;">
             <div id="vnpt-panel-header" title="Kẹp chuột vào đây để di chuyển">
-                <span>Trợ Lý Hợp Đồng VNPT</span>
-                <span class="drag-icon"></span>
+                <span id="vnpt-panel-title">Trợ Lý Hợp Đồng VNPT</span>
             </div>
 
-            <div class="btn-row">
-                <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">🔍 Quét</button>
-                <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">👁 ID</button>
-                <button class="vnpt-btn-action btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">➕ Thêm</button>
-                <button class="vnpt-btn-action btn-clean" id="vnpt-btn-clean" title="Xóa dữ liệu các trường">🗑️ Clean</button>
-            </div>
-
-            <div id="vnpt-fields-container">
-                <div class="text-hint">Bảng dữ liệu đang trống...</div>
-            </div>
-
-            <div class="bottom-export-row">
-                <div class="vnpt-control-group">
-                    <label title="2. Template Word mẫu">2. Template Word</label>
-                    <input type="file" id="vnpt-template-file" accept=".docx" title="Chọn file mẫu DOCX" />
+            <div id="vnpt-panel-body">
+                <div class="btn-row">
+                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">🔍 Quét</button>
+                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">📤 Điền web</button>
+                    <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">🏷️ ID</button>
+                    <button class="vnpt-btn-action btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">➕</button>
+                    <button class="vnpt-btn-action btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑️</button>
                 </div>
-                <div class="vnpt-control-group">
-                    <label title="3. Tên file lưu lại">3. Tên file lưu lại</label>
-                    <input type="text" id="vnpt-export-filename" value="HopDong_Auto.docx" />
+
+                <div id="vnpt-fields-container">
+                    <div class="text-hint">Bảng dữ liệu đang trống...</div>
                 </div>
-                <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️</button>
+
+                <!-- Template Manager -->
+                <div id="vnpt-template-section">
+                    <div id="vnpt-template-manager"></div>
+                </div>
+
+                <div class="bottom-export-row">
+                    <div class="vnpt-control-group" id="vnpt-local-file-group">
+                        <label title="Hoặc chọn file local">📂 File local</label>
+                        <input type="file" id="vnpt-template-file" accept=".docx" title="Chọn file mẫu DOCX" />
+                    </div>
+                    <div class="vnpt-control-group">
+                        <label title="Tên file lưu lại">💾 Tên file xuất</label>
+                        <input type="text" id="vnpt-export-filename" value="HopDong_Auto.docx" />
+                    </div>
+                    <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️</button>
+                </div>
             </div>
         </div>
-
-        <button id="vnpt-toggle-btn" title="Mở UI Hợp đồng (Co/Kéo UI vào đây)">📄</button>
     `;
     document.body.appendChild(widget);
 
@@ -45,18 +53,43 @@ export function initWidget() {
     AppState.header = document.getElementById('vnpt-panel-header');
     AppState.fieldsContainer = document.getElementById('vnpt-fields-container');
 
-    // Đóng/Mở Panel kết hợp chống kích nhầm khi kéo thả
-    AppState.toggleBtn.addEventListener('click', (e) => {
-        if (AppState.hasDragged) { 
-            e.preventDefault(); 
-            return; 
-        } // Nếu vừa kéo thả xong thì không Đóng/Mở
+    // Render template manager — khi user chọn template từ URL, lưu buffer vào AppState
+    renderTemplateManager(
+        document.getElementById('vnpt-template-manager'),
+        (arrayBuffer, name) => {
+            AppState.templateBuffer = arrayBuffer;
+            AppState.templateName = name;
+        }
+    );
 
-        if (AppState.panel.style.display === 'none' || AppState.panel.style.display === '') {
-            AppState.panel.style.display = 'block';
+    // Khi chọn file local → lưu dạng base64 vào localStorage
+    document.getElementById('vnpt-template-file').addEventListener('change', function () {
+        const file = this.files && this.files[0];
+        if (!file) return;
+        const tmplContainer = document.getElementById('vnpt-template-manager');
+        
+        saveLocalTemplate(file, tmplContainer, (arrayBuffer, name) => {
+            AppState.templateBuffer = arrayBuffer;
+            AppState.templateName = name;
+        });
+        this.value = ''; // Reset để có thể chọn lại cùng file
+    });
+
+
+
+    AppState.panelBody = document.getElementById('vnpt-panel-body');
+
+    // Đóng/Mở Panel 
+    AppState.toggleBtn.addEventListener('click', (e) => {
+        if (AppState.panel.style.display === 'none') {
+            // Mở panel
+            AppState.panel.style.display = 'flex';
+            AppState.toggleBtn.className = 'btn-opened';
             AppState.toggleBtn.innerHTML = '✖'; 
         } else {
+            // Đóng panel
             AppState.panel.style.display = 'none';
+            AppState.toggleBtn.className = 'btn-closed';
             AppState.toggleBtn.innerHTML = '📄';
         }
     });

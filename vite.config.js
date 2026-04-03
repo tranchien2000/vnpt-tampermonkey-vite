@@ -12,6 +12,11 @@ const tampermonkeyHeader = `// ==UserScript==
 // @updateURL    https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
 // @downloadURL  https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
 // @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
+// @connect      localhost
+// @connect      drive.google.com
+// @connect      raw.githubusercontent.com
+// @connect      *
 // ==/UserScript==\n`;
 
 export default defineConfig({

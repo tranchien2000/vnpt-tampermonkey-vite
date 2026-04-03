@@ -8,13 +8,22 @@ export function initWebScanner() {
 
         Object.keys(DEFAULT_LABELS).forEach(id_can_tim => {
             const el = document.getElementById(id_can_tim);
+            let val = '';
             if (el) {
-                let val = el.tagName.toLowerCase() === 'select' ? (el.options[el.selectedIndex]?.text || '') : el.value;
-                addOrUpdateFieldRow(id_can_tim, val, null);
-                foundCount++;
-            } else {
-                addOrUpdateFieldRow(id_can_tim, '', null);
+                val = el.tagName.toLowerCase() === 'select' ? (el.options[el.selectedIndex]?.text || '') : el.value;
+                foundCount++; // found an element
             }
+            
+            if (!val) {
+                const lKey = id_can_tim.toLowerCase();
+                const d = new Date();
+                if (lKey === 'ngayky') val = String(d.getDate()).padStart(2, '0');
+                if (lKey === 'thangky' || lKey === 'thangky1') val = String(d.getMonth() + 1).padStart(2, '0');
+                if (lKey === 'namky' || lKey === 'namky1') val = String(d.getFullYear());
+                if (lKey === 'soluonggoi') val = '1';
+            }
+
+            addOrUpdateFieldRow(id_can_tim, val, null);
         });
 
         saveFieldsToLocal(); // Quét xong thì lưu vào bộ nhớ mây

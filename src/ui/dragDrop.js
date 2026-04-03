@@ -49,9 +49,15 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
 
         const w = window.innerWidth;
         const h = window.innerHeight;
+
+        const toggleBtn = document.getElementById('vnpt-toggle-btn');
+        const iconWidth = toggleBtn ? toggleBtn.offsetWidth : 40;
+        const iconHeight = toggleBtn ? toggleBtn.offsetHeight : 40;
+
         if (newX < 0) newX = 0;
         if (newY < 0) newY = 0;
-        if (newX + widgetEl.offsetWidth > w) newX = w - widgetEl.offsetWidth;
+        if (newX + iconWidth > w) newX = w - iconWidth;
+        if (newY + iconHeight > h) newY = h - iconHeight;
 
         // Phát hiện kéo vào vùng dock (cạnh dưới) dựa trên vị trí chuột, tránh nhấp nháy 
         let shouldDock = isDocked;
@@ -113,5 +119,24 @@ export function initDragDrop() {
     // Tích hợp Drag & Drop cho Docx Widget
     if (AppState.widget && AppState.header && AppState.toggleBtn) {
         makeDraggable(AppState.widget, [AppState.header, AppState.toggleBtn], LOCAL_KEY_POS);
+
+        // Bắt sự kiện resize màn hình để đẩy cái nút vào trong nều ở ngoài (ví dụ thu vào)
+        window.addEventListener('resize', () => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const toggleBtn = document.getElementById('vnpt-toggle-btn');
+            const iconWidth = toggleBtn ? toggleBtn.offsetWidth : 40;
+            const iconHeight = toggleBtn ? toggleBtn.offsetHeight : 40;
+
+            let rect = AppState.widget.getBoundingClientRect();
+            let newX = rect.left;
+            let newY = rect.top;
+
+            if (newX + iconWidth > w) newX = Math.max(0, w - iconWidth);
+            if (newY + iconHeight > h) newY = Math.max(0, h - iconHeight);
+
+            AppState.widget.style.left = newX + 'px';
+            AppState.widget.style.top = newY + 'px';
+        });
     }
 }
