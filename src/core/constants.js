@@ -7,7 +7,7 @@ export const DEFAULT_LABELS = {
     'ngayCapCustomer': 'Ngày Cấp CMND',
     'noiCap': 'Nơi Cấp',
     'sdt': 'SĐT',
-    'emailDaiDien': 'Email Đại Diện',
+    'emailDaiDien': 'Email Nhận TK',
     'tenToChuc': 'Tên Tổ Chức',
     'ngayCapSoDkdnCustomer': 'Ngày Cấp ĐKKD',
     'soDkdn': 'Số GPKD | MST',
