@@ -33,6 +33,75 @@ function renderDocx(arrayBuffer, dataToFill, exportFileName) {
 }
 
 export function initDocExport() {
+    const filenameInput = document.getElementById('vnpt-export-filename');
+    if (filenameInput) {
+        filenameInput.addEventListener('input', () => {
+            filenameInput.dataset.userEdited = '1';
+            if (!filenameInput.value.trim()) {
+                filenameInput.dataset.userEdited = '0';
+            }
+        });
+    }
+
+    function autoUpdateExportFileName() {
+        if (!filenameInput || filenameInput.dataset.userEdited === '1') return;
+
+        let tenToChuc = '';
+        if (AppState.fieldsContainer) {
+            const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
+            rows.forEach(row => {
+                const k = row.querySelector('.f-key').value.trim();
+                const v = row.querySelector('.f-val').value.trim();
+                if (k === 'tenToChuc') tenToChuc = v;
+            });
+        }
+
+        if (!tenToChuc) {
+            const docEl = document.getElementById('tenToChuc');
+            if (docEl) tenToChuc = docEl.tagName.toLowerCase() === 'textarea' || docEl.tagName.toLowerCase() === 'input' ? docEl.value.trim() : docEl.innerText.trim();
+        }
+
+        function shrinkName(name) {
+            if (!name) return '';
+            let s = name;
+            
+            s = s.replace(/Tổng công ty/gi, '');
+            s = s.replace(/Công ty/gi, '');
+            s = s.replace(/\bCty\b/gi, '');
+            s = s.replace(/Trách nhiệm hữu hạn/gi, '');
+            s = s.replace(/\bTNHH\b/gi, '');
+            s = s.replace(/Cổ phần/gi, '');
+            s = s.replace(/\bCP\b/gi, '');
+            s = s.replace(/Một thành viên/gi, '');
+            s = s.replace(/\bMTV\b/gi, '');
+            s = s.replace(/Chi nhánh/gi, '');
+            s = s.replace(/Việt Nam/gi, 'VN');
+            s = s.replace(/Viet Nam/gi, 'VN');
+            
+            s = s.replace(/\s+/g, ' ').trim();
+            s = s.replace(/^[-,\s]+|[-,\s]+$/g, '');
+
+            if (s.length > 50) s = s.substring(0, 47) + '...';
+            return s.replace(/[<>:"/\\|?*]/g, '');
+        }
+
+        let shortTen = shrinkName(tenToChuc);
+        let tplName = AppState.templateName ? AppState.templateName.replace(/\.docx$/i, '') : '';
+        
+        let parts = [];
+        if (shortTen) parts.push(shortTen);
+        if (tplName) parts.push(tplName);
+        
+        if (parts.length > 0) {
+            filenameInput.value = parts.join(' - ') + '.docx';
+        } else if (!filenameInput.value) {
+            filenameInput.value = 'HopDong_Auto.docx';
+        }
+    }
+
+    // Cập nhật định kỳ (dùng interval cho gọn)
+    setInterval(autoUpdateExportFileName, 1000);
+
     document.getElementById('vnpt-btn-export').addEventListener('click', function () {
         // Lấy data từ bảng fields
         const dataToFill = {};
@@ -47,7 +116,7 @@ export function initDocExport() {
             alert('Bạn chưa Quét dữ liệu hoặc chưa có Biến nào.'); return;
         }
 
-        let exportFileName = document.getElementById('vnpt-export-filename').value.trim() || 'HopDong.docx';
+        let exportFileName = document.getElementById('vnpt-export-filename').value.trim() || 'HopDong_Auto.docx';
         if (!exportFileName.toLowerCase().endsWith('.docx')) exportFileName += '.docx';
 
         // Ưu tiên 1: template đã fetch từ URL (AppState.templateBuffer)

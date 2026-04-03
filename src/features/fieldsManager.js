@@ -34,19 +34,26 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
 
         const row = document.createElement('div');
         row.className = 'vnpt-field-row row-item';
-        row.setAttribute('draggable', 'true');
+        row.setAttribute('draggable', 'false');
 
         row.innerHTML = `
-            <input type="checkbox" class="row-chk" title="Chọn để thao tác hàng loạt" style="margin: 0 4px 0 2px;" />
+            <input type="checkbox" class="row-chk" title="Chọn để thao tác hàng loạt" style="margin: 0 2px 0 2px;" />
             <input type="text" class="f-label" placeholder="Nhãn..." value="${labelText}" />
             <input type="text" class="f-key" placeholder="Mã biến" value="${keyText}" />
-            <span>=</span>
+            <span class="row-drag-handle" title="Kéo thả để di chuyển">=</span>
             <input type="text" class="f-val" placeholder="Giá trị" value="${valueText}" />
         `;
-        // Bắt sự kiện thay đổi dữ liệu để Lưu
-        row.querySelector('.f-key').addEventListener('keyup', saveFieldsToLocal);
-        row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
         const fVal = row.querySelector('.f-val');
+        if (keyText === 'tenToChuc') {
+            fVal.style.textAlign = 'right';
+        }
+
+        // Bắt sự kiện thay đổi dữ liệu để Lưu
+        row.querySelector('.f-key').addEventListener('keyup', function() {
+            saveFieldsToLocal();
+            fVal.style.textAlign = this.value.trim() === 'tenToChuc' ? 'right' : '';
+        });
+        row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
         fVal.addEventListener('keyup', saveFieldsToLocal);
 
         // ==== MASK LOGIC ====
@@ -69,7 +76,15 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
             });
         }
 
-        // Logic kéo thả sắp xếp (Drag & Drop) - Giờ kéo ngay trên checkbox hoặc nhãn
+        // Logic kéo thả sắp xếp (Drag & Drop)
+        const dragHandle = row.querySelector('.row-drag-handle');
+        dragHandle.addEventListener('mouseenter', () => row.setAttribute('draggable', 'true'));
+        dragHandle.addEventListener('mouseleave', () => {
+            if (!row.classList.contains('dragging')) {
+                row.setAttribute('draggable', 'false');
+            }
+        });
+
         row.addEventListener('dragstart', function (e) {
             AppState.draggedRowForVNPT = this;
             e.dataTransfer.effectAllowed = 'move';
@@ -104,6 +119,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
             return false;
         });
         row.addEventListener('dragend', function (e) {
+            this.setAttribute('draggable', 'false');
             const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
             rows.forEach(r => {
                 r.classList.remove('over');
@@ -148,11 +164,16 @@ export function loadSavedData() {
     // Load Position
     try {
         const pos = JSON.parse(localStorage.getItem(LOCAL_KEY_POS));
-        if (pos && pos.left && AppState.widget) {
-            AppState.widget.style.right = 'auto'; // Tắt right đi
+        if (pos && AppState.widget) {
             AppState.widget.style.bottom = 'auto';
-            AppState.widget.style.left = pos.left;
-            AppState.widget.style.top = pos.top;
+            if (pos.right) {
+                AppState.widget.style.right = pos.right;
+                AppState.widget.style.left = 'auto';
+            } else if (pos.left) { // Tuong thich phien ban cu
+                AppState.widget.style.left = pos.left;
+                AppState.widget.style.right = 'auto';
+            }
+            if (pos.top) AppState.widget.style.top = pos.top;
         }
     } catch (e) { }
 }

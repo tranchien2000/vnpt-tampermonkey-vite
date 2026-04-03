@@ -54,39 +54,62 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
         const iconWidth = toggleBtn ? toggleBtn.offsetWidth : 40;
         const iconHeight = toggleBtn ? toggleBtn.offsetHeight : 40;
 
-        if (newX < 0) newX = 0;
-        if (newY < 0) newY = 0;
-        if (newX + iconWidth > w) newX = w - iconWidth;
-        if (newY + iconHeight > h) newY = h - iconHeight;
+        const isRightAnchor = widgetEl.id === 'vnpt-docx-widget';
+        let pWidth = widgetEl.offsetWidth || 0;
 
-        // Phát hiện kéo vào vùng dock (cạnh dưới) dựa trên vị trí chuột, tránh nhấp nháy 
-        let shouldDock = isDocked;
-
-        if (!isDocked) {
-            // Nếu chuột tiến vào sát đáy màn hình (cách đáy 10px)
-            if (e.clientY > h - 10) {
-                shouldDock = true;
-            }
+        if (isRightAnchor) {
+            let btnSpace = iconWidth + 6;
+            let minX = btnSpace - pWidth;
+            let maxX = w - pWidth + 6;
+            if (newX < minX) newX = minX;
+            if (newX > maxX) newX = maxX;
         } else {
-            // Nếu đang dock, kéo chuột lên cách đáy > 40px mới undock
-            if (e.clientY < h - 40) {
-                shouldDock = false;
+            pWidth = pWidth || 200;
+            if (newX < 0) newX = 0;
+            if (newX + pWidth > w) newX = Math.max(0, w - pWidth);
+        }
+
+        let shouldDock = isDocked;
+        if (isRightAnchor) {
+            shouldDock = false; // Disable docking for vnpt-docx-widget completely
+        } else {
+            if (!isDocked) {
+                if (e.clientY > h - 10) shouldDock = true;
+            } else {
+                if (e.clientY < h - 40) shouldDock = false;
             }
         }
 
+        if (newY < 0) newY = 0;
+
         if (shouldDock) {
             setDocked(true);
-            // Bám dính vào đáy
             widgetEl.style.top = (h - widgetEl.offsetHeight) + 'px';
-            widgetEl.style.left = newX + 'px';
-            widgetEl.style.right = 'auto';
+            if (isRightAnchor) {
+                widgetEl.style.right = (w - newX - pWidth) + 'px';
+                widgetEl.style.left = 'auto';
+            } else {
+                widgetEl.style.left = newX + 'px';
+                widgetEl.style.right = 'auto';
+            }
             widgetEl.style.bottom = 'auto';
         } else {
             setDocked(false);
-            // Giữ nguyên newY theo hướng chuột, không giới hạn để chuột luôn trùng khớp title bar
+            
+            // Evaluate height AFTER undocking (in case it expanded)
+            let pHeight = widgetEl.offsetHeight || 40;
+            // Widget không bị kéo mất khung dưới màn hình (giống các cạnh khác)
+            let bottomLimit = pHeight;
+            if (newY + bottomLimit > h) newY = Math.max(0, h - bottomLimit);
+
             widgetEl.style.top = newY + 'px';
-            widgetEl.style.left = newX + 'px';
-            widgetEl.style.right = 'auto';
+            if (isRightAnchor) {
+                widgetEl.style.right = (w - newX - pWidth) + 'px';
+                widgetEl.style.left = 'auto';
+            } else {
+                widgetEl.style.left = newX + 'px';
+                widgetEl.style.right = 'auto';
+            }
             widgetEl.style.bottom = 'auto';
         }
     });
@@ -96,31 +119,28 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
         isDragging = false;
         document.body.style.userSelect = '';
         
-        if (handleEls) {
-            handleEls.forEach(el => el.style.cursor = 'grab');
-        }
+        if (handleEls) handleEls.forEach(el => el.style.cursor = 'grab');
 
         if (storageKey) {
+            const isRightAnchor = widgetEl.id === 'vnpt-docx-widget';
             localStorage.setItem(storageKey, JSON.stringify({
-                left: widgetEl.style.left,
+                left: isRightAnchor ? undefined : widgetEl.style.left,
+                right: isRightAnchor ? widgetEl.style.right : undefined,
                 top: widgetEl.style.top,
-                x: parseFloat(widgetEl.style.left),
+                x: isRightAnchor ? undefined : parseFloat(widgetEl.style.left),
                 y: parseFloat(widgetEl.style.top),
                 docked: isDocked
             }));
         }
     });
 
-    // Trả về hàm để kiểm tra / set dock state từ bên ngoài
     return { isDocked: () => isDocked, setDocked };
 }
 
 export function initDragDrop() {
-    // Tích hợp Drag & Drop cho Docx Widget
     if (AppState.widget && AppState.header && AppState.toggleBtn) {
         makeDraggable(AppState.widget, [AppState.header, AppState.toggleBtn], LOCAL_KEY_POS);
 
-        // Bắt sự kiện resize màn hình để đẩy cái nút vào trong nều ở ngoài (ví dụ thu vào)
         window.addEventListener('resize', () => {
             const w = window.innerWidth;
             const h = window.innerHeight;
@@ -132,10 +152,16 @@ export function initDragDrop() {
             let newX = rect.left;
             let newY = rect.top;
 
-            if (newX + iconWidth > w) newX = Math.max(0, w - iconWidth);
+            let pWidth = AppState.widget.offsetWidth || 0;
+            let btnSpace = iconWidth + 6;
+            let minX = btnSpace - pWidth;
+            let maxX = w - pWidth + 6;
+            
+            if (newX < minX) newX = minX;
+            if (newX > maxX) newX = maxX;
             if (newY + iconHeight > h) newY = Math.max(0, h - iconHeight);
 
-            AppState.widget.style.left = newX + 'px';
+            AppState.widget.style.right = (w - newX - pWidth) + 'px';
             AppState.widget.style.top = newY + 'px';
         });
     }

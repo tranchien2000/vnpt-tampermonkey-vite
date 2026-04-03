@@ -1,5 +1,6 @@
 // src/features/webScanner.js
 import { DEFAULT_LABELS } from '../core/constants.js';
+import { showToast } from '../ui/toast.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from './fieldsManager.js';
 
 export function initWebScanner() {
@@ -13,7 +14,7 @@ export function initWebScanner() {
                 val = el.tagName.toLowerCase() === 'select' ? (el.options[el.selectedIndex]?.text || '') : el.value;
                 foundCount++; // found an element
             }
-            
+
             if (!val) {
                 const lKey = id_can_tim.toLowerCase();
                 const d = new Date();
@@ -30,10 +31,10 @@ export function initWebScanner() {
 
         if (foundCount > 0) {
             this.style.background = '#34a853'; this.style.color = '#fff';
-            this.innerText = '✔️ Đã cập nhật';
-            setTimeout(() => { this.style.background = '#fbbc04'; this.style.color = '#000'; this.innerText = '🔍 Quét'; }, 1000);
+            this.innerText = 'Done';
+            setTimeout(() => { this.style.background = '#fbbc04'; this.style.color = '#000'; this.innerText = 'Quét'; }, 1000);
         } else {
-            alert("Không tìm thấy trường nào trên web, đã tạo các trường mặc định với biểu mẫu trống.");
+            showToast("Không tìm thấy trường nào trên web, đã tạo các trường mặc định với biểu mẫu trống.");
         }
     });
 

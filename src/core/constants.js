@@ -12,8 +12,8 @@ export const DEFAULT_LABELS = {
     'ngayCapSoDkdnCustomer': 'Ngày Cấp ĐKKD',
     'soDkdn': 'Số GPKD | MST',
     'goiDV': 'Gói Dịch Vụ',
-    'thangKy': 'Tháng Ký',
     'ngayKy': 'Ngày ký',
+    'thangKy': 'Tháng Ký',
     'namKy': 'Năm ký',
     'soHopDong': 'Số Hợp đồng',
     'soLuongGoi': 'Số Lượng Gói',
@@ -22,6 +22,8 @@ export const DEFAULT_LABELS = {
 // VNPT Docx Export Widget Keys
 export const LOCAL_KEY_FIELDS = 'vnpt_docx_fields';
 export const LOCAL_KEY_POS = 'vnpt_docx_position';
+export const LOCAL_KEY_SIZE = 'vnpt_docx_size';
+export const LOCAL_KEY_OPENED = 'vnpt_docx_opened';
 
 // VNPT Calc & AutoFill Widget Keys
 export const SK_DATA_DEF = 'vnpt_autofill_data_default';

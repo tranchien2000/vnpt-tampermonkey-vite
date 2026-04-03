@@ -38,18 +38,11 @@ function clamp(widget) {
 
 function mkSecHeader(title, sectionKey, toggleCallback) {
     const hdr = document.createElement('div');
-    Object.assign(hdr.style, {
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '5px 10px', background: '#e9ecef', color: '#495057', fontSize: '11px',
-        fontWeight: '700', borderBottom: '1px solid #dee2e6'
-    });
+    hdr.className = 'wg-sec-header';
     const s = document.createElement('span'); s.innerText = title;
     const b = document.createElement('button');
     b.className = 'wg-toggle-btn';
     b.innerText = collapsedSections[sectionKey] ? '▾' : '▴';
-    Object.assign(b.style, {
-        background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', padding: '0 4px'
-    });
     hdr.appendChild(s);
     hdr.appendChild(b);
     
@@ -69,39 +62,27 @@ export function initCalcWidget() {
     const savedPos = ld(SK_POS_CALC);
     const startDocked = !!(savedPos && savedPos.docked);
     Object.assign(widget.style, {
-        position: 'fixed',
         top: (savedPos && savedPos.y) ? savedPos.y + 'px' : '16px',
-        left: (savedPos && savedPos.x) ? savedPos.x + 'px' : (window.innerWidth - 236) + 'px',
-        zIndex: '99999', width: '232px',
-        fontFamily: "'Segoe UI', sans-serif", fontSize: '13px',
-        borderRadius: '10px', boxShadow: '0 4px 24px rgba(0,0,0,.3)',
-        overflow: 'hidden', userSelect: 'none', background: '#fff',
-        transition: 'box-shadow 0.2s'
+        left: (savedPos && savedPos.x) ? savedPos.x + 'px' : (window.innerWidth - 236) + 'px'
     });
 
     // ══════════════ ACTION BUTTONS ══════════════
-    function mkBtn(label, bg, fg = '#fff') {
+    function mkBtn(label, extraClass) {
         const b = document.createElement('button');
         b.innerText = label;
-        Object.assign(b.style, {
-            padding: '3px 7px', background: bg, color: fg, border: 'none',
-            borderRadius: '4px', cursor: 'pointer', fontSize: '10px',
-            fontWeight: '1000'
-        });
-        b.onmouseover = () => b.style.filter = 'brightness(.88)';
-        b.onmouseout = () => b.style.filter = 'none';
+        b.className = 'cw-action-btn ' + extraClass;
         return b;
     }
 
-    const fillBtn = mkBtn('Fill', '#fff', '#0d6efd'); fillBtn.id = "vnpt-cw-fill";
-    const syncBtn = mkBtn('Sync', '#ffc107', '#000'); syncBtn.id = "vnpt-cw-sync";
+    const fillBtn = mkBtn('Fill', 'cw-btn-fill'); fillBtn.id = "vnpt-cw-fill";
+    const syncBtn = mkBtn('Sync', 'cw-btn-sync'); syncBtn.id = "vnpt-cw-sync";
     syncBtn.title = 'Manual trigger for Sync Mapping';
-    const addBtn = mkBtn('Add', 'rgba(255,255,255,0.25)', '#fff'); addBtn.id = "vnpt-cw-add";
-    const resetBtn = mkBtn('↺', 'rgba(255,255,255,0.25)', '#fff'); resetBtn.id = "vnpt-cw-reset";
+    const addBtn = mkBtn('Add', 'cw-btn-add'); addBtn.id = "vnpt-cw-add";
+    const resetBtn = mkBtn('↺', 'cw-btn-reset'); resetBtn.id = "vnpt-cw-reset";
     resetBtn.title = 'Reset Default fields back to original';
 
     const btnGroup = document.createElement('div');
-    Object.assign(btnGroup.style, { display: 'flex', gap: '4px', alignItems: 'center' });
+    btnGroup.className = 'cw-btn-group';
     btnGroup.appendChild(fillBtn);
     btnGroup.appendChild(syncBtn);
     btnGroup.appendChild(addBtn);
@@ -109,13 +90,9 @@ export function initCalcWidget() {
 
     // ══════════════ TITLE BAR ══════════════
     const titleBar = document.createElement('div');
-    Object.assign(titleBar.style, {
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '6px 10px', background: '#198754', color: '#fff',
-        cursor: 'grab', gap: '4px'
-    });
+    titleBar.className = 'cw-title-bar';
     const titleLabel = document.createElement('span');
-    titleLabel.style.cssText = 'font-size:12px;font-weight:700;user-select:none;display:flex;align-items:center;gap:5px;';
+    titleLabel.className = 'cw-title-label';
     titleLabel.innerHTML = 'VNPT Fast';
     titleBar.appendChild(titleLabel);
     titleBar.appendChild(btnGroup);
@@ -124,61 +101,57 @@ export function initCalcWidget() {
     // ══════════════ SECTION: CALCULATOR ══════════════
     collapsedSections.calc = false; // Always default open for calc or use saved
     const calcBody = document.createElement('div');
-    Object.assign(calcBody.style, {
-        padding: '8px 10px', background: '#f8fbff',
-        borderBottom: '1px solid #e0e8ff',
-        display: 'block'
-    });
+    calcBody.className = 'cw-body';
 
     calcBody.innerHTML = `
-    <div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
-        <span style="font-size:10px;color:#0d6efd;font-weight:600;width:55px;">Trước thuế</span>
-        <input id="wg-before" list="wg-before-list" style="flex:1;border:1px solid #ccc;border-radius:4px;padding:3px 5px;font-size:12px;min-width:0;outline:none;">
-        <button data-wgcopy="wg-before" style="padding:3px 7px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#f0f0f0;">Copy</button>
+    <div class="cw-row">
+        <span class="cw-label">Trước thuế</span>
+        <input id="wg-before" class="cw-input" list="wg-before-list">
+        <button data-wgcopy="wg-before" class="cw-btn-copy">Copy</button>
         <datalist id="wg-before-list"></datalist>
     </div>
-    <div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
-        <div style="width:55px;display:flex;align-items:center;">
-            <span style="font-size:10px;color:#0d6efd;font-weight:600;">Thuế</span>
-            <input id="wg-taxRate" style="width:20px;border:1px solid #ccc;border-radius:3px;padding:1px;font-size:9px;text-align:center;margin:0 2px 0 3px;">
-            <span style="font-size:9px;color:#555;font-weight:600;">%</span>
+    <div class="cw-row">
+        <div class="cw-tax-group">
+            <span class="cw-label" style="width:auto;">Thuế</span>
+            <input id="wg-taxRate" class="cw-tax-input">
+            <span class="cw-tax-symbol">%</span>
         </div>
-        <input id="wg-tax" style="flex:1;border:1px solid #ccc;border-radius:4px;padding:3px 5px;font-size:12px;min-width:0;outline:none;">
-        <button data-wgcopy="wg-tax" style="padding:3px 7px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#f0f0f0;">Copy</button>
+        <input id="wg-tax" class="cw-input">
+        <button data-wgcopy="wg-tax" class="cw-btn-copy">Copy</button>
     </div>
-    <div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
-        <span style="font-size:10px;color:#0d6efd;font-weight:600;width:55px;">Sau thuế</span>
-        <input id="wg-after" list="wg-after-list" style="flex:1;border:1px solid #ccc;border-radius:4px;padding:3px 5px;font-size:12px;min-width:0;outline:none;">
-        <button data-wgcopy="wg-after" style="padding:3px 7px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#f0f0f0;">Copy</button>
+    <div class="cw-row">
+        <span class="cw-label">Sau thuế</span>
+        <input id="wg-after" class="cw-input" list="wg-after-list">
+        <button data-wgcopy="wg-after" class="cw-btn-copy">Copy</button>
         <datalist id="wg-after-list"></datalist>
     </div>
-    <div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
-        <span style="font-size:10px;color:#0d6efd;font-weight:600;width:55px;">Bằng chữ</span>
-        <input id="wg-text" readonly style="flex:1;border:1px solid #ccc;border-radius:4px;padding:3px 5px;font-size:11px;min-width:0;background:#fafafa;outline:none;">
-        <button data-wgcopy="wg-text" style="padding:3px 7px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#f0f0f0;">Copy</button>
+    <div class="cw-row">
+        <span class="cw-label">Bằng chữ</span>
+        <input id="wg-text" class="cw-input cw-input-readonly" readonly>
+        <button data-wgcopy="wg-text" class="cw-btn-copy">Copy</button>
     </div>
 
-    <div style="margin-top:6px;">
-        <button id="wg-calc-map-btn" style="background:none;border:none;cursor:pointer;font-size:10px;color:#0d6efd;font-weight:600;padding:2px 0;">+ Cấu hình "Gán" tự điền</button>
+    <div>
+        <button id="wg-calc-map-btn" class="cw-map-btn">+ Cấu hình "Gán" tự điền</button>
     </div>
-    <div id="wg-calc-map-wrap" style="display:none;margin-top:4px;padding:6px;background:#fff;border-radius:4px;border:1px solid #d0d9ff;flex-direction:column;gap:4px;">
-         <div style="display:flex;align-items:center;gap:4px;">
-             <span style="font-size:10px;color:#555;width:55px;">Trước thuế</span>
-             <input data-clink="before" placeholder="Ví dụ: tongThanhTien, donGiaCA" style="flex:1;min-width:0;border:1px solid #ccc;border-radius:3px;padding:2px 4px;font-size:10px;outline:none;">
+    <div id="wg-calc-map-wrap" class="cw-map-wrap" style="display:none;">
+         <div class="cw-row">
+             <span class="cw-map-label">Trước thuế</span>
+             <input data-clink="before" placeholder="Ví dụ: tongThanhTien, donGiaCA" class="cw-map-input">
          </div>
-         <div style="display:flex;align-items:center;gap:4px;">
-             <span style="font-size:10px;color:#555;width:55px;">Tiền thuế</span>
-             <input data-clink="tax" placeholder="Ví dụ: thueCA, Thue GTGT" style="flex:1;min-width:0;border:1px solid #ccc;border-radius:3px;padding:2px 4px;font-size:10px;outline:none;">
+         <div class="cw-row">
+             <span class="cw-map-label">Tiền thuế</span>
+             <input data-clink="tax" placeholder="Ví dụ: thueCA, Thue GTGT" class="cw-map-input">
          </div>
-         <div style="display:flex;align-items:center;gap:4px;">
-             <span style="font-size:10px;color:#555;width:55px;">Sau thuế</span>
-             <input data-clink="after" placeholder="Ví dụ: tongCongHD" style="flex:1;min-width:0;border:1px solid #ccc;border-radius:3px;padding:2px 4px;font-size:10px;outline:none;">
+         <div class="cw-row">
+             <span class="cw-map-label">Sau thuế</span>
+             <input data-clink="after" placeholder="Ví dụ: tongCongHD" class="cw-map-input">
          </div>
-         <div style="display:flex;align-items:center;gap:4px;">
-             <span style="font-size:10px;color:#555;width:55px;">Bằng chữ</span>
-             <input data-clink="text" placeholder="Ví dụ: tongCongHDbangChu" style="flex:1;min-width:0;border:1px solid #ccc;border-radius:3px;padding:2px 4px;font-size:10px;outline:none;">
+         <div class="cw-row">
+             <span class="cw-map-label">Bằng chữ</span>
+             <input data-clink="text" placeholder="Ví dụ: tongCongHDbangChu" class="cw-map-input">
          </div>
-         <div style="font-size:9px;color:#888;margin-top:2px;line-height:1.2;">Nhập các ID hoặc nhãn trên trang, cách nhau bởi dấu phẩy. Cấu hình sẽ được Auto-save và tự điền khi tính toán.</div>
+         <div class="cw-map-hint">Nhập các ID hoặc nhãn trên trang, cách nhau bởi dấu phẩy. Cấu hình sẽ được Auto-save và tự điền khi tính toán.</div>
     </div>
     `;
     widget.appendChild(calcBody);

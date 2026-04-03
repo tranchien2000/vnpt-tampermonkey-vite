@@ -133,7 +133,7 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
 
     // ── Danh sách ──
     const listWrapper = document.createElement('div');
-    listWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;';
+    listWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:2px;';
     
     templates.forEach((tpl, idx) => {
         const row = document.createElement('div');

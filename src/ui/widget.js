@@ -1,27 +1,30 @@
 // src/ui/widget.js
 import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
+import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED } from '../core/constants.js';
 
 export function initWidget() {
     const widget = document.createElement('div');
     widget.id = 'vnpt-docx-widget'; // Widget bọc ngoài cùng
+    // Khôi phục trạng thái mở/đóng
+    const isOpened = localStorage.getItem(LOCAL_KEY_OPENED) === 'true';
+    
     widget.innerHTML = `
-        <button id="vnpt-toggle-btn" title="Mở/Đóng UI Hợp đồng" class="btn-closed">📄</button>
+        <button id="vnpt-toggle-btn" title="Mở/Đóng UI Hợp đồng" class="${isOpened ? 'btn-opened' : 'btn-closed'}">${isOpened ? '✖' : '📄'}</button>
 
-        <div id="vnpt-export-panel" style="display: none;">
+        <div id="vnpt-export-panel" style="display: ${isOpened ? 'flex' : 'none'};">
             <div id="vnpt-panel-header" title="Kẹp chuột vào đây để di chuyển">
-                <span id="vnpt-panel-title">Trợ Lý Hợp Đồng VNPT</span>
-            </div>
-
-            <div id="vnpt-panel-body">
-                <div class="btn-row">
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">🔍 Quét</button>
-                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">📤 Điền web</button>
-                    <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">🏷️ ID</button>
+                <span id="vnpt-panel-title">Nhập|Xuất H.Đồng</span>
+                <div class="btn-row" style="margin-bottom: 0; padding-right: 35px; gap: 4px;">
+                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét</button>
+                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền</button>
+                    <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">ID</button>
                     <button class="vnpt-btn-action btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">➕</button>
                     <button class="vnpt-btn-action btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑️</button>
                 </div>
+            </div>
 
+            <div id="vnpt-panel-body">
                 <div id="vnpt-fields-container">
                     <div class="text-hint">Bảng dữ liệu đang trống...</div>
                 </div>
@@ -53,6 +56,34 @@ export function initWidget() {
     AppState.header = document.getElementById('vnpt-panel-header');
     AppState.fieldsContainer = document.getElementById('vnpt-fields-container');
 
+    // Khôi phục kích thước bảng
+    try {
+        const savedSize = JSON.parse(localStorage.getItem(LOCAL_KEY_SIZE));
+        if (savedSize && savedSize.width && savedSize.height) {
+            AppState.panel.style.width = savedSize.width + 'px';
+            AppState.panel.style.height = savedSize.height + 'px';
+        }
+    } catch (e) {
+        console.error('Lỗi load size panel:', e);
+    }
+
+    // Theo dõi và lưu kích thước bảng
+    const resizeObserver = new ResizeObserver(entries => {
+        if (AppState.panel.style.display === 'none') return;
+        for (let entry of entries) {
+            const { width, height } = entry.contentRect;
+            // Chỉ lưu nếu thực sự có kích thước (tránh lúc display:none)
+            if (width > 0 && height > 0) {
+                // Debounce nhẹ bằng cách dùng timeout hoặc cứ lưu vì resize native không nhạy quá mức
+                localStorage.setItem(LOCAL_KEY_SIZE, JSON.stringify({
+                    width: Math.round(width + 20), // + padding
+                    height: Math.round(height + 20) // + padding
+                }));
+            }
+        }
+    });
+    resizeObserver.observe(AppState.panel);
+
     // Render template manager — khi user chọn template từ URL, lưu buffer vào AppState
     renderTemplateManager(
         document.getElementById('vnpt-template-manager'),
@@ -67,7 +98,7 @@ export function initWidget() {
         const file = this.files && this.files[0];
         if (!file) return;
         const tmplContainer = document.getElementById('vnpt-template-manager');
-        
+
         saveLocalTemplate(file, tmplContainer, (arrayBuffer, name) => {
             AppState.templateBuffer = arrayBuffer;
             AppState.templateName = name;
@@ -81,16 +112,23 @@ export function initWidget() {
 
     // Đóng/Mở Panel 
     AppState.toggleBtn.addEventListener('click', (e) => {
+        if (AppState.hasDragged) {
+            // Bỏ qua click nếu vừa kéo thả xong
+            return;
+        }
+
         if (AppState.panel.style.display === 'none') {
             // Mở panel
             AppState.panel.style.display = 'flex';
             AppState.toggleBtn.className = 'btn-opened';
-            AppState.toggleBtn.innerHTML = '✖'; 
+            AppState.toggleBtn.innerHTML = '✖';
+            localStorage.setItem(LOCAL_KEY_OPENED, 'true');
         } else {
             // Đóng panel
             AppState.panel.style.display = 'none';
             AppState.toggleBtn.className = 'btn-closed';
             AppState.toggleBtn.innerHTML = '📄';
+            localStorage.setItem(LOCAL_KEY_OPENED, 'false');
         }
     });
 }

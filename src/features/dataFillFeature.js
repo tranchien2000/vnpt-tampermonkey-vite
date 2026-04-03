@@ -112,36 +112,25 @@ export function doSyncData() {
 export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections) {
     // ══════════════ SECTION: DATA TABS ══════════════
     const tabHeader = document.createElement('div');
-    Object.assign(tabHeader.style, {
-        display: 'flex',
-        background: '#f8f9fa',
-        borderBottom: '1px solid #dee2e6'
-    });
+    tabHeader.className = 'cw-tab-header';
 
-    const tabCustom = document.createElement('div'); tabCustom.innerText = '📋 Custom';
+    const tabCustom = document.createElement('div'); tabCustom.innerText = '📋 Custom'; 
+    tabCustom.className = 'cw-tab cw-tab-custom';
     const tabSync = document.createElement('div'); tabSync.innerText = '🔗 Sync';
+    tabSync.className = 'cw-tab cw-tab-sync';
     const tabDefault = document.createElement('div'); tabDefault.innerText = '📌 Default';
+    tabDefault.className = 'cw-tab cw-tab-default';
 
     function applyTabStyles() {
-        [tabCustom, tabDefault, tabSync].forEach(t => {
-            Object.assign(t.style, {
-                flex: '1', textAlign: 'center', padding: '6px 0', fontSize: '10px',
-                fontWeight: '700', cursor: 'pointer', userSelect: 'none',
-                color: '#6c757d', borderBottom: '2px solid transparent'
-            });
-        });
+        tabCustom.classList.remove('active');
+        tabDefault.classList.remove('active');
+        tabSync.classList.remove('active');
         if (currentDataTab === 'custom') {
-            tabCustom.style.color = '#0d6efd';
-            tabCustom.style.borderBottom = '2px solid #0d6efd';
-            tabCustom.style.background = '#fff';
+            tabCustom.classList.add('active');
         } else if (currentDataTab === 'default') {
-            tabDefault.style.color = '#198754';
-            tabDefault.style.borderBottom = '2px solid #198754';
-            tabDefault.style.background = '#fff';
+            tabDefault.classList.add('active');
         } else {
-            tabSync.style.color = '#ffc107';
-            tabSync.style.borderBottom = '2px solid #ffc107';
-            tabSync.style.background = '#fff';
+            tabSync.classList.add('active');
         }
     }
     applyTabStyles();
@@ -151,7 +140,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     tabHeader.appendChild(tabSync);
 
     const dataWrap = document.createElement('div');
-    Object.assign(dataWrap.style, { display: collapsedSections.data ? 'none' : 'block' });
+    dataWrap.style.display = collapsedSections.data ? 'none' : 'block';
 
     const dataHeader = mkSecHeader('📋 Cấu hình Data', 'data', (isHidden) => {
         dataWrap.style.display = isHidden ? 'none' : 'block';
@@ -160,21 +149,18 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
 
     const importBtn = document.createElement('button'); importBtn.innerText = '📥'; importBtn.title = 'Import JSON';
     const exportBtn = document.createElement('button'); exportBtn.innerText = '📤'; exportBtn.title = 'Export JSON';
-    [importBtn, exportBtn].forEach(b => Object.assign(b.style, {
-        background: 'none', border: 'none', cursor: 'pointer',
-        fontSize: '13px', padding: '0 4px', lineHeight: '1'
-    }));
+    [importBtn, exportBtn].forEach(b => b.className = 'cw-icon-btn');
 
     const dataToggleBtn = dataHeader.querySelector('.wg-toggle-btn');
     const rightWrap = document.createElement('div');
-    Object.assign(rightWrap.style, { display: 'flex', alignItems: 'center', gap: '4px' });
+    rightWrap.className = 'cw-right-wrap';
     rightWrap.appendChild(importBtn);
     rightWrap.appendChild(exportBtn);
     rightWrap.appendChild(dataToggleBtn);
     dataHeader.appendChild(rightWrap);
 
     const dataBody = document.createElement('div');
-    Object.assign(dataBody.style, { background: '#fff', maxHeight: '35vh', overflowY: 'auto' });
+    dataBody.className = 'cw-data-body';
 
     dataWrap.appendChild(tabHeader);
     dataWrap.appendChild(dataBody);
@@ -189,28 +175,22 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
         const keys = Object.keys(activeData);
 
         if (keys.length === 0 && (currentDataTab === 'custom' || currentDataTab === 'sync')) {
-            dataBody.innerHTML = `<div style="padding:15px;text-align:center;color:#888;font-size:11px;">Chưa có fields nào.<br>Nhấn [＋ Add] để thêm mới.</div>`;
+            dataBody.innerHTML = `<div class="cw-data-empty">Chưa có fields nào.<br>Nhấn [＋ Add] để thêm mới.</div>`;
             return;
         }
 
         keys.forEach(key => {
             const row = document.createElement('div');
-            Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderBottom: '1px solid #f0f0f0' });
+            row.className = 'cw-data-row';
 
             let isMutable = currentDataTab === 'custom' || currentDataTab === 'sync';
 
             const keyInp = document.createElement('input');
             keyInp.type = 'text'; keyInp.value = key; keyInp.title = key;
-            Object.assign(keyInp.style, {
-                fontSize: '10px', color: isMutable ? '#084298' : '#0d6efd', fontWeight: '600',
-                width: '85px', minWidth: '85px', border: isMutable ? '1px solid #cce5ff' : 'none',
-                background: isMutable ? '#f8fbff' : 'transparent', borderRadius: '3px',
-                padding: '2px 4px', outline: 'none'
-            });
+            keyInp.className = 'cw-data-key' + (isMutable ? ' mutable' : '');
+            
             keyInp.readOnly = !isMutable;
             if (isMutable) {
-                keyInp.onfocus = () => keyInp.style.borderColor = '#86b7fe';
-                keyInp.onblur = () => keyInp.style.borderColor = '#cce5ff';
                 keyInp.onchange = () => {
                     const newKey = keyInp.value.trim();
                     if (!newKey || newKey === key) { keyInp.value = key; return; }
@@ -225,10 +205,8 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
 
             const inp = document.createElement('input');
             inp.type = 'text'; inp.value = activeData[key] ?? '';
-            Object.assign(inp.style, { flex: '1', border: '1px solid #dee2e6', borderRadius: '4px', padding: '3px 5px', fontSize: '11px', minWidth: '0', outline: 'none' });
-            inp.onfocus = () => inp.style.borderColor = '#0d6efd';
-            inp.onblur = () => inp.style.borderColor = '#dee2e6';
-
+            inp.className = 'cw-data-val';
+            
             inp.oninput = () => {
                 activeData[key] = inp.value;
                 let sk = currentDataTab === 'sync' ? SK_DATA_SYNC : (currentDataTab === 'custom' ? SK_DATA_CUS : SK_DATA_DEF);
@@ -241,7 +219,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
             if (currentDataTab === 'custom' || currentDataTab === 'sync') {
                 const del = document.createElement('button');
                 del.innerHTML = '✕';
-                Object.assign(del.style, { background: 'none', border: 'none', color: '#dc3545', cursor: 'pointer', fontSize: '11px', padding: '0 2px', lineHeight: '1', flexShrink: '0' });
+                del.className = 'cw-del-btn';
                 del.onclick = () => {
                     if (confirm(`Delete "${key}"?`)) {
                         delete activeData[key];
@@ -253,7 +231,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
                 row.appendChild(del);
             } else {
                 const pad = document.createElement('div');
-                pad.style.width = '13px';
+                pad.className = 'cw-pad';
                 row.appendChild(pad);
             }
 
@@ -261,7 +239,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
         });
 
         const hint = document.createElement('div');
-        hint.style.cssText = 'font-size:10px;color:#aaa;text-align:center;padding:5px 8px;';
+        hint.className = 'cw-data-hint';
         hint.innerText = `${keys.length} fields · auto-saved`;
         dataBody.appendChild(hint);
     }
