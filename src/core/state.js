@@ -1,9 +1,6 @@
 export const AppState = {
     // VNPT Docx Widget
     widget: null,
-
-
-    
     panel: null,
     header: null,
     toggleBtn: null,
