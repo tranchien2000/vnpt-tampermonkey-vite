@@ -98,8 +98,14 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
             
             // Evaluate height AFTER undocking (in case it expanded)
             let pHeight = widgetEl.offsetHeight || 40;
-            // Widget không bị kéo mất khung dưới màn hình (giống các cạnh khác)
-            let bottomLimit = pHeight;
+            // Widget DOCX có thể kéo được panel ra khỏi màn hình, chỉ giữ lại toggleBtn (top: 10)
+            let bottomLimit;
+            if (isRightAnchor) {
+                bottomLimit = 10 + iconHeight;
+            } else {
+                const tb = widgetEl.querySelector('.cw-title-bar');
+                bottomLimit = tb ? tb.offsetHeight : pHeight;
+            }
             if (newY + bottomLimit > h) newY = Math.max(0, h - bottomLimit);
 
             widgetEl.style.top = newY + 'px';
@@ -159,7 +165,7 @@ export function initDragDrop() {
             
             if (newX < minX) newX = minX;
             if (newX > maxX) newX = maxX;
-            if (newY + iconHeight > h) newY = Math.max(0, h - iconHeight);
+            if (newY + 10 + iconHeight > h) newY = Math.max(0, h - (10 + iconHeight));
 
             AppState.widget.style.right = (w - newX - pWidth) + 'px';
             AppState.widget.style.top = newY + 'px';
