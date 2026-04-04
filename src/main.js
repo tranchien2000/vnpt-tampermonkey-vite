@@ -7,11 +7,13 @@ import { initWebScanner } from './features/webScanner.js';
 import { initDocExport } from './features/docExport.js';
 import { setupAutoFillForm } from './features/autoFillForm.js';
 import { initCalcWidget } from './features/calcWidgetFeature.js';
+import { initFirebase, loadUserConfig, saveUserConfig } from './api/firebase.js';
 
 function init() {
   logger.info('Initializing VNPT Userscript...');
 
   try {
+    initFirebase();
     injectStyles();
     initWidget();        // Docx Export Widget
     initDragDrop();      // Make Docx widget draggable

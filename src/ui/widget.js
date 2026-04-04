@@ -26,7 +26,7 @@ export function initWidget() {
 
             <div id="vnpt-panel-body">
                 <div id="vnpt-fields-container">
-                    <div class="text-hint">Bảng dữ liệu đang trống...</div>
+                    <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                 </div>
 
                 <!-- Template Manager -->
@@ -36,14 +36,12 @@ export function initWidget() {
 
                 <div class="bottom-export-row">
                     <div class="vnpt-control-group" id="vnpt-local-file-group">
-                        <label title="Hoặc chọn file local">📂 File local</label>
-                        <input type="file" id="vnpt-template-file" accept=".docx" title="Chọn file mẫu DOCX" />
+                        <input type="file" id="vnpt-template-file" accept=".docx" title="Hoặc sử dụng File nội bộ từ máy" />
                     </div>
                     <div class="vnpt-control-group">
-                        <label title="Tên file lưu lại">💾 Tên file xuất</label>
-                        <input type="text" id="vnpt-export-filename" value="HopDong_Auto.docx" />
+                        <input type="text" id="vnpt-export-filename" value="HopDong_Auto.docx" placeholder="Tên file HD xuất..." title="Tên file HD xuất" />
                     </div>
-                    <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️</button>
+                    <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT FILE</button>
                 </div>
             </div>
         </div>

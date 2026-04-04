@@ -1,5 +1,6 @@
 // src/features/fieldsManager.js
 import { AppState } from '../core/state.js';
+import { loadUserConfig, saveUserConfig } from '../api/firebase.js';
 import { LOCAL_KEY_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
@@ -56,25 +57,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
         row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
         fVal.addEventListener('keyup', saveFieldsToLocal);
 
-        // ==== MASK LOGIC ====
-        const kLow = keyText.toLowerCase();
-        if (kLow.includes('cmnd') || kLow.includes('cccd') || kLow.includes('sdt') || kLow.includes('dienthoai')) {
-            fVal.addEventListener('input', function() {
-                this.value = this.value.replace(/[^\\d]/g, '');
-            });
-        }
-        if (kLow.includes('ngaysinh') || kLow.includes('ngaycap')) {
-            fVal.placeholder = "dd/mm/yyyy";
-            fVal.addEventListener('input', function(e) {
-                if (e.inputType === 'deleteContentBackward') return;
-                let v = this.value.replace(/[^\\d]/g, '');
-                if (v.length > 8) v = v.substring(0, 8);
-                let formatted = v;
-                if (v.length > 4) formatted = v.substring(0, 2) + '/' + v.substring(2, 4) + '/' + v.substring(4);
-                else if (v.length > 2) formatted = v.substring(0, 2) + '/' + v.substring(2);
-                this.value = formatted;
-            });
-        }
+
 
         // Logic kéo thả sắp xếp (Drag & Drop)
         const dragHandle = row.querySelector('.row-drag-handle');
@@ -133,7 +116,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
     }
 }
 
-export function saveFieldsToLocal() {
+export async function saveFieldsToLocal() {
     const data = {};
     const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
     rows.forEach(row => {
@@ -143,13 +126,28 @@ export function saveFieldsToLocal() {
         if (k) data[k] = { label: l, value: v };
     });
     localStorage.setItem(LOCAL_KEY_FIELDS, JSON.stringify(data));
+    
+    // Sync to firebase debounce (fire and forget cho nhanh, có thể cải tiến sau)
+    saveUserConfig({ fields: data });
 }
 
-export function loadSavedData() {
-    // Load Form Fields
+export async function loadSavedData() {
+    // 1. Load Form Fields (ưu tiên firebase)
     try {
-        const savedFields = JSON.parse(localStorage.getItem(LOCAL_KEY_FIELDS));
+        let savedFields = null;
+        const cloudConfig = await loadUserConfig();
+        if (cloudConfig && cloudConfig.fields) {
+            savedFields = cloudConfig.fields;
+            // Cập nhật lại local cache
+            localStorage.setItem(LOCAL_KEY_FIELDS, JSON.stringify(savedFields));
+        } else {
+            savedFields = JSON.parse(localStorage.getItem(LOCAL_KEY_FIELDS));
+        }
+
         if (savedFields && Object.keys(savedFields).length > 0) {
+            // Xoá trắng các field cũ trước khi load để tránh duplicate
+            AppState.fieldsContainer.querySelectorAll('.vnpt-field-row').forEach(row => row.remove());
+            
             for (const key in savedFields) {
                 let st = savedFields[key];
                 if (typeof st === 'object' && st !== null) {
@@ -159,7 +157,9 @@ export function loadSavedData() {
                 }
             }
         }
-    } catch (e) { }
+    } catch (e) {
+        console.error('Error loading config:', e);
+    }
 
     // Load Position
     try {

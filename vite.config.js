@@ -16,6 +16,9 @@ const tampermonkeyHeader = `// ==UserScript==
 // @connect      localhost
 // @connect      drive.google.com
 // @connect      raw.githubusercontent.com
+// @connect      firebaseio.com
+// @connect      googleapis.com
+// @connect      firebasestorage.googleapis.com
 // @connect      *
 // ==/UserScript==\n`;
 

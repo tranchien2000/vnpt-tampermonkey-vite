@@ -3,14 +3,20 @@ import { AppState } from '../core/state.js';
 
 function renderDocx(arrayBuffer, dataToFill, exportFileName) {
     try {
-        const doc = new window.docxtemplater(new window.PizZip(arrayBuffer), { paragraphLoop: true, linebreaks: true });
+        let zip;
+        try {
+            zip = new window.PizZip(arrayBuffer);
+        } catch(zipErr) {
+            alert('Lỗi định dạng: File template (.docx) rỗng, bị hỏng hoặc cấu hình Link URL Google Drive chưa bật "Bất kỳ ai có liên kết". Vui lòng kiểm tra lại!');
+            console.error(zipErr);
+            return;
+        }
+        const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
         doc.render(dataToFill);
 
         const out = doc.getZip().generate({
             type: 'blob',
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            compression: 'DEFLATE',
-            compressionOptions: { level: 9 }
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         });
         const url = URL.createObjectURL(out);
         const a = document.createElement('a');

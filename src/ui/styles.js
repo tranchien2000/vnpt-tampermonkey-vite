@@ -26,7 +26,7 @@ export function injectStyles() {
         #vnpt-toggle-btn.btn-opened:hover { transform: scale(1.05); background-color: #b71c1c; }
 
         /* Bảng điều khiển */
-        #vnpt-export-panel { position: relative; width: 500px; min-width: 300px; max-height: 90vh; resize: both; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); transition: none; }
+        #vnpt-export-panel { position: relative; width: 440px; min-width: 300px; max-height: 85vh; resize: both; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); transition: none; }
         #vnpt-export-panel::after {
             content: "";
             position: absolute;
@@ -48,7 +48,7 @@ export function injectStyles() {
         .drag-icon { font-size: 14px; cursor: move; opacity: 0.6; }
 
         /* Box chứa danh sách biến */
-        #vnpt-fields-container { max-height: 400px; overflow-y: auto; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; padding: 4px; margin-bottom: 4px; transition: max-height 0.3s ease;}
+        #vnpt-fields-container { flex: 1; max-height: unset; overflow-y: auto; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; padding: 4px; margin-bottom: 4px;}
         .vnpt-field-row { display: flex; gap: 2px; margin-bottom: 2px; align-items: center; }
         .row-drag-handle { cursor: grab; padding: 0 4px; font-size: 16px; font-weight: bold; color: #aaa; user-select: none; }
         .row-drag-handle:active { cursor: grabbing; }
@@ -76,13 +76,15 @@ export function injectStyles() {
         .btn-add { background: #e8eaed; color: #3c4043; } .btn-add:hover { background: #dadce0; }
         .btn-fill-back { background: #ab47bc; color: #fff; } .btn-fill-back:hover { background: #8e24aa; }
         .btn-clean { background: #ff5252; color: #fff; } .btn-clean:hover { background: #ff1744; }
-        .btn-export { width: 100%; background: #1a73e8; color: white; padding: 10px; font-size: 13px; margin-top: 5px;} .btn-export:hover { background: #1557b0; }
+        .btn-export { background: #1a73e8; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold;} .btn-export:hover { background: #1557b0; }
 
-        .bottom-export-row { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid #eee; margin-top: 5px; }
+        #vnpt-template-section { border-top: 1px solid #e0e0e0; margin-top: 4px; padding-top: 6px; }
+        
+        .bottom-export-row { display: flex; gap: 4px; align-items: center; border-top: 1px solid #eee; margin-top: 4px; padding-top: 6px; }
         .bottom-export-row .vnpt-control-group { margin-bottom: 0; flex: 1; min-width: 0; }
-        .bottom-export-row .vnpt-control-group label { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bottom-export-row .vnpt-control-group input[type="file"] { width: 145px; }
         .bottom-export-row .vnpt-control-group input { padding: 4px; font-size: 11px; }
-        .bottom-export-row .btn-export { flex: 0 0 40px; height: 26px; padding: 0; margin-top: 0; display: flex; align-items: center; justify-content: center; font-size: 16px;}
+        .bottom-export-row .btn-export { flex: 0 0 auto; height: 26px; margin: 0; border-radius: 5px; }
 
         .text-hint { font-size: 11px; color: #666; font-style: italic; text-align: center; margin-bottom: 5px;}
 

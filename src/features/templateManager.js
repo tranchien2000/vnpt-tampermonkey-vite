@@ -3,8 +3,7 @@
 
 import { SK_TEMPLATES } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
-
-let isEditMode = false;
+import { handleUploadToCloud, renderCloudTemplateSection } from './cloudTemplates.js';
 
 function loadTemplates() {
     try { 
@@ -34,7 +33,19 @@ export function fetchTemplateFromUrl(url) {
             url: normalizeUrl(url),
             responseType: 'arraybuffer',
             onload: (res) => {
-                if (res.status >= 200 && res.status < 300) resolve(res.response);
+                if (res.status >= 200 && res.status < 300) {
+                    if (res.response && res.response.byteLength > 4) {
+                        const bytes = new Uint8Array(res.response.slice(0, 4));
+                        if (bytes[0] === 0x50 && bytes[1] === 0x4B && bytes[2] === 0x03 && bytes[3] === 0x04) {
+                            resolve(res.response);
+                            return;
+                        } else {
+                            reject(new Error('Link tải không trả về định dạng DOCX/ZIP hợp lệ (có thể do lỗi quyền truy cập Google Drive hoặc link sai).'));
+                            return;
+                        }
+                    }
+                    resolve(res.response);
+                }
                 else reject(new Error(`HTTP ${res.status}: Không lấy được file`));
             },
             onerror: () => reject(new Error('Không thể tải URL.')),
@@ -104,21 +115,6 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
     const btnWrap = document.createElement('div');
     btnWrap.style.cssText = 'display:flex;gap:4px;';
 
-    const addUrlBtn = document.createElement('button');
-    addUrlBtn.textContent = '+ URL';
-    addUrlBtn.style.cssText = 'font-size:10px;padding:2px 7px;border:1px solid #1a73e8;background:#e8f0fe;color:#1a73e8;border-radius:4px;cursor:pointer;font-weight:600;display:' + (isEditMode ? 'block' : 'none');
-    addUrlBtn.onclick = () => showAddUrlForm(container, onSelectTemplate);
-
-    const toggleEditBtn = document.createElement('button');
-    toggleEditBtn.textContent = isEditMode ? 'Xong' : '⚙ Quản lý';
-    toggleEditBtn.style.cssText = 'font-size:10px;padding:2px 7px;border:1px solid #6c757d;background:#f8f9fa;color:#495057;border-radius:4px;cursor:pointer;font-weight:600;';
-    toggleEditBtn.onclick = () => {
-        isEditMode = !isEditMode;
-        renderTemplateManager(container, onSelectTemplate);
-    };
-
-    btnWrap.appendChild(addUrlBtn);
-    btnWrap.appendChild(toggleEditBtn);
     headerRow.appendChild(title);
     headerRow.appendChild(btnWrap);
     container.appendChild(headerRow);
@@ -152,41 +148,72 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#212529;white-space:nowrap;';
         
         row.onclick = () => {
-            if (isEditMode) {
-                const newName = prompt('Đổi tên template:', tpl.name);
-                if (newName && newName.trim() && newName.trim() !== tpl.name) {
-                    const list = loadTemplates();
-                    list[idx].name = newName.trim();
-                    saveTemplates(list);
-                    renderTemplateManager(container, onSelectTemplate, currentActiveName);
-                }
-            } else {
-                selectTemplate(tpl, onSelectTemplate, currentActiveName, container);
-            }
+            selectTemplate(tpl, onSelectTemplate, currentActiveName, container);
         };
 
         row.appendChild(badge);
         row.appendChild(nameEl);
 
-        if (isEditMode) {
-            const delBtn = document.createElement('button');
-            delBtn.innerHTML = '✕';
-            delBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#d32f2f;cursor:pointer;margin-left:4px;';
-            delBtn.onclick = (e) => {
+        // Nút đổi tên
+        const renameBtn = document.createElement('button');
+        renameBtn.innerHTML = '✎';
+        renameBtn.title = 'Đổi tên template';
+        renameBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#555;cursor:pointer;margin-left:auto;';
+        renameBtn.onclick = (e) => {
+            e.stopPropagation();
+            const newName = prompt('Đổi tên template:', tpl.name);
+            if (newName && newName.trim() && newName.trim() !== tpl.name) {
+                const list = loadTemplates();
+                list[idx].name = newName.trim();
+                saveTemplates(list);
+                renderTemplateManager(container, onSelectTemplate, currentActiveName);
+            }
+        };
+        row.appendChild(renameBtn);
+
+        // Nút upload lên mây (chỉ cho local base64)
+        if (tpl.type === 'local_base64') {
+            const cloudBtn = document.createElement('button');
+            cloudBtn.innerHTML = '☁️';
+            cloudBtn.title = 'Tải lên Cloud (Chia sẻ)';
+            cloudBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#1976d2;cursor:pointer;margin-left:2px;';
+            cloudBtn.onclick = async (e) => {
                 e.stopPropagation();
-                if (confirm(`Xoá biểu mẫu "${tpl.name}"?`)) {
-                    const list = loadTemplates();
-                    list.splice(idx, 1);
-                    saveTemplates(list);
-                    renderTemplateManager(container, onSelectTemplate, currentActiveName === tpl.name ? null : currentActiveName);
+                // Tạo pseudo file từ base64
+                const byteString = atob(tpl.data.split(',')[1]);
+                const arrayBuffer = new ArrayBuffer(byteString.length);
+                const uint8Array = new Uint8Array(arrayBuffer);
+                for (let i = 0; i < byteString.length; i++) {
+                    uint8Array[i] = byteString.charCodeAt(i);
                 }
+                const blob = new Blob([uint8Array], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+                const file = new File([blob], tpl.name + '.docx', { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+                
+                await handleUploadToCloud(file, onSelectTemplate, container);
             };
-            row.appendChild(delBtn);
+            row.appendChild(cloudBtn);
         }
+
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = '✕';
+        delBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#d32f2f;cursor:pointer;margin-left:2px;';
+        delBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (confirm(`Xoá biểu mẫu "${tpl.name}"?`)) {
+                const list = loadTemplates();
+                list.splice(idx, 1);
+                saveTemplates(list);
+                renderTemplateManager(container, onSelectTemplate, currentActiveName === tpl.name ? null : currentActiveName);
+            }
+        };
+        row.appendChild(delBtn);
 
         listWrapper.appendChild(row);
     });
     container.appendChild(listWrapper);
+
+    // Render Cloud Section below list, but pass btnWrap for header injections
+    renderCloudTemplateSection(container, btnWrap, onSelectTemplate, currentActiveName);
 }
 
 function selectTemplate(tpl, onSelectTemplate, currentActiveName, container) {
@@ -212,50 +239,4 @@ function selectTemplate(tpl, onSelectTemplate, currentActiveName, container) {
     }).catch(err => {
         showToast(`❌ ${err.message}`, '#dc3545');
     });
-}
-
-function showAddUrlForm(container, onSelectTemplate) {
-    const existing = container.querySelector('.tpl-add-form');
-    if (existing) { existing.remove(); return; }
-
-    const form = document.createElement('div');
-    form.className = 'tpl-add-form';
-    form.style.cssText = 'background:#fff;border:1px dashed #1a73e8;border-radius:4px;padding:6px;margin-bottom:6px;';
-
-    const nameInp = document.createElement('input');
-    nameInp.placeholder = 'Tên mẫu';
-    nameInp.style.cssText = 'width:100%;box-sizing:border-box;padding:3px 5px;font-size:11px;border:1px solid #ccc;border-radius:3px;margin-bottom:4px;';
-
-    const urlInp = document.createElement('input');
-    urlInp.placeholder = 'URL (.docx)';
-    urlInp.style.cssText = 'width:100%;box-sizing:border-box;padding:3px 5px;font-size:11px;border:1px solid #ccc;border-radius:3px;margin-bottom:4px;';
-
-    const btnRow = document.createElement('div');
-    btnRow.style.cssText = 'display:flex;gap:4px;';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = '💾 Lưu';
-    saveBtn.style.cssText = 'flex:1;padding:3px;font-size:10px;font-weight:700;background:#1a73e8;color:#fff;border:none;border-radius:3px;cursor:pointer;';
-    saveBtn.onclick = () => {
-        const name = nameInp.value.trim();
-        const url = urlInp.value.trim();
-        if (!name || !url) return;
-        const list = loadTemplates();
-        list.unshift({ name, url, type: 'url', lastUsed: Date.now() });
-        saveTemplates(list);
-        form.remove();
-        renderTemplateManager(container, onSelectTemplate);
-    };
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Hủy';
-    cancelBtn.style.cssText = 'padding:3px 8px;font-size:10px;background:#f0f0f0;border:1px solid #ccc;border-radius:3px;cursor:pointer;';
-    cancelBtn.onclick = () => form.remove();
-
-    btnRow.appendChild(saveBtn);
-    btnRow.appendChild(cancelBtn);
-    form.appendChild(nameInp);
-    form.appendChild(urlInp);
-    form.appendChild(btnRow);
-    container.insertBefore(form, container.firstChild.nextSibling);
 }

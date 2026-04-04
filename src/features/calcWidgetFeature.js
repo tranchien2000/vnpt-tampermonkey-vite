@@ -176,7 +176,7 @@ export function initCalcWidget() {
         
         // Khi dock, snap top = đáy - chiều cao title bar
         if (docked) {
-            widget.style.top = (window.innerHeight - titleBar.offsetHeight) + 'px';
+            widget.style.top = (window.innerHeight - (titleBar.offsetHeight || 34)) + 'px';
         }
     }
 
@@ -186,7 +186,7 @@ export function initCalcWidget() {
     });
 
     // Khởi tạo trạng thái dock từ localStorage
-    if (startDocked) applyDock(true);
+    if (startDocked) dragHandle.setDocked(true);
     
     // Window clamp on resize
     window.addEventListener('resize', () => {
