@@ -37,3 +37,4 @@ export const SK_COLLAPSE = 'vnpt_widget_collapsed'; // 'calc' | 'data' | ''
 export const SK_CALC_MAP = 'vnd_calc_map';
 export const SK_DATATAB = 'vnpt_widget_datatab';   // 'default' | 'custom'
 export const SK_TEMPLATES = 'vnpt_templates';       // [{name, url, lastUsed}]
+//
