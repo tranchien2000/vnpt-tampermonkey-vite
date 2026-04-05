@@ -26,7 +26,18 @@ export function injectStyles() {
         #vnpt-toggle-btn.btn-opened:hover { transform: scale(1.05); background-color: #b71c1c; }
 
         /* Bảng điều khiển */
-        #vnpt-export-panel { position: relative; width: 440px; min-width: 300px; max-height: 85vh; resize: both; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); transition: none; }
+        #vnpt-export-panel { 
+            position: relative; 
+            width: 440px; min-width: 350px; 
+            height: auto; min-height: 200px;
+            max-height: 92vh; max-width: 98vw;
+            resize: both; overflow: hidden; 
+            display: flex; flex-direction: column; 
+            background: #ffffff; border: 1px solid #dadce0; 
+            border-radius: 10px; padding: 10px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
+            transition: none; 
+        }
         #vnpt-export-panel::after {
             content: "";
             position: absolute;
@@ -43,7 +54,14 @@ export function injectStyles() {
         #vnpt-panel-body { display: flex; flex-direction: column; overflow: auto; flex: 1; margin-top: 5px; }
 
         /* Header vùng kéo thả */
-        #vnpt-panel-header { margin: 0 0 0 0; color: #1a73e8; font-size: 15px; border-bottom: 2px solid #f0f0f0; cursor: move; user-select: none; display: flex; align-items: center; justify-content: space-between; font-weight: bold;}
+        #vnpt-panel-header { 
+            margin: 0 -10px 0 -10px; padding: 0 10px 5px 10px;
+            color: #1a73e8; font-size: 14px; 
+            border-bottom: 2px solid #f1f3f4; 
+            cursor: move; user-select: none; 
+            display: flex; align-items: center; justify-content: space-between; 
+            font-weight: bold;
+        }
         #vnpt-panel-header:hover { background: #f8f9fa; border-radius: 4px; }
         .drag-icon { font-size: 14px; cursor: move; opacity: 0.6; }
 
@@ -56,9 +74,10 @@ export function injectStyles() {
         .vnpt-field-row.over { background-color: #e3f2fd; border-radius: 4px; }
         .vnpt-field-row input { flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
         .vnpt-field-row input.row-chk { flex: 0 0 auto; width: auto; height: auto; margin: 0 4px 0 0; padding: 0; cursor: pointer; }
-        .vnpt-field-row input.f-label { flex: 0.55; color: #0056b3; font-weight: bold;}
-        .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: bold; color: #d63384;}
-        .show-ids .vnpt-field-row input.f-key { display: block; }
+        .vnpt-field-row input.f-label { flex: 0.35; color: #0056b3; font-weight: bold;}
+        .vnpt-field-row input.f-key { display: none; flex: 0.3; font-weight: bold; color: #d63384;}
+        .vnpt-field-row input.f-sync { display: none; flex: 0.15; color: #d39e00; font-weight: bold; text-align: center; }
+        .show-ids .vnpt-field-row input.f-key, .show-ids .vnpt-field-row input.f-sync { display: block; }
         .vnpt-btn-hide { background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; cursor: pointer; padding: 3px 6px; }
         .vnpt-btn-hide:hover { background: #e0e0e0; }
         .vnpt-btn-del { background: #fee; color: #d32f2f; border: 1px solid #fcc; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 10px;}
@@ -72,11 +91,30 @@ export function injectStyles() {
         .vnpt-btn-action { border: none; padding: 0 8px; height: 27px; min-width: 27px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 5px; transition: background 0.2s; white-space: nowrap; box-sizing: border-box; }
 
         .btn-scan { background: #fbbc04; color: #000; } .btn-scan:hover { background: #f2a500; }
-        .btn-toggle-id { background: #e0f7fa; color: #00838f; } .btn-toggle-id:hover { background: #b2ebf2; }
-        .btn-add { background: #e8eaed; color: #3c4043; } .btn-add:hover { background: #dadce0; }
+        .btn-toggle-id { background: #e8f0fe; color: #1a73e8; } .btn-toggle-id:hover { background: #d2e3fc; }
+        .btn-default-toggle { background: #e6f4ea; color: #1e8e3e; font-size: 14px; } .btn-default-toggle:hover { background: #ceead6; }
+        .btn-add { background: #f1f3f4; color: #3c4043; } .btn-add:hover { background: #e8eaed; }
         .btn-fill-back { background: #ab47bc; color: #fff; } .btn-fill-back:hover { background: #8e24aa; }
-        .btn-clean { background: #ff5252; color: #fff; } .btn-clean:hover { background: #ff1744; }
+        .btn-clean { background: #ea4335; color: #fff; } .btn-clean:hover { background: #d93025; }
         .btn-export { background: #1a73e8; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold;} .btn-export:hover { background: #1557b0; }
+
+        /* Popup Default Data */
+        #vnpt-default-data-popup {
+            position: absolute; top: 40px; right: 10px; 
+            width: 250px; max-height: 250px; 
+            background: #fff; border: 1px solid #dadce0; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+            border-radius: 8px; z-index: 100; 
+            display: none; flex-direction: column; overflow: hidden;
+        }
+        .vdp-header { background: #f8f9fa; padding: 6px 10px; font-size: 11px; font-weight: 700; border-bottom: 1px solid #eee; color: #1e8e3e; display: flex; justify-content: space-between; align-items: center;}
+        .vdp-list { overflow-y: auto; padding: 4px 0; }
+        .vdp-item { 
+            padding: 5px 10px; cursor: pointer; font-size: 11px; color: #3c4043; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .vdp-item:hover { background: #e6f4ea; color: #1e8e3e; }
+        .vdp-item .vdp-key { color: #888; font-family: monospace; font-size: 9px; margin-left: 10px; }
 
         #vnpt-template-section { border-top: 1px solid #e0e0e0; margin-top: 4px; padding-top: 6px; }
         

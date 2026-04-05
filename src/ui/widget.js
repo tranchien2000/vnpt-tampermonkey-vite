@@ -1,6 +1,6 @@
-// src/ui/widget.js
 import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
+import { initFieldsManager, loadSavedData, renderDefaultDataQuickView } from '../features/fieldsManager.js';
 import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED } from '../core/constants.js';
 
 export function initWidget() {
@@ -18,6 +18,7 @@ export function initWidget() {
                 <div class="btn-row" style="margin-bottom: 0; padding-right: 35px; gap: 4px;">
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền</button>
+                    <button class="vnpt-btn-action btn-default-toggle" id="vnpt-btn-default" title="📌 Dữ liệu mặc định VNPT">📌</button>
                     <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">ID</button>
                     <button class="vnpt-btn-action btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">➕</button>
                     <button class="vnpt-btn-action btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑️</button>
@@ -25,6 +26,10 @@ export function initWidget() {
             </div>
 
             <div id="vnpt-panel-body">
+                <div id="vnpt-default-data-popup">
+                    <div class="vdp-header">📌 Dữ liệu mặc định <span id="vdp-close" style="cursor:pointer;">✕</span></div>
+                    <div class="vdp-list" id="vdp-list"></div>
+                </div>
                 <div id="vnpt-fields-container">
                     <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                 </div>
@@ -81,6 +86,19 @@ export function initWidget() {
         }
     });
     resizeObserver.observe(AppState.panel);
+
+    // Render Default Data Quick View
+    const vdpPopup = document.getElementById('vnpt-default-data-popup');
+    const vdpList = document.getElementById('vdp-list');
+    renderDefaultDataQuickView(vdpList);
+
+    document.getElementById('vnpt-btn-default').onclick = (e) => {
+        const isVis = vdpPopup.style.display === 'flex';
+        vdpPopup.style.display = isVis ? 'none' : 'flex';
+    };
+    document.getElementById('vdp-close').onclick = () => {
+        vdpPopup.style.display = 'none';
+    };
 
     // Render template manager — khi user chọn template từ URL, lưu buffer vào AppState
     renderTemplateManager(

@@ -1,11 +1,10 @@
-// src/features/fieldsManager.js
 import { AppState } from '../core/state.js';
-import { loadUserConfig, saveUserConfig } from '../api/firebase.js';
 import { LOCAL_KEY_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
+import { DEFAULT_DATA } from './dataFillFeature.js';
 
-export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
+export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '') {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
     if (hint) hint.remove();
 
@@ -17,11 +16,15 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
             const row = input.closest('.vnpt-field-row');
             const valueInput = row.querySelector('.f-val');
             const labelInput = row.querySelector('.f-label');
+            const syncInput = row.querySelector('.f-sync');
             if (valueText !== '') {
                 valueInput.value = valueText;
             }
             if (labelText !== null && labelText !== '') {
                 labelInput.value = labelText;
+            }
+            if (syncText !== '') {
+                syncInput.value = syncText;
             }
             isDuplicate = true;
             break;
@@ -41,10 +44,13 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
             <input type="checkbox" class="row-chk" title="Chọn để thao tác hàng loạt" style="margin: 0 2px 0 2px;" />
             <input type="text" class="f-label" placeholder="Nhãn..." value="${labelText}" />
             <input type="text" class="f-key" placeholder="Mã biến" value="${keyText}" />
+            <input type="text" class="f-sync" placeholder="🔗 Đồng bộ" value="${syncText}" title="Nhập các ID đích trên web, cách nhau bởi dấu phẩy" />
             <span class="row-drag-handle" title="Kéo thả để di chuyển">=</span>
             <input type="text" class="f-val" placeholder="Giá trị" value="${valueText}" />
         `;
         const fVal = row.querySelector('.f-val');
+        const fSync = row.querySelector('.f-sync');
+
         if (keyText === 'tenToChuc') {
             fVal.style.textAlign = 'right';
         }
@@ -55,7 +61,16 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null) {
             fVal.style.textAlign = this.value.trim() === 'tenToChuc' ? 'right' : '';
         });
         row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
-        fVal.addEventListener('keyup', saveFieldsToLocal);
+        fSync.addEventListener('keyup', saveFieldsToLocal);
+
+        fVal.addEventListener('keyup', function() {
+            saveFieldsToLocal();
+            // Logic đồng bộ hóa thủ công
+            const targets = fSync.value.split(',').map(s => s.trim()).filter(s => s);
+            if (targets.length > 0) {
+                targets.forEach(t => setPageField(t, this.value));
+            }
+        });
 
 
 
@@ -123,26 +138,16 @@ export async function saveFieldsToLocal() {
         const k = row.querySelector('.f-key').value.trim();
         const l = row.querySelector('.f-label').value.trim();
         const v = row.querySelector('.f-val').value;
-        if (k) data[k] = { label: l, value: v };
+        const s = row.querySelector('.f-sync').value.trim();
+        if (k) data[k] = { label: l, value: v, sync: s };
     });
     localStorage.setItem(LOCAL_KEY_FIELDS, JSON.stringify(data));
-    
-    // Sync to firebase debounce (fire and forget cho nhanh, có thể cải tiến sau)
-    saveUserConfig({ fields: data });
 }
 
 export async function loadSavedData() {
-    // 1. Load Form Fields (ưu tiên firebase)
+    // 1. Load Form Fields (Local only)
     try {
-        let savedFields = null;
-        const cloudConfig = await loadUserConfig();
-        if (cloudConfig && cloudConfig.fields) {
-            savedFields = cloudConfig.fields;
-            // Cập nhật lại local cache
-            localStorage.setItem(LOCAL_KEY_FIELDS, JSON.stringify(savedFields));
-        } else {
-            savedFields = JSON.parse(localStorage.getItem(LOCAL_KEY_FIELDS));
-        }
+        const savedFields = JSON.parse(localStorage.getItem(LOCAL_KEY_FIELDS));
 
         if (savedFields && Object.keys(savedFields).length > 0) {
             // Xoá trắng các field cũ trước khi load để tránh duplicate
@@ -151,9 +156,9 @@ export async function loadSavedData() {
             for (const key in savedFields) {
                 let st = savedFields[key];
                 if (typeof st === 'object' && st !== null) {
-                    addOrUpdateFieldRow(key, st.value, st.label);
+                    addOrUpdateFieldRow(key, st.value, st.label, st.sync || '');
                 } else {
-                    addOrUpdateFieldRow(key, st, '');
+                    addOrUpdateFieldRow(key, st, '', '');
                 }
             }
         }
@@ -210,7 +215,7 @@ export function initFieldsManager() {
     // 👉 LOGIC 2: THÊM TAY
     document.getElementById('vnpt-btn-add').addEventListener('click', function () {
         const uniqueNumber = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row').length + 1;
-        addOrUpdateFieldRow('bien_moi_' + uniqueNumber, '', '');
+        addOrUpdateFieldRow('bien_moi_' + uniqueNumber, '', '', '');
         saveFieldsToLocal();
     });
 
@@ -235,4 +240,30 @@ export function initFieldsManager() {
             showToast(`⚠️ Không có trường nào khớp`, '#ffc107');
         }
     });
+}
+
+export function renderDefaultDataQuickView(container) {
+    if (!container) return;
+    container.innerHTML = '';
+    
+    Object.keys(DEFAULT_DATA).forEach(key => {
+        const item = document.createElement('div');
+        item.className = 'vdp-item';
+        item.innerHTML = `
+            <span class="vdp-label">${DEFAULT_LABELS[key] || key}</span>
+            <span class="vdp-key">${key}</span>
+        `;
+        item.onclick = () => {
+            addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
+            saveFieldsToLocal();
+            showToast(`📌 Đã thêm: ${DEFAULT_LABELS[key] || key}`);
+        };
+        container.appendChild(item);
+    });
+
+    // Thêm gợi ý
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size: 10px; color: #999; padding: 10px; text-align: center; border-top: 1px solid #eee;';
+    hint.innerText = 'Nhấn vào một trường để thêm nhanh vào danh sách xuất hợp đồng.';
+    container.appendChild(hint);
 }

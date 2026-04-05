@@ -3,6 +3,7 @@
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, SK_DATATAB, SK_COLLAPSE } from '../core/constants.js';
 import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
+import { storage } from '../api/storage/index.js';
 
 // Storage helpers
 function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
@@ -13,7 +14,7 @@ const ngay = String(now.getDate()).padStart(2, '0');
 const thang = String(now.getMonth() + 1).padStart(2, '0');
 const nam = String(now.getFullYear());
 
-const DEFAULT_DATA = {
+export const DEFAULT_DATA = {
     ngayKy: ngay,
     thangKy: thang,
     namKy: nam,
@@ -264,21 +265,18 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
         const fileInp = document.createElement('input');
         fileInp.type = 'file';
         fileInp.accept = '.json';
-        fileInp.onchange = e => {
+        fileInp.onchange = async e => {
             const file = e.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = ev => {
-                try {
-                    const parsed = JSON.parse(ev.target.result);
-                    if (parsed.defaultData) { defaultData = parsed.defaultData; sv(SK_DATA_DEF, defaultData); }
-                    if (parsed.customData) { customData = parsed.customData; sv(SK_DATA_CUS, customData); }
-                    if (parsed.syncData) { syncData = parsed.syncData; sv(SK_DATA_SYNC, syncData); }
-                    renderDataFields();
-                    showToast('✅ Import successful!');
-                } catch (err) { alert('Invalid JSON file format!'); }
-            };
-            reader.readAsText(file);
+            try {
+                const text = await storage.download('local', file, { type: 'text' });
+                const parsed = JSON.parse(text);
+                if (parsed.defaultData) { defaultData = parsed.defaultData; sv(SK_DATA_DEF, defaultData); }
+                if (parsed.customData) { customData = parsed.customData; sv(SK_DATA_CUS, customData); }
+                if (parsed.syncData) { syncData = parsed.syncData; sv(SK_DATA_SYNC, syncData); }
+                renderDataFields();
+                showToast('✅ Import successful!');
+            } catch (err) { alert('Invalid JSON file format or error reading file!'); }
         };
         fileInp.click();
     };

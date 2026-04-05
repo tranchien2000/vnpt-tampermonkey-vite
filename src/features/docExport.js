@@ -1,5 +1,6 @@
 // src/features/docExport.js
 import { AppState } from '../core/state.js';
+import { storage } from '../api/storage/index.js';
 
 function renderDocx(arrayBuffer, dataToFill, exportFileName) {
     try {
@@ -134,9 +135,9 @@ export function initDocExport() {
         // Ưu tiên 2: file local
         const fileInput = document.getElementById('vnpt-template-file');
         if (fileInput.files && fileInput.files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = (e) => renderDocx(e.target.result, dataToFill, exportFileName);
-            reader.readAsArrayBuffer(fileInput.files[0]);
+            storage.download('local', fileInput.files[0], { type: 'arraybuffer' })
+                .then(buf => renderDocx(buf, dataToFill, exportFileName))
+                .catch(err => alert(`Lỗi đọc file: ${err.message}`));
             return;
         }
 
