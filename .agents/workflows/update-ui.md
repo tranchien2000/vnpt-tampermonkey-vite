@@ -5,7 +5,7 @@ description: Quy trình cập nhật hoặc sửa đổi giao diện (CSS) cho c
 Để cập nhật giao diện mà không làm mất tính thẩm mỹ và cấu trúc, hãy thực hiện:
 
 1. **Tìm đúng Section**:
-   Mở [styles.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/styles.js) và định vị mã CSS trong 6 SECTION:
+   Mở [styles.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/styles.js) và định vị mã CSS trong 6 SECTION:
    - SECTION 1: Khung bao ngoài & nút Toggle.
    - SECTION 2-5: Export Panel & Template Manager.
    - SECTION 6: Calc Widget (bao gồm cả các Tab Data).

@@ -8,8 +8,8 @@ Mặc định các mẫu được lưu trong LocalStorage, nếu bạn muốn AI
    Link Google Drive phải ở dạng "Bất kỳ ai có liên kết đều có thể đọc".
 
 2. **Khởi tạo Code**:
-   Mẫu thường được render bởi `renderTemplateManager` trong [widget.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/widget.js).
-   Để thêm mẫu mặc định, AI cần chèn logic nạp mẫu vào `localStorage (SK_TEMPLATES)` nếu nó chưa tồn tại trong [templateManager.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/templateManager.js).
+   Mẫu thường được render bởi `renderTemplateManager` trong [widget.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/widget.js).
+   Để thêm mẫu mặc định, AI cần chèn logic nạp mẫu vào `localStorage (SK_TEMPLATES)` nếu nó chưa tồn tại trong [templateManager.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/templateManager.js).
 
 3. **Xử lý URL**:
    Sử dụng hàm `normalizeUrl(url)` để chuyển link trực tiếp của GDrive thành link tải file `uc?export=download`.

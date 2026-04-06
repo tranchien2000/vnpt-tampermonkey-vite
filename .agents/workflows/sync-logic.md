@@ -12,7 +12,7 @@ Có 2 cấp độ đồng bộ (Sync) dữ liệu:
 2. **Cấp độ Tab Sync (Calc Widget)**:
    - Mở Tab **🔗 Sync** trong Calc Widget.
    - Thêm một cặp: `Nguồn (Label/ID trên trang)` → `Đích (Các ID/Name đích)`.
-   - Cơ chế này sử dụng `doSyncData` trong [dataFillFeature.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/dataFillFeature.js).
+   - Cơ chế này sử dụng `doSyncData` trong [dataFillFeature.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/dataFillFeature.js).
 
 3. **Sửa logic đồng bộ**:
-   - Mọi thao tác gán giá trị đều đi qua [domHelper.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/utils/domHelper.js) (hàm `setPageField` hoặc `syncSetValue`).
+   - Mọi thao tác gán giá trị đều đi qua [domHelper.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/utils/domHelper.js) (hàm `setPageField` hoặc `syncSetValue`).

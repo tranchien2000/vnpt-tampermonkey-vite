@@ -13,7 +13,7 @@ Dùng khi bạn muốn biết một ô nhập liệu trên web có ID hay Name g
    ```
 
 2. **Quét tự động**:
-   Sử dụng nút **[Quét]** trên Widget Export. AI sẽ đối chiếu `DEFAULT_LABELS` trong [constants.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/core/constants.js) để tìm phần tử tương ứng.
+   Sử dụng nút **[Quét]** trên Widget Export. AI sẽ đối chiếu `DEFAULT_LABELS` trong [constants.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/constants.js) để tìm phần tử tương ứng.
 
 3. **Lỗi không quét được**:
    Nếu selector sai, hãy cập nhật `DEFAULT_LABELS` với ID/Name chính xác nhất vừa tìm được ở Bước 1.

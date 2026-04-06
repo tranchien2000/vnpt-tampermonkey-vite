@@ -1,4 +1,4 @@
-1. AI **LUÔN LUÔN** phải đọc [ARCHITECTURE.md](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/ARCHITECTURE.md) ngay khi bắt đầu phiên làm việc.
+1. AI **LUÔN LUÔN** phải đọc [ARCHITECTURE.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/ARCHITECTURE.md) ngay khi bắt đầu phiên làm việc.
 2. AI phải đọc **JSDoc header** (20 dòng đầu) của file `src/` trước khi đọc toàn bộ.
 3. **Grep-First Mandate**: Nếu file > 100 dòng, AI **PHẢI** dùng `grep_search` để tìm đoạn code cần sửa trước khi dùng `view_file`.
 4. **Exclusion List**: Tuyệt đối KHÔNG đọc: `dist/`, `node_modules/`, `.git/`, `package-lock.json`, `original_script.js`, `source.js`, `temp_vnpt*.js`.
