@@ -101,60 +101,43 @@ export function initCalcWidget() {
     // ══════════════ SECTION: CALCULATOR ══════════════
     collapsedSections.calc = false; // Always default open for calc or use saved
     const calcBody = document.createElement('div');
-    calcBody.className = 'cw-body';
+    calcBody.className = 'cw-body-inline';
 
     calcBody.innerHTML = `
-    <div class="cw-row">
-        <span class="cw-label">Trước thuế</span>
-        <input id="wg-before" class="cw-input" list="wg-before-list">
-        <button data-wgcopy="wg-before" class="cw-btn-copy">Copy</button>
+    <div class="cw-inline-row">
+        <input id="wg-before" class="cw-input-inline" placeholder="Trước thuế" list="wg-before-list" title="Trước thuế (Click/Focus để Copy)">
         <datalist id="wg-before-list"></datalist>
-    </div>
-    <div class="cw-row">
-        <div class="cw-tax-group">
-            <span class="cw-label" style="width:auto;">Thuế</span>
-            <input id="wg-taxRate" class="cw-tax-input">
+        
+        <div class="cw-tax-group-inline">
+            <input id="wg-taxRate" class="cw-tax-input-inline" title="Thuế (%)">
             <span class="cw-tax-symbol">%</span>
         </div>
-        <input id="wg-tax" class="cw-input">
-        <button data-wgcopy="wg-tax" class="cw-btn-copy">Copy</button>
-    </div>
-    <div class="cw-row">
-        <span class="cw-label">Sau thuế</span>
-        <input id="wg-after" class="cw-input" list="wg-after-list">
-        <button data-wgcopy="wg-after" class="cw-btn-copy">Copy</button>
+        
+        <input id="wg-tax" class="cw-input-inline" placeholder="Tiền thuế" title="Tiền thuế (Click/Focus để Copy)">
+        
+        <input id="wg-after" class="cw-input-inline" placeholder="Sau thuế" list="wg-after-list" title="Sau thuế (Click/Focus để Copy)">
         <datalist id="wg-after-list"></datalist>
-    </div>
-    <div class="cw-row">
-        <span class="cw-label">Bằng chữ</span>
-        <input id="wg-text" class="cw-input cw-input-readonly" readonly>
-        <button data-wgcopy="wg-text" class="cw-btn-copy">Copy</button>
-    </div>
+        
+        <input id="wg-text" class="cw-input-inline cw-input-readonly-inline" placeholder="Bằng chữ" readonly title="Bằng chữ (Click/Focus để Copy)">
 
-    <div>
-        <button id="wg-calc-map-btn" class="cw-map-btn">+ Cấu hình "Gán" tự điền</button>
-    </div>
-    <div id="wg-calc-map-wrap" class="cw-map-wrap" style="display:none;">
-         <div class="cw-row">
-             <span class="cw-map-label">Trước thuế</span>
-             <input data-clink="before" placeholder="Ví dụ: tongThanhTien, donGiaCA" class="cw-map-input">
-         </div>
-         <div class="cw-row">
-             <span class="cw-map-label">Tiền thuế</span>
-             <input data-clink="tax" placeholder="Ví dụ: thueCA, Thue GTGT" class="cw-map-input">
-         </div>
-         <div class="cw-row">
-             <span class="cw-map-label">Sau thuế</span>
-             <input data-clink="after" placeholder="Ví dụ: tongCongHD" class="cw-map-input">
-         </div>
-         <div class="cw-row">
-             <span class="cw-map-label">Bằng chữ</span>
-             <input data-clink="text" placeholder="Ví dụ: tongCongHDbangChu" class="cw-map-input">
-         </div>
-         <div class="cw-map-hint">Nhập các ID hoặc nhãn trên trang, cách nhau bởi dấu phẩy. Cấu hình sẽ được Auto-save và tự điền khi tính toán.</div>
+        <div class="cw-map-dropdown-container">
+            <button id="wg-calc-map-btn" class="cw-map-btn-inline" title="Cấu hình Gán trường thông tin tự điền">⚙️</button>
+            <div id="wg-calc-map-wrap" class="cw-map-wrap-popup" style="display:none;">
+                <div class="cw-row"><span class="cw-map-label">Trước thuế</span><input data-clink="before" class="cw-map-input" placeholder="Ví dụ: tongThanhTien"></div>
+                <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input data-clink="tax" class="cw-map-input" placeholder="Ví dụ: thueCA"></div>
+                <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input data-clink="after" class="cw-map-input" placeholder="Ví dụ: tongCongHD"></div>
+                <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input data-clink="text" class="cw-map-input" placeholder="Ví dụ: tongCongHDbangChu"></div>
+                <div class="cw-map-hint">Các id/nhãn trên trang cách nhau bởi dấu phẩy. Sẽ được Auto-save.</div>
+            </div>
+        </div>
     </div>
     `;
-    widget.appendChild(calcBody);
+    const inlineContainer = document.getElementById('vnpt-inline-calc');
+    if (inlineContainer) {
+        inlineContainer.appendChild(calcBody);
+    } else {
+        widget.appendChild(calcBody);
+    }
 
     // Document Append
     document.body.appendChild(widget);
@@ -208,11 +191,20 @@ export function initCalcWidget() {
     const mapWrap = document.getElementById('wg-calc-map-wrap');
     let calcMaps = ld(SK_CALC_MAP) ?? {};
 
-    mapBtn.onclick = () => {
+    mapBtn.onclick = (e) => {
+        // Toggle Map popup
         const isVis = mapWrap.style.display === 'flex';
         mapWrap.style.display = isVis ? 'none' : 'flex';
-        mapBtn.innerText = isVis ? '+ Cấu hình "Gán" tự điền' : '- Ẩn cấu hình "Gán" tự điền';
-        clamp(widget);
+        // Hide popup if clicking outside
+        if (!isVis) {
+            const closePopup = (evt) => {
+                if (!mapWrap.contains(evt.target) && evt.target !== mapBtn) {
+                    mapWrap.style.display = 'none';
+                    document.removeEventListener('click', closePopup);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', closePopup), 0);
+        }
     };
 
     widget.querySelectorAll('input[data-clink]').forEach(inp => {
@@ -289,13 +281,29 @@ export function initCalcWidget() {
         fromAfter(); 
     });
 
-    calcBody.querySelectorAll('button[data-wgcopy]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const val = document.getElementById(btn.dataset.wgcopy)?.value ?? '';
-            navigator.clipboard.writeText(val);
-            if (btn.dataset.wgcopy === 'wg-before') { saveHist(SK_HIST_B, val); renderHist(SK_HIST_B, 'wg-before-list'); }
-            if (btn.dataset.wgcopy === 'wg-after') { saveHist(SK_HIST_A, val); renderHist(SK_HIST_A, 'wg-after-list'); }
-            btn.textContent = '✓'; setTimeout(() => btn.textContent = 'Copy', 1000);
+    // Click directly on inputs to copy
+    const inputsToCopy = [
+        { el: beforeEl, key: SK_HIST_B },
+        { el: taxEl, key: null },
+        { el: afterEl, key: SK_HIST_A },
+        { el: textEl, key: null }
+    ];
+
+    inputsToCopy.forEach(item => {
+        if (!item.el) return;
+        ['click', 'focus'].forEach(evtType => {
+            item.el.addEventListener(evtType, (e) => {
+                if (e.target.value) {
+                    navigator.clipboard.writeText(e.target.value);
+                    if (item.key === SK_HIST_B) { saveHist(SK_HIST_B, e.target.value); renderHist(SK_HIST_B, 'wg-before-list'); }
+                    if (item.key === SK_HIST_A) { saveHist(SK_HIST_A, e.target.value); renderHist(SK_HIST_A, 'wg-after-list'); }
+                    
+                    // Visual feedback
+                    const oldBg = e.target.style.backgroundColor;
+                    e.target.style.backgroundColor = '#d1e7dd';
+                    setTimeout(() => e.target.style.backgroundColor = oldBg, 300);
+                }
+            });
         });
     });
 }

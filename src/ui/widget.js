@@ -25,6 +25,8 @@ export function initWidget() {
                 </div>
             </div>
 
+            <div id="vnpt-inline-calc"></div>
+
             <div id="vnpt-panel-body">
                 <div id="vnpt-default-data-popup">
                     <div class="vdp-header">📌 Dữ liệu mặc định <span id="vdp-close" style="cursor:pointer;">✕</span></div>

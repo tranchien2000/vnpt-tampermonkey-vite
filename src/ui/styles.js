@@ -141,22 +141,26 @@ export function injectStyles() {
         .cw-btn-add { background: rgba(255,255,255,0.25); color: #fff; }
         .cw-btn-reset { background: rgba(255,255,255,0.25); color: #fff; }
 
-        .cw-body { padding: 8px 10px; background: #f8fbff; border-bottom: 1px solid #e0e8ff; display: block; }
+        /* Inline Calculator Classes */
+        .cw-body-inline { padding: 4px 6px; background: #f1f8ff; border-bottom: 2px solid #1a73e8; border-top: 2px solid #1a73e8; display: block; margin: 0 -10px; }
+        .cw-inline-row { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; width: 100%; box-sizing: border-box;}
+        .cw-input-inline { flex: 1; min-width: 50px; border: 1px solid #b6d4fe; border-radius: 4px; padding: 3px 5px; font-size: 11px; outline: none; cursor: pointer;}
+        .cw-input-inline:hover { background-color: #e9ecef; }
+        .cw-input-readonly-inline { background: #e9ecef; font-weight: 600; color: #084298; cursor: pointer; border: 1px solid #a3bced;}
+        
+        .cw-tax-group-inline { display: flex; align-items: center; width: auto; flex-shrink: 0; }
+        .cw-tax-input-inline { width: 18px; border: 1px solid #b6d4fe; border-radius: 3px; padding: 2px 1px; font-size: 10px; text-align: center; margin-right: 2px; }
+        .cw-tax-symbol { font-size: 10px; color: #555; font-weight: 600; }
+
+        .cw-map-dropdown-container { position: relative; display: inline-block; flex-shrink: 0;}
+        .cw-map-btn-inline { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px; margin: 0; outline: none; transition: transform 0.2s;}
+        .cw-map-btn-inline:hover { transform: scale(1.1); }
+        .cw-map-wrap-popup { position: absolute; top: calc(100% + 4px); right: 0; width: 220px; z-index: 1000; padding: 8px; background: #fff; border-radius: 6px; border: 1px solid #d0d9ff; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-direction: column; gap: 4px; }
+        
         .cw-row { display: flex; align-items: center; gap: 4px; margin-bottom: 5px; }
-        .cw-label { font-size: 10px; color: #0d6efd; font-weight: 600; width: 55px; }
-        .cw-input { flex: 1; border: 1px solid #ccc; border-radius: 4px; padding: 3px 5px; font-size: 12px; min-width: 0; outline: none; }
-        .cw-input-readonly { background: #fafafa; font-size: 11px; }
-        .cw-btn-copy { padding: 3px 7px; font-size: 11px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #f0f0f0; }
-
-        .cw-tax-group { width: 55px; display: flex; align-items: center; }
-        .cw-tax-input { width: 20px; border: 1px solid #ccc; border-radius: 3px; padding: 1px; font-size: 9px; text-align: center; margin: 0 2px 0 3px; }
-        .cw-tax-symbol { font-size: 9px; color: #555; font-weight: 600; }
-
-        .cw-map-btn { background: none; border: none; cursor: pointer; font-size: 10px; color: #0d6efd; font-weight: 600; padding: 2px 0; margin-top: 6px; }
-        .cw-map-wrap { margin-top: 4px; padding: 6px; background: #fff; border-radius: 4px; border: 1px solid #d0d9ff; flex-direction: column; gap: 4px; }
         .cw-map-label { font-size: 10px; color: #555; width: 55px; }
         .cw-map-input { flex: 1; min-width: 0; border: 1px solid #ccc; border-radius: 3px; padding: 2px 4px; font-size: 10px; outline: none; }
-        .cw-map-hint { font-size: 9px; color: #888; margin-top: 2px; line-height: 1.2; }
+        .cw-map-hint { font-size: 9px; color: #888; margin-top: 4px; line-height: 1.2; text-align: center;}
 
         .wg-toggle-btn { background: none; border: none; cursor: pointer; font-size: 12px; padding: 0 4px; }
         .wg-sec-header { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px; background: #e9ecef; color: #495057; font-size: 11px; font-weight: 700; border-bottom: 1px solid #dee2e6; }
