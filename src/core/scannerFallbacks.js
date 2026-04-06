@@ -20,7 +20,10 @@ export function getScannerFallback(id_can_tim) {
         'thangky1': String(d.getMonth() + 1).padStart(2, '0'),
         'namky': String(d.getFullYear()),
         'namky1': String(d.getFullYear()),
-        'soluonggoi': '1'
+        'soluonggoi': '1',
+        'noiKy': 'Hà Nội',
+        'noicap': 'Cục trưởng Cục Cảnh sát QLHC về TTXH',
+        'chucvu': 'Giám Đốc'
     };
 
     return fallbacks[lKey] || '';

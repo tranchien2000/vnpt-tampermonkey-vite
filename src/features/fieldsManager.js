@@ -15,6 +15,7 @@ import { LOCAL_KEY_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constan
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
+import { doFillData } from './dataFillFeature.js';
 
 export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '') {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
@@ -293,6 +294,10 @@ export function initFieldsManager() {
 
     // 👉 LOGIC 3: ĐIỀN NGƯỢC (REVERSE FILL)
     document.getElementById('vnpt-btn-fill-back').addEventListener('click', function() {
+        // 1. Điền các trường cố định (như tên đơn vị B, địa chỉ B, STK...) từ bộ nhớ cấu hình (Default + Custom data)
+        doFillData();
+
+        // 2. Chạy logic điền từ bảng: Điền các giá trị đang hiển thị trong bảng Fields
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
         let count = 0;
         rows.forEach(row => {

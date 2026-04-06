@@ -16,7 +16,7 @@ export function initWidget() {
     widget.id = 'vnpt-docx-widget'; // Widget bọc ngoài cùng
     // Khôi phục trạng thái mở/đóng
     const isOpened = localStorage.getItem(LOCAL_KEY_OPENED) === 'true';
-    
+
     widget.innerHTML = `
         <button id="vnpt-toggle-btn" title="Mở/Đóng UI Hợp đồng" class="${isOpened ? 'btn-opened' : 'btn-closed'}">${isOpened ? '✖' : '📄'}</button>
 
@@ -25,8 +25,8 @@ export function initWidget() {
                 <span id="vnpt-panel-title">Nhập|Xuất H.Đồng</span>
                 <div class="btn-row" style="margin-bottom: 0; padding-right: 35px; gap: 4px;">
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét</button>
-                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền</button>
-                    <button class="vnpt-btn-action btn-default-toggle" id="vnpt-btn-default" title="📌 Dữ liệu mặc định VNPT">📌</button>
+                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền Ngược</button>
+                    <button class="vnpt-btn-action btn-default-toggle" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">📌</button>
                     <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">ID</button>
                     <button class="vnpt-btn-action btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">➕</button>
                     <button class="vnpt-btn-action btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑️</button>
