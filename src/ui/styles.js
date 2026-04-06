@@ -1,7 +1,23 @@
+/**
+ * @file styles.js
+ * @desc Inject toàn bộ CSS cho cả hai widget vào trang bằng GM_addStyle.
+ *       CSS được chia thành các SECTION rõ ràng để dễ locate.
+ *       SECTION 1: Widget container & toggle button
+ *       SECTION 2: Export panel layout & header
+ *       SECTION 3: Fields container & field rows
+ *       SECTION 4: Control buttons
+ *       SECTION 5: Template manager
+ *       SECTION 6: Calc Widget (title bar, calculator, data tabs)
+ * @exports injectStyles  — gọi GM_addStyle để inject CSS
+ * @seeAlso widget.js (HTML structure), calcWidgetFeature.js (Calc Widget HTML)
+ */
 // src/ui/styles.js
 
 export function injectStyles() {
     GM_addStyle(`
+        /* ═══════════════════════════════════════════
+           SECTION 1: WIDGET CONTAINER & TOGGLE BTN
+           ═══════════════════════════════════════════ */
         /* Khối Widget tổng hợp bọc toàn bộ, đây sẽ là khối duy chuyển */
         #vnpt-docx-widget { position: fixed; top: 100px; right: 50px; z-index: 999999; font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;}
 
@@ -25,6 +41,9 @@ export function injectStyles() {
         }
         #vnpt-toggle-btn.btn-opened:hover { transform: scale(1.05); background-color: #b71c1c; }
 
+        /* ═══════════════════════════════════════════
+           SECTION 2: EXPORT PANEL LAYOUT & HEADER
+           ═══════════════════════════════════════════ */
         /* Bảng điều khiển */
         #vnpt-export-panel { 
             position: relative; 
@@ -65,6 +84,9 @@ export function injectStyles() {
         #vnpt-panel-header:hover { background: #f8f9fa; border-radius: 4px; }
         .drag-icon { font-size: 14px; cursor: move; opacity: 0.6; }
 
+        /* ═══════════════════════════════════════════
+           SECTION 3: FIELDS CONTAINER & FIELD ROWS
+           ═══════════════════════════════════════════ */
         /* Box chứa danh sách biến */
         #vnpt-fields-container { flex: 1; max-height: unset; overflow-y: auto; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; padding: 4px; margin-bottom: 4px;}
         .vnpt-field-row { display: flex; gap: 2px; margin-bottom: 2px; align-items: center; }
@@ -87,35 +109,27 @@ export function injectStyles() {
         .vnpt-control-group label { display: block; font-weight: 600; font-size: 12px; color: #444; margin-bottom: 4px; }
         .vnpt-control-group input[type="file"], .vnpt-control-group input[type="text"] { width: 100%; box-sizing: border-box; padding: 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px;}
 
+        /* ═══════════════════════════════════════════
+           SECTION 4: CONTROL BUTTONS
+           ═══════════════════════════════════════════ */
         .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
         .vnpt-btn-action { border: none; padding: 0 8px; height: 27px; min-width: 27px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 5px; transition: background 0.2s; white-space: nowrap; box-sizing: border-box; }
 
         .btn-scan { background: #fbbc04; color: #000; } .btn-scan:hover { background: #f2a500; }
         .btn-toggle-id { background: #e8f0fe; color: #1a73e8; } .btn-toggle-id:hover { background: #d2e3fc; }
-        .btn-default-toggle { background: #e6f4ea; color: #1e8e3e; font-size: 14px; } .btn-default-toggle:hover { background: #ceead6; }
+        .btn-default-toggle { background: #e6f4ea; color: #1e8e3e; font-size: 14px; border: 1px solid transparent; } 
+        .btn-default-toggle:hover { background: #ceead6; }
+        .btn-default-toggle.active { background: #1e8e3e; color: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); border-color: #155e2a;}
         .btn-add { background: #f1f3f4; color: #3c4043; } .btn-add:hover { background: #e8eaed; }
         .btn-fill-back { background: #ab47bc; color: #fff; } .btn-fill-back:hover { background: #8e24aa; }
         .btn-clean { background: #ea4335; color: #fff; } .btn-clean:hover { background: #d93025; }
         .btn-export { background: #1a73e8; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold;} .btn-export:hover { background: #1557b0; }
 
-        /* Popup Default Data */
-        #vnpt-default-data-popup {
-            position: absolute; top: 40px; right: 10px; 
-            width: 250px; max-height: 250px; 
-            background: #fff; border: 1px solid #dadce0; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
-            border-radius: 8px; z-index: 100; 
-            display: none; flex-direction: column; overflow: hidden;
-        }
-        .vdp-header { background: #f8f9fa; padding: 6px 10px; font-size: 11px; font-weight: 700; border-bottom: 1px solid #eee; color: #1e8e3e; display: flex; justify-content: space-between; align-items: center;}
-        .vdp-list { overflow-y: auto; padding: 4px 0; }
-        .vdp-item { 
-            padding: 5px 10px; cursor: pointer; font-size: 11px; color: #3c4043; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .vdp-item:hover { background: #e6f4ea; color: #1e8e3e; }
-        .vdp-item .vdp-key { color: #888; font-family: monospace; font-size: 9px; margin-left: 10px; }
+        /* Popup Default Data - Removed */
 
+        /* ═══════════════════════════════════════════
+           SECTION 5: TEMPLATE MANAGER
+           ═══════════════════════════════════════════ */
         #vnpt-template-section { border-top: 1px solid #e0e0e0; margin-top: 4px; padding-top: 6px; }
         
         .bottom-export-row { display: flex; gap: 4px; align-items: center; border-top: 1px solid #eee; margin-top: 4px; padding-top: 6px; }
@@ -129,6 +143,9 @@ export function injectStyles() {
         #vnpt-fields-container::-webkit-scrollbar { width: 5px; }
         #vnpt-fields-container::-webkit-scrollbar-thumb { background-color: #bbb; border-radius: 10px; }
 
+        /* ═══════════════════════════════════════════
+           SECTION 6: CALC WIDGET (TITLE, CALC, DATA)
+           ═══════════════════════════════════════════ */
         /* Calc Widget */
         #vnpt-calc-widget { position: fixed; z-index: 99999; width: 232px; font-family: 'Segoe UI', sans-serif; font-size: 13px; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,.3); overflow: hidden; user-select: none; background: #fff; transition: box-shadow 0.2s; }
         .cw-title-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #198754; color: #fff; cursor: grab; gap: 4px; }

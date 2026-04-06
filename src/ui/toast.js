@@ -1,3 +1,8 @@
+/**
+ * @file toast.js
+ * @desc Hiển thị thông báo (toast) nhỏ gọn ở cạnh dưới màn hình.
+ * @exports showToast  — Tạo DOM thông báo, hiện thị với hiệu ứng transition và tự động remove
+ */
 // src/ui/toast.js
 
 export function showToast(msg, color = '#198754') {

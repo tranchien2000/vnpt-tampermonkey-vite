@@ -1,75 +1,33 @@
-// src/features/dataFillFeature.js
+/**
+ * @file dataFillFeature.js
+ * @desc Quản lý 3 tab dữ liệu (Custom / Default / Sync) trong Calc Widget.
+ *       Bao gồm: render giao diện tab, CRUD dữ liệu, import/export JSON,
+ *       và engine tự động đồng bộ field theo mapping khi user gõ trên trang.
+ * @exports renderDataFillTabs  — render toàn bộ phần Data vào widget
+ * @exports doFillData          — điền dữ liệu merged (default+custom) lên trang
+ * @exports doSyncData          — trigger đồng bộ theo sync-map thủ công
+ * @exports DEFAULT_DATA        — re-export từ core/defaults.js (backward compat)
+ * @seeAlso core/defaults.js (data), calcWidgetFeature.js (caller), core/constants.js (keys)
+ */
 
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, SK_DATATAB, SK_COLLAPSE } from '../core/constants.js';
 import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { storage } from '../api/storage/index.js';
+import { DEFAULT_DATA as _DEFAULT_DATA, fieldsA } from '../core/defaults.js';
+export { DEFAULT_DATA } from '../core/defaults.js'; // re-export cho backward compat
 
 // Storage helpers
 function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
 function sv(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
 
-const now = new Date();
-const ngay = String(now.getDate()).padStart(2, '0');
-const thang = String(now.getMonth() + 1).padStart(2, '0');
-const nam = String(now.getFullYear());
-
-export const DEFAULT_DATA = {
-    ngayKy: ngay,
-    thangKy: thang,
-    namKy: nam,
-    ngayTiepNhan: `${ngay}/${thang}/${nam}`,
-    ngayThangNamKy: `${ngay}/${thang}/${nam}`,
-    thangKy1: thang,
-    namKy1: nam,
-    tenDoanhNghiepB: "VIỄN THÔNG HÀ NỘI – CHI NHÁNH TẬP ĐOÀN BƯU CHÍNH VIỄN THÔNG VIỆT NAM",
-    diaChiB: "75 Đinh Tiên Hoàng, Phường Hoàn Kiếm, Thành phố Hà Nội",
-    maSoThueB: "0100686223",
-    stkB: "1600114156",
-    diaChiStkB: "Ngân hàng Đầu tư & Phát triển Việt Nam - CN Sở giao dịch 3 (BIDV – CN SGD 3)",
-    tenB: "Phạm Khánh Chung",
-    nguoiDaiDienB: "Phạm Khánh Chung",
-    chucVuB: "Phó Giám đốc Trung tâm Kinh doanh Khách hàng doanh nghiệp",
-    chucVuDaiDienB: "Phó Giám đốc Trung tâm Kinh doanh Khách hàng doanh nghiệp",
-    giayUyQuyenSoB: "2628/GUQ-VNPT-HNI-VP",
-    soGiayUyQuyenB: "2628/GUQ-VNPT-HNI-VP",
-    giayUyQuyenNgayB: "1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    ngayGiayUyQuyenB: "1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    GiayUyQuyenB: "2628/GUQ-VNPT-HNI-VP ngày 1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    tenDoanhNghiepB1: "Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    donViTiepNhan: "TTKD KHDN",
-    tenTiepNhan: "Bùi Anh",
-    tenNguoiNhan: "Bùi Anh",
-    dienThoaiB: "02436686868",
-    diaChiTaiKhoanB: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 ",
-    noiKy: "Hà Nội",
-    emailB: "",
-    lienheHopDongB: "AM Bùi Anh",
-    lienheTuVanB: "AM Bùi Anh",
-    lienheHoaDonB: "AM Bùi Anh",
-    sucoCap1B: "AM Bùi Anh",
-    sucoCap2B: "AM Bùi Anh",
-    sucoCap3B: "AM Bùi Anh",
-    sucoCap4B: "AM Bùi Anh"
-};
-
-const fieldsA = [
-    "lienheHopDongA",
-    "lienheHoaDonA",
-    "lienheTuVanA",
-    "sucoCap1A",
-    "sucoCap2A",
-    "sucoCap3A",
-    "sucoCap4A"
-];
-
-let defaultData = ld(SK_DATA_DEF) ?? { ...DEFAULT_DATA };
+let defaultData = ld(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
 let customData = ld(SK_DATA_CUS) ?? {};
 let syncData = ld(SK_DATA_SYNC) ?? {};
 let currentDataTab = ld(SK_DATATAB) ?? 'custom';
 
 export function doFillData() {
-    defaultData = ld(SK_DATA_DEF) ?? { ...DEFAULT_DATA };
+    defaultData = ld(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
     customData = ld(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
     
@@ -303,7 +261,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     };
     widget.querySelector('#vnpt-cw-reset').onclick = () => {
         if (confirm('Reset [Default Data] to hardcoded values?')) {
-            defaultData = { ...DEFAULT_DATA };
+            defaultData = { ..._DEFAULT_DATA };
             sv(SK_DATA_DEF, defaultData);
             if (currentDataTab === 'default') renderDataFields();
             showToast('Reset complete', '#17a2b8');

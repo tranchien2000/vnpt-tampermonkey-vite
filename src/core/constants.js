@@ -1,3 +1,11 @@
+/**
+ * @file constants.js
+ * @desc Tất cả hằng số dùng chung toàn dự án: localStorage keys, DEFAULT_LABELS.
+ * @exports DEFAULT_LABELS    — map{id → tên nhãn tiếng Việt} dùng cho webScanner
+ * @exports LOCAL_KEY_*       — localStorage keys cho VNPT Export Widget
+ * @exports SK_*              — localStorage keys cho Calc & AutoFill Widget
+ * @seeAlso core/defaults.js (data mặc định), core/state.js (AppState)
+ */
 export const DEFAULT_LABELS = {
     'tenDaiDienn': 'Tên Đại Diện',
     'chucVu': 'Chức Vụ',

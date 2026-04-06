@@ -1,3 +1,14 @@
+/**
+ * @file templateManager.js
+ * @desc Quản lý danh sách template DOCX (lưu URL hoặc file local qua IndexedDB).
+ *       Bao gồm: load/save danh sách, fetch từ URL (Google Drive), lưu file local vào
+ *       IndexedDB (idbSave/idbLoad), render UI danh sách, chọn/xoá/đổi tên template.
+ * @exports loadTemplates         — đọc danh sách template từ localStorage
+ * @exports fetchTemplateFromUrl  — tải ArrayBuffer từ URL qua GM_xmlhttpRequest
+ * @exports saveLocalTemplate     — lưu file local vào IDB + cập nhật danh sách
+ * @exports renderTemplateManager — render/refresh UI danh sách template vào container
+ * @seeAlso api/storage/idb.js (IndexedDB), widget.js (host container), docExport.js (consumer)
+ */
 // src/features/templateManager.js
 // Quản lý mẫu template docx (lưu URL hoặc chuỗi Base64 local)
 

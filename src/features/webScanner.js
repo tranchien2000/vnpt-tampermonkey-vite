@@ -1,3 +1,11 @@
+/**
+ * @file webScanner.js
+ * @desc Quét các trường (fields) trên trang web và đồng bộ vào bảng fields của widget.
+ *       Bao gồm: nút "Quét" lấy values từ DOM theo DEFAULT_LABELS keys,
+ *       và listener input/change để tự động cập nhật khi user gõ trực tiếp trên web.
+ * @exports initWebScanner  — gán click/input/change listeners cho nút Quét
+ * @seeAlso core/constants.js (DEFAULT_LABELS), fieldsManager.js (addOrUpdateFieldRow)
+ */
 // src/features/webScanner.js
 import { DEFAULT_LABELS } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';

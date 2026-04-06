@@ -1,6 +1,14 @@
+/**
+ * @file widget.js
+ * @desc Khởi tạo giao diện chính của VNPT Export Widget (panel bên phải).
+ *       Thiết lập layout HTML, quản lý trạng thái đóng/mở, lưu kích thước (ResizeObserver),
+ *       và kết nối với các module: FieldsManager, TemplateManager.
+ * @exports initWidget  — Tạo DOM, khôi phục state, và gán sự kiện đóng/mở panel
+ * @seeAlso features/fieldsManager.js (bảng dữ liệu), features/templateManager.js (mẫu DOCX)
+ */
 import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
-import { initFieldsManager, loadSavedData, renderDefaultDataQuickView } from '../features/fieldsManager.js';
+import { initFieldsManager, loadSavedData } from '../features/fieldsManager.js';
 import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED } from '../core/constants.js';
 
 export function initWidget() {
@@ -28,10 +36,6 @@ export function initWidget() {
             <div id="vnpt-inline-calc"></div>
 
             <div id="vnpt-panel-body">
-                <div id="vnpt-default-data-popup">
-                    <div class="vdp-header">📌 Dữ liệu mặc định <span id="vdp-close" style="cursor:pointer;">✕</span></div>
-                    <div class="vdp-list" id="vdp-list"></div>
-                </div>
                 <div id="vnpt-fields-container">
                     <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                 </div>
@@ -89,18 +93,7 @@ export function initWidget() {
     });
     resizeObserver.observe(AppState.panel);
 
-    // Render Default Data Quick View
-    const vdpPopup = document.getElementById('vnpt-default-data-popup');
-    const vdpList = document.getElementById('vdp-list');
-    renderDefaultDataQuickView(vdpList);
-
-    document.getElementById('vnpt-btn-default').onclick = (e) => {
-        const isVis = vdpPopup.style.display === 'flex';
-        vdpPopup.style.display = isVis ? 'none' : 'flex';
-    };
-    document.getElementById('vdp-close').onclick = () => {
-        vdpPopup.style.display = 'none';
-    };
+    AppState.panelBody = document.getElementById('vnpt-panel-body');
 
     // Render template manager — khi user chọn template từ URL, lưu buffer vào AppState
     renderTemplateManager(
@@ -123,10 +116,6 @@ export function initWidget() {
         });
         this.value = ''; // Reset để có thể chọn lại cùng file
     });
-
-
-
-    AppState.panelBody = document.getElementById('vnpt-panel-body');
 
     // Đóng/Mở Panel 
     AppState.toggleBtn.addEventListener('click', (e) => {

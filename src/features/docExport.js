@@ -1,3 +1,11 @@
+/**
+ * @file docExport.js
+ * @desc Xử lý xuất file DOCX từ template bằng docxtemplater + PizZip.
+ *       Bao gồm: render DOCX (fill data), tự động cập nhật tên file xuất,
+ *       và ưu tiên template: URL buffer → file local.
+ * @exports initDocExport  — gán click handler cho nút xuất DOCX và logic tên file
+ * @seeAlso templateManager.js (template buffer), fieldsManager.js (data source)
+ */
 // src/features/docExport.js
 import { AppState } from '../core/state.js';
 import { storage } from '../api/storage/index.js';

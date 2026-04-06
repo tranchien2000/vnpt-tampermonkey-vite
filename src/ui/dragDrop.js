@@ -1,3 +1,12 @@
+/**
+ * @file dragDrop.js
+ * @desc Xử lý kéo thả (drag & drop) cho hai widget DOCX và Calc.
+ *       Hỗ trợ dock/snap vào cạnh dưới màn hình, giới hạn phạm vi di chuyển,
+ *       lưu vị trí vào localStorage (LOCAL_KEY_POS, SK_POS_CALC).
+ * @exports makeDraggable  — Kích hoạt kéo thả cho một element với handle cụ thể
+ * @exports initDragDrop    — Hàm wrapper khởi tạo cho widget DOCX
+ * @seeAlso core/state.js (AppState.hasDragged), ui/widget.js (host)
+ */
 // src/ui/dragDrop.js
 import { AppState } from '../core/state.js';
 import { LOCAL_KEY_POS } from '../core/constants.js';

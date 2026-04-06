@@ -1,3 +1,11 @@
+/**
+ * @file main.js
+ * @desc Điểm khởi đầu (entry point) của UserScript.
+ *       Phối hợp gọi các hàm init từ các module: injectStyles, widget,
+ *       dragDrop, fieldsManager, scanners, export, và calcWidget.
+ * @exports init  — Khởi tạo toàn bộ ứng dụng
+ * @seeAlso ui/styles.js, ui/widget.js, features/calcWidgetFeature.js
+ */
 import { logger } from './utils/logger.js';
 import { injectStyles } from './ui/styles.js';
 import { initWidget } from './ui/widget.js';

@@ -1,0 +1,137 @@
+# Tối Ưu Token – VNPT Tampermonkey Script
+
+## Tổng quan vấn đề
+
+Mỗi lần AI làm việc với project này, toàn bộ nội dung các file nguồn phải được đọc vào context. Hiện tại tổng ~82 KB source code (không tính build output), nhưng mỗi session lại phải đọc đi đọc lại nhiều file lớn. Mục tiêu là **giảm tối đa số token cần thiết cho mỗi lần AI can thiệp** mà không ảnh hưởng đến chức năng.
+
+---
+
+## Phân tích nguyên nhân hết token nhanh
+
+| # | Nguyên nhân | File liên quan | Mức độ |
+|---|---|---|---|
+| 1 | **CSS nhúng inline trong JS** – `styles.js` (13 KB) chứa toàn bộ CSS dưới dạng template string → AI phải đọc toàn bộ để chỉnh 1 dòng | `src/ui/styles.js` | 🔴 Cao |
+| 2 | **`DEFAULT_DATA` hardcode** – 40 dòng data tĩnh trong `dataFillFeature.js` → file 14.9 KB, khi AI cần sửa logic sync thì vẫn phải nạp cả blob data | `src/features/dataFillFeature.js` | 🔴 Cao |
+| 3 | **`calcWidgetFeature.js` quá lớn** – 310 dòng, 13.7 KB; gộp logic init, DOM, event, history, dock, map → AI phải đọc toàn bộ mỗi khi sửa bất kỳ phần nào | `src/features/calcWidgetFeature.js` | 🟠 Trung bình |
+| 4 | **`templateManager.js`** – 240 dòng, 10.3 KB; logic select/fetch/IDB gộp chung → thường phải đọc full | `src/features/templateManager.js` | 🟠 Trung bình |
+| 5 | **Inline HTML trong JS** – `widget.js` và `calcWidgetFeature.js` dùng template literal dài để render HTML → khó tìm phần cần sửa | `widget.js`, `calcWidgetFeature.js` | 🟡 Thấp |
+| 6 | **Các file utils nhỏ** – đã compact, ít vấn đề | `utils/`, `core/` | 🟢 Tốt |
+
+---
+
+## Các phương án tối ưu
+
+### ✅ Phương án 1 (Ưu tiên cao): Tách `DEFAULT_DATA` ra file riêng
+
+**Vấn đề:** `dataFillFeature.js` (14.9 KB) phải được đọc toàn bộ dù AI chỉ cần sửa sync engine hoặc tab rendering.
+
+**Giải pháp:** Tách `DEFAULT_DATA` + `fieldsA` sang `src/core/defaults.js` (file ~2 KB). File gốc chỉ còn ~10 KB với logic thuần.
+
+```
+[NEW] src/core/defaults.js        — chỉ chứa DEFAULT_DATA và fieldsA
+[MODIFY] src/features/dataFillFeature.js — import từ defaults.js, xoá data
+[MODIFY] src/features/fieldsManager.js  — cập nhật import path
+```
+
+**Lợi ích:** Khi AI cần sửa logic tab/sync, không cần đọc 53 dòng data tĩnh. Khi cần update data, chỉ đọc 1 file nhỏ.
+
+---
+
+### ✅ Phương án 2 (Ưu tiên cao): Tách CSS thành file `.user.css` / comment rõ sections
+
+**Vấn đề:** `styles.js` (13 KB) là 1 khối CSS khổng lồ không có section rõ ràng → AI phải đọc toàn bộ để tìm 1 class.
+
+**Giải pháp A – Tách file (tốt hơn):** Tách thành 2 file:
+- `src/ui/styles-widget.js` — CSS cho VNPT Export Widget (~7 KB)
+- `src/ui/styles-calc.js` — CSS cho Calc Widget & Data Fill (~6 KB)
+
+**Giải pháp B – Comment section (đơn giản hơn):** Thêm section comments rõ ràng để AI có thể nhận ra vùng cần đọc mà không cần đọc toàn bộ:
+
+```css
+/* ═══════════════════════════════════════════
+   SECTION 1: WIDGET CONTAINER & TOGGLE BTN
+   ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   SECTION 2: PANEL LAYOUT & HEADER
+   ═══════════════════════════════════════════ */
+/* ... */
+```
+
+> [!IMPORTANT]
+> Phương án A (tách file) hiệu quả hơn nhưng cần cập nhật import ở `main.js`. Phương án B đơn giản và an toàn hơn.
+
+---
+
+### ✅ Phương án 3 (Ưu tiên trung bình): Tách `calcWidgetFeature.js`
+
+**Vấn đề:** File 310 dòng trộn lẫn: init layout, calculator logic, dock logic, map popup, event wiring.
+
+**Giải pháp:** Tách thành:
+- `src/features/calcWidget.init.js` — khởi tạo DOM, titleBar, docking (~100 dòng)
+- `src/features/calcWidget.calc.js` — logic tính thuế, lịch sử, copy (~100 dòng)
+- Giữ `dataFillFeature.js` riêng (đã có)
+
+---
+
+### ✅ Phương án 4 (Ưu tiên cao, ít tốn công): Thêm JSDoc/comments định hướng vào đầu mỗi file
+
+**Vấn đề:** AI không biết file làm gì nếu không đọc → đọc theo quán tính.
+
+**Giải pháp:** Thêm block comment đầu mỗi file:
+
+```js
+/**
+ * @file dataFillFeature.js
+ * @desc Quản lý 3 tab dữ liệu (Custom/Default/Sync) trong Calc Widget.
+ *       Logic auto-sync form theo mapping.
+ * @exports renderDataFillTabs, doFillData, doSyncData, DEFAULT_DATA
+ * @seeAlso calcWidgetFeature.js (caller), constants.js (storage keys)
+ */
+```
+
+**Lợi ích:** AI đọc comment đầu file, quyết định file nào cần đọc thêm, tránh đọc dư.
+
+---
+
+### ✅ Phương án 5 (Dài hạn): Viết `ARCHITECTURE.md`
+
+Một file 1–2 KB liệt kê tất cả files, exports chính, và mối quan hệ giữa chúng. AI đọc file này đầu tiên → biết chính xác file nào cần thiết cho task → tiết kiệm đáng kể.
+
+```
+[NEW] ARCHITECTURE.md  — sơ đồ module, exports, data flow
+```
+
+---
+
+## Thứ tự ưu tiên thực hiện
+
+| Thứ tự | Phương án | Công sức | Token giảm est. |
+|--------|-----------|----------|-----------------|
+| 1 | **Phương án 4**: JSDoc đầu file | Thấp (30 phút) | ~20-30% |
+| 2 | **Phương án 1**: Tách `DEFAULT_DATA` | Thấp (20 phút) | ~15-20% |
+| 3 | **Phương án 2B**: Section comments CSS | Thấp (15 phút) | ~10-15% |
+| 4 | **Phương án 5**: `ARCHITECTURE.md` | Thấp (20 phút) | ~25-35% |
+| 5 | **Phương án 2A**: Tách file CSS | Trung bình (45 phút) | ~20-25% |
+| 6 | **Phương án 3**: Tách calcWidget | Cao (60 phút) | ~10-15% |
+
+> [!TIP]
+> **Khuyến nghị thực hiện ngay:** Phương án 4 + 1 + 2B + 5 — tổng công sức ~1.5 giờ, giảm ~50-60% token tiêu thụ cho các session tiếp theo.
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Bạn muốn thực hiện theo thứ tự nào?**
+> - Option A: Thực hiện tất cả 4 phương án ưu tiên cao (4, 1, 2B, 5) — ~1.5 giờ
+> - Option B: Chỉ làm phần ít rủi ro nhất trước (4 và 5) — ~50 phút, không thay đổi code logic
+> - Option C: Chỉ làm phương án 1 (tách `DEFAULT_DATA`) + phương án 5
+
+> [!NOTE]
+> Phương án 1 (tách file) có **rủi ro thấp** do chỉ là refactor import, không đổi logic. Có thể bị lỗi build nếu quên cập nhật import path ở 1 nơi.
+
+## Verification Plan
+
+- Chạy `npm run build` sau mỗi phương án để đảm bảo build không broken
+- Kiểm tra `dist/myscript.user.js` vẫn đủ các exports cần thiết
+- Test thủ công: mở script trên browser, kiểm tra widget hoạt động bình thường

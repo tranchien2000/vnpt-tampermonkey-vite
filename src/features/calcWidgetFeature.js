@@ -1,3 +1,11 @@
+/**
+ * @file calcWidgetFeature.js
+ * @desc Khởi tạo và điều phối Calc & AutoFill Widget (widget phụ, nổi góc màn hình).
+ *       Bao gồm: title bar, calculator thuế (trước/thuế/sau/bằng chữ), lịch sử,
+ *       dock/undock, cấu hình field-mapping (⚙️), và gọi renderDataFillTabs().
+ * @exports initCalcWidget  — tạo toàn bộ DOM và gán logic cho widget
+ * @seeAlso dataFillFeature.js (tab data), ui/dragDrop.js (dock/drag), core/constants.js (SK_*)
+ */
 // src/features/calcWidgetFeature.js
 
 import { AppState } from '../core/state.js';

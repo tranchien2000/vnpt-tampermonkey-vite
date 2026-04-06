@@ -1,3 +1,11 @@
+/**
+ * @file autoFillForm.js
+ * @desc Tự động điền và đồng bộ các trường cố định ngay khi trang load hoặc AJAX render form.
+ *       Sử dụng MutationObserver để detect form mới, sau đó điền: chức vụ, nơi cấp CCCD,
+ *       đồng bộ địa chỉ, SĐT, email, MST theo cặp field tương ứng.
+ * @exports setupAutoFillForm  — khởi tạo MutationObserver + chạy fill lần đầu
+ * @seeAlso utils/domHelper.js (syncSetValue), dataFillFeature.js (fill nâng cao)
+ */
 // src/features/autoFillForm.js
 import { syncSetValue } from '../utils/domHelper.js';
 
