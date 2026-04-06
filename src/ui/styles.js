@@ -137,6 +137,8 @@ export function injectStyles() {
         .btn-toggle-id { background: #ee0feeff; color: #ffffffff; } .btn-toggle-id:hover { background: #d2e3fc; }
         .btn-default-toggle { background: #17e050ff; color: #ffffffff; font-size: 14px; border: 1px solid transparent; } 
         .btn-default-toggle:hover { background: #ceead6; }
+        .btn-reset-default { background: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; font-size: 14px; }
+        .btn-reset-default:hover { background: #d2e3fc; }
         .btn-add { background: #f1f3f4; color: #3c4043; } .btn-add:hover { background: #e8eaed; }
         .btn-fill-back { background: #ab47bc; color: #fff; } .btn-fill-back:hover { background: #8e24aa; }
         .btn-clean { background: #ea4335; color: #fff; } .btn-clean:hover { background: #d93025; }

@@ -238,6 +238,19 @@ export function initFieldsManager() {
     // 👉 LOGIC CHUYỂN CHẾ ĐỘ MẶC ĐỊNH
     document.getElementById('vnpt-btn-default').addEventListener('click', toggleDefaultMode);
 
+    // 👉 LOGIC RESET DỮ LIỆU MẶC ĐỊNH (Chỉ khôi phục bộ VNPT)
+    document.getElementById('vnpt-btn-reset-default').addEventListener('click', function() {
+        if (confirm("Khôi phục toàn bộ Dữ liệu Mặc định VNPT về ban đầu? (Sẽ xóa các chỉnh sửa hiện tại của bạn trong chế độ này)")) {
+            localStorage.removeItem(LOCAL_KEY_DEFAULT_FIELDS);
+            if (AppState.isDefaultMode) {
+                // Refresh lại view bằng cách tắt rồi bật lại (đơn giản nhất)
+                AppState.isDefaultMode = false;
+                toggleDefaultMode();
+                showToast("🔄 Đã khôi phục dữ liệu gốc", "#1a73e8");
+            }
+        }
+    });
+
     // 👉 LOGIC BATCH XÓA
     document.getElementById('vnpt-btn-batch-del').addEventListener('click', function () {
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
@@ -299,6 +312,7 @@ export function initFieldsManager() {
 export function toggleDefaultMode() {
     AppState.isDefaultMode = !AppState.isDefaultMode;
     const btn = document.getElementById('vnpt-btn-default');
+    const resetBtn = document.getElementById('vnpt-btn-reset-default');
     
     // Xóa toàn bộ nội dung hiện tại để nạp bộ mới
     AppState.fieldsContainer.innerHTML = '';
@@ -306,6 +320,7 @@ export function toggleDefaultMode() {
 
     if (AppState.isDefaultMode) {
         btn.classList.add('active');
+        if (resetBtn) resetBtn.style.display = 'flex';
         AppState.fieldsContainer.classList.add('vnpt-mode-default');
         showToast("📌 Chế độ Dữ liệu mặc định (Có thể chỉnh sửa)", "#ea4335");
         
@@ -342,6 +357,7 @@ export function toggleDefaultMode() {
         }
     } else {
         btn.classList.remove('active');
+        if (resetBtn) resetBtn.style.display = 'none';
         AppState.fieldsContainer.classList.remove('vnpt-mode-default');
         showToast("📋 Đã quay lại Dữ liệu cá nhân");
         
