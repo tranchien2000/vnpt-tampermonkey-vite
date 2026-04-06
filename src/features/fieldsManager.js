@@ -24,11 +24,12 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
     let isDuplicate = false;
 
     for (let input of existingInputs) {
-        if (input.value === keyText) {
+        // extract prefix from comma-separated input.f-key
+        const currentKeyText = input.value.split(',')[0].trim();
+        if (currentKeyText === keyText) {
             const row = input.closest('.vnpt-field-row');
             const valueInput = row.querySelector('.f-val');
             const labelInput = row.querySelector('.f-label');
-            const syncInput = row.querySelector('.f-sync');
             if (valueText !== '') {
                 valueInput.value = valueText;
             }
@@ -36,7 +37,9 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
                 labelInput.value = labelText;
             }
             if (syncText !== '') {
-                syncInput.value = syncText;
+                // append to existing if not already there? simple mode: replace it
+                const currentSync = input.value.split(',').slice(1).map(s=>s.trim()).join(', ');
+                input.value = keyText + ', ' + syncText;
             }
             isDuplicate = true;
             break;
@@ -52,28 +55,30 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         row.className = 'vnpt-field-row row-item';
         row.setAttribute('draggable', 'false');
 
+        let displayKey = keyText;
+        if (syncText) displayKey += ', ' + syncText;
+
         row.innerHTML = `
             <input type="checkbox" class="row-chk" title="Chọn để thao tác hàng loạt" style="margin: 0 2px 0 2px;" />
             <input type="text" class="f-label" placeholder="Nhãn..." value="${labelText}" />
-            <input type="text" class="f-key" placeholder="Mã biến" value="${keyText}" />
-            <input type="text" class="f-sync" placeholder="🔗 Đồng bộ" value="${syncText}" title="Nhập các ID đích trên web, cách nhau bởi dấu phẩy" />
+            <input type="text" class="f-key" placeholder="Mã biến / IDs đồng bộ" value="${displayKey}" title="Biến DOCX (đầu tiên), theo sau là các ID web cách dấu phẩy" />
             <span class="row-drag-handle" title="Kéo thả để di chuyển">=</span>
             <input type="text" class="f-val" placeholder="Giá trị" value="${valueText}" />
         `;
         const fVal = row.querySelector('.f-val');
-        const fSync = row.querySelector('.f-sync');
+        const fKey = row.querySelector('.f-key');
 
         if (keyText === 'tenToChuc') {
             fVal.style.textAlign = 'right';
         }
 
         // Bắt sự kiện thay đổi dữ liệu để Lưu
-        row.querySelector('.f-key').addEventListener('keyup', function() {
+        fKey.addEventListener('keyup', function() {
             saveFieldsToLocal();
-            fVal.style.textAlign = this.value.trim() === 'tenToChuc' ? 'right' : '';
+            const firstKey = this.value.split(',')[0].trim();
+            fVal.style.textAlign = firstKey === 'tenToChuc' ? 'right' : '';
         });
         row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
-        fSync.addEventListener('keyup', saveFieldsToLocal);
 
         fVal.addEventListener('keyup', function() {
             if (AppState.isDefaultMode) {
@@ -87,7 +92,8 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             }
             saveFieldsToLocal();
             // Logic đồng bộ hóa thủ công
-            const targets = fSync.value.split(',').map(s => s.trim()).filter(s => s);
+            const fKeyRaw = fKey.value;
+            const targets = fKeyRaw.split(',').map(s => s.trim()).filter(s => s);
             if (targets.length > 0) {
                 targets.forEach(t => setPageField(t, this.value));
             }
@@ -165,10 +171,12 @@ export async function saveFieldsToLocal() {
     const data = {};
     const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
     rows.forEach(row => {
-        const k = row.querySelector('.f-key').value.trim();
+        const rawKeyInput = row.querySelector('.f-key').value.trim();
+        const parts = rawKeyInput.split(',').map(s => s.trim()).filter(s => s);
+        const k = parts[0];
+        const s = parts.slice(1).join(', ');
         const l = row.querySelector('.f-label').value.trim();
         const v = row.querySelector('.f-val').value;
-        const s = row.querySelector('.f-sync').value.trim();
         if (k) data[k] = { label: l, value: v, sync: s };
     });
     localStorage.setItem(LOCAL_KEY_FIELDS, JSON.stringify(data));
@@ -177,23 +185,46 @@ export async function saveFieldsToLocal() {
 export async function loadSavedData() {
     // 1. Load Form Fields (Local only)
     try {
-        const savedFields = JSON.parse(localStorage.getItem(LOCAL_KEY_FIELDS));
+        // Luôn xoá sạch các field cũ trước khi load để tránh duplicate hoặc rác
+        AppState.fieldsContainer.innerHTML = '';
 
-        if (savedFields && Object.keys(savedFields).length > 0) {
-            // Xoá trắng các field cũ trước khi load để tránh duplicate
-            AppState.fieldsContainer.querySelectorAll('.vnpt-field-row').forEach(row => row.remove());
-            
-            for (const key in savedFields) {
-                let st = savedFields[key];
-                if (typeof st === 'object' && st !== null) {
-                    addOrUpdateFieldRow(key, st.value, st.label, st.sync || '');
+        const savedFields = JSON.parse(localStorage.getItem(LOCAL_KEY_FIELDS)) || {};
+
+        // PASS 1: Nạp các trường cốt yếu trong DEFAULT_LABELS (Luôn ở đầu)
+        Object.keys(DEFAULT_LABELS).forEach(key => {
+            const label = DEFAULT_LABELS[key];
+            const saved = savedFields[key];
+            if (saved && typeof saved === 'object') {
+                addOrUpdateFieldRow(key, saved.value, saved.label || label, saved.sync || '');
+            } else if (saved) {
+                addOrUpdateFieldRow(key, saved, label, '');
+            } else {
+                addOrUpdateFieldRow(key, '', label, '');
+            }
+        });
+
+        // PASS 2: Nạp các trường còn lại trong savedFields mà không thuộc mặc định
+        Object.keys(savedFields).forEach(key => {
+            if (!(key in DEFAULT_LABELS)) {
+                const saved = savedFields[key];
+                if (typeof saved === 'object') {
+                    addOrUpdateFieldRow(key, saved.value, saved.label, saved.sync || '');
                 } else {
-                    addOrUpdateFieldRow(key, st, '', '');
+                    addOrUpdateFieldRow(key, saved, '', '');
                 }
             }
+        });
+
+        // Hiển thị hint nhẹ cuối danh sách nếu bảng trống (không xảy ra vì đã có DEFAULT_LABELS)
+        if (Object.keys(DEFAULT_LABELS).length === 0 && Object.keys(savedFields).length === 0) {
+            AppState.fieldsContainer.innerHTML = '<div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>';
         }
     } catch (e) {
         console.error('Error loading config:', e);
+        // Dự phòng nạp chay DEFAULT_LABELS nếu lỗi JSON
+        Object.keys(DEFAULT_LABELS).forEach(key => {
+            addOrUpdateFieldRow(key, '', DEFAULT_LABELS[key]);
+        });
     }
 
     // Load Position
@@ -265,15 +296,16 @@ export function initFieldsManager() {
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
         let count = 0;
         rows.forEach(row => {
-            const key = row.querySelector('.f-key').value.trim();
+            const rawKey = row.querySelector('.f-key').value.trim();
             const val = row.querySelector('.f-val').value;
-            if (key) {
-                const el = document.getElementById(key) || document.getElementsByName(key)[0];
+            const targets = rawKey.split(',').map(x => x.trim()).filter(Boolean);
+            targets.forEach(t => {
+                const el = document.getElementById(t) || document.getElementsByName(t)[0];
                 if (el) {
-                    setPageField(key, val);
+                    setPageField(t, val);
                     count++;
                 }
-            }
+            });
         });
         if (count > 0) {
             showToast(`✅ Đã điền ngược ${count} trường vào web`, '#198754');
@@ -287,22 +319,34 @@ export function toggleDefaultMode() {
     AppState.isDefaultMode = !AppState.isDefaultMode;
     const btn = document.getElementById('vnpt-btn-default');
     
-    // Xóa toàn bộ nội dung hiện tại
+    // Xóa toàn bộ nội dung hiện tại để nạp bộ mới
     AppState.fieldsContainer.innerHTML = '';
+    AppState.bannerArea.innerHTML = '';
 
     if (AppState.isDefaultMode) {
         btn.classList.add('active');
-        showToast("📌 Đang xem Dữ liệu mặc định", "#1e8e3e");
+        AppState.fieldsContainer.classList.add('vnpt-mode-default');
+        showToast("📌 Chế độ xem Dữ liệu mặc định", "#ea4335");
         
-        // Nạp dữ liệu mặc định
+        // Thêm banner thông báo (Chỉ xem)
+        const banner = document.createElement('div');
+        banner.className = 'vnpt-default-banner';
+        banner.innerHTML = `
+            <span>📌 Đang xem Dữ liệu mặc định</span>
+        `;
+        AppState.bannerArea.appendChild(banner);
+        
+        // Nạp dữ liệu mặc định (Chỉ hiển thị, không Fill)
         Object.keys(DEFAULT_DATA).forEach(key => {
             addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
         });
     } else {
         btn.classList.remove('active');
+        AppState.fieldsContainer.classList.remove('vnpt-mode-default');
         showToast("📋 Đã quay lại Dữ liệu cá nhân");
         
         // Nạp lại dữ liệu từ local
         loadSavedData();
     }
 }
+

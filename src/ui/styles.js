@@ -88,7 +88,26 @@ export function injectStyles() {
            SECTION 3: FIELDS CONTAINER & FIELD ROWS
            ═══════════════════════════════════════════ */
         /* Box chứa danh sách biến */
-        #vnpt-fields-container { flex: 1; max-height: unset; overflow-y: auto; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; padding: 4px; margin-bottom: 4px;}
+        #vnpt-fields-container { flex: 1; max-height: unset; overflow-y: auto; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; padding: 4px; margin-bottom: 4px; position: relative; }
+        
+        /* Banner thông báo chế độ Dữ liệu mặc định - Tông Đỏ thông báo */
+        .vnpt-default-banner {
+            background: #ea4335; color: #fff;
+            padding: 4px 8px; font-size: 11px; font-weight: bold;
+            text-align: center; border-radius: 4px; margin-bottom: 5px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            animation: slideDown 0.3s ease-out;
+            box-shadow: 0 2px 4px rgba(234, 67, 53, 0.3);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Chế độ Default (High Alert) */
+        #vnpt-fields-container.vnpt-mode-default {
+            border: 2px solid #ea4335 !important;
+            box-shadow: inset 0 0 8px rgba(234, 67, 53, 0.15);
+            background-color: #fffafb;
+        }
+
         .vnpt-field-row { display: flex; gap: 2px; margin-bottom: 2px; align-items: center; }
         .row-drag-handle { cursor: grab; padding: 0 4px; font-size: 16px; font-weight: bold; color: #aaa; user-select: none; }
         .row-drag-handle:active { cursor: grabbing; }
@@ -97,9 +116,8 @@ export function injectStyles() {
         .vnpt-field-row input { flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
         .vnpt-field-row input.row-chk { flex: 0 0 auto; width: auto; height: auto; margin: 0 4px 0 0; padding: 0; cursor: pointer; }
         .vnpt-field-row input.f-label { flex: 0.35; color: #0056b3; font-weight: bold;}
-        .vnpt-field-row input.f-key { display: none; flex: 0.3; font-weight: bold; color: #d63384;}
-        .vnpt-field-row input.f-sync { display: none; flex: 0.15; color: #d39e00; font-weight: bold; text-align: center; }
-        .show-ids .vnpt-field-row input.f-key, .show-ids .vnpt-field-row input.f-sync { display: block; }
+        .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: bold; color: #d63384;}
+        .show-ids .vnpt-field-row input.f-key { display: block; }
         .vnpt-btn-hide { background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; cursor: pointer; padding: 3px 6px; }
         .vnpt-btn-hide:hover { background: #e0e0e0; }
         .vnpt-btn-del { background: #fee; color: #d32f2f; border: 1px solid #fcc; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 10px;}

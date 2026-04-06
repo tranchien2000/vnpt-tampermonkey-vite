@@ -36,6 +36,7 @@ export function initWidget() {
             <div id="vnpt-inline-calc"></div>
 
             <div id="vnpt-panel-body">
+                <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
                     <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                 </div>
@@ -63,6 +64,7 @@ export function initWidget() {
     AppState.panel = document.getElementById('vnpt-export-panel');
     AppState.toggleBtn = document.getElementById('vnpt-toggle-btn');
     AppState.header = document.getElementById('vnpt-panel-header');
+    AppState.bannerArea = document.getElementById('vnpt-banner-area');
     AppState.fieldsContainer = document.getElementById('vnpt-fields-container');
 
     // Khôi phục kích thước bảng

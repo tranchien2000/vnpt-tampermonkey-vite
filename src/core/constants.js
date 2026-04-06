@@ -25,6 +25,14 @@ export const DEFAULT_LABELS = {
     'namKy': 'Năm ký',
     'soHopDong': 'Số Hợp đồng',
     'soLuongGoi': 'Số Lượng Gói',
+    'ngayTiepNhan': 'Ngày tiếp nhận',
+    'noiKy': 'Nơi ký',
+    'tenTiepNhan': 'AM tiếp nhận',
+    'dienThoaiB': 'SĐT AM',
+    'lienheHopDongA': 'Liên hệ Hợp đồng (A)',
+    'lienheHoaDonA': 'Liên hệ Hóa đơn (A)',
+    'lienheTuVanA': 'Liên hệ Tư vấn (A)',
+    'sucoCap1A': 'Sự cố Cấp 1 (A)',
 };
 
 // VNPT Docx Export Widget Keys

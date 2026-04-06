@@ -31,5 +31,12 @@ function init() {
   }
 }
 
-// Expose ra global để dev.user.js gọi sau
+// Expose ra global để dev.user.js gọi sau nếu cần
 window.__vnptInit = init;
+
+// Tự động chạy khi load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

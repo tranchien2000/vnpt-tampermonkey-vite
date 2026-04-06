@@ -65,7 +65,8 @@ export function initDocExport() {
         if (AppState.fieldsContainer) {
             const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
             rows.forEach(row => {
-                const k = row.querySelector('.f-key').value.trim();
+                const rawKey = row.querySelector('.f-key').value.trim();
+                const k = rawKey.split(',')[0].trim();
                 const v = row.querySelector('.f-val').value.trim();
                 if (k === 'tenToChuc') tenToChuc = v;
             });
@@ -122,7 +123,8 @@ export function initDocExport() {
         const dataToFill = {};
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
         rows.forEach(row => {
-            const k = row.querySelector('.f-key').value.trim();
+            const rawKey = row.querySelector('.f-key').value.trim();
+            const k = rawKey.split(',')[0].trim();
             const v = row.querySelector('.f-val').value;
             if (k) dataToFill[k] = v;
         });

@@ -4,7 +4,7 @@
 4. **Exclusion List**: Tuyệt đối KHÔNG đọc: `dist/`, `node_modules/`, `.git/`, `package-lock.json`, `original_script.js`, `source.js`, `temp_vnpt*.js`.
 5. **Language Mandate**: Toàn bộ phản hồi, tài liệu và **code comments** phải dùng **Tiếng Việt**.
 6. **Concise Response**: Phản hồi ngắn gọn, tập trung vào logic và diff code, không chào hỏi rườm rà.
-7. **Workflow First**: Luôn kiểm tra thư mục `.agents/workflows/` trước khi thực hiện các tác vụ như thêm field, thêm feature, hoặc sửa UI.
+7. **Workflow First**: Luôn kiểm tra thư mục `.agents/workflows/` trước khi thực hiện các tác vụ như thêm field, thêm feature, hoặc sửa UI, thông báo nếu chưa có Workflow như này
 
 ## 2. UI/Aesthetics (Premium Standard)
 - Theme: Dark Mode + Glassmorphism (blur, semi-transparent borders).
