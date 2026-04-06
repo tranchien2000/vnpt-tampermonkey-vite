@@ -8,59 +8,42 @@
  */
 // src/features/autoFillForm.js
 import { syncSetValue } from '../utils/domHelper.js';
+import { getScannerFallback } from '../core/scannerFallbacks.js';
+
+const AUTO_FILL_FIELDS = [
+    'chucVu', 'noiCap', 'noiCapSoDkdn', 
+    'ngayky', 'thangky', 'namky', 
+    'thangky1', 'namky1', 'noiKy'
+];
+
+const SYNC_PAIRS = [
+    { src: 'duong', target: 'diaChiTruSoDuong' },
+    { src: 'sdt', target: 'sdtToChuc' },
+    { src: 'emailDaiDien', target: 'emailCongTy' },
+    { src: 'soDkdn', target: 'maSoThue' }
+];
 
 export function setupAutoFillForm() {
     function initAutoFillForm() {
-        // ===== 1. AUTO TEXT =====
-        const chucVu = document.getElementById('chucVu');
-        if (chucVu && !chucVu.dataset.filled) {
-            chucVu.dataset.filled = "1";
-            syncSetValue(chucVu, 'Giám Đốc');
-        }
+        // ===== 1. AUTO TEXT TỪ SCANNER FALLBACKS =====
+        AUTO_FILL_FIELDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && !el.dataset.filled) {
+                el.dataset.filled = "1";
+                // getScannerFallback tự xử lý in hoa/in thường do đã có .toLowerCase() bên trong
+                syncSetValue(el, getScannerFallback(id));
+            }
+        });
 
-        const noiCapCCCD = document.getElementById('noiCap');
-        if (noiCapCCCD && !noiCapCCCD.dataset.filled) {
-            noiCapCCCD.dataset.filled = "1";
-            syncSetValue(noiCapCCCD, 'Cục trưởng Cục Cảnh sát QLHC về TTXH');
-        }
-
-        const noiCapDKDN = document.getElementById('noiCapSoDkdn');
-        if (noiCapDKDN && !noiCapDKDN.dataset.filled) {
-            noiCapDKDN.dataset.filled = "1";
-            syncSetValue(noiCapDKDN, '');
-        }
-
-        // ===== 2. ĐỒNG BỘ ĐỊA CHỈ =====
-        const duong = document.getElementById('duong');
-        const diaChi = document.getElementById('diaChiTruSoDuong');
-        if (duong && diaChi && !duong.dataset.bound) {
-            duong.dataset.bound = "1";
-            duong.addEventListener('input', () => syncSetValue(diaChi, duong.value));
-        }
-
-        // ===== 3. ĐỒNG BỘ SĐT =====
-        const sdt = document.getElementById('sdt');
-        const sdtToChuc = document.getElementById('sdtToChuc');
-        if (sdt && sdtToChuc && !sdt.dataset.bound) {
-            sdt.dataset.bound = "1";
-            sdt.addEventListener('input', () => syncSetValue(sdtToChuc, sdt.value));
-        }
-
-        // ===== 4. ĐỒNG BỘ EMAIL =====
-        const emailDD = document.getElementById('emailDaiDien');
-        const emailCT = document.getElementById('emailCongTy');
-        if (emailDD && emailCT && !emailDD.dataset.bound) {
-            emailDD.dataset.bound = "1";
-            emailDD.addEventListener('input', () => syncSetValue(emailCT, emailDD.value));
-        }
-
-        // ===== 5. ĐỒNG BỘ MST =====
-        const dkdn = document.getElementById('soDkdn');
-        const mst = document.getElementById('maSoThue');
-        if (dkdn && mst && !dkdn.dataset.bound) {
-            dkdn.dataset.bound = "1";
-            dkdn.addEventListener('input', () => syncSetValue(mst, dkdn.value));
-        }
+        // ===== 2. ĐỒNG BỘ CÁC TRƯỜNG =====
+        SYNC_PAIRS.forEach(pair => {
+            const srcEl = document.getElementById(pair.src);
+            const targetEl = document.getElementById(pair.target);
+            if (srcEl && targetEl && !srcEl.dataset.bound) {
+                srcEl.dataset.bound = "1";
+                srcEl.addEventListener('input', () => syncSetValue(targetEl, srcEl.value));
+            }
+        });
     }
 
     // Khởi tạo MutationObserver để luôn auto-fill kể cả khi trang tải form bằng AJAX

@@ -22,7 +22,7 @@ export function initWidget() {
 
         <div id="vnpt-export-panel" style="display: ${isOpened ? 'flex' : 'none'};">
             <div id="vnpt-panel-header" title="Kẹp chuột vào đây để di chuyển">
-                <span id="vnpt-panel-title">Nhập|Xuất H.Đồng</span>
+                <span id="vnpt-panel-title">VNPT PRO</span>
                 <div class="btn-row" style="margin-bottom: 0; padding-right: 35px; gap: 4px;">
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền Ngược</button>
