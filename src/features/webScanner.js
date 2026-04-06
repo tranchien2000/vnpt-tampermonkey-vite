@@ -10,6 +10,7 @@
 import { DEFAULT_LABELS } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from './fieldsManager.js';
+import { getScannerFallback } from '../core/scannerFallbacks.js';
 
 export function initWebScanner() {
     document.getElementById('vnpt-btn-scan').addEventListener('click', function () {
@@ -24,12 +25,7 @@ export function initWebScanner() {
             }
 
             if (!val) {
-                const lKey = id_can_tim.toLowerCase();
-                const d = new Date();
-                if (lKey === 'ngayky') val = String(d.getDate()).padStart(2, '0');
-                if (lKey === 'thangky' || lKey === 'thangky1') val = String(d.getMonth() + 1).padStart(2, '0');
-                if (lKey === 'namky' || lKey === 'namky1') val = String(d.getFullYear());
-                if (lKey === 'soluonggoi') val = '1';
+                val = getScannerFallback(id_can_tim);
             }
 
             addOrUpdateFieldRow(id_can_tim, val, null);
