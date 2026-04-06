@@ -18,6 +18,10 @@ import { initSyncEngine } from './features/dataFill/syncEngine.js';
 import { initCalcWidget } from './features/calc/index.js';
 
 function init() {
+  // Chống chạy 2 lần
+  if (window.__vnptInited) return;
+  window.__vnptInited = true;
+
   logger.info('Initializing VNPT Userscript...');
 
   try {

@@ -4,14 +4,14 @@
   "description": "A minimal Vite setup for Tampermonkey userscripts",
   "type": "module",
   "scripts": {
-    "dev": "vite build --config vite.config.dev.js --watch",
-    "serve": "npx serve dist --cors -p 8788",
-    "dev:all": "npx concurrently \"vite build --config vite.config.dev.js --watch\" \"npx serve dist --cors -p 8788\"",
+    "dev": "set VITE_DEV=true && vite build --watch",
+    "serve": "serve dist --cors --no-clipboard -p 8788",
+    "dev:all": "concurrently \"npm run dev\" \"npm run serve\"",
     "build": "vite build"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
+    "serve": "^14.2.6",
     "vite": "^5.0.0"
-  },
-  "dependencies": {
   }
 }

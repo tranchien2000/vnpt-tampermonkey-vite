@@ -24,16 +24,16 @@ const tampermonkeyHeader = `// ==UserScript==
 
 export default defineConfig({
   build: {
-    // Output directory (can be outside or inside, let's keep default 'dist')
+    // Output directory
     outDir: 'dist',
-    // We only want a single file, so we disable splitting and hashes
-    emptyOutDir: true,
+    emptyOutDir: false, // Dùng chung dist, tránh xóa nhầm các file khác
     lib: {
       entry: 'src/main.js',
       name: 'MyUserscript',
       formats: ['iife'],
       fileName: () => 'myscript.user.js'
-    }
+    },
+    minify: process.env.VITE_DEV === 'true' ? false : 'esbuild',
   },
   plugins: [
     {

@@ -21,7 +21,7 @@
 (function() {
     'use strict';
     // Bypass cached file from localhost by adding a timestamp
-    const url = `http://localhost:8788/myscript.dev.js?t=${Date.now()}`;
+    const url = `http://localhost:8788/myscript.user.js?t=${Date.now()}`;
 
     GM_xmlhttpRequest({
         method: "GET",
