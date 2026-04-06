@@ -133,11 +133,10 @@ export function injectStyles() {
         .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
         .vnpt-btn-action { border: none; padding: 0 8px; height: 27px; min-width: 27px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 5px; transition: background 0.2s; white-space: nowrap; box-sizing: border-box; }
 
-        .btn-scan { background: #fbbc04; color: #000; } .btn-scan:hover { background: #f2a500; }
-        .btn-toggle-id { background: #e8f0fe; color: #1a73e8; } .btn-toggle-id:hover { background: #d2e3fc; }
-        .btn-default-toggle { background: #e6f4ea; color: #1e8e3e; font-size: 14px; border: 1px solid transparent; } 
+        .btn-scan { background: #ff6200ff; color: #000; } .btn-scan:hover { background: #f2a500; }
+        .btn-toggle-id { background: #ee0feeff; color: #ffffffff; } .btn-toggle-id:hover { background: #d2e3fc; }
+        .btn-default-toggle { background: #17e050ff; color: #ffffffff; font-size: 14px; border: 1px solid transparent; } 
         .btn-default-toggle:hover { background: #ceead6; }
-        .btn-default-toggle.active { background: #1e8e3e; color: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); border-color: #155e2a;}
         .btn-add { background: #f1f3f4; color: #3c4043; } .btn-add:hover { background: #e8eaed; }
         .btn-fill-back { background: #ab47bc; color: #fff; } .btn-fill-back:hover { background: #8e24aa; }
         .btn-clean { background: #ea4335; color: #fff; } .btn-clean:hover { background: #d93025; }
