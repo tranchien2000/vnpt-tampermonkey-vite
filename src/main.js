@@ -14,8 +14,7 @@ import { initFieldsManager, loadSavedData } from './features/fieldsManager.js';
 import { initWebScanner } from './features/webScanner.js';
 import { initDocExport } from './features/docExport.js';
 import { setupAutoFillForm } from './features/autoFillForm.js';
-import { initCalcWidget } from './features/calc/index.js';
-import { initDataFill } from './features/dataFill/index.js';
+import { initSyncEngine } from './features/dataFill/syncEngine.js';
 
 function init() {
   logger.info('Initializing VNPT Userscript...');
@@ -29,9 +28,8 @@ function init() {
     initWebScanner();
     initDocExport();
     setupAutoFillForm();
-
-    initCalcWidget();    // Make Calc & Autofill widget
-    initDataFill();      // Activate Sync Engine & Data Tabs logic
+    
+    initSyncEngine();    // Khởi tạo engine đồng bộ gõ phím ngầm
     
     logger.info('Userscript initialized successfully.');
   } catch (error) {

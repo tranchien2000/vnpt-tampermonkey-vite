@@ -10,6 +10,7 @@ import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
 import { initFieldsManager, loadSavedData } from '../features/fieldsManager.js';
 import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED } from '../core/constants.js';
+import { importConfig, exportConfig } from '../features/configManager.js';
 
 export function initWidget() {
     const widget = document.createElement('div');
@@ -27,13 +28,13 @@ export function initWidget() {
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền Ngược</button>
                     <button class="vnpt-btn-action btn-default-toggle" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">📌</button>
+                    <button class="vnpt-btn-action btn-import" id="vnpt-btn-import" title="Nhập cấu hình JSON">📥</button>
+                    <button class="vnpt-btn-action btn-export-json" id="vnpt-btn-export-json" title="Xuất cấu hình JSON">📤</button>
                     <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">ID</button>
                     <button class="vnpt-btn-action btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">➕</button>
                     <button class="vnpt-btn-action btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑️</button>
                 </div>
             </div>
-
-            <div id="vnpt-inline-calc"></div>
 
             <div id="vnpt-panel-body">
                 <div id="vnpt-banner-area"></div>
@@ -140,4 +141,8 @@ export function initWidget() {
             localStorage.setItem(LOCAL_KEY_OPENED, 'false');
         }
     });
+
+    // Sự kiện Import / Export
+    document.getElementById('vnpt-btn-import').onclick = importConfig;
+    document.getElementById('vnpt-btn-export-json').onclick = exportConfig;
 }

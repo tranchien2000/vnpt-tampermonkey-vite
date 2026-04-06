@@ -15,7 +15,7 @@ import { LOCAL_KEY_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constan
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
-import { doFillData } from './dataFillFeature.js';
+import { doFillData } from './dataFill/syncEngine.js';
 
 export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '') {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
