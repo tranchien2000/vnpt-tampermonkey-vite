@@ -4,11 +4,13 @@
  */
 import { createCalcUI } from './calcUI.js';
 import { AppState } from '../../core/state.js';
-import { SK_POS_CALC } from '../../core/constants.js';
+import { SK_POS_CALC, SK_COLLAPSE } from '../../core/constants.js';
+import { ld, sv } from './calcHistory.js';
 
 export function initCalcWidget() {
     // Tìm container inline nếu có (như trong widget.js có <div id="vnpt-inline-calc"></div>)
     const inlineContainer = document.getElementById('vnpt-inline-calc');
+    const toggleBtn = document.getElementById('vnpt-btn-calc-toggle');
     
     // Nếu nhúng (inline), ta dùng widget chính của AppState
     // Nếu không nhúng (chạy floating), ta mới tạo/dùng calcWidget riêng
@@ -20,6 +22,24 @@ export function initCalcWidget() {
         AppState.calcWidget = widget;
     } else if (inlineContainer) {
         widget = AppState.widget; // Gắn logic vào widget chính của AppState
+    }
+    
+    // Logic cho nút toggle trên header
+    if (inlineContainer && toggleBtn) {
+        let collapsed = ld(SK_COLLAPSE) ?? { calc: false, data: true };
+        
+        const applyState = (isCollapsed) => {
+            inlineContainer.style.display = isCollapsed ? 'none' : 'block';
+            toggleBtn.classList.toggle('active', !isCollapsed);
+        };
+        
+        applyState(collapsed.calc);
+        
+        toggleBtn.onclick = () => {
+            collapsed.calc = !collapsed.calc;
+            sv(SK_COLLAPSE, collapsed);
+            applyState(collapsed.calc);
+        };
     }
     
     return createCalcUI(widget, inlineContainer, SK_POS_CALC);

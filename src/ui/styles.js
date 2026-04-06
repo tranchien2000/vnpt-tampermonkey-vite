@@ -168,24 +168,33 @@ export function injectStyles() {
             background: #f1f3f4; 
             padding: 5px 8px; 
             border-bottom: 1px solid #dadce0;
+            display: block; /* Mặc định hiện, sẽ được toggle bằng JS */
         }
         .cw-body-inline { display: flex; flex-direction: column; gap: 4px; }
-        .cw-inline-row { display: flex; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; }
+        .cw-inline-row { 
+            display: flex; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; 
+            flex-wrap: wrap; /* Cho phép rớt dòng nếu quá hẹp */
+        }
         .cw-input-inline { 
-            flex: 1; padding: 4px 6px; border: 1px solid #ced4da; border-radius: 4px; 
+            flex: 1; min-width: 60px; padding: 4px 6px; border: 1px solid #ced4da; border-radius: 4px; 
             font-size: 11px; font-weight: 500; height: 26px; box-sizing: border-box;
             background: #fff; transition: background 0.2s;
         }
         .cw-input-inline:focus { border-color: #1a73e8; outline: none; box-shadow: 0 0 0 2px rgba(26,115,232,0.1); }
-        .cw-input-readonly-inline { background-color: #f8f9fa; color: #1e8e3e; cursor: default; }
+        .cw-input-readonly-inline { background-color: #f8f9fa; color: #1e8e3e; cursor: default; flex: 1.5; min-width: 100px; }
         
-        .cw-tax-group-inline { position: relative; display: flex; align-items: center; width: 45px; flex-shrink: 0; }
-        .cw-tax-input-inline { width: 100%; padding: 4px 18px 4px 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 11px; text-align: right; height: 26px; box-sizing: border-box;}
+        .cw-tax-group-inline { position: relative; display: flex; align-items: center; flex: 0 0 auto; min-width: 45px; }
+        .cw-tax-input-inline { width: 45px; padding: 4px 18px 4px 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 11px; text-align: right; height: 26px; box-sizing: border-box;}
         .cw-tax-symbol { position: absolute; right: 4px; color: #666; font-size: 10px; pointer-events: none; }
 
-        .cw-map-dropdown-container { position: relative; }
+        .cw-map-dropdown-container { position: relative; flex-shrink: 0; }
         .cw-map-btn-inline { background: #e8f0fe; border: 1px solid #d2e3fc; border-radius: 4px; cursor: pointer; height: 26px; width: 26px; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s; }
         .cw-map-btn-inline:hover { background: #d2e3fc; }
+
+        /* Style cho nút toggle trên header */
+        .btn-calc-toggle { background: #e8f0fe; color: #1a73e8; }
+        .btn-calc-toggle:hover { background: #d2e3fc; }
+        .btn-calc-toggle.active { background: #1a73e8; color: #fff; }
         
         .cw-map-wrap-popup { 
             position: absolute; right: 0; top: 30px; z-index: 1000;
@@ -200,6 +209,38 @@ export function injectStyles() {
         .cw-map-label { font-size: 11px; font-weight: 600; color: #555; white-space: nowrap; }
         .cw-map-input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; width: 120px; }
         .cw-map-hint { font-size: 9px; color: #888; margin-top: 4px; line-height: 1.2; }
+
+        /* Menu Xem thêm (Dropdown) */
+        .vnpt-more-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            padding: 6px;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 120px;
+            margin-top: 5px;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .vnpt-more-menu .vnpt-btn-action {
+            justify-content: flex-start;
+            width: 100%;
+            padding: 0 10px;
+            background: transparent;
+            color: #3c4043;
+        }
+        .vnpt-more-menu .vnpt-btn-action:hover {
+            background: #f1f3f4;
+        }
+        .btn-more { background: #f1f3f4; color: #3c4043; }
+        .btn-more:hover { background: #e8eaed; }
+        .btn-more.active { background: #dadce0; }
 
     `);
 }
