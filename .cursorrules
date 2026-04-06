@@ -1,0 +1,21 @@
+# VNPT Tampermonkey Script Rules
+
+Định hướng hành vi của AI để tối ưu token và duy trì cấu trúc code.
+
+## 1. Ưu tiên đọc tài liệu
+- AI **LUÔN LUÔN** phải đọc [ARCHITECTURE.md](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/ARCHITECTURE.md) trước khi thực hiện bất kỳ nghiên cứu nào.
+- AI phải đọc **JSDoc header** (dưới 20 dòng đầu) của các file trong `src/` trước khi quyết định đọc toàn bộ file.
+
+## 2. Quy tắc đọc file
+- **KHÔNG ĐƯỢC** đọc thư mục `dist/`, `node_modules/`, hoặc `.git/`.
+- Nếu cần sửa CSS, hãy tìm Section tương ứng trong [styles.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/styles.js) thay vì đọc 400 dòng CSS.
+
+## 3. Quy tắc Code & Cleanliness
+- Duy trì cấu trúc module ESM.
+- Khi thêm trường (field) mới, hãy tuân thủ workflow `add-field.md`.
+- Sử dụng [constants.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/core/constants.js) cho mọi khóa lưu trữ và nhãn mặc định.
+
+## 4. UI/Aesthetics (Antigravity standard)
+- Widget phải có giao diện premium (Glassmorphism, gradients, HSL colors).
+- Micro-animations cho nút bấm và hover effects là bắt buộc.
+- Không dùng ảnh placeholder; dùng công cụ `generate_image`.
