@@ -23,8 +23,12 @@ Phần render và điều khiển layout của widget.
 ### 3. Features (Tính năng)
 Logic nghiệp vụ chính của script.
 
-- [calcWidgetFeature.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/calcWidgetFeature.js): Widget tính toán thuế và điền dữ liệu. Là host cho phần Data Fill Tabs.
-- [dataFillFeature.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/dataFillFeature.js): Quản lý 3 tab dữ liệu (Custom/Default/Sync). Chứa engine tự động đồng bộ khi gõ.
+- [calc/](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/calc/): Thư mục quản lý Calc Widget (Gồm Logic, UI, History).
+  - [calcLogic.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/calc/calcLogic.js): Logic tính thuế & format số.
+  - [calcUI.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/calc/calcUI.js): Khởi tạo DOM & Event Listeners.
+- [dataFill/](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/dataFill/): Thư mục quản lý dữ liệu và đồng bộ (Tabs UI, Sync Engine).
+  - [syncEngine.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/dataFill/syncEngine.js): Logic điền dữ liệu & lắng nghe sự kiện input toàn trang.
+  - [dataFillUI.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/dataFill/dataFillUI.js): Giao diện 3 tab dữ liệu & Import/Export.
 - [fieldsManager.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/fieldsManager.js): Quản lý bảng dữ liệu trung tâm của widget Export (CRUD, drag-sort).
 - [docExport.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/docExport.js): Logic render file .docx bằng docxtemplater.
 - [templateManager.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/templateManager.js): Quản lý các mẫu .docx (URL hoặc file local lưu trong IndexedDB).
@@ -42,7 +46,26 @@ Logic nghiệp vụ chính của script.
 3. **Tính toán**: Nhập liệu vào Calc Widget (`calcWidgetFeature.js`) -> Đồng bộ ngược vào web hoặc Data Tabs (`dataFillFeature.js`).
 4. **Tự động**: `autoFillForm.js` tự động điền ngay khi form xuất hiện qua `MutationObserver`.
 
-## Token Optimization Best Practices
-- AI hãy đọc file [ARCHITECTURE.md](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/ARCHITECTURE.md) này đầu tiên.
-- Luôn kiểm tra JSDoc ở đầu mỗi file trước khi đọc nội dung code.
-- Khi cần sửa CSS, hãy tìm section tương ứng dựa trên [styles.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/styles.js) section comments.
+## Token Optimization & Cheat Sheet
+
+### 1. Cheat Sheet (Lược đồ nhanh)
+
+| Component | File chính | Chức năng |
+| :--- | :--- | :--- |
+| **Giao diện** | [styles.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/styles.js) | Chứa 100% CSS (Tìm theo Section Comments) |
+| **Widget** | [widget.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/widget.js) | Khung sườn UI chính |
+| **Dữ liệu** | [constants.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/core/constants.js) | Chứa nhãn (Labels) và Keys cho storage |
+| **Logic Tính** | [calcLogic.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/calc/calcLogic.js) | Thuế, format tiền, số -> chữ |
+| **Đồng bộ** | [syncEngine.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/dataFill/syncEngine.js) | Điền dữ liệu từ widget vào trang web |
+| **Xuất file** | [docExport.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/features/docExport.js) | Tạo file .docx |
+
+### 2. Quy trình "Tiết kiệm Token" cho AI
+
+1. **Grep-First**: Thay vì `view_file` toàn bộ 400 dòng `styles.js`, hãy dùng `grep_search` với từ khóa của Section (ví dụ: `/* Section 3: Tabs */`).
+2. **Context-Aware Mapping**: Luôn đối chiếu `constants.js` trước khi sửa bất kỳ logic lấy dữ liệu nào.
+3. **Skip Large Files**: Tuyệt đối không đọc `original_script.js` hay `source.js` trừ khi có chỉ thị đặc biệt.
+4. **Workflow Check**: Xem `.agents/workflows/` để biết các bước thực hiện chuẩn cho các tác vụ lặp lại.
+5. **JSDoc Header**: Chỉ đọc 20 dòng đầu của file để hiểu nhiệm vụ trước khi đào sâu code.
+
+---
+*Lưu ý: Toàn bộ code comments và tài liệu phải duy trì bằng Tiếng Việt.*

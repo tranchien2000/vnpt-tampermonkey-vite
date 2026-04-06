@@ -81,3 +81,18 @@ Khi code xong, gõ chạy:
 npm run build
 \`\`\`
 Sản phậm xuất ra sẽ nằm ở file: `dist/myscript.user.js`. Nhặt file này đi đưa cho người sử dụng cài trên Tampermonkey của trình duyệt.
+
+---
+
+## 🤖 Quy tắc cho AI (Agent Rules)
+
+Dự án này được tối ưu cho các Agentic AI (như Antigravity). Khi làm việc với project này, AI cần tuân thủ:
+- **Ngôn ngữ**: Luôn dùng **Tiếng Việt** cho code comments, tài liệu và giao tiếp.
+- **Tiết kiệm Token**: 
+  - Luôn đọc [ARCHITECTURE.md](ARCHITECTURE.md) ngay khi bắt đầu.
+  - Luôn kiểm tra thư mục `.agents/workflows/` trước khi thực hiện task.
+  - Sử dụng quy trình "Grep-First" cho các file trên 100 dòng.
+- **Loại trừ**: Tuyệt đối không đọc các thư mục `dist/`, `node_modules/` và các file legacy lớn (`original_script.js`, `source.js`, `temp_vnpt*.js`).
+
+---
+*VNPT Word Automation - Tối ưu hóa quy trình nhập liệu nội bộ.*

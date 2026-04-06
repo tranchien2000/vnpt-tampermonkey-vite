@@ -1,0 +1,116 @@
+/**
+ * @file dataFillUI.js
+ * @desc Xử lý giao diện các Tab dữ liệu (Custom/Default/Sync).
+ */
+import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, SK_DATATAB, SK_COLLAPSE } from '../../core/constants.js';
+import { showToast } from '../../ui/toast.js';
+import { storage } from '../../api/storage/index.js';
+import { DEFAULT_DATA as _DEFAULT_DATA } from '../../core/defaults.js';
+import { doFillData, doSyncData } from './syncEngine.js';
+
+function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
+function sv(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections) {
+    let currentDataTab = ld(SK_DATATAB) ?? 'custom';
+    let defaultData = ld(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
+    let customData = ld(SK_DATA_CUS) ?? {};
+    let syncData = ld(SK_DATA_SYNC) ?? {};
+
+    const tabHeader = document.createElement('div');
+    tabHeader.className = 'cw-tab-header';
+
+    const tabs = {
+        custom: document.createElement('div'),
+        default: document.createElement('div'),
+        sync: document.createElement('div')
+    };
+    tabs.custom.innerText = '📋 Custom'; tabs.custom.className = 'cw-tab cw-tab-custom';
+    tabs.default.innerText = '📌 Default'; tabs.default.className = 'cw-tab cw-tab-default';
+    tabs.sync.innerText = '🔗 Sync'; tabs.sync.className = 'cw-tab cw-tab-sync';
+
+    function applyStyles() {
+        Object.values(tabs).forEach(t => t.classList.remove('active'));
+        tabs[currentDataTab].classList.add('active');
+    }
+    applyStyles();
+
+    const dataWrap = document.createElement('div');
+    dataWrap.style.display = collapsedSections.data ? 'none' : 'block';
+    const dataHeader = mkSecHeader('📋 Cấu hình Data', 'data', (isHidden) => {
+        dataWrap.style.display = isHidden ? 'none' : 'block';
+        clamp(widget);
+    });
+
+    const dataBody = document.createElement('div');
+    dataBody.className = 'cw-data-body';
+
+    function renderFields() {
+        dataBody.innerHTML = '';
+        let active = currentDataTab === 'sync' ? syncData : (currentDataTab === 'custom' ? customData : defaultData);
+        let sk = currentDataTab === 'sync' ? SK_DATA_SYNC : (currentDataTab === 'custom' ? SK_DATA_CUS : SK_DATA_DEF);
+        const keys = Object.keys(active);
+
+        if (keys.length === 0 && currentDataTab !== 'default') {
+            dataBody.innerHTML = `<div class="cw-data-empty">Chưa có fields nào.<br>Nhấn [＋ Add] để thêm mới.</div>`;
+        }
+
+        keys.forEach(k => {
+            const row = document.createElement('div'); row.className = 'cw-data-row';
+            let mut = currentDataTab !== 'default';
+            const kInp = document.createElement('input'); 
+            kInp.type = 'text'; kInp.value = k; kInp.className = 'cw-data-key' + (mut ? ' mutable' : '');
+            kInp.readOnly = !mut;
+            if (mut) {
+                kInp.onchange = () => {
+                    const nk = kInp.value.trim(); if (!nk || nk === k) { kInp.value = k; return; }
+                    active[nk] = active[k]; delete active[k]; sv(sk, active); renderFields();
+                };
+            }
+            const vInp = document.createElement('input'); 
+            vInp.type = 'text'; vInp.value = active[k] ?? ''; vInp.className = 'cw-data-val';
+            vInp.oninput = () => { active[k] = vInp.value; sv(sk, active); };
+            row.appendChild(kInp); row.appendChild(vInp);
+            if (mut) {
+                const del = document.createElement('button'); del.innerHTML = '✕'; del.className = 'cw-del-btn';
+                del.onclick = () => { if (confirm(`Delete "${k}"?`)) { delete active[k]; sv(sk, active); renderFields(); } };
+                row.appendChild(del);
+            } else row.appendChild(document.createElement('div')).className = 'cw-pad';
+            dataBody.appendChild(row);
+        });
+    }
+
+    tabs.custom.onclick = () => { currentDataTab = 'custom'; sv(SK_DATATAB, 'custom'); applyStyles(); renderFields(); };
+    tabs.default.onclick = () => { currentDataTab = 'default'; sv(SK_DATATAB, 'default'); applyStyles(); renderFields(); };
+    tabs.sync.onclick = () => { currentDataTab = 'sync'; sv(SK_DATATAB, 'sync'); applyStyles(); renderFields(); };
+
+    // JSON Import/Export logic (simplified for Brevity)
+    const expBtn = document.createElement('button'); expBtn.innerText = '📤'; expBtn.className = 'cw-icon-btn';
+    expBtn.onclick = () => {
+        const b = new Blob([JSON.stringify({defaultData, customData, syncData}, null, 2)], {type:'application/json'});
+        const u = URL.createObjectURL(b), a = document.createElement('a');
+        a.href = u; a.download = `vnpt_data_${Date.now()}.json`; a.click(); URL.revokeObjectURL(u);
+    };
+
+    dataWrap.appendChild(tabHeader); tabHeader.appendChild(tabs.custom); tabHeader.appendChild(tabs.default); tabHeader.appendChild(tabs.sync);
+    dataWrap.appendChild(dataBody); widget.appendChild(dataHeader); widget.appendChild(dataWrap);
+    
+    // Action overrides (Fill/Sync buttons are in title bar)
+    const fillB = widget.querySelector('#vnpt-cw-fill'), syncB = widget.querySelector('#vnpt-cw-sync'), addB = widget.querySelector('#vnpt-cw-add'), resB = widget.querySelector('#vnpt-cw-reset');
+    if (fillB) fillB.onclick = doFillData;
+    if (syncB) syncB.onclick = doSyncData;
+    if (addB) addB.onclick = () => {
+        if (currentDataTab === 'default') { currentDataTab = 'custom'; sv(SK_DATATAB, 'custom'); applyStyles(); }
+        let active = currentDataTab === 'sync' ? syncData : customData;
+        let nk = "new_field_" + Date.now(); active[nk] = "";
+        sv(currentDataTab === 'sync' ? SK_DATA_SYNC : SK_DATA_CUS, active);
+        renderFields(); dataBody.scrollTop = dataBody.scrollHeight;
+    };
+    if (resB) resB.onclick = () => {
+        if (confirm('Reset Default Data?')) { defaultData = {..._DEFAULT_DATA}; sv(SK_DATA_DEF, defaultData); renderFields(); }
+    };
+    
+    renderFields();
+    const right = dataHeader.querySelector('.cw-right-wrap') || document.createElement('div');
+    right.className = 'cw-right-wrap'; right.prepend(expBtn); dataHeader.appendChild(right);
+}
