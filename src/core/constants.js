@@ -23,16 +23,9 @@ export const DEFAULT_LABELS = {
     'ngayKy': 'Ngày ký',
     'thangKy': 'Tháng Ký',
     'namKy': 'Năm ký',
-    'soHopDong': 'Số Hợp đồng',
+    'soHopDong': 'SỐ HỢP ĐỒNG',
     'soLuongGoi': 'Số Lượng Gói',
-    'ngayTiepNhan': 'Ngày tiếp nhận',
-    'noiKy': 'Nơi ký',
-    'tenTiepNhan': 'AM tiếp nhận',
-    'dienThoaiB': 'SĐT AM',
-    'lienheHopDongA': 'Liên hệ Hợp đồng (A)',
-    'lienheHoaDonA': 'Liên hệ Hóa đơn (A)',
-    'lienheTuVanA': 'Liên hệ Tư vấn (A)',
-    'sucoCap1A': 'Sự cố Cấp 1 (A)',
+    'noiKy': 'Nơi ký'
 };
 
 // VNPT Docx Export Widget Keys
