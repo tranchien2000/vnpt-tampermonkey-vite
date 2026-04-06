@@ -11,7 +11,7 @@
  * @seeAlso core/defaults.js (DEFAULT_DATA), core/constants.js (keys), widget.js (UI host)
  */
 import { AppState } from '../core/state.js';
-import { LOCAL_KEY_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constants.js';
+import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
@@ -82,28 +82,12 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
 
         fVal.addEventListener('keyup', function() {
-            if (AppState.isDefaultMode) {
-                if (!this.dataset.warned) {
-                    if (!confirm("⚠️ Bạn đang chỉnh sửa dữ liệu mặc định. Thay đổi này sẽ không được lưu vào cấu hình cá nhân. Tiếp tục?")) {
-                        loadSavedData(); // Công tắc an toàn: load lại để reset
-                        return;
-                    }
-                    this.dataset.warned = 'true';
-                }
-            }
             saveFieldsToLocal();
             // Logic đồng bộ hóa thủ công
             const fKeyRaw = fKey.value;
             const targets = fKeyRaw.split(',').map(s => s.trim()).filter(s => s);
             if (targets.length > 0) {
                 targets.forEach(t => setPageField(t, this.value));
-            }
-        });
-
-        // Thêm bắt sự kiện click/focus để cảnh báo sớm nếu cần
-        fVal.addEventListener('focus', function() {
-            if (AppState.isDefaultMode && !this.dataset.warned) {
-                // Chỉ hint nhẹ hoặc để người dùng gõ rồi mới xh confirm ở keyup (tránh làm phiền khi chỉ tab qua)
             }
         });
 
@@ -167,7 +151,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 }
 
 export async function saveFieldsToLocal() {
-    if (AppState.isDefaultMode) return; // Không lưu đè dữ liệu mặc định vào local của user
+    const key = AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS;
 
     const data = {};
     const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
@@ -180,7 +164,7 @@ export async function saveFieldsToLocal() {
         const v = row.querySelector('.f-val').value;
         if (k) data[k] = { label: l, value: v, sync: s };
     });
-    localStorage.setItem(LOCAL_KEY_FIELDS, JSON.stringify(data));
+    localStorage.setItem(key, JSON.stringify(data));
 }
 
 export async function loadSavedData() {
@@ -256,10 +240,6 @@ export function initFieldsManager() {
 
     // 👉 LOGIC BATCH XÓA
     document.getElementById('vnpt-btn-batch-del').addEventListener('click', function () {
-        if (AppState.isDefaultMode) {
-            showToast("⚠️ Không thể xóa ở chế độ Dữ liệu mặc định", "#ffc107");
-            return;
-        }
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
         let checkedCount = 0;
         rows.forEach(row => {
@@ -283,10 +263,6 @@ export function initFieldsManager() {
 
     // 👉 LOGIC 2: THÊM TAY
     document.getElementById('vnpt-btn-add').addEventListener('click', function () {
-        if (AppState.isDefaultMode) {
-            showToast("⚠️ Không thể thêm ở chế độ Dữ liệu mặc định", "#ffc107");
-            return;
-        }
         const uniqueNumber = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row').length + 1;
         addOrUpdateFieldRow('bien_moi_' + uniqueNumber, '', '', '');
         saveFieldsToLocal();
@@ -331,20 +307,39 @@ export function toggleDefaultMode() {
     if (AppState.isDefaultMode) {
         btn.classList.add('active');
         AppState.fieldsContainer.classList.add('vnpt-mode-default');
-        showToast("📌 Chế độ xem Dữ liệu mặc định", "#ea4335");
+        showToast("📌 Chế độ Dữ liệu mặc định (Có thể chỉnh sửa)", "#ea4335");
         
-        // Thêm banner thông báo (Chỉ xem)
+        // Thêm banner thông báo
         const banner = document.createElement('div');
         banner.className = 'vnpt-default-banner';
         banner.innerHTML = `
-            <span>📌 Đang xem Dữ liệu mặc định</span>
+            <span>📌 Đang dùng Dữ liệu mặc định (Có thể sửa/lưu)</span>
         `;
         AppState.bannerArea.appendChild(banner);
         
-        // Nạp dữ liệu mặc định (Chỉ hiển thị, không Fill)
-        Object.keys(DEFAULT_DATA).forEach(key => {
-            addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
-        });
+        // Nạp dữ liệu mặc định hoặc Overrides từ localStorage
+        const rawOverrides = localStorage.getItem(LOCAL_KEY_DEFAULT_FIELDS);
+        if (rawOverrides === null) {
+            // Chưa có tùy chỉnh, nạp toàn bộ mặc định từ file defaults.js
+            Object.keys(DEFAULT_DATA).forEach(key => {
+                addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
+            });
+        } else {
+            // Đã có tùy chỉnh (thêm/bớt/sửa), nạp từ localStorage
+            try {
+                const overrides = JSON.parse(rawOverrides);
+                Object.keys(overrides).forEach(key => {
+                    const item = overrides[key];
+                    addOrUpdateFieldRow(key, item.value, item.label, item.sync || '');
+                });
+            } catch (e) {
+                console.error("Lỗi nạp Default Overrides:", e);
+                // Fallback nếu JSON hỏng
+                Object.keys(DEFAULT_DATA).forEach(key => {
+                    addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
+                });
+            }
+        }
     } else {
         btn.classList.remove('active');
         AppState.fieldsContainer.classList.remove('vnpt-mode-default');

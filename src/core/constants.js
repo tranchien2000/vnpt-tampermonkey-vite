@@ -30,6 +30,7 @@ export const DEFAULT_LABELS = {
 
 // VNPT Docx Export Widget Keys
 export const LOCAL_KEY_FIELDS = 'vnpt_docx_fields';
+export const LOCAL_KEY_DEFAULT_FIELDS = 'vnpt_docx_default_fields';
 export const LOCAL_KEY_POS = 'vnpt_docx_position';
 export const LOCAL_KEY_SIZE = 'vnpt_docx_size';
 export const LOCAL_KEY_OPENED = 'vnpt_docx_opened';
