@@ -135,7 +135,7 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
 
     const templates = loadTemplates();
     const titleEl = mainWrap.querySelector('.vnpt-title-main');
-    titleEl.innerHTML = '📁 Bộ nhớ Templates' + (currentActiveName ? ` <span style="color:#2e7d32;">(Đang dùng: ${currentActiveName})</span>` : '');
+    titleEl.innerHTML = 'Templates' + (currentActiveName ? ` <span style="color:#2e7d32;">(Đang dùng: ${currentActiveName})</span>` : '');
 
     if (templates.length === 0) {
         localListWrapper.innerHTML = `<div style="font-size:10px;color:#999;font-style:italic;padding:2px 0 6px;text-align:center;width:100%;">Chọn file bên dưới để tự ghi nhớ mẫu</div>`;
