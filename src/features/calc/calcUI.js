@@ -47,23 +47,25 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         w.style.top = Math.min(Math.max(parseFloat(w.style.top), 0), vh - 36) + 'px';
     }
 
-    // ─── Render Title Bar ───
+    // ─── Render Title Bar (Only if NOT embedded) ───
     const titleBar = document.createElement('div');
-    titleBar.className = 'cw-title-bar';
-    titleBar.innerHTML = `<span class="cw-title-label">VNPT Fast</span>`;
-    
-    const btnGroup = document.createElement('div');
-    btnGroup.className = 'cw-btn-group';
-    const btns = {
-        fill: mkBtn('Fill', 'cw-btn-fill'),
-        sync: mkBtn('Sync', 'cw-btn-sync'),
-        add: mkBtn('Add', 'cw-btn-add'),
-        reset: mkBtn('↺', 'cw-btn-reset')
-    };
-    btns.reset.title = 'Reset Default fields';
-    Object.values(btns).forEach(b => btnGroup.appendChild(b));
-    titleBar.appendChild(btnGroup);
-    widget.appendChild(titleBar);
+    if (!container) {
+        titleBar.className = 'cw-title-bar';
+        titleBar.innerHTML = `<span class="cw-title-label">VNPT Fast</span>`;
+        
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'cw-btn-group';
+        const btns = {
+            fill: mkBtn('Fill', 'cw-btn-fill'),
+            sync: mkBtn('Sync', 'cw-btn-sync'),
+            add: mkBtn('Add', 'cw-btn-add'),
+            reset: mkBtn('↺', 'cw-btn-reset')
+        };
+        btns.reset.title = 'Reset Default fields';
+        Object.values(btns).forEach(b => btnGroup.appendChild(b));
+        titleBar.appendChild(btnGroup);
+        widget.appendChild(titleBar);
+    }
 
     // ─── Render Body ───
     const calcBody = document.createElement('div');
@@ -91,8 +93,10 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     if (container) container.appendChild(calcBody);
     else widget.appendChild(calcBody);
 
-    // Data tabs
-    renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections);
+    // Data tabs (Only if NOT embedded, keeping it simple for now)
+    if (!container) {
+        renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections);
+    }
 
     // ─── Event Wiring ───
     const els = {
@@ -149,20 +153,24 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         inp.oninput = () => { calcMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s); sv(SK_CALC_MAP, calcMaps); };
     });
 
-    // ─── Drag & Dock ───
-    const content = Array.from(widget.children).filter(el => el !== titleBar);
-    const handler = makeDraggable(widget, [titleBar], SK_POS_CALC, null, (docked) => {
-        content.forEach(el => el.style.display = docked ? 'none' : '');
-        titleBar.style.borderRadius = docked ? '8px' : '0';
-        if (docked) widget.style.top = (window.innerHeight - (titleBar.offsetHeight || 34)) + 'px';
-    });
-    const savedPos = ld(SK_POS_CALC);
-    if (savedPos && savedPos.docked) handler.setDocked(true);
+    // ─── Drag & Dock (Only if NOT embedded) ───
+    if (!container) {
+        const content = Array.from(widget.children).filter(el => el !== titleBar);
+        const handler = makeDraggable(widget, [titleBar], SK_POS_CALC, null, (docked) => {
+            content.forEach(el => el.style.display = docked ? 'none' : '');
+            titleBar.style.borderRadius = docked ? '8px' : '0';
+            if (docked) widget.style.top = (window.innerHeight - (titleBar.offsetHeight || 34)) + 'px';
+        });
+        const savedPos = ld(SK_POS_CALC);
+        if (savedPos && savedPos.docked) handler.setDocked(true);
 
-    window.addEventListener('resize', () => {
-        if (handler.isDocked()) widget.style.top = (window.innerHeight - titleBar.offsetHeight) + 'px';
-        else clamp(widget);
-    });
+        window.addEventListener('resize', () => {
+            if (handler.isDocked()) widget.style.top = (window.innerHeight - titleBar.offsetHeight) + 'px';
+            else clamp(widget);
+        });
 
-    return handler;
+        return handler;
+    }
+
+    return null;
 }

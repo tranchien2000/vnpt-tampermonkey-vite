@@ -161,5 +161,45 @@ export function injectStyles() {
         #vnpt-fields-container::-webkit-scrollbar { width: 5px; }
         #vnpt-fields-container::-webkit-scrollbar-thumb { background-color: #bbb; border-radius: 10px; }
 
+        /* ═══════════════════════════════════════════
+           SECTION 6: INLINE CALC (Premium Layout)
+           ═══════════════════════════════════════════ */
+        #vnpt-inline-calc { 
+            background: #f1f3f4; 
+            padding: 5px 8px; 
+            border-bottom: 1px solid #dadce0;
+        }
+        .cw-body-inline { display: flex; flex-direction: column; gap: 4px; }
+        .cw-inline-row { display: flex; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; }
+        .cw-input-inline { 
+            flex: 1; padding: 4px 6px; border: 1px solid #ced4da; border-radius: 4px; 
+            font-size: 11px; font-weight: 500; height: 26px; box-sizing: border-box;
+            background: #fff; transition: background 0.2s;
+        }
+        .cw-input-inline:focus { border-color: #1a73e8; outline: none; box-shadow: 0 0 0 2px rgba(26,115,232,0.1); }
+        .cw-input-readonly-inline { background-color: #f8f9fa; color: #1e8e3e; cursor: default; }
+        
+        .cw-tax-group-inline { position: relative; display: flex; align-items: center; width: 45px; flex-shrink: 0; }
+        .cw-tax-input-inline { width: 100%; padding: 4px 18px 4px 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 11px; text-align: right; height: 26px; box-sizing: border-box;}
+        .cw-tax-symbol { position: absolute; right: 4px; color: #666; font-size: 10px; pointer-events: none; }
+
+        .cw-map-dropdown-container { position: relative; }
+        .cw-map-btn-inline { background: #e8f0fe; border: 1px solid #d2e3fc; border-radius: 4px; cursor: pointer; height: 26px; width: 26px; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s; }
+        .cw-map-btn-inline:hover { background: #d2e3fc; }
+        
+        .cw-map-wrap-popup { 
+            position: absolute; right: 0; top: 30px; z-index: 1000;
+            background: white; border: 1px solid #dadce0; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 220px;
+            padding: 8px; display: flex; flex-direction: column; gap: 6px;
+            animation: fadeIn 0.2s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .cw-row { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
+        .cw-map-label { font-size: 11px; font-weight: 600; color: #555; white-space: nowrap; }
+        .cw-map-input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; width: 120px; }
+        .cw-map-hint { font-size: 9px; color: #888; margin-top: 4px; line-height: 1.2; }
+
     `);
 }

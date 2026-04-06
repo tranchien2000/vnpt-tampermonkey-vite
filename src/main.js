@@ -15,6 +15,7 @@ import { initWebScanner } from './features/webScanner.js';
 import { initDocExport } from './features/docExport.js';
 import { setupAutoFillForm } from './features/autoFillForm.js';
 import { initSyncEngine } from './features/dataFill/syncEngine.js';
+import { initCalcWidget } from './features/calc/index.js';
 
 function init() {
   logger.info('Initializing VNPT Userscript...');
@@ -22,6 +23,7 @@ function init() {
   try {
     injectStyles();
     initWidget();        // Docx Export Widget
+    initCalcWidget();    // Calculator UI (will attach to #vnpt-inline-calc)
     initDragDrop();      // Make Docx widget draggable
     initFieldsManager();
     loadSavedData();

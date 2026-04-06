@@ -36,7 +36,11 @@ export function initWidget() {
                 </div>
             </div>
 
+            <!-- Inline Calculator Container -->
+            <div id="vnpt-inline-calc"></div>
+
             <div id="vnpt-panel-body">
+
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
                     <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
