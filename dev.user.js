@@ -20,22 +20,56 @@
 
 (function() {
     'use strict';
-    // Bypass cached file from localhost by adding a timestamp
-    const url = `http://localhost:8788/myscript.user.js?t=${Date.now()}`;
+    let lastScriptContent = '';
+    const pollInterval = 2000; // 2 seconds
 
-    GM_xmlhttpRequest({
-        method: "GET",
-        url: url,
-        onload: function(response) {
-            if (response.status === 200) {
-                console.log('%c[VNPT-DEV] Script loaded from localhost!', 'color: #1e8e3e; font-weight: bold;');
-                eval(response.responseText);
-            } else {
-                console.error('[VNPT-DEV] Failed to load script from localhost. Make sure "npm run dev:all" is running.');
+    function loadScript() {
+        const url = `http://localhost:8788/myscript.user.js?t=${Date.now()}`;
+
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: url,
+            onload: function(response) {
+                if (response.status === 200) {
+                    if (response.responseText === lastScriptContent) {
+                        return; // No change
+                    }
+
+                    console.log('%c[VNPT-DEV] Detecting script change, reloading...', 'color: #1a73e8; font-weight: bold;');
+                    
+                    // 1. Cleanup old version
+                    if (typeof window.__vnptCleanup === 'function') {
+                        try {
+                            window.__vnptCleanup();
+                        } catch (e) {
+                            console.error('[VNPT-DEV] Cleanup failed:', e);
+                        }
+                    }
+
+                    // 2. Update content and inject
+                    lastScriptContent = response.responseText;
+                    
+                    try {
+                        // Cần xóa flag inited của TM cũ nếu có (trong trường hợp script cũ không có cleanup)
+                        window.__vnptInited = false;
+                        
+                        eval(response.responseText);
+                        console.log('%c[VNPT-DEV] Hot Reload Successful!', 'color: #1e8e3e; font-weight: bold;');
+                    } catch (e) {
+                        console.error('[VNPT-DEV] Eval failed:', e);
+                    }
+                } else {
+                    console.error('[VNPT-DEV] Failed to load script from localhost.');
+                }
+            },
+            onerror: function(err) {
+                console.error('[VNPT-DEV] Error fetching script:', err);
             }
-        },
-        onerror: function(err) {
-            console.error('[VNPT-DEV] Error fetching script from localhost:', err);
-        }
-    });
+        });
+    }
+
+    // Start polling
+    console.log('%c[VNPT-DEV] Hot Reload enabled (polling every 2s)', 'color: #f2a500; font-weight: bold;');
+    setInterval(loadScript, pollInterval);
+    loadScript(); // Initial load
 })();

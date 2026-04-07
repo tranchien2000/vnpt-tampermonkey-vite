@@ -19,6 +19,8 @@ import { initCalcWidget } from './features/calc/index.js';
 import { clearDOMCache } from './utils/domHelper.js';
 import { debounce } from './utils/common.js';
 
+let cacheObserver = null;
+
 function init() {
   // Chống chạy 2 lần
   if (window.__vnptInited) return;
@@ -46,7 +48,7 @@ function init() {
         logger.debug('DOM Cache cleared due to mutations');
     }, 500);
 
-    const cacheObserver = new MutationObserver((mutations) => {
+    cacheObserver = new MutationObserver((mutations) => {
         if (mutations.some(m => m.addedNodes.length > 0 || m.removedNodes.length > 0)) {
             debouncedClearCache();
         }
@@ -58,6 +60,41 @@ function init() {
     logger.error('Error during userscript initialization:', error);
   }
 }
+
+/**
+ * Cleanup function to remove all side effects of the script.
+ * Used for Hot Reload (No-refresh update).
+ */
+function cleanup() {
+  logger.info('Cleaning up VNPT Userscript for reload...');
+  
+  // 1. Dừng Observer
+  if (cacheObserver) {
+    cacheObserver.disconnect();
+    cacheObserver = null;
+  }
+
+  // 2. Xóa Widget chính
+  const widget = document.getElementById('vnpt-docx-widget');
+  if (widget) widget.remove();
+
+  // 3. Xóa Calc Widget (nếu có riêng, nhưng hiện tại nó nằm trong widget chính)
+  const calcWidget = document.getElementById('vnpt-calc-widget'); 
+  if (calcWidget) calcWidget.remove();
+
+  // 4. Xóa Style
+  const style = document.getElementById('vnpt-styles');
+  if (style) style.remove();
+
+  // 5. Reset flag
+  window.__vnptInited = false;
+  
+  logger.info('Cleanup completed.');
+}
+
+// Expose to window for dev.user.js
+window.__vnptCleanup = cleanup;
+window.__vnptInit = init;
 
 // Ensure the DOM is fully loaded or run immediately if already loaded
 if (document.readyState === 'loading') {

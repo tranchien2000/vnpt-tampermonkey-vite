@@ -14,7 +14,12 @@
 // src/ui/styles.js
 
 export function injectStyles() {
-    GM_addStyle(`
+    const styleId = 'vnpt-styles';
+    if (document.getElementById(styleId)) return;
+
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
         /* ═══════════════════════════════════════════
            SECTION 1: WIDGET CONTAINER & TOGGLE BTN
            ═══════════════════════════════════════════ */
@@ -224,5 +229,6 @@ export function injectStyles() {
 
         .btn-more.active { background: #dadce0; }
 
-    `);
+    `;
+    document.head.appendChild(style);
 }
