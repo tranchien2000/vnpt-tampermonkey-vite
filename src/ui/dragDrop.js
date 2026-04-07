@@ -10,6 +10,7 @@
 // src/ui/dragDrop.js
 import { AppState } from '../core/state.js';
 import { LOCAL_KEY_POS } from '../core/constants.js';
+import { Storage } from '../utils/storage.js';
 
 const DOCK_THRESHOLD = 60; // px từ cạnh dưới màn hình để kích hoạt dock
 
@@ -138,14 +139,14 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
 
         if (storageKey) {
             const isRightAnchor = widgetEl.id === 'vnpt-docx-widget';
-            localStorage.setItem(storageKey, JSON.stringify({
+            Storage.set(storageKey, {
                 left: isRightAnchor ? undefined : widgetEl.style.left,
                 right: isRightAnchor ? widgetEl.style.right : undefined,
                 top: widgetEl.style.top,
                 x: isRightAnchor ? undefined : parseFloat(widgetEl.style.left),
                 y: parseFloat(widgetEl.style.top),
                 docked: isDocked
-            }));
+            });
         }
     });
 

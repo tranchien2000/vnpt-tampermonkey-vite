@@ -14,12 +14,12 @@
 
 import { SK_TEMPLATES } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
-import { storage } from '../api/storage/index.js';
 import { idbSave, idbLoad, idbDelete } from '../api/storage/idb.js';
+import { Storage } from '../utils/storage.js';
 
 export function loadTemplates() {
     try { 
-        const list = JSON.parse(localStorage.getItem(SK_TEMPLATES)) || []; 
+        const list = Storage.get(SK_TEMPLATES) || []; 
         // Remove old 'local' only items that don't have base64 (to prevent the blocking alert)
         const validList = list.filter(t => t.type !== 'local');
         if (validList.length !== list.length) saveTemplates(validList);
@@ -29,7 +29,7 @@ export function loadTemplates() {
 }
 
 function saveTemplates(list) {
-    localStorage.setItem(SK_TEMPLATES, JSON.stringify(list));
+    Storage.set(SK_TEMPLATES, list);
 }
 
 function normalizeUrl(url) {

@@ -40,5 +40,20 @@ export const DEFAULT_DATA = {
  * Khi trường key thay đổi, các trường trong value (phân tách bằng dấu phẩy) sẽ được cập nhật theo.
  */
 export const DEFAULT_SYNC_DATA = {
-    'soHopDong': 'inputContractGroupName'
+    'soHopDong': 'inputContractGroupName, contractName'
 };
+
+/**
+ * DEFAULT_CALC_MAP: Mapping kết quả từ bộ tính toán (Calc Widget) ra các trường trên trang web.
+ */
+export const DEFAULT_CALC_MAP = {
+    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong"],
+    before: ["donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue"],
+    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT"],
+    text: ["soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu"]
+};
+
+/**
+ * DEFAULT_TAX_RATE: Thuế suất mặc định (8%).
+ */
+export const DEFAULT_TAX_RATE = 0.08;

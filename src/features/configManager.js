@@ -14,7 +14,7 @@ import {
 import { showToast } from '../ui/toast.js';
 import { loadSavedData } from './fieldsManager.js';
 import { renderTemplateManager } from './templateManager.js';
-import { AppState } from '../core/state.js';
+import { Storage } from '../utils/storage.js';
 
 /**
  * Xuất toàn bộ cấu hình hiện tại ra file JSON
@@ -23,16 +23,16 @@ export function exportConfig() {
     const config = {
         version: '1.0',
         timestamp: Date.now(),
-        fields: JSON.parse(localStorage.getItem(LOCAL_KEY_FIELDS)) || {},
-        templates: JSON.parse(localStorage.getItem(SK_TEMPLATES)) || [],
-        position: JSON.parse(localStorage.getItem(LOCAL_KEY_POS)) || null,
-        size: JSON.parse(localStorage.getItem(LOCAL_KEY_SIZE)) || null,
+        fields: Storage.get(LOCAL_KEY_FIELDS) || {},
+        templates: Storage.get(SK_TEMPLATES) || [],
+        position: Storage.get(LOCAL_KEY_POS) || null,
+        size: Storage.get(LOCAL_KEY_SIZE) || null,
         calc: {
-            default: JSON.parse(localStorage.getItem(SK_DATA_DEF)) || null,
-            custom: JSON.parse(localStorage.getItem(SK_DATA_CUS)) || null,
-            sync: JSON.parse(localStorage.getItem(SK_DATA_SYNC)) || null,
-            map: JSON.parse(localStorage.getItem(SK_CALC_MAP)) || {},
-            taxRate: Number(localStorage.getItem(SK_TAX)) || 0.08
+            default: Storage.get(SK_DATA_DEF) || null,
+            custom: Storage.get(SK_DATA_CUS) || null,
+            sync: Storage.get(SK_DATA_SYNC) || null,
+            map: Storage.get(SK_CALC_MAP) || {},
+            taxRate: Number(Storage.get(SK_TAX)) || 0.08
         }
     };
 
@@ -67,18 +67,18 @@ export function importConfig() {
                 throw new Error('Định dạng file không hợp lệ!');
             }
 
-            // Lưu vào localStorage
-            if (config.fields) localStorage.setItem(LOCAL_KEY_FIELDS, JSON.stringify(config.fields));
-            if (config.templates) localStorage.setItem(SK_TEMPLATES, JSON.stringify(config.templates));
-            if (config.position) localStorage.setItem(LOCAL_KEY_POS, JSON.stringify(config.position));
-            if (config.size) localStorage.setItem(LOCAL_KEY_SIZE, JSON.stringify(config.size));
+            // Lưu vào Storage utility
+            if (config.fields) Storage.set(LOCAL_KEY_FIELDS, config.fields);
+            if (config.templates) Storage.set(SK_TEMPLATES, config.templates);
+            if (config.position) Storage.set(LOCAL_KEY_POS, config.position);
+            if (config.size) Storage.set(LOCAL_KEY_SIZE, config.size);
             
             if (config.calc) {
-                if (config.calc.default) localStorage.setItem(SK_DATA_DEF, JSON.stringify(config.calc.default));
-                if (config.calc.custom) localStorage.setItem(SK_DATA_CUS, JSON.stringify(config.calc.custom));
-                if (config.calc.sync) localStorage.setItem(SK_DATA_SYNC, JSON.stringify(config.calc.sync));
-                if (config.calc.map) localStorage.setItem(SK_CALC_MAP, JSON.stringify(config.calc.map));
-                if (config.calc.taxRate !== undefined) localStorage.setItem(SK_TAX, config.calc.taxRate);
+                if (config.calc.default) Storage.set(SK_DATA_DEF, config.calc.default);
+                if (config.calc.custom) Storage.set(SK_DATA_CUS, config.calc.custom);
+                if (config.calc.sync) Storage.set(SK_DATA_SYNC, config.calc.sync);
+                if (config.calc.map) Storage.set(SK_CALC_MAP, config.calc.map);
+                if (config.calc.taxRate !== undefined) Storage.set(SK_TAX, config.calc.taxRate);
             }
 
             // Cập nhật giao diện

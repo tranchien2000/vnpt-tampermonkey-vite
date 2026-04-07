@@ -3,14 +3,14 @@
  * @desc Quản lý việc lưu trữ (localStorage) và lịch sử (History) cho Calc Widget.
  */
 import { SK_HIST_B, SK_HIST_A } from '../../core/constants.js';
+import { Storage } from '../../utils/storage.js';
 
 export function ld(k, def = null) { 
-    try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } 
-    catch { return def; } 
+    return Storage.get(k, def);
 }
 
 export function sv(k, v) { 
-    localStorage.setItem(k, JSON.stringify(v)); 
+    Storage.set(k, v); 
 }
 
 export function saveHist(key, val) {

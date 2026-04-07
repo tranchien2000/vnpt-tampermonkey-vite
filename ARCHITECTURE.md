@@ -3,6 +3,15 @@
 ## Overview
 Dự án là một Tampermonkey Userscript dùng để tự động hóa việc nhập liệu và xuất file DOCX từ các biểu mẫu web của VNPT. Script được cấu trúc theo dạng module ESM, sử dụng Vite để build.
 
+```mermaid
+graph TD;
+  Core[Core (constants, state, defaults)] --> UI[UI (widget, styles)];
+  UI --> Features[Features];
+  Features --> Utils[Utils];
+  Features -->|điền dữ liệu| DataFill[dataFill];
+  Features -->|tạo file| DocExport[docExport];
+```
+
 ## Module Map
 
 ### 1. Core (State & Constants)
@@ -10,7 +19,8 @@ Các file lưu trữ cấu hình tĩnh và trạng thái runtime. AI nên đọc
 
 - [constants.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/constants.js): Chứa mapping nhãn (DEFAULT_LABELS) và các key của localStorage.
 - [state.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/state.js): Singleton AppState lưu giữ tham chiếu đến các thành phần UI (DOM) và các cờ trạng thái (flags).
-- [defaults.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/defaults.js): [NEW] Chứa dữ liệu bên B mặc định (DEFAULT_DATA) và danh sách trường bên A (fieldsA).
+- [defaults.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/defaults.js): Chứa dữ liệu bên B mặc định (DEFAULT_DATA) và danh sách trường bên A (fieldsA).
+- [scannerFallbacks.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/scannerFallbacks.js): [NEW] Xử lý logic dự phòng khi quét dữ liệu trang web không tìm thấy nhãn chuẩn.
 
 ### 2. UI (Giao diện)
 Phần render và điều khiển layout của widget.
@@ -19,6 +29,11 @@ Phần render và điều khiển layout của widget.
 - [widget.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/widget.js): Khởi tạo giao diện chính (Export Widget), quản lý resize/đóng mở.
 - [dragDrop.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/dragDrop.js): Logic kéo thả chung cho cả 2 widget chính.
 - [toast.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/toast.js): Hiển thị thông báo góc màn hình.
+
+### 3. API (Giao tiếp & Lưu trữ)
+Quản lý các kết nối ngoại vi và lưu trữ tập trung.
+
+- [storage/](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/api/storage/): Quản lý lưu trữ dữ liệu (localStorage, GM_setValue) với cơ chế debounce và caching.
 
 ### 3. Features (Tính năng)
 Logic nghiệp vụ chính của script.

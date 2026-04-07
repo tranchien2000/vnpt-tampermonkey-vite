@@ -41,6 +41,14 @@ export function findPageInput(name) {
         DOMCache.set(name, byId);
         return byId;
     }
+
+    // Thử tìm theo thuộc tính id, name, formcontrolname, hoặc placeholder
+    const selector = `input[id="${name}"], textarea[id="${name}"], input[name="${name}"], textarea[name="${name}"], input[formcontrolname="${name}"], textarea[formcontrolname="${name}"], input[placeholder="${name}"], textarea[placeholder="${name}"]`;
+    const byAttr = document.querySelector(selector);
+    if (byAttr) {
+        DOMCache.set(name, byAttr);
+        return byAttr;
+    }
     
     for (const lbl of document.querySelectorAll('label')) {
         if (lbl.textContent.trim() === name) {

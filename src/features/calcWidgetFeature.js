@@ -15,26 +15,24 @@ import { formatNum, parseNum, numToVN, capFirst } from '../utils/numberHelper.js
 import { setPageField } from '../utils/domHelper.js';
 import { renderDataFillTabs } from './dataFillFeature.js'; // We will import rendering for the bottom half
 
-// Storage helpers
-function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
-function sv(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+import { Storage } from '../utils/storage.js';
 
-let TAX_RATE = Number(localStorage.getItem(SK_TAX)) || 0.08;
-let collapsedSections = ld(SK_COLLAPSE) ?? { calc: false, data: true };
+let TAX_RATE = Number(Storage.get(SK_TAX)) || 0.08;
+let collapsedSections = Storage.get(SK_COLLAPSE) ?? { calc: false, data: true };
 
 // History functions
 function saveHist(key, val) {
     if (!val || val.replace(/\D/g, '').length < 6) return;
-    let arr = ld(key, []);
+    let arr = Storage.get(key, []);
     arr = arr.filter(v => v !== val);
     arr.unshift(val);
-    sv(key, arr.slice(0, 10));
+    Storage.set(key, arr.slice(0, 10));
 }
 
 function renderHist(key, listId) {
     const el = document.getElementById(listId);
     if (!el) return;
-    el.innerHTML = (ld(key, [])).map(v => `<option value="${v}">`).join('');
+    el.innerHTML = (Storage.get(key, [])).map(v => `<option value="${v}">`).join('');
 }
 
 function clamp(widget) {
@@ -57,7 +55,7 @@ function mkSecHeader(title, sectionKey, toggleCallback) {
     b.onclick = () => {
         collapsedSections[sectionKey] = !collapsedSections[sectionKey];
         b.innerText = collapsedSections[sectionKey] ? '▾' : '▴';
-        sv(SK_COLLAPSE, collapsedSections);
+        Storage.set(SK_COLLAPSE, collapsedSections);
         toggleCallback(collapsedSections[sectionKey]);
     };
     return hdr;
@@ -67,7 +65,7 @@ export function initCalcWidget() {
     const widget = document.createElement('div');
     widget.id = 'vnpt-calc-widget';
 
-    const savedPos = ld(SK_POS_CALC);
+    const savedPos = Storage.get(SK_POS_CALC);
     const startDocked = !!(savedPos && savedPos.docked);
     Object.assign(widget.style, {
         top: (savedPos && savedPos.y) ? savedPos.y + 'px' : '16px',
@@ -196,7 +194,7 @@ export function initCalcWidget() {
 
     const mapBtn = document.getElementById('wg-calc-map-btn');
     const mapWrap = document.getElementById('wg-calc-map-wrap');
-    let calcMaps = ld(SK_CALC_MAP) ?? {};
+    let calcMaps = Storage.get(SK_CALC_MAP) ?? {};
 
     mapBtn.onclick = (e) => {
         // Toggle Map popup
@@ -219,7 +217,7 @@ export function initCalcWidget() {
         inp.value = (calcMaps[key] || []).join(', ');
         inp.addEventListener('input', () => {
             calcMaps[key] = inp.value.split(',').map(s => s.trim()).filter(s => s);
-            sv(SK_CALC_MAP, calcMaps);
+            Storage.set(SK_CALC_MAP, calcMaps);
         });
     });
 
@@ -255,7 +253,7 @@ export function initCalcWidget() {
 
     taxRateEl.addEventListener('input', () => {
         TAX_RATE = Number(taxRateEl.value) / 100 || 0;
-        localStorage.setItem(SK_TAX, TAX_RATE);
+        Storage.set(SK_TAX, TAX_RATE);
         fromBefore();
     });
     beforeEl.addEventListener('input', () => {

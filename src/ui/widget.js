@@ -9,14 +9,15 @@
 import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
 import { initFieldsManager, loadSavedData } from '../features/fieldsManager.js';
-import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED } from '../core/constants.js';
+import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS } from '../core/constants.js';
 import { importConfig, exportConfig } from '../features/configManager.js';
+import { Storage } from '../utils/storage.js';
 
 export function initWidget() {
-    const widget = document.createElement('div');
+    const widget = document.getElementById('vnpt-docx-widget') || document.createElement('div');
     widget.id = 'vnpt-docx-widget'; // Widget bọc ngoài cùng
     // Khôi phục trạng thái mở/đóng
-    const isOpened = localStorage.getItem(LOCAL_KEY_OPENED) === 'true';
+    const isOpened = Storage.get(LOCAL_KEY_OPENED) === true;
 
     widget.innerHTML = `
         <button id="vnpt-toggle-btn" title="Mở/Đóng UI Hợp đồng" class="${isOpened ? 'btn-opened' : 'btn-closed'}">${isOpened ? '✖' : '📄'}</button>
@@ -98,7 +99,7 @@ export function initWidget() {
 
     // Khôi phục kích thước bảng
     try {
-        const savedSize = JSON.parse(localStorage.getItem(LOCAL_KEY_SIZE));
+        const savedSize = Storage.get(LOCAL_KEY_SIZE);
         if (savedSize && savedSize.width && savedSize.height) {
             AppState.panel.style.width = savedSize.width + 'px';
             AppState.panel.style.height = savedSize.height + 'px';
@@ -112,13 +113,12 @@ export function initWidget() {
         if (AppState.panel.style.display === 'none') return;
         for (let entry of entries) {
             const { width, height } = entry.contentRect;
-            // Chỉ lưu nếu thực sự có kích thước (tránh lúc display:none)
             if (width > 0 && height > 0) {
-                // Debounce nhẹ bằng cách dùng timeout hoặc cứ lưu vì resize native không nhạy quá mức
-                localStorage.setItem(LOCAL_KEY_SIZE, JSON.stringify({
-                    width: Math.round(width + 20), // + padding
-                    height: Math.round(height + 20) // + padding
-                }));
+                // Sử dụng setDebounced cho việc thay đổi kích thước liên tục
+                Storage.setDebounced(LOCAL_KEY_SIZE, {
+                    width: Math.round(width + 20),
+                    height: Math.round(height + 20)
+                }, 1000);
             }
         }
     });
@@ -160,13 +160,13 @@ export function initWidget() {
             AppState.panel.style.display = 'flex';
             AppState.toggleBtn.className = 'btn-opened';
             AppState.toggleBtn.innerHTML = '✖';
-            localStorage.setItem(LOCAL_KEY_OPENED, 'true');
+            Storage.set(LOCAL_KEY_OPENED, true);
         } else {
             // Đóng panel
             AppState.panel.style.display = 'none';
             AppState.toggleBtn.className = 'btn-closed';
             AppState.toggleBtn.innerHTML = '📄';
-            localStorage.setItem(LOCAL_KEY_OPENED, 'false');
+            Storage.set(LOCAL_KEY_OPENED, false);
         }
     });
 
@@ -255,12 +255,12 @@ export function initWidget() {
                 window.removeEventListener('mouseup', onMouseUp);
                 // Lưu vị trí sau khi resize (vì top/right có thể đã thay đổi)
                 const isRightAnchor = AppState.widget.id === 'vnpt-docx-widget';
-                localStorage.setItem(LOCAL_KEY_POS, JSON.stringify({
+                Storage.setDebounced(LOCAL_KEY_POS, {
                     right: isRightAnchor ? AppState.widget.style.right : undefined,
                     top: AppState.widget.style.top,
                     x: isRightAnchor ? undefined : parseFloat(AppState.widget.style.left),
                     y: parseFloat(AppState.widget.style.top),
-                }));
+                }, 1000);
             };
 
             window.addEventListener('mousemove', onMouseMove);

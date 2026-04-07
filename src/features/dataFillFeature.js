@@ -13,22 +13,18 @@
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, SK_DATATAB, SK_COLLAPSE } from '../core/constants.js';
 import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
-import { storage } from '../api/storage/index.js';
+import { Storage } from '../utils/storage.js';
 import { DEFAULT_DATA as _DEFAULT_DATA } from '../core/defaults.js';
 export { DEFAULT_DATA } from '../core/defaults.js'; // re-export cho backward compat
 
-// Storage helpers
-function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
-function sv(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
-
-let defaultData = ld(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
-let customData = ld(SK_DATA_CUS) ?? {};
-let syncData = ld(SK_DATA_SYNC) ?? {};
-let currentDataTab = ld(SK_DATATAB) ?? 'custom';
+let defaultData = Storage.get(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
+let customData = Storage.get(SK_DATA_CUS) ?? {};
+let syncData = Storage.get(SK_DATA_SYNC) ?? {};
+let currentDataTab = Storage.get(SK_DATATAB) ?? 'custom';
 
 export function doFillData() {
-    defaultData = ld(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
-    customData = ld(SK_DATA_CUS) ?? {};
+    defaultData = Storage.get(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
+    customData = Storage.get(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
     
     Object.keys(merged).forEach(k => {
@@ -46,7 +42,7 @@ export function doFillData() {
 }
 
 export function doSyncData() {
-    let syncMap = ld(SK_DATA_SYNC) ?? {};
+    let syncMap = Storage.get(SK_DATA_SYNC) ?? {};
     const keys = Object.keys(syncMap);
     if (keys.length === 0) {
         showToast('⚠️ No sync mapping', '#ffc107');
@@ -160,7 +156,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
                     }
                     delete activeData[key];
                     let sk = currentDataTab === 'sync' ? SK_DATA_SYNC : SK_DATA_CUS;
-                    sv(sk, activeData);
+                    Storage.set(sk, activeData);
                     renderDataFields();
                 };
             }
@@ -176,7 +172,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
                     activeData[key] = inp.value;
                 }
                 let sk = currentDataTab === 'sync' ? SK_DATA_SYNC : (currentDataTab === 'custom' ? SK_DATA_CUS : SK_DATA_DEF);
-                sv(sk, activeData);
+                Storage.setDebounced(sk, activeData, 1000);
             };
 
             if (currentDataTab === 'sync') inp.placeholder = 'Các nhãn đích...';
@@ -189,8 +185,8 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
                 del.onclick = () => {
                     if (confirm(`Delete "${key}"?`)) {
                         delete activeData[key];
-                        if (currentDataTab === 'custom') sv(SK_DATA_CUS, activeData);
-                        if (currentDataTab === 'sync') sv(SK_DATA_SYNC, activeData);
+                        if (currentDataTab === 'custom') Storage.set(SK_DATA_CUS, activeData);
+                        if (currentDataTab === 'sync') Storage.set(SK_DATA_SYNC, activeData);
                         renderDataFields();
                     }
                 };
@@ -211,9 +207,9 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     }
     renderDataFields();
 
-    tabCustom.onclick = () => { currentDataTab = 'custom'; sv(SK_DATATAB, 'custom'); applyTabStyles(); renderDataFields(); };
-    tabDefault.onclick = () => { currentDataTab = 'default'; sv(SK_DATATAB, 'default'); applyTabStyles(); renderDataFields(); };
-    tabSync.onclick = () => { currentDataTab = 'sync'; sv(SK_DATATAB, 'sync'); applyTabStyles(); renderDataFields(); };
+    tabCustom.onclick = () => { currentDataTab = 'custom'; Storage.set(SK_DATATAB, 'custom'); applyTabStyles(); renderDataFields(); };
+    tabDefault.onclick = () => { currentDataTab = 'default'; Storage.set(SK_DATATAB, 'default'); applyTabStyles(); renderDataFields(); };
+    tabSync.onclick = () => { currentDataTab = 'sync'; Storage.set(SK_DATATAB, 'sync'); applyTabStyles(); renderDataFields(); };
 
     exportBtn.onclick = () => {
         const dataToExport = { defaultData, customData, syncData };
@@ -236,9 +232,9 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
             try {
                 const text = await storage.download('local', file, { type: 'text' });
                 const parsed = JSON.parse(text);
-                if (parsed.defaultData) { defaultData = parsed.defaultData; sv(SK_DATA_DEF, defaultData); }
-                if (parsed.customData) { customData = parsed.customData; sv(SK_DATA_CUS, customData); }
-                if (parsed.syncData) { syncData = parsed.syncData; sv(SK_DATA_SYNC, syncData); }
+                if (parsed.defaultData) { defaultData = parsed.defaultData; Storage.set(SK_DATA_DEF, defaultData); }
+                if (parsed.customData) { customData = parsed.customData; Storage.set(SK_DATA_CUS, customData); }
+                if (parsed.syncData) { syncData = parsed.syncData; Storage.set(SK_DATA_SYNC, syncData); }
                 renderDataFields();
                 showToast('✅ Import successful!');
             } catch (err) { alert('Invalid JSON file format or error reading file!'); }
@@ -250,16 +246,16 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     widget.querySelector('#vnpt-cw-sync').onclick = doSyncData;
     widget.querySelector('#vnpt-cw-add').onclick = () => {
         if (currentDataTab === 'default') {
-            currentDataTab = 'custom'; sv(SK_DATATAB, 'custom'); applyTabStyles();
+            currentDataTab = 'custom'; Storage.set(SK_DATATAB, 'custom'); applyTabStyles();
         }
         let activeData = currentDataTab === 'sync' ? syncData : customData;
         let i = 1, newKey = "new_field";
         while (activeData.hasOwnProperty(newKey)) { newKey = "new_field_" + i; i++; }
         activeData[newKey] = "";
-        sv(currentDataTab === 'sync' ? SK_DATA_SYNC : SK_DATA_CUS, activeData);
+        Storage.set(currentDataTab === 'sync' ? SK_DATA_SYNC : SK_DATA_CUS, activeData);
         if (collapsedSections.data) {
             collapsedSections.data = false;
-            sv(SK_COLLAPSE, collapsedSections);
+            Storage.set(SK_COLLAPSE, collapsedSections);
             dataWrap.style.display = 'block';
             dataHeader.querySelector('.wg-toggle-btn').innerText = '▴';
         }
@@ -269,7 +265,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     widget.querySelector('#vnpt-cw-reset').onclick = () => {
         if (confirm('Reset [Default Data] to hardcoded values?')) {
             defaultData = { ..._DEFAULT_DATA };
-            sv(SK_DATA_DEF, defaultData);
+            Storage.set(SK_DATA_DEF, defaultData);
             if (currentDataTab === 'default') renderDataFields();
             showToast('Reset complete', '#17a2b8');
         }
@@ -281,7 +277,7 @@ let isSyncing = false;
 document.addEventListener('input', (e) => {
     if (isSyncing || !e.target || !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
-    let sMap = ld(SK_DATA_SYNC) ?? {};
+    let sMap = Storage.get(SK_DATA_SYNC) ?? {};
     if (Object.keys(sMap).length === 0) return;
 
     let keyId = e.target.id;

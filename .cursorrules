@@ -1,6 +1,6 @@
 1. AI **LUÔN LUÔN** phải đọc [ARCHITECTURE.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/ARCHITECTURE.md) ngay khi bắt đầu phiên làm việc.
 2. **Planning First**: Khi nhận yêu cầu mới (ngoại trừ hỏi đáp đơn thuần), AI **PHẢI** lập kế hoạch chi tiết trong `implementation_plan.md` (brain artifact) và chờ xác nhận.
-3. **Execution Trigger**: AI chỉ được phép chỉnh sửa code (EXECUTION) sau khi người dùng ra lệnh "triển khai", "trien khai" hoặc đồng ý với kế hoạch.
+3. **Execution Trigger**: AI chỉ được phép chỉnh sửa code (EXECUTION) sau khi người dùng ra lệnh "ok", "trien khai" hoặc đồng ý với kế hoạch.
 4. AI phải đọc **JSDoc header** (20 dòng đầu) của file `src/` trước khi đọc toàn bộ.
 5. **Grep-First Mandate**: Nếu file > 100 dòng, AI **PHẢI** dùng `grep_search` để tìm đoạn code cần sửa trước khi dùng `view_file`.
 6. **Exclusion List**: Tuyệt đối KHÔNG đọc: `dist/`, `node_modules/`, `.git/`, `package-lock.json`, `original_script.js`, `source.js`, `temp_vnpt*.js`.
@@ -10,6 +10,9 @@
 10. **Error Handling**: Các hàm xử lý DOM hoặc API phải có `try-catch` và sử dụng `logger` từ `src/utils/logger.js`.
 11. **JSDoc Style**: Mọi hàm export mới phải có JSDoc mô tả tham số và giá trị trả về.
 12. **Tool Optimization**: Ưu tiên dùng `multi_replace_file_content` cho các thay đổi không liên tục trong cùng file.
+13. **State Management Pattern**: Luôn sử dụng singleton `AppState` từ `src/core/state.js` để quản lý trạng thái runtime. Tuyệt đối không dùng biến toàn cục rải rác.
+14. **Commit Message Standard**: Sử dụng định dạng: `[loại]: [mô tả ngắn bằng tiếng Việt]` (VD: `feat: thêm nút quét dữ liệu`). Loại bao gồm: `feat`, `fix`, `refactor`, `docs`, `style`.
+15. **Advanced Error Handling**: Mọi hàm `async` phải bọc trong `try-catch`. Sử dụng `logger.error` để ghi lại lỗi và hiển thị `toast` cho người dùng nếu cần thiết.
 
 ## 2. UI/Aesthetics (Premium Standard)
 - Theme: Dark Mode + Glassmorphism (blur, semi-transparent borders).

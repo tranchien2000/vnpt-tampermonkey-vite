@@ -4,7 +4,7 @@
  *       Đã tối ưu: Sử dụng Storage utility, Reactive State (AppState.on), DOM Cache.
  */
 import { AppState } from '../core/state.js';
-import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS } from '../core/constants.js';
+import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS, SK_TAX, SK_CALC_MAP } from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
@@ -140,7 +140,8 @@ export function saveFieldsToLocal() {
         const v = row.querySelector('.f-val').value;
         if (k) data[k] = { label: l, value: v, sync: s };
     });
-    Storage.set(key, data);
+    // Sử dụng setDebounced để tránh ghi đĩa liên tục khi gõ phím
+    Storage.setDebounced(key, data, 1000); 
 }
 
 export function loadSavedData() {
@@ -210,6 +211,9 @@ export function initFieldsManager() {
     document.getElementById('vnpt-btn-reset-default').onclick = () => {
         if (confirm("Khôi phục toàn bộ Dữ liệu Mặc định VNPT về ban đầu?")) {
             Storage.remove(LOCAL_KEY_DEFAULT_FIELDS);
+            Storage.remove(SK_CALC_MAP);
+            Storage.remove(SK_TAX);
+            
             if (AppState.isDefaultMode) {
                 updateUIForDefaultMode(true);
                 showToast("🔄 Đã khôi phục dữ liệu gốc", "#1a73e8");

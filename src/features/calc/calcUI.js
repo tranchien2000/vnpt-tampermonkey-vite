@@ -10,11 +10,12 @@ import { formatNum, parseNum } from '../../utils/numberHelper.js';
 import { renderDataFillTabs } from '../dataFill/index.js';
 import { makeDraggable } from '../../ui/dragDrop.js';
 import { importConfig, exportConfig } from '../../features/configManager.js';
+import { DEFAULT_CALC_MAP, DEFAULT_TAX_RATE } from '../../core/defaults.js';
 
 export function createCalcUI(widget, container, SK_POS_CALC) {
-    let TAX_RATE = Number(localStorage.getItem(SK_TAX)) || 0.08;
+    let TAX_RATE = Number(localStorage.getItem(SK_TAX)) || DEFAULT_TAX_RATE;
     let collapsedSections = ld(SK_COLLAPSE) ?? { calc: false, data: true };
-    let calcMaps = ld(SK_CALC_MAP) ?? {};
+    let calcMaps = ld(SK_CALC_MAP) ?? { ...DEFAULT_CALC_MAP };
 
     // Internal helpers
     function mkBtn(label, extraClass) {

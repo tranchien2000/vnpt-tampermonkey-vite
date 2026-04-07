@@ -1,6 +1,9 @@
-# Quy Tắc Phát Triển Tampermonkey UserScript (JS)
+# Technical Standards (Tiêu chuẩn Kỹ thuật - Tampermonkey JS)
 
-Bộ quy tắc này quy định các tiêu chuẩn về kiến trúc, bảo mật, và hiệu năng khi phát triển Tampermonkey Userscript, đặc biệt với các dự án tích hợp thư viện bên thứ 3 (Export, Preview, OCR). Hệ thống AI phải tuyệt đối tuân thủ các nguyên tắc này khi khởi tạo và tái cấu trúc mã nguồn.
+> [!IMPORTANT]
+> Đây là tài liệu về tiêu chuẩn lập trình. Các quy tắc hành vi của AI được quy định tại Master Rule: [.cursorrules](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.cursorrules).
+
+Bộ quy tắc này quy định các tiêu chuẩn về kỹ thuật chuyên sâu khi phát triển Tampermonkey Userscript.
 
 ## 1. Kiến Trúc & Build Process (Architecture & Build Process)
 - **Module Hóa (Modularization):** Không duy trì toàn bộ code trong một file `.js` duy nhất. Phải sử dụng Bundler (như Vite, Webpack, Rollup) và TypeScript để quản lý mã nguồn. Code sẽ tự động bundle thành file Userscript khi deploy.
@@ -33,6 +36,11 @@ Bộ quy tắc này quy định các tiêu chuẩn về kiến trúc, bảo mậ
 - **Tính Năng Preview File:** Đối với tài liệu, hãy ứng dụng thẻ `iframe` với Blob URL truyền vào cấu trúc `src` để preview mượt mà và an toàn trên nội bộ máy khách.
 
 ## 6. Quản Lý Trạng Thái & Thiết Lập (Persistence State)
-- **Xài Storage Độc Lập Tampermonkey:** Tuyệt đối không lưu cấu hình hay Token vào `localStorage` hay `sessionStorage` của website bởi nó dễ gặp nguy cơ bảo mật đồng thời dễ bị website ghi đè. Giải pháp tiêu chuẩn là cấu trúc `GM_setValue`, `GM_getValue`, `GM_deleteValue` của chính Tampermonkey.
+- **Xài Storage Utility:** Ưu tiên sử dụng lớp `Storage` từ `src/api/storage/` thay vì gọi trực tiếp `GM_setValue/getValue`. Lớp này đã hỗ trợ debounce và internal caching để tối ưu hiệu năng.
 - **Bảo Vệ Dữ Liệu Nhạy Cảm:** Với Access Token hay các tham số hệ thống đặc thù, tuyệt đối không hard-code tĩnh vào mã nguồn. Để tính năng input prompt báo cho User nhập ở UI hoặc giao diện Option config tuân thủ quyền riêng tư.
 - **Tính Tuần Tự Hóa (Serialization):** Cấu trúc settings phải cho phép dễ dàng serialize qua `JSON` để đáp ứng khả năng đồng bộ (Sync config qua Cloud), cho phép backup trích xuất trạng thái một cách hiện đại.
+
+## 7. Chiến Lược Đồng Bộ Dữ Liệu (Data Sync Strategy)
+- **Đồng bộ Một Chiều (One-way Sync):** Khi dữ liệu trong Widget thay đổi, phải gọi ngay hàm đồng bộ để cập nhật lên trang web (thông qua `syncEngine.js`).
+- **Lắng nghe Sự Kiện (Event Listeners):** Sử dụng `input` event listener trên các trường của trang web để phát hiện thay đổi từ phía người dùng và cập nhật ngược lại vào `AppState`.
+- **Phản hồi Tức thì (Immediate Feedback):** Sau khi điền dữ liệu tự động, phải dispatch một sự kiện `input` hoặc `change` thủ công để kích hoạt các logic xử lý ngầm (như validation) của trang web (thường là Angular/React của VNPT).
