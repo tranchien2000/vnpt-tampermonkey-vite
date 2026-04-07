@@ -16,6 +16,8 @@ import { initDocExport } from './features/docExport.js';
 import { setupAutoFillForm } from './features/autoFillForm.js';
 import { initSyncEngine } from './features/dataFill/syncEngine.js';
 import { initCalcWidget } from './features/calc/index.js';
+import { clearDOMCache } from './utils/domHelper.js';
+import { debounce } from './utils/common.js';
 
 function init() {
   // Chống chạy 2 lần
@@ -36,6 +38,20 @@ function init() {
     setupAutoFillForm();
     
     initSyncEngine();    // Khởi tạo engine đồng bộ gõ phím ngầm
+
+    // ─── DOM Cache Management ───
+    // Xóa cache khi DOM thay đổi lớn (SPA navigation hoặc load form mới)
+    const debouncedClearCache = debounce(() => {
+        clearDOMCache();
+        logger.debug('DOM Cache cleared due to mutations');
+    }, 500);
+
+    const cacheObserver = new MutationObserver((mutations) => {
+        if (mutations.some(m => m.addedNodes.length > 0 || m.removedNodes.length > 0)) {
+            debouncedClearCache();
+        }
+    });
+    cacheObserver.observe(document.body, { childList: true, subtree: true });
     
     logger.info('Userscript initialized successfully.');
   } catch (error) {

@@ -105,13 +105,13 @@ export function initDocExport() {
         let tplName = AppState.templateName ? AppState.templateName.replace(/\.docx$/i, '') : '';
         
         let parts = [];
-        if (shortTen) parts.push(shortTen);
         if (tplName) parts.push(tplName);
+        if (shortTen) parts.push(shortTen);
         
         if (parts.length > 0) {
             filenameInput.value = parts.join(' - ') + '.docx';
         } else if (!filenameInput.value) {
-            filenameInput.value = 'HopDong_Auto.docx';
+            filenameInput.value = 'Export_Auto.docx';
         }
     }
 

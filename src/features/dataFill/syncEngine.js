@@ -1,17 +1,18 @@
 /**
  * @file syncEngine.js
  * @desc Logic đồng bộ dữ liệu ngầm và lắng nghe sự kiện input/change trên toàn trang web.
+ *       Đã tối ưu: Debounce 250ms, Focus Guard, DOM Cache.
  */
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC } from '../../core/constants.js';
 import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../../utils/domHelper.js';
 import { showToast } from '../../ui/toast.js';
 import { DEFAULT_DATA as _DEFAULT_DATA } from '../../core/defaults.js';
-
-function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
+import { Storage } from '../../utils/storage.js';
+import { debounce } from '../../utils/common.js';
 
 export function doFillData() {
-    const defaultData = ld(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
-    const customData = ld(SK_DATA_CUS) ?? {};
+    const defaultData = Storage.get(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
+    const customData = Storage.get(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
     
     // Fill fields B (Merged)
@@ -32,7 +33,7 @@ export function doFillData() {
 }
 
 export function doSyncData() {
-    let syncMap = ld(SK_DATA_SYNC) ?? {};
+    let syncMap = Storage.get(SK_DATA_SYNC) ?? {};
     const keys = Object.keys(syncMap);
     if (keys.length === 0) { showToast('⚠️ No sync mapping', '#ffc107'); return; }
     keys.forEach(src => {
@@ -45,42 +46,63 @@ export function doSyncData() {
     showToast('✅ Sync form complete', '#d39e00');
 }
 
-// ─── Event Listener ───
+// ─── Event Listener Logic ───
 let isSyncing = false;
+
+const processSync = (target, val) => {
+    if (isSyncing) return;
+    
+    let sMap = Storage.get(SK_DATA_SYNC) ?? {};
+    if (Object.keys(sMap).length === 0) return;
+
+    let keyId = target.id;
+    let keyName = target.name;
+    let keyLblStr = null;
+
+    // Tìm label tương ứng
+    if (keyId) {
+        const lblEl = document.querySelector(`label[for="${keyId}"]`);
+        if (lblEl) keyLblStr = lblEl.textContent.trim();
+    }
+    if (!keyLblStr) {
+        const p = target.closest('label');
+        if (p) keyLblStr = Array.from(p.childNodes).find(n => n.nodeType === 3)?.textContent.trim();
+    }
+
+    let targets = sMap[keyId] || sMap[keyName] || sMap[keyLblStr];
+    if (targets) {
+        isSyncing = true;
+        try {
+            const list = targets.split(',').map(s => s.trim()).filter(s => s);
+            list.forEach(t => {
+                // Focus Guard: Chỉ cập nhật nếu field đích đang KHÔNG được focus
+                // Điều này giúp tránh việc bị mất con trỏ/giật khi đang gõ ở field đích
+                if (t !== keyId && t !== keyName && t !== keyLblStr) {
+                    const targetEl = findPageInput(t) || getInputByLabel(t);
+                    if (targetEl && document.activeElement !== targetEl) {
+                        syncSetValue(targetEl, val);
+                    }
+                }
+            });
+        } finally {
+            isSyncing = false;
+        }
+    }
+};
+
+const debouncedSync = debounce((target, val) => {
+    processSync(target, val);
+}, 250);
+
 export function initSyncEngine() {
     document.addEventListener('input', (e) => {
+        const target = e.target;
+        if (!target || !['INPUT', 'TEXTAREA'].includes(target.tagName)) return;
+
         // Bỏ qua nếu là input từ trong chính Widget của chúng ta
-        if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
+        if (target.closest('#vnpt-docx-widget') || target.closest('#vnpt-inline-calc')) return;
         
-        if (isSyncing || !e.target || !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
-
-        let sMap = ld(SK_DATA_SYNC) ?? {};
-        if (Object.keys(sMap).length === 0) return;
-
-        let keyId = e.target.id;
-        let keyName = e.target.name;
-        let keyLblStr = null;
-
-        // Try to find label
-        if (keyId) {
-            const lblEl = document.querySelector(`label[for="${keyId}"]`);
-            if (lblEl) keyLblStr = lblEl.textContent.trim();
-        }
-        if (!keyLblStr) {
-            const p = e.target.closest('label');
-            if (p) keyLblStr = Array.from(p.childNodes).find(n => n.nodeType === 3)?.textContent.trim();
-        }
-
-        let targets = sMap[keyId] || sMap[keyName] || sMap[keyLblStr];
-        if (targets) {
-            isSyncing = true;
-            try {
-                const val = e.target.value;
-                const list = targets.split(',').map(s => s.trim()).filter(s => s);
-                list.forEach(t => {
-                    if (t !== keyId && t !== keyName && t !== keyLblStr) setPageField(t, val);
-                });
-            } finally { isSyncing = false; }
-        }
+        // Gọi xử lý đồng bộ với debounce (250ms delay)
+        debouncedSync(target, target.value);
     });
 }

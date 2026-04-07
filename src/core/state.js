@@ -1,17 +1,18 @@
 /**
  * @file state.js
  * @desc Singleton AppState — lưu tham chiếu các DOM elements và trạng thái toàn cục.
- *       KHÔNG chứa logic — chỉ dùng để chia sẻ state giữa các module.
- * @exports AppState  — object singleton với các DOM refs và flags trạng thái
- * @seeAlso widget.js (khởi tạo DOM refs), dragDrop.js (dùng AppState.hasDragged)
+ *       Sử dụng Proxy để hỗ trợ reactivity (lắng nghe thay đổi qua .on()).
  */
-export const AppState = {
+
+const internalState = {
     // VNPT Docx Widget
     widget: null,
     panel: null,
     header: null,
+    bannerArea: null,
     toggleBtn: null,
     fieldsContainer: null,
+    panelBody: null,
 
     // VNPT Calc Widget
     calcWidget: null,
@@ -20,5 +21,40 @@ export const AppState = {
     draggedRowForVNPT: null,
 
     // VNPT Data display status
-    isDefaultMode: false
+    isDefaultMode: false,
+    
+    // Template status
+    templateBuffer: null,
+    templateName: null,
+
+    // Drag status
+    hasDragged: false
 };
+
+const listeners = new Map();
+
+/**
+ * AppState Singleton Proxy
+ * @property {Function} on - Đăng ký listener: AppState.on('isDefaultMode', (newVal) => { ... })
+ */
+export const AppState = new Proxy(internalState, {
+    get(target, prop) {
+        if (prop === 'on') {
+            return (key, cb) => {
+                if (!listeners.has(key)) listeners.set(key, []);
+                listeners.get(key).push(cb);
+            };
+        }
+        return target[prop];
+    },
+    set(target, prop, value) {
+        const oldValue = target[prop];
+        target[prop] = value;
+        
+        // Chỉ trigger nếu giá trị thực sự thay đổi
+        if (oldValue !== value && listeners.has(prop)) {
+            listeners.get(prop).forEach(cb => cb(value, oldValue));
+        }
+        return true;
+    }
+});
