@@ -6,10 +6,9 @@
  * @seeAlso syncEngine.js (consumer), fieldsManager.js (consumer)
  */
 
-const now = new Date();
-const ngay = String(now.getDate()).padStart(2, '0');
-const thang = String(now.getMonth() + 1).padStart(2, '0');
-const nam = String(now.getFullYear());
+import { getVNPTDateStrings } from '../utils/dateHelper.js';
+
+const { ngay, thang, nam } = getVNPTDateStrings();
 
 export const DEFAULT_DATA = {
     ngayKy: { label: "Ngày ký", value: ngay },

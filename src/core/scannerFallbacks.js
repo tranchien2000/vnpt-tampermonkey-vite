@@ -10,16 +10,18 @@
  * @param {string} id_can_tim - ID của trường cần lấy fallback.
  * @returns {string} Giá trị mặc định hoặc chuỗi rỗng.
  */
+import { getVNPTDateStrings } from '../utils/dateHelper.js';
+
 export function getScannerFallback(id_can_tim) {
     const lKey = id_can_tim.toLowerCase();
-    const d = new Date();
+    const { ngay, thang, nam } = getVNPTDateStrings();
 
     const fallbacks = {
-        'ngayky': String(d.getDate()).padStart(2, '0'),
-        'thangky': String(d.getMonth() + 1).padStart(2, '0'),
-        'thangky1': String(d.getMonth() + 1).padStart(2, '0'),
-        'namky': String(d.getFullYear()),
-        'namky1': String(d.getFullYear()),
+        'ngayky': ngay,
+        'thangky': thang,
+        'thangky1': thang,
+        'namky': nam,
+        'namky1': nam,
         'soluonggoi': '1',
         'noiky': 'Hà Nội',
         'noicap': 'Cục trưởng Cục Cảnh sát QLHC về TTXH',
