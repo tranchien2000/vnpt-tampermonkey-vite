@@ -24,6 +24,7 @@ export function getScannerFallback(id_can_tim) {
         'noiky': 'Hà Nội',
         'noicap': 'Cục trưởng Cục Cảnh sát QLHC về TTXH',
         'noicapsodkdn': '',
+
         'chucvu': 'Giám Đốc'
     };
 
