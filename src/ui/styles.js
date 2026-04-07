@@ -135,7 +135,7 @@ export function injectStyles() {
 
         .btn-scan { background: #ff6200ff; color: #000; } .btn-scan:hover { background: #f2a500; }
         .btn-toggle-id { background: #ee0feeff; color: #ffffffff; } .btn-toggle-id:hover { background: #d2e3fc; }
-        .btn-default-toggle { background: #17e050ff; color: #ffffffff; font-size: 14px; border: 1px solid transparent; } 
+        .btn-default-toggle { background: #f7de00ff; color: #ffffffff; font-size: 14px; border: 1px solid transparent; } 
         .btn-default-toggle:hover { background: #ceead6; }
         .btn-reset-default { background: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; font-size: 14px; }
         .btn-reset-default:hover { background: #d2e3fc; }

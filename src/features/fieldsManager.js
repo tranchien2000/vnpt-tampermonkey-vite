@@ -82,7 +82,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         };
 
         // Bắt sự kiện thay đổi dữ liệu để Lưu (Dùng 'input' thay cho 'keyup' để mượt hơn và bắt được đủ ký tự)
-        fKey.addEventListener('input', function() {
+        fKey.addEventListener('input', function () {
             saveFieldsToLocal();
             const firstKey = this.value.split(',')[0].trim();
             fVal.style.textAlign = firstKey === 'tenToChuc' ? 'right' : '';
@@ -90,7 +90,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         });
         row.querySelector('.f-label').addEventListener('input', saveFieldsToLocal);
 
-        fVal.addEventListener('input', function() {
+        fVal.addEventListener('input', function () {
             saveFieldsToLocal();
             syncThisRow(); // Đồng bộ ngay khi sửa giá trị
         });
@@ -243,7 +243,7 @@ export function initFieldsManager() {
     document.getElementById('vnpt-btn-default').addEventListener('click', toggleDefaultMode);
 
     // 👉 LOGIC RESET DỮ LIỆU MẶC ĐỊNH (Chỉ khôi phục bộ VNPT)
-    document.getElementById('vnpt-btn-reset-default').addEventListener('click', function() {
+    document.getElementById('vnpt-btn-reset-default').addEventListener('click', function () {
         if (confirm("Khôi phục toàn bộ Dữ liệu Mặc định VNPT về ban đầu? (Sẽ xóa các chỉnh sửa hiện tại của bạn trong chế độ này)")) {
             localStorage.removeItem(LOCAL_KEY_DEFAULT_FIELDS);
             if (AppState.isDefaultMode) {
@@ -286,7 +286,7 @@ export function initFieldsManager() {
     });
 
     // 👉 LOGIC 3: ĐIỀN NGƯỢC (REVERSE FILL)
-    document.getElementById('vnpt-btn-fill-back').addEventListener('click', function() {
+    document.getElementById('vnpt-btn-fill-back').addEventListener('click', function () {
         // 1. Điền các trường cố định (như tên đơn vị B, địa chỉ B, STK...) từ bộ nhớ cấu hình (Default + Custom data)
         doFillData();
 
@@ -317,7 +317,7 @@ export function toggleDefaultMode() {
     AppState.isDefaultMode = !AppState.isDefaultMode;
     const btn = document.getElementById('vnpt-btn-default');
     const resetBtn = document.getElementById('vnpt-btn-reset-default');
-    
+
     // Xóa toàn bộ nội dung hiện tại để nạp bộ mới
     AppState.fieldsContainer.innerHTML = '';
     AppState.bannerArea.innerHTML = '';
@@ -327,15 +327,15 @@ export function toggleDefaultMode() {
         if (resetBtn) resetBtn.style.display = 'flex';
         AppState.fieldsContainer.classList.add('vnpt-mode-default');
         showToast("📌 Chế độ Dữ liệu mặc định (Có thể chỉnh sửa)", "#ea4335");
-        
+
         // Thêm banner thông báo
         const banner = document.createElement('div');
         banner.className = 'vnpt-default-banner';
         banner.innerHTML = `
-            <span>📌 Đang dùng Dữ liệu mặc định (Có thể sửa/lưu)</span>
+            <span> Lưu ý: đây là Dữ liệu mặc định (Có thể sửa/lưu)</span>
         `;
         AppState.bannerArea.appendChild(banner);
-        
+
         // Nạp dữ liệu mặc định hoặc Overrides từ localStorage
         const rawOverrides = localStorage.getItem(LOCAL_KEY_DEFAULT_FIELDS);
         if (rawOverrides === null) {
@@ -370,7 +370,7 @@ export function toggleDefaultMode() {
         if (resetBtn) resetBtn.style.display = 'none';
         AppState.fieldsContainer.classList.remove('vnpt-mode-default');
         showToast("📋 Đã quay lại Dữ liệu cá nhân");
-        
+
         // Nạp lại dữ liệu từ local
         loadSavedData();
     }
