@@ -37,9 +37,10 @@ graph TD;
 - Đầu mỗi file quy tắc có **front‑matter** (version, last_updated).
 - Các bảng, danh sách, và diagram luôn dùng **GitHub Flavored Markdown** để hiển thị tốt trong IDE.
 
-## 5. Plan
+## 5. Plan & Workflows
 
-- Dùng toàn bộ bằng tiếng việt
-- Mỗi khi đưa ra yêu cầu bất kì thì luôn lên plan việc cần làm trước, khi nào có xác nhận từ phía tôi mới tiến hành code, ví dụ khi tôi type "ok", "code" thì mới bắt đầu code
+- Dùng toàn bộ bằng tiếng việt (tiết kiệm token dịch thuật ngầm của LLM).
+- Mỗi khi được giao yêu cầu lớn, luôn lên plan việc cần làm (`implementation_plan.md`). Chỉ khi user gõ "ok", "code", "y" thì mới tiến hành code.
+- **Workflows Index:** Hãy ưu tiên đọc file `.agents/workflows/_index.md` để nắm các workflows có sẵn thay vì chạy lệnh `list_dir` thư mục workflows.
 
 ---

@@ -51,4 +51,9 @@ last_updated: "2026-04-06"
 - Script `scripts/token-audit.js` sẽ đọc log AI (đường dẫn `.gemini/logs`) và tính tổng token.
 - Nếu **> 5000 token** trong một phiên mà không có `@token‑justification` comment, CI sẽ **fail**.
 
+## 8. Nguyên tắc No-Fluff (Tiết kiệm Q&A)
+- **Bỏ qua câu chào:** Không bắt đầu câu trả lời bằng "Vâng", "Chắc chắn rồi", "Để tôi giúp bạn". Vào thẳng vấn đề.
+- **Không giải thích thừa:** Không tóm tắt hoặc nhắc lại những gì user vừa nói.
+- **Snippet/Diff Only:** Khi cập nhật code, ưu tiên chỉ output file name và snippet phần thay đổi, KHÔNG in lại cả file lớn trên đoạn chat.
+
 ---
