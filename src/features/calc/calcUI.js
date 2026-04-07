@@ -84,13 +84,14 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         <div class="cw-map-dropdown-container">
             <button id="wg-calc-map-btn" class="cw-map-btn-inline" title="Cấu hình">⚙️</button>
             <div id="wg-calc-map-wrap" class="cw-map-wrap-popup" style="display:none;">
+                <div class="util-submenu-title">Liên kết ô (Mapping)</div>
                 <div class="cw-row"><span class="cw-map-label">Trước thuế</span><input data-clink="before" class="cw-map-input"></div>
                 <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input data-clink="tax" class="cw-map-input"></div>
                 <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input data-clink="after" class="cw-map-input"></div>
                 <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input data-clink="text" class="cw-map-input"></div>                
                 <div class="cw-map-separator"></div>
                 <div class="cw-map-actions">
-                    <button class="vnpt-btn-action btn-reset-default" id="vnpt-btn-reset-default" title="Khôi phục dữ liệu gốc">Reset Default</button>
+                    <button class="vnpt-btn-action btn-reset-default danger" id="vnpt-btn-reset-default" title="Khôi phục dữ liệu gốc">Reset Default</button>
                     <button class="vnpt-btn-action btn-import" id="vnpt-btn-import" title="Nhập cấu hình JSON">📥 Nhập JSON</button>
                     <button class="vnpt-btn-action btn-export-json" id="vnpt-btn-export-json" title="Xuất cấu hình JSON">📤 Xuất JSON</button>
                 </div>

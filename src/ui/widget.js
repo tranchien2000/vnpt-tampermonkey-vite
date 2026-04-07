@@ -42,10 +42,11 @@ export function initWidget() {
                     <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑</button>
                     
                     <div class="vnpt-util-dropdown">
-                        <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⋮</button>
+                        <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
+                            <div class="util-submenu-title">Cấu hình hệ thống</div>
                             <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
-                            <button class="util-item" id="vnpt-btn-reset-default" style="display: none; color: #d32f2f;">🔄 Khôi phục dữ liệu gốc</button>
+                            <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
                             <button class="util-item" id="vnpt-btn-toggle-id">🆔 Hiện/Ẩn Mã ID (Nhập code)</button>
                             <div class="util-separator"></div>
                             <div class="util-submenu-title">Kích thước bảng:</div>
@@ -183,7 +184,7 @@ export function initWidget() {
     const moreBtn = document.getElementById('vnpt-btn-more');
     const utilMenu = document.getElementById('vnpt-util-menu');
     const SIZE_PRESETS = {
-        'S': { width: '350px', height: '400px' },
+        'S': { width: '320px', height: '380px' },
         'M': { width: '440px', height: '600px' },
         'L': { width: '600px', height: '800px' },
         'Full': { width: '98vw', height: '92vh' }
