@@ -8,7 +8,8 @@
 
 import { 
     LOCAL_KEY_FIELDS, LOCAL_KEY_POS, LOCAL_KEY_SIZE, 
-    SK_TEMPLATES, SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC 
+    SK_TEMPLATES, SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC,
+    SK_CALC_MAP, SK_TAX 
 } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
 import { loadSavedData } from './fieldsManager.js';
@@ -29,7 +30,9 @@ export function exportConfig() {
         calc: {
             default: JSON.parse(localStorage.getItem(SK_DATA_DEF)) || null,
             custom: JSON.parse(localStorage.getItem(SK_DATA_CUS)) || null,
-            sync: JSON.parse(localStorage.getItem(SK_DATA_SYNC)) || null
+            sync: JSON.parse(localStorage.getItem(SK_DATA_SYNC)) || null,
+            map: JSON.parse(localStorage.getItem(SK_CALC_MAP)) || {},
+            taxRate: Number(localStorage.getItem(SK_TAX)) || 0.08
         }
     };
 
@@ -74,10 +77,29 @@ export function importConfig() {
                 if (config.calc.default) localStorage.setItem(SK_DATA_DEF, JSON.stringify(config.calc.default));
                 if (config.calc.custom) localStorage.setItem(SK_DATA_CUS, JSON.stringify(config.calc.custom));
                 if (config.calc.sync) localStorage.setItem(SK_DATA_SYNC, JSON.stringify(config.calc.sync));
+                if (config.calc.map) localStorage.setItem(SK_CALC_MAP, JSON.stringify(config.calc.map));
+                if (config.calc.taxRate !== undefined) localStorage.setItem(SK_TAX, config.calc.taxRate);
             }
 
             // Cập nhật giao diện
             await loadSavedData(); // Tải lại bảng fields
+
+            // Cập nhật giao diện Calculator nếu widget đang mở
+            const calcWidget = document.getElementById('vnpt-calc-widget');
+            if (calcWidget) {
+                const taxRateEl = document.getElementById('wg-taxRate');
+                if (taxRateEl && config.calc && config.calc.taxRate !== undefined) {
+                    taxRateEl.value = config.calc.taxRate * 100;
+                }
+                if (config.calc && config.calc.map) {
+                    calcWidget.querySelectorAll('input[data-clink]').forEach(inp => {
+                        const key = inp.dataset.clink;
+                        if (config.calc.map[key]) {
+                            inp.value = (config.calc.map[key] || []).join(', ');
+                        }
+                    });
+                }
+            }
             
             // Tải lại danh sách templates
             const tmplContainer = document.getElementById('vnpt-template-manager');
