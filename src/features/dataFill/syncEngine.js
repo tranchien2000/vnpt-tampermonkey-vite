@@ -6,7 +6,7 @@
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC } from '../../core/constants.js';
 import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../../utils/domHelper.js';
 import { showToast } from '../../ui/toast.js';
-import { DEFAULT_DATA as _DEFAULT_DATA } from '../../core/defaults.js';
+import { DEFAULT_DATA as _DEFAULT_DATA, DEFAULT_SYNC_DATA } from '../../core/defaults.js';
 import { Storage } from '../../utils/storage.js';
 import { debounce } from '../../utils/common.js';
 
@@ -33,7 +33,10 @@ export function doFillData() {
 }
 
 export function doSyncData() {
-    let syncMap = Storage.get(SK_DATA_SYNC) ?? {};
+    let userSyncMap = Storage.get(SK_DATA_SYNC) ?? {};
+    // Gộp mapping mặc định với mapping của người dùng
+    const syncMap = { ...DEFAULT_SYNC_DATA, ...userSyncMap };
+    
     const keys = Object.keys(syncMap);
     if (keys.length === 0) { showToast('⚠️ No sync mapping', '#ffc107'); return; }
     keys.forEach(src => {
@@ -52,7 +55,9 @@ let isSyncing = false;
 const processSync = (target, val) => {
     if (isSyncing) return;
     
-    let sMap = Storage.get(SK_DATA_SYNC) ?? {};
+    let userSyncMap = Storage.get(SK_DATA_SYNC) ?? {};
+    const sMap = { ...DEFAULT_SYNC_DATA, ...userSyncMap };
+    
     if (Object.keys(sMap).length === 0) return;
 
     let keyId = target.id;

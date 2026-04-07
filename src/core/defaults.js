@@ -34,3 +34,11 @@ export const DEFAULT_DATA = {
     emailB: { label: "Email B", value: "" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh" }
 };
+
+/**
+ * DEFAULT_SYNC_DATA: Mapping đồng bộ mặc định giữa các trường trên trang web.
+ * Khi trường key thay đổi, các trường trong value (phân tách bằng dấu phẩy) sẽ được cập nhật theo.
+ */
+export const DEFAULT_SYNC_DATA = {
+    'soHopDong': 'inputContractGroupName'
+};

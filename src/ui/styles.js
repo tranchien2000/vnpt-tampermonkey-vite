@@ -55,23 +55,11 @@ export function injectStyles() {
             width: 440px; min-width: 350px; 
             height: auto; min-height: 200px;
             max-height: 92vh; max-width: 98vw;
-            resize: both; overflow: hidden; 
             display: flex; flex-direction: column; 
             background: #ffffff; border: 1px solid #dadce0; 
             border-radius: 10px; padding: 10px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
             transition: none; 
-        }
-        #vnpt-export-panel::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 15px;
-            height: 15px;
-            cursor: nwse-resize;
-            background: linear-gradient(135deg, transparent 50%, #ccc 50%, #ccc 60%, transparent 60%, transparent 70%, #ccc 70%, #ccc 80%, transparent 80%);
-            pointer-events: none; /* Let the native resize handle receive clicks */
         }
         
         
@@ -93,7 +81,23 @@ export function injectStyles() {
            SECTION 3: FIELDS CONTAINER & FIELD ROWS
            ═══════════════════════════════════════════ */
         /* Box chứa danh sách biến */
-        #vnpt-fields-container { flex: 1; max-height: unset; overflow-y: auto; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; padding: 4px; margin-bottom: 4px; position: relative; }
+        #vnpt-fields-container { flex: 1; max-height: unset; overflow: hidden; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; margin-bottom: 4px; position: relative; display: flex; flex-direction: column; }
+        #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
+
+        /* Fields Table Header */
+        .vnpt-fields-header {
+            display: flex; gap: 2px; padding: 4px;
+            background: #e8f0fe; border-bottom: 1px solid #dadce0;
+            font-size: 9px; font-weight: bold; color: #1a73e8;
+            align-items: center; text-transform: uppercase;
+        }
+        .vnpt-fields-header span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vnpt-fields-header .h-chk { flex: 0 0 20px; text-align: center; }
+        .vnpt-fields-header .h-label { flex: 0.35; padding-left: 5px; }
+        .vnpt-fields-header .h-key { flex: 0.45; display: none; padding-left: 5px; }
+        .show-ids .vnpt-fields-header .h-key { display: block; }
+        .vnpt-fields-header .h-drag { flex: 0 0 15px; }
+        .vnpt-fields-header .h-val { flex: 1; padding-left: 5px; }
         
         /* Banner thông báo chế độ Dữ liệu mặc định - Tông Đỏ thông báo */
         .vnpt-default-banner {
@@ -113,13 +117,13 @@ export function injectStyles() {
             background-color: #fffafb;
         }
 
-        .vnpt-field-row { display: flex; gap: 2px; margin-bottom: 2px; align-items: center; }
-        .row-drag-handle { cursor: grab; padding: 0 4px; font-size: 16px; font-weight: bold; color: #aaa; user-select: none; }
+        .vnpt-field-row { display: flex; gap: 2px; margin-bottom: 2px; align-items: center; padding: 0 2px; }
+        .row-drag-handle { cursor: grab; padding: 0; font-size: 16px; font-weight: bold; color: #aaa; user-select: none; flex: 0 0 15px; text-align: center; }
         .row-drag-handle:active { cursor: grabbing; }
         .vnpt-field-row.dragging { opacity: 0.4; }
         .vnpt-field-row.over { background-color: #e3f2fd; border-radius: 4px; }
         .vnpt-field-row input { flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
-        .vnpt-field-row input.row-chk { flex: 0 0 auto; width: auto; height: auto; margin: 0 4px 0 0; padding: 0; cursor: pointer; }
+        .vnpt-field-row input.row-chk { flex: 0 0 20px; width: 14px; height: 14px; margin: 0; padding: 0; cursor: pointer; }
         .vnpt-field-row input.f-label { flex: 0.35; color: #0056b3; font-weight: bold;}
         .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: bold; color: #d63384;}
         .show-ids .vnpt-field-row input.f-key { display: block; }
@@ -148,6 +152,45 @@ export function injectStyles() {
         .btn-fill-back { background: #ab47bc; color: #fff; } .btn-fill-back:hover { background: #8e24aa; }
         .btn-clean { background: #ea4335; color: #fff; } .btn-clean:hover { background: #d93025; }
         .btn-export { background: #1a73e8; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold;} .btn-export:hover { background: #1557b0; }
+        .btn-size { background: #f8f9fa; color: #3c4043; border: 1px solid #dadce0 !important; }
+        .btn-size:hover { background: #e8eaed; }
+
+        /* Size Dropdown & Menu */
+        .vnpt-size-dropdown { position: relative; }
+        .vnpt-size-menu {
+            position: absolute; top: calc(100% + 5px); left: 0;
+            background: #fff; border: 1px solid #dadce0; border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 100000;
+            display: none; flex-direction: column; min-width: 60px;
+            overflow: hidden; animation: fadeIn 0.15s ease-out;
+        }
+        .vnpt-size-menu.show { display: flex; }
+        .vnpt-size-menu button {
+            background: none; border: none; padding: 8px 14px;
+            text-align: center; font-size: 11px; cursor: pointer;
+            color: #3c4043; font-weight: 600; transition: all 0.2s;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        .vnpt-size-menu button:last-child { border-bottom: none; }
+        .vnpt-size-menu button:hover { background: #e8f0fe; color: #1a73e8; }
+
+        /* 4 Corner Resizers */
+        .vnpt-resizer {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            z-index: 10000;
+            /* background: rgba(26, 115, 232, 0.1); /* Để debug, có thể bỏ */
+        }
+        .vnpt-resizer.tl { top: -2px; left: -2px; cursor: nwse-resize; }
+        .vnpt-resizer.tr { top: -2px; right: -2px; cursor: nesw-resize; }
+        .vnpt-resizer.bl { bottom: -2px; left: -2px; cursor: nesw-resize; }
+        .vnpt-resizer.br { bottom: -2px; right: -2px; cursor: nwse-resize; }
+
+        .vnpt-resizer:hover {
+            background: rgba(26, 115, 232, 0.4);
+            border-radius: 4px;
+        }
 
         /* Popup Default Data - Removed */
 
