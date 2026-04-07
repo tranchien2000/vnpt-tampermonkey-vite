@@ -1,12 +1,9 @@
-/**
- * @file dataFillUI.js
- * @desc Xử lý giao diện các Tab dữ liệu (Custom/Default/Sync).
- */
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, SK_DATATAB, SK_COLLAPSE } from '../../core/constants.js';
 import { showToast } from '../../ui/toast.js';
 import { storage } from '../../api/storage/index.js';
 import { DEFAULT_DATA as _DEFAULT_DATA } from '../../core/defaults.js';
 import { doFillData, doSyncData } from './syncEngine.js';
+import { exportFullBackup, importFullBackup } from '../../utils/backupHelper.js';
 
 function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
 function sv(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
@@ -108,13 +105,23 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     tabs.default.onclick = () => { currentDataTab = 'default'; sv(SK_DATATAB, 'default'); applyStyles(); renderFields(); };
     tabs.sync.onclick = () => { currentDataTab = 'sync'; sv(SK_DATATAB, 'sync'); applyStyles(); renderFields(); };
 
-    // JSON Import/Export logic (simplified for Brevity)
+    // JSON Import/Export logic
     const expBtn = document.createElement('button'); expBtn.innerText = '📤'; expBtn.className = 'cw-icon-btn';
-    expBtn.onclick = () => {
-        const b = new Blob([JSON.stringify({defaultData, customData, syncData}, null, 2)], {type:'application/json'});
-        const u = URL.createObjectURL(b), a = document.createElement('a');
-        a.href = u; a.download = `vnpt_data_${Date.now()}.json`; a.click(); URL.revokeObjectURL(u);
+    expBtn.title = "Sao lưu toàn bộ dữ liệu ra JSON";
+    expBtn.onclick = () => exportFullBackup();
+
+    const impBtn = document.createElement('button'); impBtn.innerText = '📥'; impBtn.className = 'cw-icon-btn';
+    impBtn.title = "Khôi phục dữ liệu từ JSON";
+    const fileInp = document.createElement('input'); fileInp.type = 'file'; fileInp.accept = '.json'; fileInp.style.display = 'none';
+    fileInp.onchange = async (e) => {
+        if (e.target.files.length > 0) {
+            const success = await importFullBackup(e.target.files[0]);
+            if (success) {
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
     };
+    impBtn.onclick = () => fileInp.click();
 
     dataWrap.appendChild(tabHeader); tabHeader.appendChild(tabs.custom); tabHeader.appendChild(tabs.default); tabHeader.appendChild(tabs.sync);
     dataWrap.appendChild(dataBody); widget.appendChild(dataHeader); widget.appendChild(dataWrap);
@@ -136,5 +143,9 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     
     renderFields();
     const right = dataHeader.querySelector('.cw-right-wrap') || document.createElement('div');
-    right.className = 'cw-right-wrap'; right.prepend(expBtn); dataHeader.appendChild(right);
+    right.className = 'cw-right-wrap'; 
+    right.prepend(expBtn); 
+    right.prepend(impBtn); 
+    right.appendChild(fileInp); // Thêm file input vào DOM
+    dataHeader.appendChild(right);
 }

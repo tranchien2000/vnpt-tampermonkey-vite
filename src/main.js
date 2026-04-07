@@ -18,6 +18,7 @@ import { initSyncEngine } from './features/dataFill/syncEngine.js';
 import { initCalcWidget } from './features/calc/index.js';
 import { clearDOMCache } from './utils/domHelper.js';
 import { debounce } from './utils/common.js';
+import { initHotkeys } from './features/hotkeys.js';
 
 let cacheObserver = null;
 
@@ -40,6 +41,7 @@ function init() {
     setupAutoFillForm();
     
     initSyncEngine();    // Khởi tạo engine đồng bộ gõ phím ngầm
+    initHotkeys();       // Khởi tạo phím tắt
 
     // ─── DOM Cache Management ───
     // Xóa cache khi DOM thay đổi lớn (SPA navigation hoặc load form mới)

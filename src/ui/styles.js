@@ -256,6 +256,27 @@ export function injectStyles() {
             color: #1a73e8; text-transform: uppercase; letter-spacing: 1px; 
             background: rgba(26, 115, 232, 0.04); margin-bottom: 4px;
         }
+
+        /* Mapping Rows in Utility Menu */
+        .cw-row-map {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 4px 20px; gap: 10px;
+        }
+        .cw-row-map span { font-size: 11px; font-weight: 700; color: #5f6368; flex: 0 0 75px; }
+        .cw-map-input {
+            flex: 1; padding: 5px 10px; border: 1px solid #dadce0; border-radius: 8px;
+            font-size: 11px; background: #fff; transition: all 0.2s;
+        }
+        .cw-map-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px var(--vnpt-primary-light); outline: none; }
+
+        /* System Data Actions */
+        .util-action-row { display: flex; padding: 6px 16px; gap: 8px; }
+        .util-item-small {
+            flex: 1; border: 1px solid #e0e0e0; background: #fff; color: #3c4043;
+            padding: 8px 0; border-radius: 10px; font-size: 11px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .util-item-small:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); border-color: var(--vnpt-primary); }
         
         .size-options { display: flex; padding: 10px 18px 12px 18px; gap: 8px; }
         .size-options button {
@@ -325,51 +346,6 @@ export function injectStyles() {
         .cw-tax-group-inline { position: relative; display: flex; align-items: center; flex: 0 0 auto; min-width: 45px; }
         .cw-tax-input-inline { width: 45px; padding: 4px 18px 4px 8px; border: 1px solid #dadce0; border-radius: 6px; font-size: 11px; text-align: right; height: 28px; }
         .cw-tax-symbol { position: absolute; right: 6px; color: #5f6368; font-size: 9px; font-weight: bold; pointer-events: none; }
-
-        .cw-map-dropdown-container { position: relative; flex-shrink: 0; }
-        .cw-map-btn-inline { background: #fff; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; height: 30px; width: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; color: #5f6368; }
-        .cw-map-btn-inline:hover { background: #f8f9fa; color: var(--vnpt-primary); border-color: var(--vnpt-primary); }
-
-        .cw-map-wrap-popup { 
-            position: absolute; right: 0; top: 35px; z-index: 1000;
-            background: var(--vnpt-bg-glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 16px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.15); 
-            width: 280px;
-            padding: 12px 0; display: none; flex-direction: column; 
-            animation: menuFadeIn 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
-            transform-origin: top right;
-        }
-        
-        .cw-row { 
-            display: flex; align-items: center; gap: 10px; 
-            justify-content: space-between; padding: 6px 18px;
-            transition: background 0.2s;
-        }
-        .cw-row:hover { background: rgba(255, 255, 255, 0.5); }
-        
-        .cw-map-label { font-size: 12px; font-weight: 700; color: #3c4043; white-space: nowrap; flex: 0 0 75px; }
-        .cw-map-input { 
-            flex: 1; padding: 6px 10px; border: 1px solid #dadce0; border-radius: 8px; 
-            font-size: 11px; width: 100%; transition: all 0.2s; background: #fff;
-        }
-        .cw-map-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.1); outline: none; }
-        .cw-map-hint { font-size: 10px; color: #70757a; margin-top: 6px; line-height: 1.4; text-align: center; padding: 0 18px; }
-
-        .cw-map-separator { height: 1px; background: var(--vnpt-border); margin: 8px 0; }
-        
-        .cw-map-actions { display: flex; flex-direction: column; gap: 4px; padding: 0 10px; }
-        .cw-map-actions .vnpt-btn-action { 
-            justify-content: flex-start; width: 100%; padding: 0 12px; 
-            background: transparent; color: #3c4043; border-radius: 8px;
-            height: 34px; font-size: 12px;
-        }
-        .cw-map-actions .vnpt-btn-action:hover { background: #f1f3f4; color: var(--vnpt-primary); }
-        .cw-map-actions .btn-reset-default { color: var(--vnpt-danger); font-weight: 800; }
-        .cw-map-actions .btn-reset-default:hover { background: #fff5f5; color: var(--vnpt-danger); border-left: 3px solid var(--vnpt-danger); padding-left: 15px; }
 
         .btn-calc-toggle { background: rgba(26, 115, 232, 0.08); color: var(--vnpt-primary); }
         .btn-calc-toggle:hover { background: rgba(26, 115, 232, 0.15); }

@@ -9,9 +9,10 @@
 import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
 import { initFieldsManager, loadSavedData } from '../features/fieldsManager.js';
-import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS } from '../core/constants.js';
-import { importConfig, exportConfig } from '../features/configManager.js';
+import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS, SK_CALC_MAP } from '../core/constants.js';
+import { exportConfig } from '../features/configManager.js';
 import { Storage } from '../utils/storage.js';
+import { exportFullBackup, importFullBackup } from '../utils/backupHelper.js';
 
 export function initWidget() {
     const widget = document.getElementById('vnpt-docx-widget') || document.createElement('div');
@@ -48,6 +49,22 @@ export function initWidget() {
                             <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
                             <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
                             <button class="util-item" id="vnpt-btn-toggle-id">🆔 Hiện/Ẩn Mã ID (Nhập code)</button>
+                            
+                            <div class="util-separator"></div>
+                            <div class="util-submenu-title">Liên kết ô (Mapping Calc)</div>
+                            <div class="cw-row-map"><span>Trước thuế</span><input data-clink="before" class="cw-map-input"></div>
+                            <div class="cw-row-map"><span>Tiền thuế</span><input data-clink="tax" class="cw-map-input"></div>
+                            <div class="cw-row-map"><span>Sau thuế</span><input data-clink="after" class="cw-map-input"></div>
+                            <div class="cw-row-map"><span>Bằng chữ</span><input data-clink="text" class="cw-map-input"></div>
+                            
+                            <div class="util-separator"></div>
+                            <div class="util-submenu-title">Dữ liệu hệ thống</div>
+                            <div class="util-action-row">
+                                <button class="util-item-small" id="vnpt-btn-import-json">📥 Nhập JSON</button>
+                                <button class="util-item-small" id="vnpt-btn-export-json">📤 Xuất JSON</button>
+                                <input type="file" id="vnpt-file-import-json" accept=".json" style="display: none;">
+                            </div>
+
                             <div class="util-separator"></div>
                             <div class="util-submenu-title">Kích thước bảng:</div>
                             <div class="size-options">
@@ -104,7 +121,6 @@ export function initWidget() {
     AppState.toggleBtn = document.getElementById('vnpt-toggle-btn');
     AppState.header = document.getElementById('vnpt-panel-header');
     AppState.bannerArea = document.getElementById('vnpt-banner-area');
-    // Point fieldsContainer to the list wrapper, not the outer container with header
     AppState.fieldsContainer = document.getElementById('vnpt-fields-list');
 
     // Khôi phục kích thước bảng
@@ -114,9 +130,7 @@ export function initWidget() {
             AppState.panel.style.width = savedSize.width + 'px';
             AppState.panel.style.height = savedSize.height + 'px';
         }
-    } catch (e) {
-        console.error('Lỗi load size panel:', e);
-    }
+    } catch (e) { console.error('Lỗi load size panel:', e); }
 
     // Theo dõi và lưu kích thước bảng
     const resizeObserver = new ResizeObserver(entries => {
@@ -124,7 +138,6 @@ export function initWidget() {
         for (let entry of entries) {
             const { width, height } = entry.contentRect;
             if (width > 0 && height > 0) {
-                // Sử dụng setDebounced cho việc thay đổi kích thước liên tục
                 Storage.setDebounced(LOCAL_KEY_SIZE, {
                     width: Math.round(width + 20),
                     height: Math.round(height + 20)
@@ -136,7 +149,6 @@ export function initWidget() {
 
     AppState.panelBody = document.getElementById('vnpt-panel-body');
 
-    // Render template manager — khi user chọn template từ URL, lưu buffer vào AppState
     renderTemplateManager(
         document.getElementById('vnpt-template-manager'),
         (arrayBuffer, name) => {
@@ -145,7 +157,6 @@ export function initWidget() {
         }
     );
 
-    // Khi chọn file local → lưu dạng base64 vào localStorage
     document.getElementById('vnpt-template-file').addEventListener('change', function () {
         const file = this.files && this.files[0];
         if (!file) return;
@@ -155,24 +166,19 @@ export function initWidget() {
             AppState.templateBuffer = arrayBuffer;
             AppState.templateName = name;
         });
-        this.value = ''; // Reset để có thể chọn lại cùng file
+        this.value = ''; 
     });
 
     // Đóng/Mở Panel 
     AppState.toggleBtn.addEventListener('click', (e) => {
-        if (AppState.hasDragged) {
-            // Bỏ qua click nếu vừa kéo thả xong
-            return;
-        }
+        if (AppState.hasDragged) return;
 
         if (AppState.panel.style.display === 'none') {
-            // Mở panel
             AppState.panel.style.display = 'flex';
             AppState.toggleBtn.className = 'btn-opened';
             AppState.toggleBtn.innerHTML = '✖';
             Storage.set(LOCAL_KEY_OPENED, true);
         } else {
-            // Đóng panel
             AppState.panel.style.display = 'none';
             AppState.toggleBtn.className = 'btn-closed';
             AppState.toggleBtn.innerHTML = '📄';
@@ -180,7 +186,6 @@ export function initWidget() {
         }
     });
 
-    // Xử lý Utility Menu & Size Presets
     const moreBtn = document.getElementById('vnpt-btn-more');
     const utilMenu = document.getElementById('vnpt-util-menu');
     const SIZE_PRESETS = {
@@ -190,15 +195,45 @@ export function initWidget() {
         'Full': { width: '98vw', height: '92vh' }
     };
 
-    moreBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        utilMenu.classList.toggle('show');
-        moreBtn.classList.toggle('active');
+    const calcMaps = Storage.get(SK_CALC_MAP) || {};
+    utilMenu.querySelectorAll('input[data-clink]').forEach(inp => {
+        const k = inp.dataset.clink;
+        if (calcMaps[k]) inp.value = calcMaps[k].join(', ');
+        
+        inp.oninput = () => {
+            const currentMaps = Storage.get(SK_CALC_MAP) || {};
+            currentMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s);
+            Storage.set(SK_CALC_MAP, currentMaps);
+        };
     });
 
-    document.addEventListener('click', () => {
-        utilMenu.classList.remove('show');
-        moreBtn.classList.remove('active');
+    document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup();
+    const btnImport = document.getElementById('vnpt-btn-import-json');
+    const fileImport = document.getElementById('vnpt-file-import-json');
+    
+    btnImport.onclick = () => fileImport.click();
+    fileImport.onchange = async (e) => {
+        if (e.target.files.length > 0) {
+            const success = await importFullBackup(e.target.files[0]);
+            if (success) setTimeout(() => location.reload(), 1500);
+        }
+    };
+
+    moreBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isShow = utilMenu.classList.toggle('show');
+        moreBtn.classList.toggle('active', isShow);
+    });
+
+    utilMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (utilMenu.classList.contains('show')) {
+            utilMenu.classList.remove('show');
+            moreBtn.classList.remove('active');
+        }
     });
 
     utilMenu.querySelectorAll('.size-options button').forEach(btn => {

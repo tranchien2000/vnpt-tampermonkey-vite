@@ -6,13 +6,14 @@
  * @exports initWebScanner  — gán click/input/change listeners cho nút Quét
  * @seeAlso core/constants.js (DEFAULT_LABELS), fieldsManager.js (addOrUpdateFieldRow)
  */
-// src/features/webScanner.js
 import { DEFAULT_LABELS } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from './fieldsManager.js';
 import { getScannerFallback } from '../core/scannerFallbacks.js';
 import { AppState } from '../core/state.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
+import { findPageInput } from '../utils/domHelper.js';
+import { capitalizeName, formatPhoneNumber, normalizeDate } from '../utils/stringHelper.js';
 
 export function initWebScanner() {
     document.getElementById('vnpt-btn-scan').addEventListener('click', function () {
@@ -28,16 +29,30 @@ export function initWebScanner() {
         let foundCount = 0;
 
         Object.keys(DEFAULT_LABELS).forEach(id_can_tim => {
-            const el = document.getElementById(id_can_tim);
+            const labelText = DEFAULT_LABELS[id_can_tim];
+            const el = findPageInput(id_can_tim, labelText);
+            
             let val = '';
             if (el) {
                 val = el.tagName.toLowerCase() === 'select' ? (el.options[el.selectedIndex]?.text || '') : el.value;
-                foundCount++; // found an element
+                foundCount++; 
             }
 
             if (!val) {
                 val = getScannerFallback(id_can_tim);
             }
+
+            // --- Bắt đầu chuẩn hóa dữ liệu ---
+            if (val && typeof val === 'string') {
+                if (['tenDaiDienn', 'tenToChuc', 'noiCap', 'noiKy'].includes(id_can_tim)) {
+                    val = capitalizeName(val);
+                } else if (['sdt'].includes(id_can_tim)) {
+                    val = formatPhoneNumber(val);
+                } else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy'].includes(id_can_tim)) {
+                    val = normalizeDate(val);
+                }
+            }
+            // --- Kết thúc chuẩn hóa ---
 
             addOrUpdateFieldRow(id_can_tim, val, null);
         });

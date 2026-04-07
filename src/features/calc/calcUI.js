@@ -9,13 +9,11 @@ import { calculateValues, syncToPage } from './calcLogic.js';
 import { formatNum, parseNum } from '../../utils/numberHelper.js';
 import { renderDataFillTabs } from '../dataFill/index.js';
 import { makeDraggable } from '../../ui/dragDrop.js';
-import { importConfig, exportConfig } from '../../features/configManager.js';
 import { DEFAULT_CALC_MAP, DEFAULT_TAX_RATE } from '../../core/defaults.js';
 
 export function createCalcUI(widget, container, SK_POS_CALC) {
     let TAX_RATE = Number(localStorage.getItem(SK_TAX)) || DEFAULT_TAX_RATE;
     let collapsedSections = ld(SK_COLLAPSE) ?? { calc: false, data: true };
-    let calcMaps = ld(SK_CALC_MAP) ?? { ...DEFAULT_CALC_MAP };
 
     // Internal helpers
     function mkBtn(label, extraClass) {
@@ -81,22 +79,6 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         <input id="wg-after" class="cw-input-inline" placeholder="Sau thuế" list="wg-after-list" title="Sau thuế">
         <datalist id="wg-after-list"></datalist>
         <input id="wg-text" class="cw-input-inline cw-input-readonly-inline" placeholder="Bằng chữ" readonly title="Bằng chữ">
-        <div class="cw-map-dropdown-container">
-            <button id="wg-calc-map-btn" class="cw-map-btn-inline" title="Cấu hình">⚙️</button>
-            <div id="wg-calc-map-wrap" class="cw-map-wrap-popup" style="display:none;">
-                <div class="util-submenu-title">Liên kết ô (Mapping)</div>
-                <div class="cw-row"><span class="cw-map-label">Trước thuế</span><input data-clink="before" class="cw-map-input"></div>
-                <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input data-clink="tax" class="cw-map-input"></div>
-                <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input data-clink="after" class="cw-map-input"></div>
-                <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input data-clink="text" class="cw-map-input"></div>                
-                <div class="cw-map-separator"></div>
-                <div class="cw-map-actions">
-                    <button class="vnpt-btn-action btn-reset-default danger" id="vnpt-btn-reset-default" title="Khôi phục dữ liệu gốc">Reset Default</button>
-                    <button class="vnpt-btn-action btn-import" id="vnpt-btn-import" title="Nhập cấu hình JSON">📥 Nhập JSON</button>
-                    <button class="vnpt-btn-action btn-export-json" id="vnpt-btn-export-json" title="Xuất cấu hình JSON">📤 Xuất JSON</button>
-                </div>
-            </div>
-        </div>
     </div>`;
 
     if (container) container.appendChild(calcBody);
@@ -113,9 +95,7 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         before: document.getElementById('wg-before'),
         tax: document.getElementById('wg-tax'),
         after: document.getElementById('wg-after'),
-        text: document.getElementById('wg-text'),
-        mapBtn: document.getElementById('wg-calc-map-btn'),
-        mapWrap: document.getElementById('wg-calc-map-wrap')
+        text: document.getElementById('wg-text')
     };
 
     els.taxRate.value = TAX_RATE * 100;
@@ -128,7 +108,10 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         els.tax.value = res.taxStr;
         els.after.value = res.afterStr;
         els.text.value = res.textStr;
-        syncToPage(res, calcMaps);
+        
+        // Luôn lấy mapping mới nhất từ Storage
+        const currentMaps = ld(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
+        syncToPage(res, currentMaps);
     }
 
     els.taxRate.oninput = () => { TAX_RATE = Number(els.taxRate.value) / 100 || 0; sv(SK_TAX, TAX_RATE); update('before', els.before.value); };
@@ -147,42 +130,6 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
             setTimeout(() => el.style.backgroundColor = old, 300);
         }));
     });
-
-    // Map logic
-    els.mapBtn.onclick = () => {
-        const isV = els.mapWrap.style.display === 'flex';
-        els.mapWrap.style.display = isV ? 'none' : 'flex';
-        if (!isV) {
-            const h = (e) => { if (!els.mapWrap.contains(e.target) && e.target !== els.mapBtn) { els.mapWrap.style.display = 'none'; document.removeEventListener('click', h); } };
-            setTimeout(() => document.addEventListener('click', h), 0);
-        }
-    };
-    widget.querySelectorAll('input[data-clink]').forEach(inp => {
-        const k = inp.dataset.clink; inp.value = (calcMaps[k] || []).join(', ');
-        inp.oninput = () => { calcMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s); sv(SK_CALC_MAP, calcMaps); };
-    });
-
-    // ─── Extra Settings Actions ───
-    const btnImport = document.getElementById('vnpt-btn-import');
-    const btnExport = document.getElementById('vnpt-btn-export-json');
-    const btnReset = document.getElementById('vnpt-btn-reset-default');
-
-    if (btnImport) btnImport.onclick = (e) => {
-        importConfig(e);
-        els.mapWrap.style.display = 'none';
-    };
-    if (btnExport) btnExport.onclick = (e) => {
-        exportConfig(e);
-        els.mapWrap.style.display = 'none';
-    };
-    if (btnReset) {
-        // Listener for btnReset is already handled in fieldsManager.js via id "vnpt-btn-reset-default"
-        // But we should also close the popup when it's clicked
-        const oldResetClick = btnReset.onclick;
-        btnReset.addEventListener('click', () => {
-            els.mapWrap.style.display = 'none';
-        });
-    }
 
     // ─── Drag & Dock (Only if NOT embedded) ───
     if (!container) {
