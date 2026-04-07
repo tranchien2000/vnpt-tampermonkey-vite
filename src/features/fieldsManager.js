@@ -31,15 +31,16 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             const row = input.closest('.vnpt-field-row');
             const valueInput = row.querySelector('.f-val');
             const labelInput = row.querySelector('.f-label');
-            if (valueText !== '') {
+
+            // Chỉ cập nhật nếu giá trị Khác và Ô đó KHÔNG đang được người dùng focus
+            if (valueText !== '' && valueInput.value !== valueText && document.activeElement !== valueInput) {
                 valueInput.value = valueText;
             }
-            if (labelText !== null && labelText !== '') {
+            if (labelText !== null && labelText !== '' && labelInput.value !== labelText && document.activeElement !== labelInput) {
                 labelInput.value = labelText;
             }
-            if (syncText !== '') {
+            if (syncText !== '' && input.value !== (keyText + ', ' + syncText) && document.activeElement !== input) {
                 // append to existing if not already there? simple mode: replace it
-                const currentSync = input.value.split(',').slice(1).map(s=>s.trim()).join(', ');
                 input.value = keyText + ', ' + syncText;
             }
             isDuplicate = true;
@@ -73,22 +74,25 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             fVal.style.textAlign = 'right';
         }
 
-        // Bắt sự kiện thay đổi dữ liệu để Lưu
-        fKey.addEventListener('keyup', function() {
+        // Helper đồng bộ giá trị của hàng này lên các field trên trang web
+        const syncThisRow = () => {
+            const val = fVal.value;
+            const targets = fKey.value.split(',').map(s => s.trim()).filter(s => s);
+            targets.forEach(t => setPageField(t, val));
+        };
+
+        // Bắt sự kiện thay đổi dữ liệu để Lưu (Dùng 'input' thay cho 'keyup' để mượt hơn và bắt được đủ ký tự)
+        fKey.addEventListener('input', function() {
             saveFieldsToLocal();
             const firstKey = this.value.split(',')[0].trim();
             fVal.style.textAlign = firstKey === 'tenToChuc' ? 'right' : '';
+            syncThisRow(); // Đồng bộ ngay khi sửa key
         });
-        row.querySelector('.f-label').addEventListener('keyup', saveFieldsToLocal);
+        row.querySelector('.f-label').addEventListener('input', saveFieldsToLocal);
 
-        fVal.addEventListener('keyup', function() {
+        fVal.addEventListener('input', function() {
             saveFieldsToLocal();
-            // Logic đồng bộ hóa thủ công
-            const fKeyRaw = fKey.value;
-            const targets = fKeyRaw.split(',').map(s => s.trim()).filter(s => s);
-            if (targets.length > 0) {
-                targets.forEach(t => setPageField(t, this.value));
-            }
+            syncThisRow(); // Đồng bộ ngay khi sửa giá trị
         });
 
 
@@ -337,7 +341,10 @@ export function toggleDefaultMode() {
         if (rawOverrides === null) {
             // Chưa có tùy chỉnh, nạp toàn bộ mặc định từ file defaults.js
             Object.keys(DEFAULT_DATA).forEach(key => {
-                addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
+                const item = DEFAULT_DATA[key];
+                const val = (item && typeof item === 'object') ? item.value : item;
+                const lbl = (item && typeof item === 'object') ? item.label : (DEFAULT_LABELS[key] || '');
+                addOrUpdateFieldRow(key, val, lbl);
             });
         } else {
             // Đã có tùy chỉnh (thêm/bớt/sửa), nạp từ localStorage
@@ -351,7 +358,10 @@ export function toggleDefaultMode() {
                 console.error("Lỗi nạp Default Overrides:", e);
                 // Fallback nếu JSON hỏng
                 Object.keys(DEFAULT_DATA).forEach(key => {
-                    addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
+                    const item = DEFAULT_DATA[key];
+                    const val = (item && typeof item === 'object') ? item.value : item;
+                    const lbl = (item && typeof item === 'object') ? item.label : (DEFAULT_LABELS[key] || '');
+                    addOrUpdateFieldRow(key, val, lbl);
                 });
             }
         }

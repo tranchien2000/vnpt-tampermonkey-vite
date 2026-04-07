@@ -1,11 +1,9 @@
 /**
  * @file defaults.js
- * @desc Dữ liệu mặc định hardcoded cho bên B (VNPT Hà Nội) trong hợp đồng,
- *       và danh sách các trường bên A cần đồng bộ.
+ * @desc Dữ liệu mặc định cho bên B (VNPT Hà Nội).
  *       File này KHÔNG chứa logic — chỉ là data thuần.
  * @exports DEFAULT_DATA  — object{key: string} dùng làm giá trị mặc định
- * @exports fieldsA       — string[] danh sách id các trường bên A cần đồng bộ
- * @seeAlso dataFillFeature.js (consumer), fieldsManager.js (consumer)
+ * @seeAlso syncEngine.js (consumer), fieldsManager.js (consumer)
  */
 
 const now = new Date();
@@ -14,51 +12,26 @@ const thang = String(now.getMonth() + 1).padStart(2, '0');
 const nam = String(now.getFullYear());
 
 export const DEFAULT_DATA = {
-    ngayKy: ngay,
-    thangKy: thang,
-    namKy: nam,
-    ngayTiepNhan: `${ngay}/${thang}/${nam}`,
-    ngayThangNamKy: `${ngay}/${thang}/${nam}`,
-    thangKy1: thang,
-    namKy1: nam,
-    tenDoanhNghiepB: "VIỄN THÔNG HÀ NỘI – CHI NHÁNH TẬP ĐOÀN BƯU CHÍNH VIỄN THÔNG VIỆT NAM",
-    diaChiB: "75 Đinh Tiên Hoàng, Phường Hoàn Kiếm, Thành phố Hà Nội",
-    maSoThueB: "0100686223",
-    stkB: "1600114156",
-    diaChiStkB: "Ngân hàng Đầu tư & Phát triển Việt Nam - CN Sở giao dịch 3 (BIDV – CN SGD 3)",
-    tenB: "Phạm Khánh Chung",
-    nguoiDaiDienB: "Phạm Khánh Chung",
-    chucVuB: "Phó Giám đốc Trung tâm Kinh doanh Khách hàng doanh nghiệp",
-    chucVuDaiDienB: "Phó Giám đốc Trung tâm Kinh doanh Khách hàng doanh nghiệp",
-    giayUyQuyenSoB: "2628/GUQ-VNPT-HNI-VP",
-    soGiayUyQuyenB: "2628/GUQ-VNPT-HNI-VP",
-    giayUyQuyenNgayB: "1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    ngayGiayUyQuyenB: "1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    GiayUyQuyenB: "2628/GUQ-VNPT-HNI-VP ngày 1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    tenDoanhNghiepB1: "Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam",
-    donViTiepNhan: "TTKD KHDN",
-    tenTiepNhan: "Bùi Anh",
-    tenNguoiNhan: "Bùi Anh",
-    dienThoaiB: "02436686868",
-    diaChiTaiKhoanB: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 ",
-    noiKy: "Hà Nội",
-    emailB: "",
-    lienheHopDongB: "AM Bùi Anh",
-    lienheTuVanB: "AM Bùi Anh",
-    lienheHoaDonB: "AM Bùi Anh",
-    sucoCap1B: "AM Bùi Anh",
-    sucoCap2B: "AM Bùi Anh",
-    sucoCap3B: "AM Bùi Anh",
-    sucoCap4B: "AM Bùi Anh"
+    ngayKy: { label: "Ngày ký", value: ngay },
+    "thangKy, thangKy1": { label: "Tháng ký", value: thang },
+    "namKy, namKy1": { label: "Năm ký", value: nam },
+    "ngayTiepNhan, ngayThangNamKy": { label: "Ngày ký (full)", value: `${ngay}/${thang}/${nam}` },
+    tenDoanhNghiepB: { label: "Tên doanh nghiệp B", value: "VIỄN THÔNG HÀ NỘI – CHI NHÁNH TẬP ĐOÀN BƯU CHÍNH VIỄN THÔNG VIỆT NAM" },
+    diaChiB: { label: "Địa chỉ B", value: "75 Đinh Tiên Hoàng, Phường Hoàn Kiếm, Thành phố Hà Nội" },
+    maSoThueB: { label: "Mã số thuế B", value: "0100686223" },
+    stkB: { label: "Số tài khoản B", value: "1600114156" },
+    diaChiStkB: { label: "Ngân hàng/Địa chỉ STK B", value: "Ngân hàng Đầu tư & Phát triển Việt Nam - CN Sở giao dịch 3 (BIDV – CN SGD 3)" },
+    "tenB, nguoiDaiDienB": { label: "Người đại diện B", value: "Phạm Khánh Chung" },
+    "chucVuB, chucVuDaiDienB": { label: "Chức vụ B", value: "Phó Giám đốc Trung tâm Kinh doanh Khách hàng doanh nghiệp" },
+    "giayUyQuyenSoB, soGiayUyQuyenB": { label: "Giấy ủy quyền số B", value: "2628/GUQ-VNPT-HNI-VP" },
+    "giayUyQuyenNgayB, ngayGiayUyQuyenB": { label: "Giấy ủy quyền ngày B", value: `1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam` },
+    GiayUyQuyenB: { label: "Giấy ủy quyền B (full)", value: `2628/GUQ-VNPT-HNI-VP ngày 1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam` },
+    tenDoanhNghiepB1: { label: "Tên doanh nghiệp B (phụ)", value: "Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam" },
+    donViTiepNhan: { label: "Đơn vị tiếp nhận", value: "TTKD KHDN" },
+    "tenTiepNhan, tenNguoiNhan": { label: "Người tiếp nhận", value: "Bùi Anh" },
+    dienThoaiB: { label: "Điện thoại B", value: "02436686868" },
+    diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 " },
+    noiKy: { label: "Nơi ký", value: "Hà Nội" },
+    emailB: { label: "Email B", value: "" },
+    "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh" }
 };
-
-/** Các trường liên hệ bên A — dùng để đồng bộ giá trị đầu tiên tìm được */
-export const fieldsA = [
-    "lienheHopDongA",
-    "lienheHoaDonA",
-    "lienheTuVanA",
-    "sucoCap1A",
-    "sucoCap2A",
-    "sucoCap3A",
-    "sucoCap4A"
-];

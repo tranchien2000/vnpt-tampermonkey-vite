@@ -14,7 +14,7 @@ import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, SK_DATATAB, SK_COLLAPSE } from 
 import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { storage } from '../api/storage/index.js';
-import { DEFAULT_DATA as _DEFAULT_DATA, fieldsA } from '../core/defaults.js';
+import { DEFAULT_DATA as _DEFAULT_DATA } from '../core/defaults.js';
 export { DEFAULT_DATA } from '../core/defaults.js'; // re-export cho backward compat
 
 // Storage helpers
@@ -31,21 +31,15 @@ export function doFillData() {
     customData = ld(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
     
-    let valueA = "";
-    for (let name of fieldsA) {
-        const el = findPageInput(name) || getInputByLabel(name);
-        if (el && el.value) {
-            valueA = el.value;
-            break;
-        }
-    }
-    if (valueA) {
-        fieldsA.forEach(name => setPageField(name, valueA));
-    }
-
     Object.keys(merged).forEach(k => {
         let el = findPageInput(k) || getInputByLabel(k);
-        if (el) syncSetValue(el, merged[k]);
+        if (el) {
+            const dataItem = merged[k];
+            const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value')) 
+                        ? dataItem.value 
+                        : dataItem; 
+            syncSetValue(el, val);
+        }
     });
 
     showToast('✅ Auto fill complete');
@@ -143,18 +137,27 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
             row.className = 'cw-data-row';
 
             let isMutable = currentDataTab === 'custom' || currentDataTab === 'sync';
+            const dataItem = activeData[key];
+            const isObj = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'));
+            const val = isObj ? dataItem.value : dataItem;
+            const lbl = isObj ? (dataItem.label || key) : key;
 
             const keyInp = document.createElement('input');
-            keyInp.type = 'text'; keyInp.value = key; keyInp.title = key;
+            keyInp.type = 'text'; keyInp.value = lbl; keyInp.title = key;
             keyInp.className = 'cw-data-key' + (isMutable ? ' mutable' : '');
             
             keyInp.readOnly = !isMutable;
             if (isMutable) {
                 keyInp.onchange = () => {
                     const newKey = keyInp.value.trim();
-                    if (!newKey || newKey === key) { keyInp.value = key; return; }
-                    if (activeData.hasOwnProperty(newKey)) { alert(`Nhãn "${newKey}" đã tồn tại!`); keyInp.value = key; return; }
-                    activeData[newKey] = activeData[key];
+                    if (!newKey || newKey === key) { keyInp.value = lbl; return; }
+                    if (activeData.hasOwnProperty(newKey)) { alert(`Nhãn "${newKey}" đã tồn tại!`); keyInp.value = lbl; return; }
+                    
+                    if (isObj) {
+                        activeData[newKey] = { ...dataItem, label: newKey };
+                    } else {
+                        activeData[newKey] = val;
+                    }
                     delete activeData[key];
                     let sk = currentDataTab === 'sync' ? SK_DATA_SYNC : SK_DATA_CUS;
                     sv(sk, activeData);
@@ -163,11 +166,15 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
             }
 
             const inp = document.createElement('input');
-            inp.type = 'text'; inp.value = activeData[key] ?? '';
+            inp.type = 'text'; inp.value = val ?? '';
             inp.className = 'cw-data-val';
             
             inp.oninput = () => {
-                activeData[key] = inp.value;
+                if (isObj) {
+                    activeData[key] = { ...dataItem, value: inp.value };
+                } else {
+                    activeData[key] = inp.value;
+                }
                 let sk = currentDataTab === 'sync' ? SK_DATA_SYNC : (currentDataTab === 'custom' ? SK_DATA_CUS : SK_DATA_DEF);
                 sv(sk, activeData);
             };

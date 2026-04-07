@@ -5,7 +5,7 @@
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC } from '../../core/constants.js';
 import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../../utils/domHelper.js';
 import { showToast } from '../../ui/toast.js';
-import { DEFAULT_DATA as _DEFAULT_DATA, fieldsA } from '../../core/defaults.js';
+import { DEFAULT_DATA as _DEFAULT_DATA } from '../../core/defaults.js';
 
 function ld(k, def = null) { try { const s = localStorage.getItem(k); return s !== null ? JSON.parse(s) : def; } catch { return def; } }
 
@@ -14,18 +14,19 @@ export function doFillData() {
     const customData = ld(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
     
-    // Fill fields A
-    let valueA = "";
-    for (let name of fieldsA) {
-        const el = findPageInput(name) || getInputByLabel(name);
-        if (el && el.value) { valueA = el.value; break; }
-    }
-    if (valueA) fieldsA.forEach(name => setPageField(name, valueA));
-
     // Fill fields B (Merged)
     Object.keys(merged).forEach(k => {
-        let el = findPageInput(k) || getInputByLabel(k);
-        if (el) syncSetValue(el, merged[k]);
+        const dataItem = merged[k];
+        const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value')) 
+                    ? dataItem.value 
+                    : dataItem; 
+        
+        // Hỗ trợ gán nhiều field bằng dấu phẩy
+        const targets = k.split(',').map(s => s.trim()).filter(s => s);
+        targets.forEach(t => {
+            let el = findPageInput(t) || getInputByLabel(t);
+            if (el) syncSetValue(el, val);
+        });
     });
     showToast('✅ Auto fill complete');
 }
@@ -48,6 +49,9 @@ export function doSyncData() {
 let isSyncing = false;
 export function initSyncEngine() {
     document.addEventListener('input', (e) => {
+        // Bỏ qua nếu là input từ trong chính Widget của chúng ta
+        if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
+        
         if (isSyncing || !e.target || !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
         let sMap = ld(SK_DATA_SYNC) ?? {};

@@ -44,6 +44,9 @@ export function initWebScanner() {
 
     // Bắt sự kiện 'input' (khi gõ text) và 'change' (khi chọn danh sách/ngày tháng) cực kỳ nhẹ, không tốn tài nguyên
     document.addEventListener('input', function (e) {
+        // Bỏ qua nếu sự kiện phát ra từ trong chính Widget của chúng ta
+        if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
+
         if (e.target && e.target.id && DEFAULT_LABELS[e.target.id] !== undefined) {
             addOrUpdateFieldRow(e.target.id, e.target.value, null);
             saveFieldsToLocal();
@@ -51,6 +54,9 @@ export function initWebScanner() {
     });
 
     document.addEventListener('change', function (e) {
+        // Bỏ qua nếu sự kiện phát ra từ trong chính Widget của chúng ta
+        if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
+
         if (e.target && e.target.id && DEFAULT_LABELS[e.target.id] !== undefined) {
             let val = e.target.tagName.toLowerCase() === 'select' ? (e.target.options[e.target.selectedIndex]?.text || '') : e.target.value;
             addOrUpdateFieldRow(e.target.id, val, null);

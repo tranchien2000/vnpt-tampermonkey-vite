@@ -58,22 +58,46 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
         keys.forEach(k => {
             const row = document.createElement('div'); row.className = 'cw-data-row';
             let mut = currentDataTab !== 'default';
+            const dataItem = active[k];
+            const isObj = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'));
+            const val = isObj ? dataItem.value : dataItem;
+            const lbl = isObj ? (dataItem.label || k) : k;
+
             const kInp = document.createElement('input'); 
-            kInp.type = 'text'; kInp.value = k; kInp.className = 'cw-data-key' + (mut ? ' mutable' : '');
+            kInp.type = 'text'; kInp.value = lbl; 
+            kInp.className = 'cw-data-key' + (mut ? ' mutable' : '');
+            kInp.title = k; // Technical Key is shown on hover
             kInp.readOnly = !mut;
+
             if (mut) {
                 kInp.onchange = () => {
-                    const nk = kInp.value.trim(); if (!nk || nk === k) { kInp.value = k; return; }
-                    active[nk] = active[k]; delete active[k]; sv(sk, active); renderFields();
+                    const nk = kInp.value.trim(); if (!nk || nk === k) { kInp.value = lbl; return; }
+                    // Update key while preserving value (and label if it was an object)
+                    if (isObj) {
+                        active[nk] = { ...dataItem, label: nk };
+                    } else {
+                        active[nk] = val;
+                    }
+                    delete active[k]; 
+                    sv(sk, active); renderFields();
                 };
             }
+
             const vInp = document.createElement('input'); 
-            vInp.type = 'text'; vInp.value = active[k] ?? ''; vInp.className = 'cw-data-val';
-            vInp.oninput = () => { active[k] = vInp.value; sv(sk, active); };
+            vInp.type = 'text'; vInp.value = val ?? ''; vInp.className = 'cw-data-val';
+            vInp.oninput = () => { 
+                if (isObj) {
+                    active[k] = { ...dataItem, value: vInp.value };
+                } else {
+                    active[k] = vInp.value;
+                }
+                sv(sk, active); 
+            };
+
             row.appendChild(kInp); row.appendChild(vInp);
             if (mut) {
                 const del = document.createElement('button'); del.innerHTML = '✕'; del.className = 'cw-del-btn';
-                del.onclick = () => { if (confirm(`Delete "${k}"?`)) { delete active[k]; sv(sk, active); renderFields(); } };
+                del.onclick = () => { if (confirm(`Delete "${lbl}"?`)) { delete active[k]; sv(sk, active); renderFields(); } };
                 row.appendChild(del);
             } else row.appendChild(document.createElement('div')).className = 'cw-pad';
             dataBody.appendChild(row);
