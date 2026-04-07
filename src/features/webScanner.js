@@ -11,9 +11,20 @@ import { DEFAULT_LABELS } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from './fieldsManager.js';
 import { getScannerFallback } from '../core/scannerFallbacks.js';
+import { AppState } from '../core/state.js';
+import { DEFAULT_DATA } from '../core/defaults.js';
 
 export function initWebScanner() {
     document.getElementById('vnpt-btn-scan').addEventListener('click', function () {
+        if (AppState.isDefaultMode) {
+            Object.keys(DEFAULT_DATA).forEach(key => {
+                addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
+            });
+            saveFieldsToLocal();
+            showToast("Đã nạp lại dữ liệu mặc định từ hệ thống.");
+            return;
+        }
+
         let foundCount = 0;
 
         Object.keys(DEFAULT_LABELS).forEach(id_can_tim => {

@@ -4,7 +4,7 @@ export function triggerCustom(el) {
 }
 
 export function syncSetValue(el, value) {
-    if (!el || el.disabled || el.readOnly) return;
+
     
     // Use prototype setter to bypass framework wrappers if any
     const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
