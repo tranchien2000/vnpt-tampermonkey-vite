@@ -200,47 +200,28 @@ export function injectStyles() {
         .cw-map-wrap-popup { 
             position: absolute; right: 0; top: 30px; z-index: 1000;
             background: white; border: 1px solid #dadce0; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 220px;
-            padding: 8px; display: flex; flex-direction: column; gap: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 240px;
+            padding: 10px; display: flex; flex-direction: column; gap: 6px;
             animation: fadeIn 0.2s;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         
         .cw-row { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
         .cw-map-label { font-size: 11px; font-weight: 600; color: #555; white-space: nowrap; }
-        .cw-map-input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; width: 120px; }
-        .cw-map-hint { font-size: 9px; color: #888; margin-top: 4px; line-height: 1.2; }
+        .cw-map-input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; width: 140px; }
+        .cw-map-hint { font-size: 9px; color: #888; margin-top: 4px; line-height: 1.2; text-align: center; }
 
-        /* Menu Xem thêm (Dropdown) */
-        .vnpt-more-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: #ffffff;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            padding: 6px;
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 120px;
-            margin-top: 5px;
-            animation: fadeIn 0.2s ease-out;
+        .cw-map-separator { height: 1px; background: #eee; margin: 4px 0; }
+        
+        .cw-map-actions { display: flex; flex-direction: column; gap: 4px; }
+        .cw-map-actions .vnpt-btn-action { 
+            justify-content: flex-start; width: 100%; padding: 0 10px; 
+            background: transparent; color: #3c4043; border-radius: 6px;
         }
-        .vnpt-more-menu .vnpt-btn-action {
-            justify-content: flex-start;
-            width: 100%;
-            padding: 0 10px;
-            background: transparent;
-            color: #3c4043;
-        }
-        .vnpt-more-menu .vnpt-btn-action:hover {
-            background: #f1f3f4;
-        }
-        .btn-more { background: #f1f3f4; color: #3c4043; }
-        .btn-more:hover { background: #e8eaed; }
+        .cw-map-actions .vnpt-btn-action:hover { background: #f1f3f4; }
+        .cw-map-actions .btn-reset-default { color: #d32f2f; }
+        .cw-map-actions .btn-reset-default:hover { background: #fff5f5; }
+
         .btn-more.active { background: #dadce0; }
 
     `);

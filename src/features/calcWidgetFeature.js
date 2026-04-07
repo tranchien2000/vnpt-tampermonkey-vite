@@ -53,7 +53,7 @@ function mkSecHeader(title, sectionKey, toggleCallback) {
     b.innerText = collapsedSections[sectionKey] ? '▾' : '▴';
     hdr.appendChild(s);
     hdr.appendChild(b);
-    
+
     b.onclick = () => {
         collapsedSections[sectionKey] = !collapsedSections[sectionKey];
         b.innerText = collapsedSections[sectionKey] ? '▾' : '▴';
@@ -135,7 +135,6 @@ export function initCalcWidget() {
                 <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input data-clink="tax" class="cw-map-input" placeholder="Ví dụ: thueCA"></div>
                 <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input data-clink="after" class="cw-map-input" placeholder="Ví dụ: tongCongHD"></div>
                 <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input data-clink="text" class="cw-map-input" placeholder="Ví dụ: tongCongHDbangChu"></div>
-                <div class="cw-map-hint">Các id/nhãn trên trang cách nhau bởi dấu phẩy. Sẽ được Auto-save.</div>
             </div>
         </div>
     </div>
@@ -164,7 +163,7 @@ export function initCalcWidget() {
         widget.style.boxShadow = docked
             ? '0 -3px 16px rgba(25,135,84,0.55)'
             : '0 4px 24px rgba(0,0,0,.3)';
-        
+
         // Khi dock, snap top = đáy - chiều cao title bar
         if (docked) {
             widget.style.top = (window.innerHeight - (titleBar.offsetHeight || 34)) + 'px';
@@ -178,7 +177,7 @@ export function initCalcWidget() {
 
     // Khởi tạo trạng thái dock từ localStorage
     if (startDocked) dragHandle.setDocked(true);
-    
+
     // Window clamp on resize
     window.addEventListener('resize', () => {
         if (dragHandle.isDocked()) {
@@ -264,29 +263,29 @@ export function initCalcWidget() {
         taxEl.value = formatNum(t); afterEl.value = formatNum(a);
         textEl.value = capFirst(numToVN(a)) + ' đồng';
     });
-    beforeEl.addEventListener('blur', () => { 
-        beforeEl.value = formatNum(parseNum(beforeEl.value)); 
-        saveHist(SK_HIST_B, beforeEl.value); 
-        renderHist(SK_HIST_B, 'wg-before-list'); 
+    beforeEl.addEventListener('blur', () => {
+        beforeEl.value = formatNum(parseNum(beforeEl.value));
+        saveHist(SK_HIST_B, beforeEl.value);
+        renderHist(SK_HIST_B, 'wg-before-list');
     });
-    beforeEl.addEventListener('change', () => { 
-        beforeEl.value = formatNum(parseNum(beforeEl.value)); 
-        saveHist(SK_HIST_B, beforeEl.value); 
-        renderHist(SK_HIST_B, 'wg-before-list'); 
-        fromBefore(); 
+    beforeEl.addEventListener('change', () => {
+        beforeEl.value = formatNum(parseNum(beforeEl.value));
+        saveHist(SK_HIST_B, beforeEl.value);
+        renderHist(SK_HIST_B, 'wg-before-list');
+        fromBefore();
     });
     taxEl.addEventListener('input', fromTax);
     afterEl.addEventListener('input', fromAfter);
-    afterEl.addEventListener('blur', () => { 
-        afterEl.value = formatNum(parseNum(afterEl.value)); 
-        saveHist(SK_HIST_A, afterEl.value); 
-        renderHist(SK_HIST_A, 'wg-after-list'); 
+    afterEl.addEventListener('blur', () => {
+        afterEl.value = formatNum(parseNum(afterEl.value));
+        saveHist(SK_HIST_A, afterEl.value);
+        renderHist(SK_HIST_A, 'wg-after-list');
     });
-    afterEl.addEventListener('change', () => { 
-        afterEl.value = formatNum(parseNum(afterEl.value)); 
-        saveHist(SK_HIST_A, afterEl.value); 
-        renderHist(SK_HIST_A, 'wg-after-list'); 
-        fromAfter(); 
+    afterEl.addEventListener('change', () => {
+        afterEl.value = formatNum(parseNum(afterEl.value));
+        saveHist(SK_HIST_A, afterEl.value);
+        renderHist(SK_HIST_A, 'wg-after-list');
+        fromAfter();
     });
 
     // Click directly on inputs to copy
@@ -305,7 +304,7 @@ export function initCalcWidget() {
                     navigator.clipboard.writeText(e.target.value);
                     if (item.key === SK_HIST_B) { saveHist(SK_HIST_B, e.target.value); renderHist(SK_HIST_B, 'wg-before-list'); }
                     if (item.key === SK_HIST_A) { saveHist(SK_HIST_A, e.target.value); renderHist(SK_HIST_A, 'wg-after-list'); }
-                    
+
                     // Visual feedback
                     const oldBg = e.target.style.backgroundColor;
                     e.target.style.backgroundColor = '#d1e7dd';
