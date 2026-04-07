@@ -133,9 +133,9 @@ export function injectStyles() {
         .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
         .vnpt-btn-action { border: none; padding: 0 8px; height: 27px; min-width: 27px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 5px; transition: background 0.2s; white-space: nowrap; box-sizing: border-box; }
 
-        .btn-scan { background: #ff6200ff; color: #000; } .btn-scan:hover { background: #f2a500; }
+        .btn-scan { background: #11ff00ff; color: #000; } .btn-scan:hover { background: #f2a500; }
         .btn-toggle-id { background: #ee0feeff; color: #ffffffff; } .btn-toggle-id:hover { background: #d2e3fc; }
-        .btn-default-toggle { background: ##ea4335; color: #ffffffff; font-size: 14px; border: 1px solid transparent; } 
+        .btn-default-toggle { background: #ea4335; color: #ffffffff; font-size: 14px; border: 1px solid transparent; } 
         .btn-default-toggle:hover { background: #ceead6; }
         .btn-reset-default { background: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; font-size: 14px; }
         .btn-reset-default:hover { background: #d2e3fc; }
