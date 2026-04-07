@@ -45,9 +45,12 @@ export function initWebScanner() {
         saveFieldsToLocal(); // Quét xong thì lưu vào bộ nhớ mây
 
         if (foundCount > 0) {
-            this.style.background = '#34a853'; this.style.color = '#fff';
-            this.innerText = 'Done';
-            setTimeout(() => { this.style.background = '#fbbc04'; this.style.color = '#000'; this.innerText = 'Quét'; }, 1000);
+            this.style.background = '#1e8e3e'; this.style.color = '#fff';
+            this.innerText = 'Đã quét xong';
+            setTimeout(() => { 
+                this.style.background = ''; this.style.color = ''; 
+                this.innerText = 'Quét dữ liệu'; 
+            }, 1000);
         } else {
             showToast("Không tìm thấy trường nào trên web, đã tạo các trường mặc định với biểu mẫu trống.");
         }

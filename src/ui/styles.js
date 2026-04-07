@@ -20,257 +20,300 @@ export function injectStyles() {
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
+        :root {
+            --vnpt-primary: #1a73e8;
+            --vnpt-primary-hover: #1557b0;
+            --vnpt-danger: #ea4335;
+            --vnpt-danger-hover: #d93025;
+            --vnpt-success: #1e8e3e;
+            --vnpt-bg-glass: rgba(255, 255, 255, 0.85);
+            --vnpt-border: rgba(0, 0, 0, 0.1);
+            --vnpt-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            --vnpt-radius: 12px;
+            --vnpt-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
         /* ═══════════════════════════════════════════
            SECTION 1: WIDGET CONTAINER & TOGGLE BTN
            ═══════════════════════════════════════════ */
-        /* Khối Widget tổng hợp bọc toàn bộ, đây sẽ là khối duy chuyển */
-        #vnpt-docx-widget { position: fixed; top: 100px; right: 50px; z-index: 999999; font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;}
+        #vnpt-docx-widget { position: fixed; top: 100px; right: 50px; z-index: 999999; font-family: var(--vnpt-font); }
 
-        /* Nút khi panel ĐÓNG */
         #vnpt-toggle-btn.btn-closed { 
             position: absolute; right: 10px; top: 10px;
-            width: 27px; height: 27px; font-size: 13px; border-radius: 5px;
-            background-color: #1a73e8; color: white; border: none; 
+            width: 32px; height: 32px; font-size: 14px; border-radius: 8px;
+            background: var(--vnpt-primary); color: white; border: none; 
             cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s; z-index: 10;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10;
         }
-        #vnpt-toggle-btn.btn-closed:hover { transform: scale(1.05); background-color: #1557b0; }
+        #vnpt-toggle-btn.btn-closed:hover { transform: scale(1.1) rotate(5deg); background: var(--vnpt-primary-hover); }
 
-        /* Nút khi panel MỞ (Đồng bộ vị trí/size với nút đóng) */
         #vnpt-toggle-btn.btn-opened {
             position: absolute; right: 10px; top: 10px;
-            width: 27px; height: 27px; font-size: 13px; border-radius: 5px;
-            background-color: #d32f2f; color: white; border: none;
+            width: 32px; height: 32px; font-size: 14px; border-radius: 8px;
+            background: var(--vnpt-danger); color: white; border: none;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s; z-index: 10;
+            box-shadow: 0 4px 12px rgba(234, 67, 53, 0.4); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10;
         }
-        #vnpt-toggle-btn.btn-opened:hover { transform: scale(1.05); background-color: #b71c1c; }
+        #vnpt-toggle-btn.btn-opened:hover { transform: scale(1.1) rotate(-5deg); background: var(--vnpt-danger-hover); }
 
         /* ═══════════════════════════════════════════
            SECTION 2: EXPORT PANEL LAYOUT & HEADER
            ═══════════════════════════════════════════ */
-        /* Bảng điều khiển */
         #vnpt-export-panel { 
             position: relative; 
-            width: 440px; min-width: 350px; 
-            height: auto; min-height: 200px;
+            width: 460px; min-width: 360px; 
+            height: auto; min-height: 250px;
             max-height: 92vh; max-width: 98vw;
             display: flex; flex-direction: column; 
-            background: #ffffff; border: 1px solid #dadce0; 
-            border-radius: 10px; padding: 10px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
-            transition: none; 
+            background: var(--vnpt-bg-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--vnpt-radius); padding: 12px; 
+            box-shadow: var(--vnpt-shadow);
+            transition: width 0.2s ease, height 0.2s ease;
         }
         
-        
-        #vnpt-panel-body { display: flex; flex-direction: column; overflow: auto; flex: 1; margin-top: 5px; }
+        #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 8px; border-radius: 8px; }
 
-        /* Header vùng kéo thả */
         #vnpt-panel-header { 
-            margin: 0 -10px 0 -10px; padding: 0 10px 5px 10px;
-            color: #1a73e8; font-size: 14px; 
-            border-bottom: 2px solid #f1f3f4; 
+            margin: -12px -12px 0 -12px; padding: 10px 15px;
+            color: var(--vnpt-primary); font-size: 14px; 
+            border-bottom: 1px solid var(--vnpt-border); 
             cursor: move; user-select: none; 
             display: flex; align-items: center; justify-content: space-between; 
-            font-weight: bold;
+            font-weight: 700; background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--vnpt-radius) var(--vnpt-radius) 0 0;
+            gap: 12px;
         }
-        #vnpt-panel-header:hover { background: #f8f9fa; border-radius: 4px; }
-        .drag-icon { font-size: 14px; cursor: move; opacity: 0.6; }
+        #vnpt-panel-header:hover { background: rgba(255, 255, 255, 0.8); }
+        
+        .header-left { display: flex; align-items: center; min-width: 80px; }
+        .header-center { display: flex; gap: 8px; flex: 1; justify-content: center; margin-right: 30px; }
+        .header-right { 
+            display: flex; gap: 6px; align-items: center; 
+            position: absolute; right: 48px; /* Chừa chỗ cho nút close */
+            top: 10px;
+        }
+
+        #vnpt-panel-title { font-size: 13px; letter-spacing: 0.5px; color: var(--vnpt-primary); text-transform: uppercase; }
 
         /* ═══════════════════════════════════════════
            SECTION 3: FIELDS CONTAINER & FIELD ROWS
            ═══════════════════════════════════════════ */
-        /* Box chứa danh sách biến */
-        #vnpt-fields-container { flex: 1; max-height: unset; overflow: hidden; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; margin-bottom: 4px; position: relative; display: flex; flex-direction: column; }
-        #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
+        #vnpt-fields-container { 
+            flex: 1; overflow: hidden; background: rgba(255, 255, 255, 0.4); 
+            border: 1px solid var(--vnpt-border); border-radius: 8px; 
+            margin-bottom: 8px; position: relative; display: flex; flex-direction: column; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 6px; }
 
-        /* Fields Table Header */
         .vnpt-fields-header {
-            display: flex; gap: 2px; padding: 4px;
-            background: #e8f0fe; border-bottom: 1px solid #dadce0;
-            font-size: 9px; font-weight: bold; color: #1a73e8;
-            align-items: center; text-transform: uppercase;
+            display: flex; gap: 4px; padding: 6px 8px;
+            background: rgba(26, 115, 232, 0.08); border-bottom: 1px solid var(--vnpt-border);
+            font-size: 10px; font-weight: 800; color: var(--vnpt-primary);
+            align-items: center; text-transform: uppercase; letter-spacing: 0.3px;
         }
         .vnpt-fields-header span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .vnpt-fields-header .h-chk { flex: 0 0 20px; text-align: center; }
+        .vnpt-fields-header .h-chk { flex: 0 0 24px; text-align: center; }
         .vnpt-fields-header .h-label { flex: 0.35; padding-left: 5px; }
         .vnpt-fields-header .h-key { flex: 0.45; display: none; padding-left: 5px; }
         .show-ids .vnpt-fields-header .h-key { display: block; }
-        .vnpt-fields-header .h-drag { flex: 0 0 15px; }
+        .vnpt-fields-header .h-drag { flex: 0 0 18px; }
         .vnpt-fields-header .h-val { flex: 1; padding-left: 5px; }
         
-        /* Banner thông báo chế độ Dữ liệu mặc định - Tông Đỏ thông báo */
         .vnpt-default-banner {
-            background: #ea4335; color: #fff;
-            padding: 4px 8px; font-size: 11px; font-weight: bold;
-            text-align: center; border-radius: 4px; margin-bottom: 5px;
+            background: linear-gradient(90deg, #ea4335, #d93025); color: #fff;
+            padding: 6px 12px; font-size: 11px; font-weight: 700;
+            text-align: center; border-radius: 6px; margin: 0 8px 8px 8px;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            animation: slideDown 0.3s ease-out;
-            box-shadow: 0 2px 4px rgba(234, 67, 53, 0.3);
+            box-shadow: 0 4px 10px rgba(234, 67, 53, 0.3);
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Chế độ Default (High Alert) */
         #vnpt-fields-container.vnpt-mode-default {
-            border: 2px solid #ea4335 !important;
-            box-shadow: inset 0 0 8px rgba(234, 67, 53, 0.15);
-            background-color: #fffafb;
+            border: 2px solid var(--vnpt-danger) !important;
+            box-shadow: inset 0 0 12px rgba(234, 67, 53, 0.1);
         }
 
-        .vnpt-field-row { display: flex; gap: 2px; margin-bottom: 2px; align-items: center; padding: 0 2px; }
-        .row-drag-handle { cursor: grab; padding: 0; font-size: 16px; font-weight: bold; color: #aaa; user-select: none; flex: 0 0 15px; text-align: center; }
+        .vnpt-field-row { 
+            display: flex; gap: 4px; margin-bottom: 4px; align-items: center; 
+            padding: 4px; border-radius: 6px; transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.5); border: 1px solid transparent;
+        }
+        .vnpt-field-row:hover { background: #fff; border-color: rgba(26, 115, 232, 0.2); transform: translateX(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .row-drag-handle { cursor: grab; padding: 0; font-size: 16px; color: #bdc1c6; user-select: none; flex: 0 0 18px; text-align: center; }
         .row-drag-handle:active { cursor: grabbing; }
         .vnpt-field-row.dragging { opacity: 0.4; }
-        .vnpt-field-row.over { background-color: #e3f2fd; border-radius: 4px; }
-        .vnpt-field-row input { flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
-        .vnpt-field-row input.row-chk { flex: 0 0 20px; width: 14px; height: 14px; margin: 0; padding: 0; cursor: pointer; }
-        .vnpt-field-row input.f-label { flex: 0.35; color: #0056b3; font-weight: bold;}
-        .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: bold; color: #d63384;}
-        .show-ids .vnpt-field-row input.f-key { display: block; }
-        .vnpt-btn-hide { background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; cursor: pointer; padding: 3px 6px; }
-        .vnpt-btn-hide:hover { background: #e0e0e0; }
-        .vnpt-btn-del { background: #fee; color: #d32f2f; border: 1px solid #fcc; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 10px;}
-        .vnpt-btn-del:hover { background: #fcc; }
+        .vnpt-field-row.over { background-color: #e8f0fe; border: 1px dashed var(--vnpt-primary); }
 
-        .vnpt-control-group { margin-bottom: 10px; }
-        .vnpt-control-group label { display: block; font-weight: 600; font-size: 12px; color: #444; margin-bottom: 4px; }
-        .vnpt-control-group input[type="file"], .vnpt-control-group input[type="text"] { width: 100%; box-sizing: border-box; padding: 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px;}
+        .vnpt-field-row input { 
+            flex: 1; padding: 6px 8px; border: 1px solid #dadce0; border-radius: 6px; 
+            font-size: 12px; transition: all 0.2s; background: #fff;
+        }
+        .vnpt-field-row input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
+        
+        .vnpt-field-row input.row-chk { flex: 0 0 24px; width: 16px; height: 16px; cursor: pointer; accent-color: var(--vnpt-primary); }
+        .vnpt-field-row input.f-label { flex: 0.35; color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.03); }
+        .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.03); }
+        .show-ids .vnpt-field-row input.f-key { display: block; }
+
+        .vnpt-btn-hide { background: #f1f3f4; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; padding: 4px 8px; color: #5f6368; font-weight: 600; }
+        .vnpt-btn-hide:hover { background: #e8eaed; color: #3c4043; }
+        
+        .vnpt-btn-del { background: #fce8e6; color: var(--vnpt-danger); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
+        .vnpt-btn-del:hover { background: #f9d7d1; }
+
+        .vnpt-control-group { margin-bottom: 12px; }
+        .vnpt-control-group label { display: block; font-weight: 700; font-size: 12px; color: #3c4043; margin-bottom: 6px; }
+        .vnpt-control-group input[type="text"] { 
+            width: 100%; box-sizing: border-box; padding: 8px 12px; 
+            border: 1px solid #dadce0; border-radius: 8px; font-size: 12px;
+            background: #fff; transition: all 0.2s;
+        }
+        .vnpt-control-group input[type="text"]:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1); outline: none; }
 
         /* ═══════════════════════════════════════════
            SECTION 4: CONTROL BUTTONS
            ═══════════════════════════════════════════ */
-        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
-        .vnpt-btn-action { border: none; padding: 0 8px; height: 27px; min-width: 27px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 5px; transition: background 0.2s; white-space: nowrap; box-sizing: border-box; }
-
-        .btn-scan { background: #11ff00ff; color: #000; } .btn-scan:hover { background: #f2a500; }
-        .btn-toggle-id { background: #ee0feeff; color: #ffffffff; } .btn-toggle-id:hover { background: #d2e3fc; }
-        .btn-default-toggle { background: #ea4335; color: #ffffffff; font-size: 14px; border: 1px solid transparent; } 
-        .btn-default-toggle:hover { background: #ceead6; }
-        .btn-reset-default { background: #e53d3dff; color: #1a73e8; border: 1px solid #d2e3fc; font-size: 14px; }
-        .btn-reset-default:hover { background: #d2e3fc; }
-        .btn-add { background: #f1f3f4; color: #3c4043; } .btn-add:hover { background: #e8eaed; }
-        .btn-fill-back { background: #ab47bc; color: #fff; } .btn-fill-back:hover { background: #8e24aa; }
-        .btn-clean { background: #ea4335; color: #fff; } .btn-clean:hover { background: #d93025; }
-        .btn-export { background: #1a73e8; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold;} .btn-export:hover { background: #1557b0; }
-        .btn-size { background: #f8f9fa; color: #3c4043; border: 1px solid #dadce0 !important; }
-        .btn-size:hover { background: #e8eaed; }
-
-        /* Size Dropdown & Menu */
-        .vnpt-size-dropdown { position: relative; }
-        .vnpt-size-menu {
-            position: absolute; top: calc(100% + 5px); left: 0;
-            background: #fff; border: 1px solid #dadce0; border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 100000;
-            display: none; flex-direction: column; min-width: 60px;
-            overflow: hidden; animation: fadeIn 0.15s ease-out;
+        .vnpt-btn-action { 
+            border: none; padding: 0 15px; height: 32px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 700; font-size: 12px; cursor: pointer; 
+            border-radius: 8px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            white-space: nowrap; box-sizing: border-box; 
         }
-        .vnpt-size-menu.show { display: flex; }
-        .vnpt-size-menu button {
-            background: none; border: none; padding: 8px 14px;
-            text-align: center; font-size: 11px; cursor: pointer;
+        .vnpt-btn-action:active { transform: scale(0.96); }
+
+        .vnpt-btn-icon {
+            background: transparent; border: none; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; cursor: pointer; border-radius: 8px;
+            color: #5f6368; transition: all 0.2s;
+        }
+        .vnpt-btn-icon:hover { background: rgba(0,0,0,0.05); color: var(--vnpt-primary); }
+        .vnpt-btn-icon.active { background: rgba(26, 115, 232, 0.12); color: var(--vnpt-primary); }
+
+        .btn-scan { background: #e6f4ea; color: var(--vnpt-success); border: 1px solid #ceead6; } 
+        .btn-scan:hover { background: var(--vnpt-success); color: #fff; box-shadow: 0 4px 10px rgba(30, 142, 62, 0.3); }
+        
+        .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; } 
+        .btn-fill-back:hover { background: #7b1fa2; color: #fff; box-shadow: 0 4px 10px rgba(123, 31, 162, 0.3); }
+
+        .field-required-empty {
+            border-color: var(--vnpt-danger) !important;
+            background-color: #fff0f0 !important;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+            40%, 60% { transform: translate3d(3px, 0, 0); }
+        }
+
+        .btn-export { background: var(--vnpt-primary); color: white; padding: 0 16px; font-weight: 800; } 
+        .btn-export:hover { background: var(--vnpt-primary-hover); box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4); }
+
+        /* Utility Menu UI */
+        .vnpt-util-dropdown { position: relative; }
+        .vnpt-util-menu {
+            position: absolute; top: calc(100% + 8px); right: 0;
+            background: #fff; border: 1px solid var(--vnpt-border); border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 100000;
+            display: none; flex-direction: column; min-width: 240px;
+            padding: 8px 0; animation: menuFadeIn 0.2s ease-out;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-15px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .vnpt-util-menu.show { display: flex; }
+        
+        .util-item {
+            background: none; border: none; padding: 10px 16px; width: 100%;
+            text-align: left; font-size: 13px; cursor: pointer;
             color: #3c4043; font-weight: 600; transition: all 0.2s;
-            border-bottom: 1px solid #f1f3f4;
+            display: flex; align-items: center; gap: 12px;
         }
-        .vnpt-size-menu button:last-child { border-bottom: none; }
-        .vnpt-size-menu button:hover { background: #e8f0fe; color: #1a73e8; }
+        .util-item:hover { background: #f8f9fa; color: var(--vnpt-primary); }
+        
+        .util-separator { height: 1px; background: #f1f3f4; margin: 6px 0; }
+        .util-submenu-title { padding: 8px 16px 4px 18px; font-size: 10px; font-weight: 800; color: #9aa0a6; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .size-options { display: flex; padding: 6px 16px 10px 16px; gap: 8px; }
+        .size-options button {
+            flex: 1; padding: 6px 0; border: 1px solid #dadce0; border-radius: 6px;
+            background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .size-options button:hover { background: #e8f0fe; border-color: #d2e3fc; color: var(--vnpt-primary); }
 
         /* 4 Corner Resizers */
         .vnpt-resizer {
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            z-index: 10000;
-            /* background: rgba(26, 115, 232, 0.1); /* Để debug, có thể bỏ */
+            position: absolute; width: 16px; height: 16px; z-index: 10000;
         }
-        .vnpt-resizer.tl { top: -2px; left: -2px; cursor: nwse-resize; }
-        .vnpt-resizer.tr { top: -2px; right: -2px; cursor: nesw-resize; }
-        .vnpt-resizer.bl { bottom: -2px; left: -2px; cursor: nesw-resize; }
-        .vnpt-resizer.br { bottom: -2px; right: -2px; cursor: nwse-resize; }
-
-        .vnpt-resizer:hover {
-            background: rgba(26, 115, 232, 0.4);
-            border-radius: 4px;
-        }
-
-        /* Popup Default Data - Removed */
+        .vnpt-resizer.tl { top: -4px; left: -4px; cursor: nwse-resize; }
+        .vnpt-resizer.tr { top: -4px; right: -4px; cursor: nesw-resize; }
+        .vnpt-resizer.bl { bottom: -4px; left: -4px; cursor: nesw-resize; }
+        .vnpt-resizer.br { bottom: -4px; right: -4px; cursor: nwse-resize; }
+        .vnpt-resizer:hover { background: rgba(26, 115, 232, 0.2); border-radius: 50%; }
 
         /* ═══════════════════════════════════════════
            SECTION 5: TEMPLATE MANAGER
            ═══════════════════════════════════════════ */
-        #vnpt-template-section { border-top: 1px solid #e0e0e0; margin-top: 4px; padding-top: 6px; }
+        #vnpt-template-section { border-top: 1px solid var(--vnpt-border); margin-top: 8px; padding-top: 10px; }
         
-        .bottom-export-row { display: flex; gap: 4px; align-items: center; border-top: 1px solid #eee; margin-top: 4px; padding-top: 6px; }
+        .bottom-export-row { 
+            display: flex; gap: 8px; align-items: flex-end; 
+            border-top: 1px solid var(--vnpt-border); 
+            margin: 8px -12px -12px -12px; padding: 12px;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: 0 0 var(--vnpt-radius) var(--vnpt-radius);
+        }
         .bottom-export-row .vnpt-control-group { margin-bottom: 0; flex: 1; min-width: 0; }
-        .bottom-export-row .vnpt-control-group input[type="file"] { width: 145px; }
-        .bottom-export-row .vnpt-control-group input { padding: 4px; font-size: 11px; }
-        .bottom-export-row .btn-export { flex: 0 0 auto; height: 26px; margin: 0; border-radius: 5px; }
+        .bottom-export-row .vnpt-control-group input[type="text"] { height: 32px; padding: 6px 10px; }
+        .bottom-export-row .btn-export { flex: 0 0 auto; height: 32px; margin: 0; border-radius: 8px; }
 
-        .text-hint { font-size: 11px; color: #666; font-style: italic; text-align: center; margin-bottom: 5px;}
+        .text-hint { font-size: 11px; color: #70757a; font-style: italic; text-align: center; margin-bottom: 8px; }
 
-        #vnpt-fields-container::-webkit-scrollbar { width: 5px; }
-        #vnpt-fields-container::-webkit-scrollbar-thumb { background-color: #bbb; border-radius: 10px; }
+        #vnpt-fields-list::-webkit-scrollbar { width: 6px; }
+        #vnpt-fields-list::-webkit-scrollbar-track { background: transparent; }
+        #vnpt-fields-list::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 10px; }
+        #vnpt-fields-list::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
 
         /* ═══════════════════════════════════════════
            SECTION 6: INLINE CALC (Premium Layout)
            ═══════════════════════════════════════════ */
         #vnpt-inline-calc { 
-            background: #f1f3f4; 
-            padding: 5px 8px; 
-            border-bottom: 1px solid #dadce0;
-            display: block; /* Mặc định hiện, sẽ được toggle bằng JS */
+            background: rgba(241, 243, 244, 0.6); 
+            padding: 8px 12px; 
+            border-bottom: 1px solid var(--vnpt-border);
+            display: block;
         }
-        .cw-body-inline { display: flex; flex-direction: column; gap: 4px; }
-        .cw-inline-row { 
-            display: flex; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; 
-            flex-wrap: wrap; /* Cho phép rớt dòng nếu quá hẹp */
-        }
+        .cw-body-inline { display: flex; flex-direction: column; gap: 6px; }
+        .cw-inline-row { display: flex; align-items: center; gap: 6px; width: 100%; box-sizing: border-box; }
         .cw-input-inline { 
-            flex: 1; min-width: 60px; padding: 4px 6px; border: 1px solid #ced4da; border-radius: 4px; 
-            font-size: 11px; font-weight: 500; height: 26px; box-sizing: border-box;
-            background: #fff; transition: background 0.2s;
+            flex: 1; min-width: 60px; padding: 6px 10px; border: 1px solid #dadce0; border-radius: 6px; 
+            font-size: 12px; font-weight: 600; height: 30px; box-sizing: border-box;
+            background: #fff; transition: all 0.2s;
         }
-        .cw-input-inline:focus { border-color: #1a73e8; outline: none; box-shadow: 0 0 0 2px rgba(26,115,232,0.1); }
-        .cw-input-readonly-inline { background-color: #f8f9fa; color: #1e8e3e; cursor: default; flex: 1.5; min-width: 100px; }
+        .cw-input-inline:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.1); outline: none; }
+        .cw-input-readonly-inline { background-color: #f8f9fa; color: var(--vnpt-success); cursor: default; flex: 1.5; border-color: #ceead6; }
         
-        .cw-tax-group-inline { position: relative; display: flex; align-items: center; flex: 0 0 auto; min-width: 45px; }
-        .cw-tax-input-inline { width: 45px; padding: 4px 18px 4px 4px; border: 1px solid #ced4da; border-radius: 4px; font-size: 11px; text-align: right; height: 26px; box-sizing: border-box;}
-        .cw-tax-symbol { position: absolute; right: 4px; color: #666; font-size: 10px; pointer-events: none; }
+        .cw-tax-group-inline { position: relative; display: flex; align-items: center; flex: 0 0 auto; min-width: 50px; }
+        .cw-tax-input-inline { width: 50px; padding: 6px 20px 6px 8px; border: 1px solid #dadce0; border-radius: 6px; font-size: 12px; text-align: right; height: 30px; }
+        .cw-tax-symbol { position: absolute; right: 6px; color: #5f6368; font-size: 10px; font-weight: bold; pointer-events: none; }
 
         .cw-map-dropdown-container { position: relative; flex-shrink: 0; }
-        .cw-map-btn-inline { background: #e8f0fe; border: 1px solid #d2e3fc; border-radius: 4px; cursor: pointer; height: 26px; width: 26px; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s; }
-        .cw-map-btn-inline:hover { background: #d2e3fc; }
+        .cw-map-btn-inline { background: #fff; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; height: 30px; width: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; color: #5f6368; }
+        .cw-map-btn-inline:hover { background: #f8f9fa; color: var(--vnpt-primary); border-color: var(--vnpt-primary); }
 
-        /* Style cho nút toggle trên header */
-        .btn-calc-toggle { background: #e8f0fe; color: #1a73e8; }
-        .btn-calc-toggle:hover { background: #d2e3fc; }
-        .btn-calc-toggle.active { background: #1a73e8; color: #fff; }
-        
-        .cw-map-wrap-popup { 
-            position: absolute; right: 0; top: 30px; z-index: 1000;
-            background: white; border: 1px solid #dadce0; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 240px;
-            padding: 10px; display: flex; flex-direction: column; gap: 6px;
-            animation: fadeIn 0.2s;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .cw-row { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
-        .cw-map-label { font-size: 11px; font-weight: 600; color: #555; white-space: nowrap; }
-        .cw-map-input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; width: 140px; }
-        .cw-map-hint { font-size: 9px; color: #888; margin-top: 4px; line-height: 1.2; text-align: center; }
+        .btn-calc-toggle { background: rgba(26, 115, 232, 0.08); color: var(--vnpt-primary); }
+        .btn-calc-toggle:hover { background: rgba(26, 115, 232, 0.15); }
+        .btn-calc-toggle.active { background: var(--vnpt-primary); color: #fff; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
 
-        .cw-map-separator { height: 1px; background: #eee; margin: 4px 0; }
-        
-        .cw-map-actions { display: flex; flex-direction: column; gap: 4px; }
-        .cw-map-actions .vnpt-btn-action { 
-            justify-content: flex-start; width: 100%; padding: 0 10px; 
-            background: transparent; color: #3c4043; border-radius: 6px;
-        }
-        .cw-map-actions .vnpt-btn-action:hover { background: #f1f3f4; }
-        .cw-map-actions .btn-reset-default { color: #d32f2f; }
-        .cw-map-actions .btn-reset-default:hover { background: #fff5f5; }
-
-        .btn-more.active { background: #dadce0; }
+        .btn-more.active { background: rgba(0,0,0,0.1); }
 
     `;
     document.head.appendChild(style);

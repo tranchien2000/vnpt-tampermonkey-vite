@@ -28,6 +28,8 @@ export const DEFAULT_LABELS = {
     'noiKy': 'Nơi ký'
 };
 
+export const REQUIRED_KEYS = ['soHopDong', 'tenDaiDienn', 'cmnd', 'sdt', 'diaChi', 'tenToChuc', 'ngayCapCustomer', 'emailDaiDien', 'soDkdn', 'goiDV', 'soHopDong'];
+
 // VNPT Docx Export Widget Keys
 export const LOCAL_KEY_FIELDS = 'vnpt_docx_fields';
 export const LOCAL_KEY_DEFAULT_FIELDS = 'vnpt_docx_default_fields';

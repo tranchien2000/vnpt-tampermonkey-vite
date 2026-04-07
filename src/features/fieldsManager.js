@@ -4,7 +4,7 @@
  *       Đã tối ưu: Sử dụng Storage utility, Reactive State (AppState.on), DOM Cache.
  */
 import { AppState } from '../core/state.js';
-import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS, SK_TAX, SK_CALC_MAP } from '../core/constants.js';
+import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS, SK_TAX, SK_CALC_MAP, REQUIRED_KEYS } from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
@@ -63,6 +63,16 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
         if (keyText === 'tenToChuc') fVal.style.textAlign = 'right';
 
+        const checkRequired = () => {
+            if (REQUIRED_KEYS.includes(keyText)) {
+                if (!fVal.value.trim()) {
+                    fVal.classList.add('field-required-empty');
+                } else {
+                    fVal.classList.remove('field-required-empty');
+                }
+            }
+        };
+
         const syncThisRow = () => {
             const val = fVal.value;
             const targets = fKey.value.split(',').map(s => s.trim()).filter(s => s);
@@ -80,7 +90,11 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         fVal.addEventListener('input', function () {
             saveFieldsToLocal();
             syncThisRow();
+            checkRequired();
         });
+
+        // Khởi tạo trạng thái ban đầu
+        checkRequired();
 
         // Drag & Drop Logic
         const dragHandle = row.querySelector('.row-drag-handle');
@@ -275,6 +289,7 @@ function updateUIForDefaultMode(isDefault) {
 
     if (isDefault) {
         btn.classList.add('active');
+        btn.innerHTML = '✅ Chế độ: Dữ liệu mặc định';
         if (resetBtn) resetBtn.style.display = 'flex';
         AppState.fieldsContainer.classList.add('vnpt-mode-default');
         showToast("📌 Chế độ Dữ liệu mặc định (Có thể sửa)", "#ea4335");
@@ -300,6 +315,7 @@ function updateUIForDefaultMode(isDefault) {
         }
     } else {
         btn.classList.remove('active');
+        btn.innerHTML = '🛠 Dữ liệu mặc định VNPT';
         if (resetBtn) resetBtn.style.display = 'none';
         AppState.fieldsContainer.classList.remove('vnpt-mode-default');
         showToast("📋 Đã quay lại Dữ liệu cá nhân");

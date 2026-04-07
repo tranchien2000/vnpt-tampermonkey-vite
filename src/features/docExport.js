@@ -9,6 +9,7 @@
 // src/features/docExport.js
 import { AppState } from '../core/state.js';
 import { storage } from '../api/storage/index.js';
+import { DEFAULT_LABELS, REQUIRED_KEYS } from '../core/constants.js';
 
 function renderDocx(arrayBuffer, dataToFill, exportFileName) {
     try {
@@ -131,6 +132,20 @@ export function initDocExport() {
 
         if (Object.keys(dataToFill).length === 0) {
             alert('Bạn chưa Quét dữ liệu hoặc chưa có Biến nào.'); return;
+        }
+
+        // Kiểm tra các trường bắt buộc
+        const missingFields = [];
+        REQUIRED_KEYS.forEach(key => {
+            if (!dataToFill[key] || !dataToFill[key].trim()) {
+                const label = DEFAULT_LABELS[key] || key;
+                missingFields.push(label);
+            }
+        });
+
+        if (missingFields.length > 0) {
+            const confirmMsg = `Cảnh báo: Bạn còn các trường sau chưa điền dữ liệu:\n\n- ${missingFields.join('\n- ')}\n\nBạn có chắc chắn muốn tiếp tục xuất file không?`;
+            if (!confirm(confirmMsg)) return;
         }
 
         let exportFileName = document.getElementById('vnpt-export-filename').value.trim() || 'HopDong_Auto.docx';

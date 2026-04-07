@@ -30,24 +30,33 @@ export function initWidget() {
             <div class="vnpt-resizer br"></div>
 
             <div id="vnpt-panel-header" title="Kẹp chuột vào đây để di chuyển">
-                <span id="vnpt-panel-title">VNPT PRO</span>
-                <div class="btn-row" style="margin-bottom: 0; padding-right: 35px; gap: 4px; position: relative;">
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Scan</button>
-                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền thông tin</button>
+                <div class="header-left">
+                    <span id="vnpt-panel-title">VNPT PRO</span>
+                </div>
+                <div class="header-center">
+                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
+                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
+                </div>
+                <div class="header-right">
+                    <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
+                    <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑</button>
                     
-                    <button class="vnpt-btn-action btn-default-toggle" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">Default</button>
-                    <div class="vnpt-size-dropdown">
-                        <button class="vnpt-btn-action btn-size" id="vnpt-btn-size" title="Thay đổi kích thước">Size ▾</button>
-                        <div class="vnpt-size-menu" id="vnpt-size-menu">
-                            <button data-size="S">S</button>
-                            <button data-size="M">M</button>
-                            <button data-size="L">L</button>
-                            <button data-size="Full">Full</button>
+                    <div class="vnpt-util-dropdown">
+                        <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⋮</button>
+                        <div class="vnpt-util-menu" id="vnpt-util-menu">
+                            <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
+                            <button class="util-item" id="vnpt-btn-reset-default" style="display: none; color: #d32f2f;">🔄 Khôi phục dữ liệu gốc</button>
+                            <button class="util-item" id="vnpt-btn-toggle-id">🆔 Hiện/Ẩn Mã ID (Nhập code)</button>
+                            <div class="util-separator"></div>
+                            <div class="util-submenu-title">Kích thước bảng:</div>
+                            <div class="size-options">
+                                <button data-size="S">S</button>
+                                <button data-size="M">M</button>
+                                <button data-size="L">L</button>
+                                <button data-size="Full">Full</button>
+                            </div>
                         </div>
                     </div>
-                    <button class="vnpt-btn-action btn-toggle-id" id="vnpt-btn-toggle-id" title="Ẩn/Hiện Mã ID">Nhập code</button>
-                    <button class="vnpt-btn-action btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">➕</button>
-                    <button class="vnpt-btn-action btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑️</button>
                 </div>
             </div>
 
@@ -170,9 +179,9 @@ export function initWidget() {
         }
     });
 
-    // Xử lý Size Presets
-    const sizeBtn = document.getElementById('vnpt-btn-size');
-    const sizeMenu = document.getElementById('vnpt-size-menu');
+    // Xử lý Utility Menu & Size Presets
+    const moreBtn = document.getElementById('vnpt-btn-more');
+    const utilMenu = document.getElementById('vnpt-util-menu');
     const SIZE_PRESETS = {
         'S': { width: '350px', height: '400px' },
         'M': { width: '440px', height: '600px' },
@@ -180,23 +189,27 @@ export function initWidget() {
         'Full': { width: '98vw', height: '92vh' }
     };
 
-    sizeBtn.addEventListener('click', (e) => {
+    moreBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        sizeMenu.classList.toggle('show');
+        utilMenu.classList.toggle('show');
+        moreBtn.classList.toggle('active');
     });
 
-    document.addEventListener('click', () => sizeMenu.classList.remove('show'));
+    document.addEventListener('click', () => {
+        utilMenu.classList.remove('show');
+        moreBtn.classList.remove('active');
+    });
 
-    sizeMenu.querySelectorAll('button').forEach(btn => {
+    utilMenu.querySelectorAll('.size-options button').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const sizeKey = e.target.getAttribute('data-size');
             const preset = SIZE_PRESETS[sizeKey];
             if (preset) {
                 AppState.panel.style.width = preset.width;
                 AppState.panel.style.height = preset.height;
-                // ResizeObserver sẽ tự động lưu vào localStorage
             }
-            sizeMenu.classList.remove('show');
+            utilMenu.classList.remove('show');
+            moreBtn.classList.remove('active');
         });
     });
 
