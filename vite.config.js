@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite';
 
 const tampermonkeyHeader = `// ==UserScript==
-// @name         VNPT Word Automation (Vite)
+// @name         VNPT Word Automation
 // @namespace    http://tampermonkey.net/
 // @version      1.5
-// @description  Tool tự động lấy dữ liệu trên portal VNPT, bọc qua Vite
+// @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
 // @require      https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js
