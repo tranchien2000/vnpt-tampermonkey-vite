@@ -54,11 +54,25 @@ export function initWidget() {
                             <button class="util-item danger" id="vnpt-btn-reset-default" >🔄 Khôi phục dữ liệu gốc</button>
                             
                             
-                            <div class="util-separator"></div>
                             <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>
                             <div class="cw-row-map">
                                 <span>API Key</span>
                                 <input id="vnpt-gemini-key" type="password" placeholder="AIzaSy..." title="Lấy mã Key từ Google AI Studio" class="cw-map-input">
+                            </div>
+                            <div class="cw-row-map">
+                                <span>Mô hình</span>
+                                <select id="vnpt-gemini-model" class="cw-map-input">
+                                    <optgroup label="Thế hệ 2.0 (Khuyên dùng)">
+                                        <option value="gemini-2.0-flash-001">Gemini 2.0 Flash (Cân bằng)</option>
+                                        <option value="gemini-2.0-flash-lite-preview-02-05">Gemini 2.0 Flash-Lite (Siêu nhanh)</option>
+                                        <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Experimental (Cao cấp nhất)</option>
+                                    </optgroup>
+                                    <optgroup label="Thế hệ 1.5 (Ổn định)">
+                                        <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Tốc độ)</option>
+                                        <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Thông minh)</option>
+                                        <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B (Tối ưu số lượng)</option>
+                                    </optgroup>
+                                </select>
                             </div>
 
                             <div class="util-separator"></div>
@@ -240,11 +254,18 @@ export function initWidget() {
     });
 
     const geminiKeyInput = document.getElementById('vnpt-gemini-key');
-    if (geminiKeyInput) {
-        import('../core/constants.js').then(({ SK_GEMINI_KEY }) => {
+    const geminiModelSelect = document.getElementById('vnpt-gemini-model');
+    
+    if (geminiKeyInput && geminiModelSelect) {
+        import('../core/constants.js').then(({ SK_GEMINI_KEY, SK_GEMINI_MODEL }) => {
             geminiKeyInput.value = Storage.get(SK_GEMINI_KEY) || '';
+            geminiModelSelect.value = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.0-flash';
+            
             geminiKeyInput.oninput = () => {
                 Storage.set(SK_GEMINI_KEY, geminiKeyInput.value.trim());
+            };
+            geminiModelSelect.onchange = () => {
+                Storage.set(SK_GEMINI_MODEL, geminiModelSelect.value);
             };
         });
     }

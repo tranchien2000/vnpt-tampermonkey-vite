@@ -4,7 +4,7 @@ Tính năng **Scan PDF Bằng AI** của tiện ích nâng cao sử dụng mô h
 
 Dưới đây là các bước để tự tạo API Key trong vài giây:
 
-## Bước 1: Truy Cập Google AI Studio
+## Bước 1: Truy Cập Google AI Studio    
 
 Truy cập địa chỉ sau (đăng nhập bằng tài khoản Google - Gmail của bạn):
 👉 **[Google AI Studio - Get API Key](https://aistudio.google.com/app/apikey)**

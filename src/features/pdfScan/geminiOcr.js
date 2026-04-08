@@ -40,13 +40,15 @@ Lưu ý quan trọng:
 /**
  * @param {string} base64PDF Chuỗi base64 của file
  * @param {string} apiKey Khóa API Google Gemini
+ * @param {string} modelName Tên mô hình (ví dụ: gemini-2.0-flash)
  * @returns {Promise<Object>} JSON đã parse
  */
-export function extractWithGemini(base64PDF, apiKey) {
+export function extractWithGemini(base64PDF, apiKey, modelName = 'gemini-2.0-flash') {
     return new Promise((resolve, reject) => {
         if (!apiKey) return reject("Vui lòng nhập API Key Gemini trong Cài đặt.");
 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const cleanKey = apiKey.trim();
+        const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${cleanKey}`;
 
         const requestData = {
             system_instruction: {
@@ -104,14 +106,14 @@ export function extractWithGemini(base64PDF, apiKey) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestData)
             })
-            .then(r => r.json())
-            .then(resObj => {
-                if(resObj.error) return reject(resObj.error.message);
-                const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
-                let cleanJson = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                resolve(JSON.parse(cleanJson));
-            })
-            .catch(e => reject(e.message));
+                .then(r => r.json())
+                .then(resObj => {
+                    if (resObj.error) return reject(resObj.error.message);
+                    const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    let cleanJson = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                    resolve(JSON.parse(cleanJson));
+                })
+                .catch(e => reject(e.message));
         }
     });
 }

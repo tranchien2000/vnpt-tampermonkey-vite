@@ -5,7 +5,7 @@
  */
 import { AppState } from '../../core/state.js';
 import { Storage } from '../../utils/storage.js';
-import { SK_GEMINI_KEY } from '../../core/constants.js';
+import { SK_GEMINI_KEY, SK_GEMINI_MODEL } from '../../core/constants.js';
 import { fileToBase64, extractWithGemini } from './geminiOcr.js';
 import { showPdfConfirmDialog, showPdfLoading, hidePdfLoading } from './pdfScanUI.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from '../fieldsManager.js';
@@ -37,6 +37,7 @@ export function initPdfScan() {
  */
 async function handlePdfFile(file) {
     const apiKey = Storage.get(SK_GEMINI_KEY);
+    const apiModel = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.0-flash';
     
     // Yêu cầu API Key nếu chưa có
     if (!apiKey) {
@@ -55,7 +56,7 @@ async function handlePdfFile(file) {
         const base64Data = await fileToBase64(file);
 
         // Ném vào LLM phân tích OCR JSON 
-        const resultFieldsObj = await extractWithGemini(base64Data, apiKey);
+        const resultFieldsObj = await extractWithGemini(base64Data, apiKey, apiModel);
 
         // Tắt wait UI
         hidePdfLoading();
@@ -88,6 +89,14 @@ async function handlePdfFile(file) {
     } catch (e) {
         hidePdfLoading();
         console.error("Lỗi PDF Scan Pipeline:", e);
-        alert("Lỗi xử lý quét File:\n" + e);
+
+        let errorMsg = e;
+        if (typeof e === 'string' && (e.includes("Quota exceeded") || e.includes("limit: 0"))) {
+            errorMsg = "⚠️ Hết hạn mức hoặc Mô hình không khả dụng (Quota Exceeded)!\n\n" +
+                "Mô hình bạn chọn có thể chưa hỗ trợ tại vùng của bạn hoặc bạn đã dùng hết lượt gọi miễn phí.\n\n" +
+                "QUYẾT : Hãy mở menu ⚙️ (Thiết lập), đổi sang 'Gemini 1.5 Flash' hoặc 'Gemini 2.0 Flash' để tiếp tục.";
+        }
+
+        alert("Lỗi xử lý quét File:\n" + errorMsg);
     }
 }
