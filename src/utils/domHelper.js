@@ -2,12 +2,26 @@ import { findBestMatch } from './stringHelper.js';
 
 // ─── DOM Cache ───
 const DOMCache = new Map();
+let LabelCache = []; // Bộ nhớ đệm danh sách các nhãn (label, .label, ...)
+let lastLabelUpdate = 0;
+const CACHE_TTL = 3000; // 3 giây mới quét label 1 lần nếu không được trigger
 
 /**
  * Xóa bộ nhớ đệm DOM khi trang thay đổi cấu trúc lớn.
  */
 export function clearDOMCache() {
     DOMCache.clear();
+    // Không xóa LabelCache ở đây để tránh giật, 
+    // sẽ được refresh riêng hoặc theo TTL
+}
+
+/**
+ * Cập nhật lại danh sách labels từ DOM.
+ */
+export function refreshLabelsCache() {
+    LabelCache = Array.from(document.querySelectorAll('label, .label, .label-text, span.title, .form-label'));
+    lastLabelUpdate = Date.now();
+    // console.debug(`[DOM] Refreshed ${LabelCache.length} labels`);
 }
 
 export function triggerCustom(el) {
@@ -53,7 +67,13 @@ export function findPageInput(name, labelText = null) {
     
     // 3. Tìm theo nhãn thẻ label (Chính xác hoặc Mờ)
     const targetLabel = labelText || name;
-    const allLabels = Array.from(document.querySelectorAll('label, .label, .label-text, span.title'));
+
+    // Cập nhật LabelCache nếu chưa có hoặc quá lâu chưa cập nhật
+    if (LabelCache.length === 0 || (Date.now() - lastLabelUpdate > CACHE_TTL)) {
+        refreshLabelsCache();
+    }
+    
+    const allLabels = LabelCache;
     
     // Thử tìm chính xác trước
     let foundLabel = allLabels.find(lbl => lbl.innerText.trim() === targetLabel);

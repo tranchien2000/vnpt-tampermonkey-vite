@@ -51,6 +51,7 @@ export function doSyncData() {
 
 // ─── Event Listener Logic ───
 let isSyncing = false;
+const targetElementCache = new Map(); // Cache cho các target elements (tăng tốc độ gõ phím)
 
 const processSync = (target, val) => {
     if (isSyncing) return;
@@ -81,9 +82,14 @@ const processSync = (target, val) => {
             const list = targets.split(',').map(s => s.trim()).filter(s => s);
             list.forEach(t => {
                 // Focus Guard: Chỉ cập nhật nếu field đích đang KHÔNG được focus
-                // Điều này giúp tránh việc bị mất con trỏ/giật khi đang gõ ở field đích
                 if (t !== keyId && t !== keyName && t !== keyLblStr) {
-                    const targetEl = findPageInput(t) || getInputByLabel(t);
+                    // Kiểm tra cache trước
+                    let targetEl = targetElementCache.get(t);
+                    if (!targetEl || !document.contains(targetEl)) {
+                        targetEl = findPageInput(t) || getInputByLabel(t);
+                        if (targetEl) targetElementCache.set(t, targetEl);
+                    }
+
                     if (targetEl && document.activeElement !== targetEl) {
                         syncSetValue(targetEl, val);
                     }

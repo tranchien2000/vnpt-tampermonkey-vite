@@ -17,7 +17,7 @@ import { setupAutoFillForm } from './features/autoFillForm.js';
 import { initPdfScan } from './features/pdfScan/index.js';
 import { initSyncEngine } from './features/dataFill/syncEngine.js';
 import { initCalcWidget } from './features/calc/index.js';
-import { clearDOMCache } from './utils/domHelper.js';
+import { clearDOMCache, refreshLabelsCache } from './utils/domHelper.js';
 import { debounce } from './utils/common.js';
 import { initHotkeys } from './features/hotkeys.js';
 import { initStorageMerge } from './utils/migrationHelper.js';
@@ -51,13 +51,25 @@ function init() {
 
     // ─── DOM Cache Management ───
     // Xóa cache khi DOM thay đổi lớn (SPA navigation hoặc load form mới)
+    // Tăng debounce lên 1500ms để tránh việc xóa cache quá liên tục khi trang web đang render
     const debouncedClearCache = debounce(() => {
         clearDOMCache();
-        logger.debug('DOM Cache cleared due to mutations');
-    }, 500);
+        refreshLabelsCache(); // Cập nhật luôn cả danh sách label
+        logger.debug('DOM Cache & Labels refreshed due to mutations');
+    }, 1500);
 
     cacheObserver = new MutationObserver((mutations) => {
-        if (mutations.some(m => m.addedNodes.length > 0 || m.removedNodes.length > 0)) {
+        // Chỉ trigger nếu có thêm/bớt Node lớn (không phải text change)
+        const hasSignificantChange = mutations.some(m => {
+            if (m.addedNodes.length > 0 || m.removedNodes.length > 0) {
+                // Kiểm tra xem có phải là thẻ script/style không (bỏ qua)
+                const nodes = [...m.addedNodes, ...m.removedNodes];
+                return nodes.some(n => n.nodeType === 1 && !['SCRIPT', 'STYLE', 'LINK'].includes(n.tagName));
+            }
+            return false;
+        });
+
+        if (hasSignificantChange) {
             debouncedClearCache();
         }
     });
