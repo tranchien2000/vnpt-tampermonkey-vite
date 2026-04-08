@@ -52,11 +52,11 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         if (syncText) displayKey += ', ' + syncText;
 
         row.innerHTML = `
-            <input type="checkbox" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
-            <input type="text" class="f-label" value="${labelText}" />
-            <input type="text" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
+            <input type="checkbox" id="chk-${keyText}" name="chk-${keyText}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
+            <input type="text" id="lbl-${keyText}" name="lbl-${keyText}" class="f-label" value="${labelText}" />
+            <input type="text" id="key-${keyText}" name="key-${keyText}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
             <span class="row-drag-handle" title="Kéo">=</span>
-            <input type="text" class="f-val" value="${valueText}" />
+            <input type="text" id="val-${keyText}" name="val-${keyText}" class="f-val" value="${valueText}" />
         `;
         const fVal = row.querySelector('.f-val');
         const fKey = row.querySelector('.f-key');

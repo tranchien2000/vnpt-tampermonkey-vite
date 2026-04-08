@@ -129,10 +129,10 @@ export function initCalcWidget() {
         <div class="cw-map-dropdown-container">
             <button id="wg-calc-map-btn" class="cw-map-btn-inline" title="Cấu hình Mapping">⚙️</button>
             <div id="wg-calc-map-wrap" class="cw-map-wrap-popup" style="display:none;">
-                <div class="cw-row"><span class="cw-map-label">Trước thuế</span><input data-clink="before" class="cw-map-input" placeholder="Ví dụ: tong_tien"></div>
-                <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input data-clink="tax" class="cw-map-input" placeholder="Ví dụ: thue_gtgt"></div>
-                <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input data-clink="after" class="cw-map-input" placeholder="Ví dụ: tong_cong"></div>
-                <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input data-clink="text" class="cw-map-input" placeholder="Ví dụ: doc_tien"></div>
+                <div class="cw-row"><span class="cw-map-label">Trước thuế</span><input id="cw-map-before" name="cw-map-before" data-clink="before" class="cw-map-input" placeholder="Ví dụ: tong_tien"></div>
+                <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input id="cw-map-tax" name="cw-map-tax" data-clink="tax" class="cw-map-input" placeholder="Ví dụ: thue_gtgt"></div>
+                <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input id="cw-map-after" name="cw-map-after" data-clink="after" class="cw-map-input" placeholder="Ví dụ: tong_cong"></div>
+                <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input id="cw-map-text" name="cw-map-text" data-clink="text" class="cw-map-input" placeholder="Ví dụ: doc_tien"></div>
             </div>
         </div>
     </div>

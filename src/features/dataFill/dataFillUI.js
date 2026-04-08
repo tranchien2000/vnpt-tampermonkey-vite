@@ -62,6 +62,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
 
             const kInp = document.createElement('input'); 
             kInp.type = 'text'; kInp.value = lbl; 
+            kInp.id = `df-key-${k}`; kInp.name = `df-key-${k}`;
             kInp.className = 'cw-data-key' + (mut ? ' mutable' : '');
             kInp.title = k; // Technical Key is shown on hover
             kInp.readOnly = !mut;
@@ -81,7 +82,9 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
             }
 
             const vInp = document.createElement('input'); 
-            vInp.type = 'text'; vInp.value = val ?? ''; vInp.className = 'cw-data-val';
+            vInp.type = 'text'; vInp.value = val ?? ''; 
+            vInp.id = `df-val-${k}`; vInp.name = `df-val-${k}`;
+            vInp.className = 'cw-data-val';
             vInp.oninput = () => { 
                 if (isObj) {
                     active[k] = { ...dataItem, value: vInp.value };

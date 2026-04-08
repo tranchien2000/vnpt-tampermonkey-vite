@@ -76,6 +76,7 @@ export function injectStyles() {
             box-shadow: var(--vnpt-shadow);
             transition: width 0.2s ease, height 0.2s ease;
         }
+        #vnpt-export-panel.vnpt-resizing { transition: none !important; user-select: none !important; }
         
         #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 6px; border-radius: 12px; }
 
@@ -299,7 +300,10 @@ export function injectStyles() {
         .vnpt-resizer.tr { top: -4px; right: -4px; cursor: nesw-resize; }
         .vnpt-resizer.bl { bottom: -4px; left: -4px; cursor: nesw-resize; }
         .vnpt-resizer.br { bottom: -4px; right: -4px; cursor: nwse-resize; }
-        .vnpt-resizer:hover { background: rgba(26, 115, 232, 0.2); border-radius: 50%; }
+        .vnpt-resizer:hover { background: rgba(26, 115, 232, 0.4); border-radius: 50%; }
+        .vnpt-resizer:active { background: var(--vnpt-primary); transform: scale(1.2); }
+
+        body.vnpt-resizing-global * { user-select: none !important; cursor: inherit !important; }
 
         /* ═══════════════════════════════════════════
            SECTION 5: TEMPLATE MANAGER

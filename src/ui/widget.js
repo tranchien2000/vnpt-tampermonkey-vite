@@ -52,17 +52,17 @@ export function initWidget() {
                             
                             <div class="util-separator"></div>
                             <div class="util-submenu-title">Liên kết ô (Mapping Calc)</div>
-                            <div class="cw-row-map"><span>Trước thuế</span><input data-clink="before" class="cw-map-input"></div>
-                            <div class="cw-row-map"><span>Tiền thuế</span><input data-clink="tax" class="cw-map-input"></div>
-                            <div class="cw-row-map"><span>Sau thuế</span><input data-clink="after" class="cw-map-input"></div>
-                            <div class="cw-row-map"><span>Bằng chữ</span><input data-clink="text" class="cw-map-input"></div>
+                            <div class="cw-row-map"><span>Trước thuế</span><input id="vnpt-map-before" name="vnpt-map-before" data-clink="before" class="cw-map-input"></div>
+                            <div class="cw-row-map"><span>Tiền thuế</span><input id="vnpt-map-tax" name="vnpt-map-tax" data-clink="tax" class="cw-map-input"></div>
+                            <div class="cw-row-map"><span>Sau thuế</span><input id="vnpt-map-after" name="vnpt-map-after" data-clink="after" class="cw-map-input"></div>
+                            <div class="cw-row-map"><span>Bằng chữ</span><input id="vnpt-map-text" name="vnpt-map-text" data-clink="text" class="cw-map-input"></div>
                             
                             <div class="util-separator"></div>
                             <div class="util-submenu-title">Dữ liệu hệ thống</div>
                             <div class="util-action-row">
                                 <button class="util-item-small" id="vnpt-btn-import-json">📥 Nhập JSON</button>
                                 <button class="util-item-small" id="vnpt-btn-export-json">📤 Xuất JSON</button>
-                                <input type="file" id="vnpt-file-import-json" accept=".json" style="display: none;">
+                                <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                             </div>
 
                             <div class="util-separator"></div>
@@ -104,10 +104,10 @@ export function initWidget() {
 
                 <div class="bottom-export-row">
                     <div class="vnpt-control-group" id="vnpt-local-file-group">
-                        <input type="file" id="vnpt-template-file" accept=".docx" title="Hoặc sử dụng File nội bộ từ máy" />
+                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" title="Hoặc sử dụng File nội bộ từ máy" />
                     </div>
                     <div class="vnpt-control-group">
-                        <input type="text" id="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
+                        <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
                     </div>
                     <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT FILE</button>
                 </div>
@@ -263,36 +263,39 @@ export function initWidget() {
             const widgetRect = AppState.widget.getBoundingClientRect();
             const startTop = widgetRect.top;
             const startRight = window.innerWidth - widgetRect.right;
+            
+            AppState.panel.classList.add('vnpt-resizing');
+            document.body.classList.add('vnpt-resizing-global');
+            const cursor = window.getComputedStyle(resizer).cursor;
+            document.body.style.cursor = cursor;
 
             const onMouseMove = (moveEvt) => {
                 const dx = moveEvt.clientX - startX;
                 const dy = moveEvt.clientY - startY;
 
                 if (resizer.classList.contains('br')) {
-                    AppState.panel.style.width = (startWidth + dx) + 'px';
-                    AppState.panel.style.height = (startHeight + dy) + 'px';
+                    AppState.panel.style.width = Math.max(360, startWidth + dx) + 'px';
+                    AppState.panel.style.height = Math.max(250, startHeight + dy) + 'px';
                 } else if (resizer.classList.contains('bl')) {
                     const newWidth = startWidth - dx;
-                    if (newWidth > 300) {
+                    if (newWidth > 360) {
                         AppState.panel.style.width = newWidth + 'px';
-                        AppState.widget.style.right = (startRight + dx) + 'px';
                     }
-                    AppState.panel.style.height = (startHeight + dy) + 'px';
+                    AppState.panel.style.height = Math.max(250, startHeight + dy) + 'px';
                 } else if (resizer.classList.contains('tr')) {
-                    AppState.panel.style.width = (startWidth + dx) + 'px';
+                    AppState.panel.style.width = Math.max(360, startWidth + dx) + 'px';
                     const newHeight = startHeight - dy;
-                    if (newHeight > 150) {
+                    if (newHeight > 250) {
                         AppState.panel.style.height = newHeight + 'px';
                         AppState.widget.style.top = (startTop + dy) + 'px';
                     }
                 } else if (resizer.classList.contains('tl')) {
                     const newWidth = startWidth - dx;
                     const newHeight = startHeight - dy;
-                    if (newWidth > 300) {
+                    if (newWidth > 360) {
                         AppState.panel.style.width = newWidth + 'px';
-                        AppState.widget.style.right = (startRight + dx) + 'px';
                     }
-                    if (newHeight > 150) {
+                    if (newHeight > 250) {
                         AppState.panel.style.height = newHeight + 'px';
                         AppState.widget.style.top = (startTop + dy) + 'px';
                     }
@@ -302,14 +305,24 @@ export function initWidget() {
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
-                // Lưu vị trí sau khi resize (vì top/right có thể đã thay đổi)
+                
+                AppState.panel.classList.remove('vnpt-resizing');
+                document.body.classList.remove('vnpt-resizing-global');
+                document.body.style.cursor = '';
+
+                // Lưu vị trí và kích thước
                 const isRightAnchor = AppState.widget.id === 'vnpt-docx-widget';
                 Storage.setDebounced(LOCAL_KEY_POS, {
                     right: isRightAnchor ? AppState.widget.style.right : undefined,
                     top: AppState.widget.style.top,
                     x: isRightAnchor ? undefined : parseFloat(AppState.widget.style.left),
                     y: parseFloat(AppState.widget.style.top),
-                }, 1000);
+                }, 500);
+
+                Storage.setDebounced(LOCAL_KEY_SIZE, {
+                    width: AppState.panel.offsetWidth,
+                    height: AppState.panel.offsetHeight
+                }, 500);
             };
 
             window.addEventListener('mousemove', onMouseMove);
