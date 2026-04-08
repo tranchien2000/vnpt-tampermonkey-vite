@@ -7,7 +7,7 @@
  * @seeAlso core/defaults.js (data mặc định), core/state.js (AppState)
  */
 export const DEFAULT_LABELS = {
-    'tenDaiDienn': 'Tên Đại Diện',
+    'tenDaiDienn, tenNguoiNhanCTS ': 'Tên Đại Diện',
     'chucVu': 'Chức Vụ',
     'ngaySinhCustomer': 'Ngày Sinh KH',
     'diaChi': 'Địa chỉ',
@@ -15,7 +15,7 @@ export const DEFAULT_LABELS = {
     'ngayCapCustomer': 'Ngày Cấp CMND',
     'noiCap': 'Nơi Cấp',
     'sdt': 'SĐT',
-    'emailDaiDien': 'Email Nhận TK',
+    'emailDaiDien, emailNhanCTS': 'Email Nhận TK',
     'tenToChuc': 'Tên Tổ Chức',
     'ngayCapSoDkdnCustomer': 'Ngày Cấp ĐKKD',
     'soDkdn': 'Mã số thuế | GPKD',
