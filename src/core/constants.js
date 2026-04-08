@@ -52,4 +52,5 @@ export const SK_CALC_MAP = 'vnd_calc_map';
 export const SK_DATATAB = 'vnpt_widget_datatab';   // 'default' | 'custom'
 export const SK_TEMPLATES = 'vnpt_templates';       // [{name, url, lastUsed}]
 export const SK_TXT_TEMPLATE = 'vnpt_txt_template'; // string — nội dung text template
+export const SK_GEMINI_KEY = 'vnpt_gemini_api_key'; // string — Google Gemini API Key
 //

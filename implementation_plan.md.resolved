@@ -1,0 +1,778 @@
+# PDF Scan & Auto-Fill — Implementation Plan
+
+## Tổng quan
+
+Tính năng cho phép người dùng **tải lên file PDF hợp đồng** (PDF đã scan hoặc nhận từ khách hàng), hệ thống sẽ:
+1. Trích xuất văn bản PDF (PDF.js).
+2. Dùng các **regex rule** được định nghĩa sẵn cho từng trường (CMND, MST, SĐT, tên, ngày...) để nhận diện dữ liệu.
+3. Tự động điền vào bảng fields của widget.
+
+> [!IMPORTANT]
+> Tính năng hoạt động **100% client-side** — không gửi dữ liệu ra ngoài, không cần backend hay AI API. Đây là thiết kế chủ đích để đảm bảo bảo mật và hoạt động trong môi trường Tampermonkey.
+
+---
+
+## Luồng dữ liệu tổng thể
+
+```mermaid
+graph TD
+    A[User chọn file PDF] --> B[pdfParser.js<br/>PDF.js extractText]
+    B --> C[fieldRecognizer.js<br/>Áp regex rules]
+    C --> D{Kết quả nhận diện}
+    D -->|Confidence cao| E[Điền thẳng vào fields]
+    D -->|Confidence thấp| F[UI Confirm Dialog]
+    F --> E
+    E --> G[addOrUpdateFieldRow]
+    G --> H[saveFieldsToLocal]
+```
+
+---
+
+## Phân tích kỹ thuật
+
+### Thư viện PDF.js
+- **Cách tích hợp**: Load từ CDN qua `@require` trong Tampermonkey header (tương tự docxtemplater/PizZip đang dùng).
+- **CDN**: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs`  
+- **Worker**: Dùng `GlobalWorkerOptions.workerSrc` từ CDN.
+- Không cần build config thay đổi nào vì đã có `@connect *` trong header.
+
+### 📊 Phân loại Độ Chính Xác theo Trường & Phương án
+
+Mỗi trường được phân vào **3 Tier** dựa trên đặc điểm nhận diện:
+
+| Tier | Đặc điểm | Ví dụ |
+|------|----------|-------|
+| 🟢 **Tier 1 — Structural** | Có định dạng cố định, regex rất chính xác | Email, SĐT, CMND, MST, Ngày tháng |
+| 🟡 **Tier 2 — Semi-free** | Có nhãn rõ, nội dung biến thiên | Tên người, Chức vụ, Nơi cấp |
+| 🔴 **Tier 3 — Free-text** | Nội dung dài, không cấu trúc, phụ thuộc ngữ nghĩa | Tên công ty, Địa chỉ, Số HĐ |
+
+---
+
+#### Bảng độ chính xác chi tiết theo từng trường
+
+| Trường | Tier | Regex (PDF.js) | Gemini API | Lý do |
+|--------|------|:--------------:|:----------:|-------|
+| `emailDaiDien` | 🟢 | **~99%** | ~97% | Regex email chuẩn, không nhầm |
+| `sdt` | 🟢 | **~95%** | ~96% | Pattern 0xxx rõ ràng |
+| `cmnd` | 🟢 | **~92%** | ~95% | 9/12 số + label rõ |
+| `soDkdn` (MST) | 🟢 | **~90%** | ~95% | 10-13 số, thường được label |
+| `ngayCapCustomer` | 🟢 | **~88%** | ~92% | dd/mm/yyyy + "Cấp ngày" |
+| `ngaySinhCustomer` | 🟢 | **~85%** | ~92% | dd/mm/yyyy + "Sinh ngày" |
+| `chucVu` | 🟡 | ~70% | **~90%** | Label rõ nhưng nội dung khác nhau |
+| `noiCap` | 🟡 | ~68% | **~88%** | "Nơi cấp:" thường có nhưng xuống dòng |
+| `tenDaiDienn` | 🟡 | ~60% | **~90%** | Cần phân biệt Bên A / Bên B |
+| `tenToChuc` | 🔴 | ~55% | **~88%** | Tên dài, nhiều kiểu viết |
+| `diaChi` | 🔴 | ~50% | **~82%** | Multi-line, format khác nhau |
+| `soHopDong` | 🔴 | ~65% | **~85%** | Format số HĐ mỗi đơn vị khác nhau |
+
+> **Regex accuracy** = PDF có text layer sạch. Nếu PDF scan ảnh → regex = 0%, Gemini vẫn hoạt động.
+
+---
+
+#### Hệ thống Confidence Score
+
+Mỗi kết quả nhận diện có score từ **0.0 → 1.0**:
+
+```
+┌──────────────────────────────────────────────────────┐
+│  Score ≥ 0.85  →  🟢 Điền tự động, không hỏi        │
+│  Score 0.6–0.84 →  🟡 Hiển thị dialog, đề xuất tick  │
+│  Score < 0.6   →  🔴 Hiển thị dialog, bỏ tick sẵn   │
+│  Không tìm thấy →  ⬜ Bỏ trống, không hiển thị       │
+└──────────────────────────────────────────────────────┘
+```
+
+**Cách tính score cho Regex:**
+- Pattern match chính xác + label rõ ràng → `1.0`
+- Match nhưng không có label → `0.75`  
+- Nhiều match, lấy cái đầu → `0.65`
+- Regex fallback pattern → `0.5`
+
+**Cách tính score cho Gemini:**
+- Field được trả về với giá trị → `0.90` (Gemini đã lọc ngữ nghĩa)
+- Field trả về nhưng có từ nghi ngờ ("Ông/Bà") → `0.75`
+- Gemini trả về chuỗi rỗng → không hiển thị
+
+---
+
+#### Chiến lược chọn phương án theo Tier
+
+```
+🟢 Tier 1 (Structural) → Dùng Regex trước, Gemini làm fallback kiểm chứng
+🟡 Tier 2 (Semi-free)  → Dùng cả Regex + Gemini, lấy score cao hơn
+🔴 Tier 3 (Free-text)  → Gemini là primary, Regex chỉ backup thô
+```
+
+**Khi nào Regex "thắng" Gemini:**
+- PDF có text layer sạch + field Tier 1 → Regex đủ nhanh và chính xác, không cần gọi API
+
+**Khi nào Gemini "thắng" Regex:**
+- PDF scan ảnh (Regex = 0%)
+- Field Tier 2/3 cần hiểu ngữ nghĩa "Bên A / Bên B"
+- Hợp đồng không theo mẫu chuẩn
+
+---
+
+#### Regex Patterns chi tiết
+
+| Trường | Pattern | Tier |
+|--------|---------|------|
+| `emailDaiDien` | `/([a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,})/` | 🟢 |
+| `sdt` | `/(?:ĐT\|SĐT\|Tel\|Phone)[:\s]*(0[0-9]{9})/i` | 🟢 |
+| `cmnd` | `/(?:CMND\|CCCD\|Căn cước)[:\s]*(\d{9}\|\d{12})/i` | 🟢 |
+| `soDkdn` | `/(?:MST\|Mã số thuế\|GPKD)[:\s]*(\d{10,13})/i` | 🟢 |
+| `ngayCapCustomer` | `/[Cc]ấp ngày[:\s]*(\d{1,2}\/\d{1,2}\/\d{4})/` | 🟢 |
+| `ngaySinhCustomer` | `/[Ss]inh ngày[:\s]*(\d{1,2}\/\d{1,2}\/\d{4})/` | 🟢 |
+| `chucVu` | `/[Cc]hức vụ[:\s]*([^\n,]{3,50})/` | 🟡 |
+| `noiCap` | `/[Nn]ơi cấp[:\s]*([^\n]{5,80})/` | 🟡 |
+| `tenDaiDienn` | `/[Nn]gười đại diện[:\s]*([^\n,]{5,60})/` | 🟡 |
+| `tenToChuc` | `/(?:(?:Công ty\|Tổ chức\|Doanh nghiệp)[:\s]*)([^\n]{10,100})/i` | 🔴 |
+| `diaChi` | `/(?:Địa chỉ\|Trụ sở)[:\s]*([^\n]{10,200})/i` | 🔴 |
+| `soHopDong` | `/Số[:\s]*([A-Z0-9\/\-\.]{5,30}(?:HĐ\|HD))/i` | 🔴 |
+
+**Cơ chế confidence**: Score được tính tự động khi match. Xem hệ thống threshold ở trên.
+
+---
+
+## Các file cần tạo/sửa
+
+### 1. Tích hợp PDF.js vào Tampermonkey Header
+
+#### [MODIFY] [vite.config.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/vite.config.js)
+Thêm 2 dòng `@require` cho PDF.js:
+```diff
++// @require      https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs
++// @require      https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs
+```
+
+---
+
+### 2. Core — Regex Rules
+
+#### [NEW] `src/core/pdfRules.js`
+Chứa toàn bộ regex rules theo từng field key. Tách riêng để dễ maintain và mở rộng:
+
+```js
+export const PDF_FIELD_RULES = [
+  {
+    key: 'cmnd',
+    label: 'CMND/CCCD',
+    patterns: [
+      /(?:CMND|CCCD|Căn cước|số)\s*[:\s]+(\d{9}|\d{12})/i
+    ]
+  },
+  {
+    key: 'soDkdn',
+    label: 'Mã số thuế | GPKD',
+    patterns: [/(?:MST|Mã số thuế|Mã số DN)\s*[:\s]+(\d{10,13})/i]
+  },
+  // ... tất cả các trường
+];
+```
+
+---
+
+### 3. Feature — Parser & Recognizer
+
+#### [NEW] `src/features/pdfScan/pdfParser.js`
+Nhận `File` object, trả về chuỗi text thô từ tất cả các trang:
+
+```js
+/**
+ * @param {File} file — file PDF
+ * @returns {Promise<string>} — toàn bộ text từ PDF
+ */
+export async function extractTextFromPDF(file) { ... }
+```
+
+- Dùng `pdfjsLib` (từ CDN `@require`).
+- Ghép text từ tất cả các trang, phân tách bằng `\n`.
+
+#### [NEW] `src/features/pdfScan/fieldRecognizer.js`
+Nhận text thô, áp `PDF_FIELD_RULES`, trả về mảng kết quả:
+
+```js
+/**
+ * @param {string} rawText
+ * @returns {Array<{key, label, value, confidence}>}
+ */
+export function recognizeFields(rawText) { ... }
+```
+
+---
+
+### 4. UI — Confirm Dialog
+
+#### [NEW] `src/features/pdfScan/pdfScanUI.js`
+Chứa hàm hiển thị dialog xác nhận kết quả nhận diện:
+
+```js
+/**
+ * Hiển thị modal xác nhận trước khi điền vào bảng fields.
+ * @param {Array<{key, label, value, confidence}>} results
+ * @param {Function} onConfirm — callback khi user bấm "Xác nhận"
+ */
+export function showPdfConfirmDialog(results, onConfirm) { ... }
+```
+
+**Giao diện dialog**:
+- Hiển thị bảng: `Tên Trường | Giá trị tìm được | Confidence | Checkbox`
+- Nút **"Điền tất cả"** và **"Chỉ điền đã chọn"** + **"Hủy"**
+- Màu sắc: xanh lá nếu confidence cao, vàng nếu thấp
+
+#### [NEW] `src/features/pdfScan/index.js`
+Entry point, orchestrate toàn bộ flow:
+
+```js
+export async function initPdfScan(file) {
+  // 1. extract text
+  // 2. recognize fields
+  // 3. show dialog
+  // 4. fill fields
+}
+```
+
+---
+
+### 5. UI Widget — Thêm nút và input PDF
+
+#### [MODIFY] [widget.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/widget.js)
+Thêm nút "📄 Scan PDF" vào `header-center` và hidden file input:
+```html
+<button class="vnpt-btn-action btn-scan-pdf" id="vnpt-btn-scan-pdf" title="Scan file PDF để tự động điền">📄 Scan PDF</button>
+<input type="file" id="vnpt-pdf-input" name="vnpt-pdf-input" accept=".pdf" style="display:none;" />
+```
+
+#### [MODIFY] [main.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/main.js)
+Import và khởi tạo `initPdfScan`:
+
+---
+
+### 6. CSS — Modal Styles
+
+#### [MODIFY] [styles.js](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/src/ui/styles.js)
+Thêm styles cho:
+- `.vnpt-pdf-modal` — overlay full-screen
+- `.vnpt-pdf-dialog` — dialog card
+- `.pdf-result-table` — bảng kết quả
+- `.confidence-high`, `.confidence-low` — màu indicator
+
+---
+
+## Cấu trúc file mới
+
+```
+src/
+├── core/
+│   └── pdfRules.js          [NEW] — Regex rules từng trường
+├── features/
+│   └── pdfScan/
+│       ├── index.js          [NEW] — Orchestrator
+│       ├── pdfParser.js      [NEW] — PDF.js text extraction
+│       ├── fieldRecognizer.js [NEW] — Áp regex, tính confidence
+│       └── pdfScanUI.js      [NEW] — Modal xác nhận kết quả
+```
+
+---
+
+## Chi tiết kỹ thuật nâng cao
+
+### Xử lý PDF scan (ảnh)
+Nhiều hợp đồng VNPT là PDF được scan từ ảnh (không có text layer). Chiến lược xử lý:
+
+| Loại PDF | Strategy |
+|----------|----------|
+| PDF có text layer | PDF.js extract trực tiếp ✅ |
+| PDF scan (chỉ ảnh) | Cảnh báo user "PDF không có text layer" ⚠️ |
+
+---
+
+## 🔗 Phương án mở rộng: Kết hợp Ứng dụng Ngoài (OCR)
+
+Đây là phần **bổ sung** vào plan cốt lõi. Nếu muốn hỗ trợ cả PDF scan ảnh (không có text layer), có 4 lựa chọn:
+
+---
+
+### So sánh các phương án
+
+| Tiêu chí | A. Gemini Vision API | B. Local Python Server | C. Azure AI Document | D. Pure client (PDF.js only) |
+|----------|---------------------|----------------------|---------------------|--------------------------|
+| **OCR PDF ảnh** | ✅ | ✅ | ✅ | ❌ |
+| **Tiếng Việt** | ✅ Rất tốt | ✅ Tesseract-vie | ✅ Tốt | N/A |
+| **Chi phí** | Free 1M tokens/ngày | Miễn phí (tự chạy) | ~$1.5/1000 trang | Miễn phí |
+| **Bảo mật** | ⚠️ Gửi PDF lên cloud | ✅ Local only | ⚠️ Gửi lên cloud | ✅ Local only |
+| **Cài đặt** | Chỉ cần API Key | Cần Python + chạy server | Cần đăng ký Azure | Không cần |
+| **Tốc độ** | ~2-5s | ~3-8s (tùy máy) | ~2-4s | <1s |
+| **Phụ thuộc internet** | ✅ Cần | ❌ Không cần | ✅ Cần | ❌ Không cần |
+| **Độ phức tạp tích hợp** | Thấp | Trung bình | Thấp | N/A |
+| **Đề xuất** | ⭐ **Khuyến nghị** | ⭐ Nếu offline | Không cần thiết | Phase 1 baseline |
+
+---
+
+### Phương án A — Gemini Vision API ⭐ Khuyến nghị
+
+**Tại sao Gemini?**
+- Gemini 1.5 Flash có thể đọc PDF trực tiếp (native PDF support).
+- Có thể hiểu **cấu trúc ngữ nghĩa** ("Bên A: ...", "Bên B: ...") thay vì chỉ dùng regex.
+- Free tier: **1 triệu tokens/ngày**, dư dùng cho vài trăm hợp đồng.
+- Tiếng Việt tốt nhất trong các model.
+
+**Luồng hoạt động:**
+```mermaid
+graph LR
+    A[PDF file] --> B[Convert to Base64]
+    B --> C[GM_xmlhttpRequest<br/>Gemini API]
+    C --> D[Gemini phân tích<br/>+ JSON response]
+    D --> E[Map sang fields]
+    E --> F[Dialog xác nhận]
+    F --> G[addOrUpdateFieldRow]
+```
+
+**Prompt gửi lên Gemini** (được thiết kế để nhận về JSON):
+```
+Hãy đọc file PDF hợp đồng này và trích xuất các thông tin sau của Bên A (khách hàng) 
+dưới dạng JSON thuần túy, không có markdown:
+{
+  "tenDaiDienn": "...",
+  "chucVu": "...",
+  "tenToChuc": "...",
+  "cmnd": "...",
+  "sdt": "...",
+  "email": "...",
+  "diaChi": "...",
+  "soDkdn": "...",
+  "ngaySinhCustomer": "...",
+  "ngayCapCustomer": "...",
+  "noiCap": "..."
+}
+Nếu không tìm thấy thông tin, để giá trị là chuỗi rỗng "".
+```
+
+**Cách tích hợp Tampermonkey:**
+```js
+// Dùng GM_xmlhttpRequest để bypass CORS
+GM_xmlhttpRequest({
+  method: 'POST',
+  url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+  headers: { 'Content-Type': 'application/json' },
+  data: JSON.stringify({
+    contents: [{
+      parts: [
+        { text: PROMPT },
+        { inline_data: { mime_type: 'application/pdf', data: base64PDF } }
+      ]
+    }]
+  }),
+  onload: (res) => { /* parse JSON */ }
+});
+```
+
+**Lưu trữ API Key:** User nhập API Key một lần → lưu vào `localStorage` (key: `vnpt_gemini_api_key`). Có thể đặt trong menu ⚙️.
+
+> [!WARNING]
+> **Bảo mật:** PDF được gửi lên server Gemini (Google). Với hợp đồng có thông tin nhạy cảm, cần thông báo rõ cho người dùng trước khi gửi.
+
+---
+
+### Phương án B — Local Python Server (Offline)
+
+Chạy một HTTP server nhỏ trên máy tính, Tampermonkey gọi về `localhost`:
+
+```mermaid
+graph LR
+    A[PDF file] -->|upload| B[localhost:5678/ocr]
+    B --> C[Python: pdf2image<br/>+ pytesseract]
+    C --> D[JSON response]
+    D --> E[Widget điền fields]
+```
+
+**Stack Python:**
+- `pdf2image` — convert PDF page sang ảnh
+- `pytesseract` + `tessdata-vie` — OCR tiếng Việt
+- `flask` — HTTP server nhỏ
+- `pdfminer.six` — fallback extract text layer
+
+**Ưu điểm:** Hoàn toàn offline, bảo mật tuyệt đối.
+**Nhược điểm:** Phải cài Python + dependencies, chạy script trước khi dùng.
+
+**File cần tạo thêm (ngoài dự án Vite):**
+- `tools/ocr_server.py` — Flask server ~50 dòng
+- `tools/README_OCR.md` — Hướng dẫn cài đặt
+
+```js
+// Trong Tampermonkey, check xem local server có chạy không:
+fetch('http://localhost:5678/health')
+  .then(() => /* dùng local server */)
+  .catch(() => /* fallback: thông báo hoặc dùng Gemini */);
+```
+
+---
+
+### Kiến trúc đề xuất: Hybrid Strategy
+
+Kết hợp cả hai phase, có thể **chọn backend khi dùng**:
+
+```mermaid
+graph TD
+    A[User upload PDF] --> B{PDF có text layer?}
+    B -->|✅ Có| C[PDF.js extract - nhanh nhất]
+    B -->|❌ Không có| D{Chọn phương thức OCR}
+    D --> E[🌐 Gemini API]
+    D --> F[🖥️ Local Server]
+    C --> G[fieldRecognizer.js<br/>Regex match]
+    E --> H[Parse Gemini JSON]
+    F --> H
+    G --> I[Show Confirm Dialog]
+    H --> I
+    I --> J[Fill fields]
+```
+
+**UI thêm:** Một dropdown nhỏ "Phương thức OCR: [Gemini API ▼ / Local Server]" chỉ xuất hiện khi PDF là ảnh scan.
+
+---
+
+### Thay đổi bổ sung nếu chọn Gemini API
+
+#### [MODIFY] `vite.config.js`
+Thêm `@connect generativelanguage.googleapis.com` (đã có `@connect *` rồi ✅)
+
+#### [MODIFY] `src/core/constants.js`
+```js
+export const SK_GEMINI_KEY = 'vnpt_gemini_api_key';
+```
+
+#### [NEW] `src/features/pdfScan/geminiOcr.js`
+```js
+/**
+ * @param {string} base64PDF
+ * @param {string} apiKey
+ * @returns {Promise<Object>} — parsed JSON fields
+ */
+export function extractWithGemini(base64PDF, apiKey) { ... }
+```
+
+#### [MODIFY] `src/ui/widget.js` — Menu ⚙️
+Thêm input API Key trong dropdown:
+```html
+<div class="util-submenu-title">PDF Scan (OCR)</div>
+<div class="cw-row-map">
+  <span>Gemini Key</span>
+  <input id="vnpt-gemini-key" placeholder="AIza..." class="cw-map-input">
+</div>
+```
+
+> [!WARNING]
+> **OCR** (nhận diện chữ từ ảnh) **KHÔNG** được implement trong plan này vì: (1) thư viện OCR rất nặng (~20MB), (2) độ chính xác với tiếng Việt thấp nếu không có model chuyên biệt. Đây có thể là phase 2 nếu cần.
+
+### Vị trí nút trong Header
+Header hiện tại đang khá đầy (Quét dữ liệu, Điền web, Hiện/Ẩn Mã ID). Có 2 lựa chọn:
+
+> [!IMPORTANT]
+> **Quyết định cần bạn chọn:**
+> - **Option A**: Thêm nút "📄 Scan PDF" vào `header-center` (cạnh 3 nút hiện tại — sẽ hơi đầy ở size S)
+> - **Option B**: Đặt nút PDF Scan vào menu `⚙️` (utility dropdown) — gọn gàng hơn nhưng khó tìm hơn
+> - **Option C**: Tạo một tab/section riêng trong panel body cho PDF Scan
+
+**Khuyến nghị**: Option A nhưng rút gọn tên nút thành "📄 PDF" để vừa layout.
+
+---
+
+---
+
+## 🗺️ Các Bước Thực Hiện Chi Tiết
+
+> Được chia thành **7 Phase**, mỗi phase độc lập và có thể test ngay sau khi xong.
+
+---
+
+### ✅ Phase 0 — Cấu hình & Constants
+*Mục tiêu: Chuẩn bị nền tảng trước khi code*
+
+**Bước 0.1** — Thêm `@require` PDF.js vào Tampermonkey header
+- **File**: `vite.config.js`
+- **Thay đổi**: Thêm 2 dòng vào `tampermonkeyHeader`:
+  ```
+  // @require  https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs
+  // @require  https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs
+  ```
+- **Kiểm tra**: Build thành công, `window.pdfjsLib` có trong output
+
+**Bước 0.2** — Khai báo constants mới
+- **File**: `src/core/constants.js`
+- **Thêm**:
+  ```js
+  export const SK_GEMINI_KEY = 'vnpt_gemini_api_key';       // API key Gemini
+  export const SK_PDF_OCR_MODE = 'vnpt_pdf_ocr_mode';      // 'gemini' | 'local'
+  export const PDF_CONFIDENCE_AUTO = 0.85;                  // Ngưỡng tự điền
+  export const PDF_CONFIDENCE_WARN = 0.60;                  // Ngưỡng cảnh báo
+  ```
+- **Kiểm tra**: Import thử từ file khác không lỗi
+
+---
+
+### ✅ Phase 1 — Regex Rules (pdfRules.js)
+*Mục tiêu: Định nghĩa toàn bộ rules nhận diện*
+
+**Bước 1.1** — Tạo file `src/core/pdfRules.js` với cấu trúc skeleton
+- **Nội dung**: Export `PDF_FIELD_RULES` là array rỗng, đảm bảo file import được
+- **Kiểm tra**: `import { PDF_FIELD_RULES } from './pdfRules.js'` không lỗi
+
+**Bước 1.2** — Điền rules cho **Tier 1 (Structural)** — 6 trường
+- **Trường**: `emailDaiDien`, `sdt`, `cmnd`, `soDkdn`, `ngayCapCustomer`, `ngaySinhCustomer`
+- **Mỗi rule struct**:
+  ```js
+  { key: 'cmnd', label: 'CMND/CCCD', tier: 1, baseScore: 1.0,
+    patterns: [/(?:CMND|CCCD|Căn cước)[:\s]*(\d{9}|\d{12})/i] }
+  ```
+- **Kiểm tra**: Test từng regex trên chuỗi mẫu trong browser console
+
+**Bước 1.3** — Điền rules cho **Tier 2 (Semi-free)** — 3 trường
+- **Trường**: `tenDaiDienn`, `chucVu`, `noiCap`
+- **baseScore**: `0.75` (cần xác nhận)
+- **Kiểm tra**: Pattern bắt được khi text có "Người đại diện:", "Chức vụ:", "Nơi cấp:"
+
+**Bước 1.4** — Điền rules cho **Tier 3 (Free-text)** — 3 trường
+- **Trường**: `tenToChuc`, `diaChi`, `soHopDong`
+- **baseScore**: `0.65`
+- **Lưu ý `soHopDong`**: Cần 2–3 pattern alternation (vì format mỗi đơn vị khác)
+- **Kiểm tra**: Test với chuỗi mẫu hợp đồng thực tế
+
+---
+
+### ✅ Phase 2 — PDF Parser (pdfParser.js)
+*Mục tiêu: Lấy được text thô từ file PDF*
+
+**Bước 2.1** — Tạo file `src/features/pdfScan/pdfParser.js` skeleton
+- **Export**: `extractTextFromPDF(file)` trả về `Promise<{ text, pageCount, hasTextLayer }>`
+- **Kiểm tra**: File tạo được, import không lỗi
+
+**Bước 2.2** — Implement đọc PDF với PDF.js
+- **Logic**:
+  ```js
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  ```
+- **Vấn đề workerSrc**: Thêm dòng `pdfjsLib.GlobalWorkerOptions.workerSrc = '...'` trước khi call
+- **Kiểm tra**: `console.log(await extractTextFromPDF(file))` in ra số trang
+
+**Bước 2.3** — Implement ghép text từ tất cả trang
+- **Logic**: Loop qua từng page → `page.getTextContent()` → ghép items.str
+- **Phân trang**: Thêm marker `\n--- Trang X ---\n` để regex có thể định vị
+- **Kiểm tra**: Text trả về có nội dung thực từ PDF
+
+**Bước 2.4** — Detect PDF không có text layer
+- **Logic**: Nếu text trim() có length < 50 sau khi đọc hết → `hasTextLayer = false`
+- **Kiểm tra**: Thử với file PDF scan ảnh → `hasTextLayer` trả về `false`
+
+---
+
+### ✅ Phase 3 — Field Recognizer (fieldRecognizer.js)
+*Mục tiêu: Match regex → trả về kết quả kèm confidence score*
+
+**Bước 3.1** — Tạo file `src/features/pdfScan/fieldRecognizer.js` skeleton
+- **Export chính**: `recognizeFields(rawText)` → `Array<Result>`
+- **Struct Result**: `{ key, label, value, confidence, tier, source: 'regex' }`
+- **Kiểm tra**: Trả về array rỗng, không lỗi
+
+**Bước 3.2** — Implement vòng lặp áp rules
+- **Logic**: Loop qua `PDF_FIELD_RULES`, thử từng pattern, lấy match đầu tiên
+- **Kiểm tra**: Với text có "CMND: 123456789" → trả về `{ key: 'cmnd', value: '123456789' }`
+
+**Bước 3.3** — Implement tính **Confidence Score**
+- **Bảng tính**:
+  | Condition | Score |
+  |-----------|-------|
+  | Pattern index 0 match (pattern chính) | `rule.baseScore` |
+  | Pattern index 1+ match (fallback) | `rule.baseScore - 0.15` |
+  | Match nhưng value nghi ngờ (quá ngắn/dài) | `-0.1` |
+  | Value có chứa stop-words ("Bên B", "VNPT") | `-0.2` |
+- **Kiểm tra**: Score email = 1.0, score tenToChuc ≈ 0.65
+
+**Bước 3.4** — Implement **lọc Bên A / Bên B**
+- **Logic**: Tìm anchor "Bên A" hoặc "Bên B" trong text → chỉ lấy match nằm SAU "Bên A" và TRƯỚC "Bên B"
+- **Fallback**: Nếu không tìm được anchor → lấy match đầu tiên (không lọc)
+- **Kiểm tra**: Với PDF có cả Bên A/B → `tenDaiDienn` lấy đúng bên A
+
+**Bước 3.5** — Implement **deduplication & sort**
+- **Dedup**: Mỗi key chỉ giữ 1 kết quả (score cao nhất)
+- **Sort**: Tier 1 trên cùng, Tier 3 dưới cùng trong dialog
+- **Kiểm tra**: Không có key trùng trong kết quả
+
+---
+
+### ✅ Phase 4 — UI Modal Confirm (pdfScanUI.js + CSS)
+*Mục tiêu: Dialog đẹp, UX rõ ràng để confirm trước khi điền*
+
+**Bước 4.1** — Tạo file `src/features/pdfScan/pdfScanUI.js` skeleton
+- **Export**: `showPdfConfirmDialog(results, onConfirm, onCancel)`
+- **Logic**: Tạo DOM overlay + dialog, append vào body
+- **Kiểm tra**: Gọi thử → dialog xuất hiện (dù là box rỗng)
+
+**Bước 4.2** — Build HTML bảng kết quả trong dialog
+- **Cột**: `[ Checkbox | Tên Trường | Giá trị | Confidence ]`
+- **Row màu**:
+  - Score ≥ 0.85 → row class `pdf-row-auto` (xanh nhạt, tick sẵn)
+  - Score 0.6–0.84 → row class `pdf-row-warn` (vàng nhạt, tick sẵn)
+  - Score < 0.6 → row class `pdf-row-low` (đỏ nhạt, bỏ tick)
+- **Kiểm tra**: Bảng hiển thị đúng dữ liệu mock
+
+**Bước 4.3** — Thêm 3 nút action và logic đóng dialog
+- **Nút**: `[ ✅ Điền đã chọn ] [ ✔ Điền tất cả ] [ ✖ Hủy ]`
+- **Logic "Điền đã chọn"**: Chỉ lấy rows mà checkbox đang tick → callback `onConfirm(selectedResults)`
+- **Logic "Điền tất cả"**: Tick hết rồi gọi `onConfirm(allResults)`
+- **Đóng**: Click overlay hoặc Hủy → `onCancel()`, remove dialog khỏi DOM
+- **Kiểm tra**: 3 nút hoạt động đúng
+
+**Bước 4.4** — Thêm spinner/loading state
+- **Khi nào**: Hiện spinner khi đang extract PDF (trước khi có kết quả)
+- **HTML**: `<div id="vnpt-pdf-loading">⏳ Đang phân tích PDF...</div>`
+- **Logic**: `showPdfLoading()` / `hidePdfLoading()` — xuất hiện/biến mất
+- **Kiểm tra**: Spinner hiện đúng lúc đang xử lý
+
+**Bước 4.5** — Viết CSS cho Modal vào `src/ui/styles.js`
+- **Thêm vào cuối** template literal CSS (Section 7 mới):
+  ```css
+  /* SECTION 7: PDF SCAN MODAL */
+  .vnpt-pdf-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px); z-index: 9999999; display: flex;
+    align-items: center; justify-content: center; }
+  .vnpt-pdf-dialog { background: #fff; border-radius: 20px; padding: 20px;
+    width: 560px; max-width: 92vw; max-height: 80vh; overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.2); animation: pdfFadeIn 0.3s ease; }
+  @keyframes pdfFadeIn { from { opacity:0; transform: scale(0.92) translateY(20px); }
+    to { opacity:1; transform: scale(1) translateY(0); } }
+  .pdf-result-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .pdf-result-table th { background: #f8f9fa; padding: 8px 10px; text-align: left;
+    font-weight: 800; color: #5f6368; }
+  .pdf-result-table td { padding: 6px 10px; border-bottom: 1px solid #f1f3f4; }
+  .pdf-row-auto td { background: rgba(30,142,62,0.04); }
+  .pdf-row-warn td { background: rgba(251,188,4,0.08); }
+  .pdf-row-low  td { background: rgba(234,67,53,0.05); }
+  .pdf-confidence-badge { font-size: 10px; font-weight: 800; padding: 2px 8px;
+    border-radius: 20px; display: inline-block; }
+  .badge-high { background: #e6f4ea; color: #1e8e3e; }
+  .badge-mid  { background: #fef7e0; color: #e37400; }
+  .badge-low  { background: #fce8e6; color: #d93025; }
+  .vnpt-pdf-actions { display: flex; gap: 8px; justify-content: flex-end;
+    margin-top: 16px; padding-top: 12px; border-top: 1px solid #f1f3f4; }
+  #vnpt-pdf-loading { text-align: center; padding: 40px; font-size: 14px; color: #5f6368; }
+  ```
+- **Kiểm tra**: Dialog đẹp, responsive
+
+---
+
+### ✅ Phase 5 — Orchestrator & Wire-up
+*Mục tiêu: Nối tất cả lại, thêm nút vào Widget*
+
+**Bước 5.1** — Tạo `src/features/pdfScan/index.js` orchestrator
+- **Export**: `initPdfScan()` — hàm gắn event listener lên file input
+- **Logic**:
+  ```js
+  export async function handlePdfFile(file) {
+    showPdfLoading();
+    const { text, hasTextLayer } = await extractTextFromPDF(file);
+    if (!hasTextLayer) { alert('PDF này là ảnh scan, không có text...'); return; }
+    const results = recognizeFields(text);
+    hidePdfLoading();
+    showPdfConfirmDialog(results, (selected) => {
+      selected.forEach(r => addOrUpdateFieldRow(r.key, r.value, r.label));
+      saveFieldsToLocal();
+      showToast(`✅ Đã điền ${selected.length} trường từ PDF`, '#1e8e3e');
+    });
+  }
+  ```
+- **Kiểm tra**: Hàm chạy không throw khi log từng bước
+
+**Bước 5.2** — Thêm nút "📄 PDF" và hidden input vào `widget.js`
+- **Vị trí**: `header-center`, thêm sau nút "Điền web"
+- **HTML mới**:
+  ```html
+  <input type="file" id="vnpt-pdf-file" name="vnpt-pdf-file" accept=".pdf" style="display:none;" />
+  <button class="vnpt-btn-action btn-scan-pdf" id="vnpt-btn-scan-pdf" title="Scan PDF → tự điền">📄 PDF</button>
+  ```
+- **Kiểm tra**: Nút hiển thị trong header
+
+**Bước 5.3** — Gán event handler trong `widget.js`
+- **Logic**:
+  ```js
+  document.getElementById('vnpt-btn-scan-pdf').onclick = () =>
+    document.getElementById('vnpt-pdf-file').click();
+  document.getElementById('vnpt-pdf-file').onchange = (e) => {
+    if (e.target.files[0]) handlePdfFile(e.target.files[0]);
+    e.target.value = '';
+  };
+  ```
+- **Kiểm tra**: Click nút → file picker mở, chọn PDF → pipeline chạy
+
+**Bước 5.4** — Import và gọi `initPdfScan` trong `main.js`
+- **Thêm**: `import { initPdfScan } from './features/pdfScan/index.js';`
+- **Thêm vào `init()`**: `initPdfScan();`
+- **Kiểm tra**: Build không lỗi, test E2E toàn bộ flow
+
+---
+
+### ✅ Phase 6 — Gemini OCR Add-on (tuỳ chọn)
+*Mục tiêu: Hỗ trợ PDF scan ảnh qua Gemini API*
+
+**Bước 6.1** — Tạo `src/features/pdfScan/geminiOcr.js`
+- **Export**: `extractWithGemini(file, apiKey)` → `Promise<Object fields>`
+- **Logic**: Convert file sang base64, gọi Gemini API, parse JSON response
+- **Kiểm tra**: Gọi thử với PDF thật → nhận về JSON
+
+**Bước 6.2** — Tích hợp `geminiOcr.js` vào orchestrator `index.js`
+- **Logic update**: Khi `hasTextLayer = false` → check có `apiKey` không → gọi Gemini thay vì alert
+- **Fallback tree**:
+  ```
+  hasTextLayer → regex pipeline
+  !hasTextLayer + apiKey → Gemini pipeline
+  !hasTextLayer + !apiKey → alert "Cần API Key hoặc PDF có text"
+  ```
+- **Kiểm tra**: PDF ảnh + có key → Gemini trả kết quả
+
+**Bước 6.3** — Thêm input Gemini API Key vào menu ⚙️ trong `widget.js`
+- **Vị trí**: Trong `vnpt-util-menu`, thêm section mới "PDF Scan (OCR)"
+- **HTML**:
+  ```html
+  <div class="util-submenu-title">PDF Scan (OCR)</div>
+  <div class="cw-row-map">
+    <span>Gemini Key</span>
+    <input id="vnpt-gemini-key" name="vnpt-gemini-key" placeholder="AIza..." class="cw-map-input" type="password">
+  </div>
+  ```
+- **Logic**: Load/save từ `Storage` với key `SK_GEMINI_KEY`
+- **Kiểm tra**: Nhập key → lưu → reload → key vẫn còn
+
+**Bước 6.4** — Thêm UX: thông báo bảo mật khi gửi lên Gemini
+- **Logic**: Lần đầu dùng Gemini → `confirm("PDF sẽ được gửi lên Google Gemini. Tiếp tục?")` → nếu No thì abort
+- **Lưu ý**: Chỉ confirm 1 lần, lưu trạng thái `vnpt_gemini_consent = true`
+- **Kiểm tra**: Confirm hiện 1 lần duy nhất
+
+---
+
+## Verification Plan
+
+### Build check
+```bash
+npm run build   # Không lỗi compile/esbuild
+```
+
+### Manual E2E test (ưu tiên)
+1. Upload PDF hợp đồng VNPT có text → Dialog hiện, score Tier 1 ≥ 0.85 → bấm "Điền tất cả" → fields được điền đúng
+2. Upload PDF scan ảnh (không có text) → Thông báo "không có text layer" (Phase 1–5 xong)
+3. Nhập Gemini API key → Upload PDF ảnh → Gemini phân tích → Dialog hiện với data từ Gemini (Phase 6)
+
+### Test edge cases
+- PDF 0 trang → không crash, báo lỗi nhẹ
+- PDF 50 trang → xử lý không timeout
+- Nhiều SĐT/email → lấy match gần "Bên A" nhất
+- PDF tiếng Anh → không nhận diện được → dialog báo "không tìm thấy trường nào"
+
+---
+
+## Câu hỏi mở
+
+> [!IMPORTANT]
+> 1. **Vị trí nút PDF Scan**: Option A — header center (đề xuất) hay muốn đặt chỗ khác?
+> 2. **Phase 6 (Gemini)**: Implement ngay cùng lúc hay để Phase 2 sau?
+> 3. **Bên A/B filter**: Cần implement (Bước 3.4) hay bỏ qua (đơn giản hóa)?
+

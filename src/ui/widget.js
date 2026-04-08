@@ -36,9 +36,11 @@ export function initWidget() {
                     <span id="vnpt-panel-title">VNPT PRO</span>
                 </div>
                 <div class="header-center">
+                    <button class="vnpt-btn-action btn-scan-pdf" id="vnpt-btn-scan-pdf" title="Scan file PDF bằng AI để tự động điền">📄 PDF</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">Hiện/Ẩn Mã ID</button>
+                    <input type="file" id="vnpt-pdf-input" accept=".pdf" style="display:none;" />
                 </div>
                 <div class="header-right">
                     <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
@@ -52,6 +54,13 @@ export function initWidget() {
                             <button class="util-item danger" id="vnpt-btn-reset-default" >🔄 Khôi phục dữ liệu gốc</button>
                             
                             
+                            <div class="util-separator"></div>
+                            <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>
+                            <div class="cw-row-map">
+                                <span>API Key</span>
+                                <input id="vnpt-gemini-key" type="password" placeholder="AIzaSy..." title="Lấy mã Key từ Google AI Studio" class="cw-map-input">
+                            </div>
+
                             <div class="util-separator"></div>
                             <div class="util-submenu-title">Liên kết ô (Mapping Calc)</div>
                             <div class="cw-row-map"><span>Trước thuế</span><input id="vnpt-map-before" name="vnpt-map-before" data-clink="before" class="cw-map-input"></div>
@@ -229,6 +238,16 @@ export function initWidget() {
             Storage.set(SK_CALC_MAP, currentMaps);
         };
     });
+
+    const geminiKeyInput = document.getElementById('vnpt-gemini-key');
+    if (geminiKeyInput) {
+        import('../core/constants.js').then(({ SK_GEMINI_KEY }) => {
+            geminiKeyInput.value = Storage.get(SK_GEMINI_KEY) || '';
+            geminiKeyInput.oninput = () => {
+                Storage.set(SK_GEMINI_KEY, geminiKeyInput.value.trim());
+            };
+        });
+    }
 
     document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup();
 

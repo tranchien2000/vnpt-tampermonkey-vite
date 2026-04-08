@@ -422,6 +422,64 @@ export function injectStyles() {
 
         .btn-more.active { background: rgba(0,0,0,0.1); }
 
+        /* ═══════════════════════════════════════════
+           SECTION 7: PDF SCAN MODAL
+           ═══════════════════════════════════════════ */
+        .btn-scan-pdf { background: rgba(30, 142, 62, 0.08); color: var(--vnpt-success); border: 1px solid rgba(30, 142, 62, 0.1); } 
+        .btn-scan-pdf:hover { background: var(--vnpt-success); color: #fff; border-color: transparent; }
+
+        .vnpt-pdf-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px); z-index: 9999999; display: flex;
+            align-items: center; justify-content: center; font-family: var(--vnpt-font);
+        }
+        
+        .vnpt-pdf-loading-box {
+            background: #fff; padding: 30px 40px; border-radius: 20px;
+            text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: pdfFadeIn 0.3s ease;
+        }
+
+        .loader-spinner {
+            border: 4px solid #f3f3f3; border-top: 4px solid var(--vnpt-primary);
+            border-radius: 50%; width: 40px; height: 40px; margin: 0 auto;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .vnpt-pdf-dialog-box { 
+            background: #fff; border-radius: 20px; padding: 20px;
+            width: 560px; max-width: 92vw; max-height: 80vh; 
+            display: flex; flex-direction: column;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.2); animation: pdfFadeIn 0.3s ease; 
+        }
+        @keyframes pdfFadeIn { 
+            from { opacity:0; transform: scale(0.92) translateY(20px); }
+            to { opacity:1; transform: scale(1) translateY(0); } 
+        }
+
+        .pdf-dlg-header h3 { margin: 0 0 16px 0; color: #3c4043; font-size: 15px; }
+
+        .pdf-dlg-body { flex: 1; overflow-y: auto; margin-bottom: 16px; border: 1px solid #e0e0e0; border-radius: 8px;}
+
+        .pdf-result-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .pdf-result-table th { background: #f8f9fa; padding: 8px 10px; text-align: left; font-weight: 800; color: #5f6368; position: sticky; top: 0;}
+        .pdf-result-table td { padding: 6px 10px; border-bottom: 1px solid #f1f3f4; }
+        .pdf-row-auto td { background: rgba(30,142,62,0.04); }
+
+        .vnpt-pdf-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+        
+        .pdf-btn-cancel {
+            padding: 8px 16px; background: #f1f3f4; border: none; border-radius: 8px;
+            color: #3c4043; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .pdf-btn-cancel:hover { background: #e8eaed; }
+        .pdf-btn-confirm {
+            padding: 8px 16px; background: var(--vnpt-primary); border: none; border-radius: 8px;
+            color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .pdf-btn-confirm:hover { background: var(--vnpt-primary-hover); box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3); }
+
     `;
     document.head.appendChild(style);
 }
