@@ -10,6 +10,7 @@ import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
 import { initFieldsManager, loadSavedData } from '../features/fieldsManager.js';
 import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS, SK_CALC_MAP } from '../core/constants.js';
+import { DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { exportConfig } from '../features/configManager.js';
 import { Storage } from '../utils/storage.js';
 import { exportFullBackup, importFullBackup } from '../utils/backupHelper.js';
@@ -37,6 +38,7 @@ export function initWidget() {
                 <div class="header-center">
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
+                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">Hiện/Ẩn Mã ID</button>
                 </div>
                 <div class="header-right">
                     <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
@@ -47,8 +49,8 @@ export function initWidget() {
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
                             <div class="util-submenu-title">Cấu hình hệ thống</div>
                             <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
-                            <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
-                            <button class="util-item" id="vnpt-btn-toggle-id">🆔 Hiện/Ẩn Mã ID (Nhập code)</button>
+                            <button class="util-item danger" id="vnpt-btn-reset-default" >🔄 Khôi phục dữ liệu gốc</button>
+                            
                             
                             <div class="util-separator"></div>
                             <div class="util-submenu-title">Liên kết ô (Mapping Calc)</div>
@@ -166,7 +168,7 @@ export function initWidget() {
             AppState.templateBuffer = arrayBuffer;
             AppState.templateName = name;
         });
-        this.value = ''; 
+        this.value = '';
     });
 
     // Đóng/Mở Panel 
@@ -198,8 +200,9 @@ export function initWidget() {
     const calcMaps = Storage.get(SK_CALC_MAP) || {};
     utilMenu.querySelectorAll('input[data-clink]').forEach(inp => {
         const k = inp.dataset.clink;
-        if (calcMaps[k]) inp.value = calcMaps[k].join(', ');
-        
+        const val = calcMaps[k] || DEFAULT_CALC_MAP[k] || [];
+        inp.value = val.join(', ');
+
         inp.oninput = () => {
             const currentMaps = Storage.get(SK_CALC_MAP) || {};
             currentMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s);
@@ -210,7 +213,7 @@ export function initWidget() {
     document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup();
     const btnImport = document.getElementById('vnpt-btn-import-json');
     const fileImport = document.getElementById('vnpt-file-import-json');
-    
+
     btnImport.onclick = () => fileImport.click();
     fileImport.onchange = async (e) => {
         if (e.target.files.length > 0) {
@@ -263,7 +266,7 @@ export function initWidget() {
             const widgetRect = AppState.widget.getBoundingClientRect();
             const startTop = widgetRect.top;
             const startRight = window.innerWidth - widgetRect.right;
-            
+
             AppState.panel.classList.add('vnpt-resizing');
             document.body.classList.add('vnpt-resizing-global');
             const cursor = window.getComputedStyle(resizer).cursor;
@@ -305,7 +308,7 @@ export function initWidget() {
             const onMouseUp = () => {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
-                
+
                 AppState.panel.classList.remove('vnpt-resizing');
                 document.body.classList.remove('vnpt-resizing-global');
                 document.body.style.cursor = '';

@@ -19,6 +19,7 @@ import { initCalcWidget } from './features/calc/index.js';
 import { clearDOMCache } from './utils/domHelper.js';
 import { debounce } from './utils/common.js';
 import { initHotkeys } from './features/hotkeys.js';
+import { initStorageMerge } from './utils/migrationHelper.js';
 
 let cacheObserver = null;
 
@@ -28,6 +29,9 @@ function init() {
   window.__vnptInited = true;
 
   logger.info('Initializing VNPT Userscript...');
+  
+  // Khởi chạy Smart Merge/Dev Sync cho Local Storage trước khi chốt Data
+  initStorageMerge();
 
   try {
     injectStyles();

@@ -20,10 +20,12 @@ export const DEFAULT_LABELS = {
     'ngayCapSoDkdnCustomer': 'Ngày Cấp ĐKKD',
     'soDkdn': 'Số GPKD | MST',
     'goiDV': 'Gói Dịch Vụ',
-    'ngayKy': 'Ngày ký',
-    'thangKy': 'Tháng Ký',
-    'namKy': 'Năm ký',
-    'soHopDong': 'SỐ HỢP ĐỒNG',
+    'ngayKy, ngayKy1': 'Ngày ký',
+    'thangKy, thangKy1': 'Tháng Ký',
+    'namKy, namKy1': 'Năm ký',
+    'ngayTiepNhan': 'Ngày tiếp nhận',
+    'ngayThangNamKy': 'Ngày tháng năm ký',
+    'soHopDong, inputContractGroupName, contractNumber, contractName': 'SỐ HỢP ĐỒNG',
     'soLuongGoi': 'Số Lượng Gói',
     'noiKy': 'Nơi ký'
 };

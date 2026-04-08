@@ -108,7 +108,7 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         els.tax.value = res.taxStr;
         els.after.value = res.afterStr;
         els.text.value = res.textStr;
-        
+
         // Luôn lấy mapping mới nhất từ Storage
         const currentMaps = ld(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
         syncToPage(res, currentMaps);

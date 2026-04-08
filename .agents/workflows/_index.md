@@ -13,6 +13,7 @@ Dưới đây là danh sách tất cả các workflows trong thư mục `.agents
 - `/api-request`: Cách gọi API Cross-origin an toàn trong môi trường Tampermonkey.
 - `/debug-ui`: Sửa lỗi hiển thị UI nội tuyến trên web host.
 - `/dev-all`: Các lệnh chạy server development song song.
+- `/export-json`: Quy trình bảo trì, cập nhật xuất/nhập trạng thái JSON (Backup).
 - `/polish-ui`: Quy chuẩn làm đẹp giao diện, tinh chỉnh CSS.
 - `/reset-all`: Xóa dữ liệu cache/log để test trắng.
 - `/sync-logic`: Cấu hình Widget tự động điền form trên trang host.

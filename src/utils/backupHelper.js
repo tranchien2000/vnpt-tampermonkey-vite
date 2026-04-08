@@ -11,6 +11,26 @@ import { Storage } from './storage.js';
 import { showToast } from '../ui/toast.js';
 
 /**
+ * Trải phẳng dữ liệu: Biến các key gộp "A, B" thành các key riêng lẻ "A", "B".
+ * @param {Object} obj 
+ * @returns {Object}
+ */
+function flattenData(obj) {
+    if (!obj) return obj;
+    const result = {};
+    Object.keys(obj).forEach(key => {
+        const val = obj[key];
+        const parts = key.split(',').map(s => s.trim()).filter(s => s);
+        parts.forEach(p => {
+            // Nếu giá trị là object (label, value), giữ nguyên hoặc chỉ lấy value tùy nhu cầu
+            // Ở đây giữ nguyên object để đảm bảo cấu hình đầy đủ
+            result[p] = val;
+        });
+    });
+    return result;
+}
+
+/**
  * Xuất toàn bộ dữ liệu ra file JSON.
  */
 export function exportFullBackup() {
@@ -20,8 +40,8 @@ export function exportFullBackup() {
         backup: {
             fields: Storage.get(LOCAL_KEY_FIELDS),
             defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS),
-            dataDefault: Storage.get(SK_DATA_DEF),
-            dataCustom: Storage.get(SK_DATA_CUS),
+            dataDefault: flattenData(Storage.get(SK_DATA_DEF)),
+            dataCustom: flattenData(Storage.get(SK_DATA_CUS)),
             dataSync: Storage.get(SK_DATA_SYNC),
             taxRate: Storage.get(SK_TAX),
             calcMap: Storage.get(SK_CALC_MAP),

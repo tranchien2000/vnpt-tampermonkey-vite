@@ -21,7 +21,7 @@
 (function() {
     'use strict';
     let lastScriptContent = '';
-    const pollInterval = 2000; // 2 seconds
+    const pollInterval = 5000; // 5 seconds
 
     function loadScript() {
         const url = `http://localhost:8788/myscript.user.js?t=${Date.now()}`;

@@ -14,14 +14,14 @@ export function doFillData() {
     const defaultData = Storage.get(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
     const customData = Storage.get(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
-    
+
     // Fill fields B (Merged)
     Object.keys(merged).forEach(k => {
         const dataItem = merged[k];
-        const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value')) 
-                    ? dataItem.value 
-                    : dataItem; 
-        
+        const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'))
+            ? dataItem.value
+            : dataItem;
+
         // Hỗ trợ gán nhiều field bằng dấu phẩy
         const targets = k.split(',').map(s => s.trim()).filter(s => s);
         targets.forEach(t => {
@@ -36,7 +36,7 @@ export function doSyncData() {
     let userSyncMap = Storage.get(SK_DATA_SYNC) ?? {};
     // Gộp mapping mặc định với mapping của người dùng
     const syncMap = { ...DEFAULT_SYNC_DATA, ...userSyncMap };
-    
+
     const keys = Object.keys(syncMap);
     if (keys.length === 0) { showToast('⚠️ No sync mapping', '#ffc107'); return; }
     keys.forEach(src => {
@@ -54,10 +54,10 @@ let isSyncing = false;
 
 const processSync = (target, val) => {
     if (isSyncing) return;
-    
+
     let userSyncMap = Storage.get(SK_DATA_SYNC) ?? {};
     const sMap = { ...DEFAULT_SYNC_DATA, ...userSyncMap };
-    
+
     if (Object.keys(sMap).length === 0) return;
 
     let keyId = target.id;
@@ -106,7 +106,7 @@ export function initSyncEngine() {
 
         // Bỏ qua nếu là input từ trong chính Widget của chúng ta
         if (target.closest('#vnpt-docx-widget') || target.closest('#vnpt-inline-calc')) return;
-        
+
         // Gọi xử lý đồng bộ với debounce (250ms delay)
         debouncedSync(target, target.value);
     });

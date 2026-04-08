@@ -17,11 +17,12 @@ export function getScannerFallback(id_can_tim) {
     const { ngay, thang, nam } = getVNPTDateStrings();
 
     const fallbacks = {
+        'ngayky, ngayky1': ngay,
         'ngayky': ngay,
+        'thangky, thangky1': thang,
         'thangky': thang,
-        'thangky1': thang,
+        'namky, namky1': nam,
         'namky': nam,
-        'namky1': nam,
         'soluonggoi': '1',
         'noiky': 'Hà Nội',
         'noicap': 'Cục trưởng Cục Cảnh sát QLHC về TTXH',

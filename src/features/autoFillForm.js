@@ -11,8 +11,8 @@ import { syncSetValue } from '../utils/domHelper.js';
 import { getScannerFallback } from '../core/scannerFallbacks.js';
 
 const AUTO_FILL_FIELDS = [
-    'chucVu', 'noiCap', 'noiCapSoDkdn', 
-    'ngayky', 'thangky', 'namky', 
+    'chucVu', 'noiCap', 'noiCapSoDkdn',
+    'ngayky', 'ngayky1', 'thangky', 'namky',
     'thangky1', 'namky1', 'noiKy'
 ];
 

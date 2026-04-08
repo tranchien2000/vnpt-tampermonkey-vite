@@ -207,6 +207,9 @@ export function injectStyles() {
         .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
         .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
 
+        .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
+        .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
+        
         .btn-export { 
             background: var(--vnpt-primary-grad); 
             color: white; padding: 0 20px; font-weight: 800; 

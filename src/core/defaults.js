@@ -11,7 +11,7 @@ import { getVNPTDateStrings } from '../utils/dateHelper.js';
 const { ngay, thang, nam } = getVNPTDateStrings();
 
 export const DEFAULT_DATA = {
-    ngayKy: { label: "Ngày ký", value: ngay },
+    "ngayKy, ngayKy1": { label: "Ngày ký", value: ngay },
     "thangKy, thangKy1": { label: "Tháng ký", value: thang },
     "namKy, namKy1": { label: "Năm ký", value: nam },
     "ngayTiepNhan, ngayThangNamKy": { label: "Ngày ký (full)", value: `${ngay}/${thang}/${nam}` },
@@ -30,6 +30,7 @@ export const DEFAULT_DATA = {
     "tenTiepNhan, tenNguoiNhan": { label: "Người tiếp nhận", value: "Bùi Anh" },
     dienThoaiB: { label: "Điện thoại B", value: "02436686868" },
     diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 " },
+    //"soHopDong, inputContractGroupName, contractNumber, contractName": { label: "Hợp đồng", value: "Hà Nội" },
     noiKy: { label: "Nơi ký", value: "Hà Nội" },
     emailB: { label: "Email B", value: "" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh" }
@@ -40,17 +41,17 @@ export const DEFAULT_DATA = {
  * Khi trường key thay đổi, các trường trong value (phân tách bằng dấu phẩy) sẽ được cập nhật theo.
  */
 export const DEFAULT_SYNC_DATA = {
-    'soHopDong': 'inputContractGroupName, contractName'
+    'soHopDong': 'soHopDong, inputContractGroupName, contractNumber, contractName'
 };
 
 /**
  * DEFAULT_CALC_MAP: Mapping kết quả từ bộ tính toán (Calc Widget) ra các trường trên trang web.
  */
 export const DEFAULT_CALC_MAP = {
-    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong"],
-    before: ["donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue"],
-    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT"],
-    text: ["soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu"]
+    after: ["vnpt-map-after", "cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong"],
+    before: ["vnpt-map-before", "donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue"],
+    tax: ["vnpt-map-tax", "tongThueGTGT", "tongThue", "thueCA", "thueVAT"],
+    text: ["vnpt-map-text", "soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu"]
 };
 
 /**

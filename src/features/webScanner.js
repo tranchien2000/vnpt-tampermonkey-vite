@@ -30,7 +30,8 @@ export function initWebScanner() {
 
         Object.keys(DEFAULT_LABELS).forEach(id_can_tim => {
             const labelText = DEFAULT_LABELS[id_can_tim];
-            const el = findPageInput(id_can_tim, labelText);
+            const primaryId = id_can_tim.split(',')[0].trim();
+            const el = findPageInput(primaryId, labelText);
             
             let val = '';
             if (el) {
@@ -44,11 +45,11 @@ export function initWebScanner() {
 
             // --- Bắt đầu chuẩn hóa dữ liệu ---
             if (val && typeof val === 'string') {
-                if (['tenDaiDienn', 'tenToChuc', 'noiCap', 'noiKy'].includes(id_can_tim)) {
+                if (['tenDaiDienn', 'tenToChuc', 'noiCap', 'noiKy'].includes(primaryId)) {
                     val = capitalizeName(val);
-                } else if (['sdt'].includes(id_can_tim)) {
+                } else if (['sdt'].includes(primaryId)) {
                     val = formatPhoneNumber(val);
-                } else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy'].includes(id_can_tim)) {
+                } else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan', 'ngayThangNamKy'].includes(primaryId)) {
                     val = normalizeDate(val);
                 }
             }
@@ -76,9 +77,12 @@ export function initWebScanner() {
         // Bỏ qua nếu sự kiện phát ra từ trong chính Widget của chúng ta
         if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
 
-        if (e.target && e.target.id && DEFAULT_LABELS[e.target.id] !== undefined) {
-            addOrUpdateFieldRow(e.target.id, e.target.value, null);
-            saveFieldsToLocal();
+        if (e.target && e.target.id) {
+            const matchedKey = Object.keys(DEFAULT_LABELS).find(k => k.split(',').map(s=>s.trim()).includes(e.target.id));
+            if (matchedKey !== undefined) {
+                addOrUpdateFieldRow(matchedKey, e.target.value, null);
+                saveFieldsToLocal();
+            }
         }
     });
 
@@ -86,10 +90,13 @@ export function initWebScanner() {
         // Bỏ qua nếu sự kiện phát ra từ trong chính Widget của chúng ta
         if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
 
-        if (e.target && e.target.id && DEFAULT_LABELS[e.target.id] !== undefined) {
-            let val = e.target.tagName.toLowerCase() === 'select' ? (e.target.options[e.target.selectedIndex]?.text || '') : e.target.value;
-            addOrUpdateFieldRow(e.target.id, val, null);
-            saveFieldsToLocal();
+        if (e.target && e.target.id) {
+            const matchedKey = Object.keys(DEFAULT_LABELS).find(k => k.split(',').map(s=>s.trim()).includes(e.target.id));
+            if (matchedKey !== undefined) {
+                let val = e.target.tagName.toLowerCase() === 'select' ? (e.target.options[e.target.selectedIndex]?.text || '') : e.target.value;
+                addOrUpdateFieldRow(matchedKey, val, null);
+                saveFieldsToLocal();
+            }
         }
     });
 }

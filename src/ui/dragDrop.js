@@ -28,6 +28,11 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
 
     function startDrag(e) {
         if (e.button !== 0) return; // Chỉ nhận click chuột trái
+
+        // Nếu click vào input, button, select... thì không kéo để nhường sự kiện focus/click
+        const isInteractive = ['INPUT', 'BUTTON', 'SELECT', 'TEXTAREA'].includes(e.target.tagName) || e.target.isContentEditable;
+        if (isInteractive) return;
+
         isDragging = true;
         
         // Cập nhật state toàn cục để UI khác biết đang drag (ví dụ toggleBtn)

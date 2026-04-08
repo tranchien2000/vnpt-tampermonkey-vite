@@ -18,9 +18,11 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
     const existingInputs = AppState.fieldsContainer.querySelectorAll('.f-key');
     let isDuplicate = false;
 
+    const incomingPK = keyText.split(',')[0].trim();
+
     for (let input of existingInputs) {
-        const currentKeyText = input.value.split(',')[0].trim();
-        if (currentKeyText === keyText) {
+        const currentPK = input.value.split(',')[0].trim();
+        if (currentPK === incomingPK) {
             const row = input.closest('.vnpt-field-row');
             const valueInput = row.querySelector('.f-val');
             const labelInput = row.querySelector('.f-label');
@@ -51,12 +53,14 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         let displayKey = keyText;
         if (syncText) displayKey += ', ' + syncText;
 
+        const primaryKey = incomingPK;
+
         row.innerHTML = `
-            <input type="checkbox" id="chk-${keyText}" name="chk-${keyText}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
-            <input type="text" id="lbl-${keyText}" name="lbl-${keyText}" class="f-label" value="${labelText}" />
-            <input type="text" id="key-${keyText}" name="key-${keyText}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
+            <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
+            <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
+            <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
             <span class="row-drag-handle" title="Kéo">=</span>
-            <input type="text" id="val-${keyText}" name="val-${keyText}" class="f-val" value="${valueText}" />
+            <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" />
         `;
         const fVal = row.querySelector('.f-val');
         const fKey = row.querySelector('.f-key');
@@ -64,7 +68,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         if (keyText === 'tenToChuc') fVal.style.textAlign = 'right';
 
         const checkRequired = () => {
-            if (REQUIRED_KEYS.includes(keyText)) {
+            if (REQUIRED_KEYS.includes(incomingPK)) {
                 if (!fVal.value.trim()) {
                     fVal.classList.add('field-required-empty');
                 } else {
@@ -155,7 +159,7 @@ export function saveFieldsToLocal() {
         if (k) data[k] = { label: l, value: v, sync: s };
     });
     // Sử dụng setDebounced để tránh ghi đĩa liên tục khi gõ phím
-    Storage.setDebounced(key, data, 1000); 
+    Storage.setDebounced(key, data, 1000);
 }
 
 export function loadSavedData() {
@@ -203,7 +207,7 @@ export function loadSavedData() {
         if (pos.right) {
             AppState.widget.style.right = pos.right;
             AppState.widget.style.left = 'auto';
-        } else if (pos.left) { 
+        } else if (pos.left) {
             AppState.widget.style.left = pos.left;
             AppState.widget.style.right = 'auto';
         }
@@ -227,7 +231,7 @@ export function initFieldsManager() {
             Storage.remove(LOCAL_KEY_DEFAULT_FIELDS);
             Storage.remove(SK_CALC_MAP);
             Storage.remove(SK_TAX);
-            
+
             if (AppState.isDefaultMode) {
                 updateUIForDefaultMode(true);
                 showToast("🔄 Đã khôi phục dữ liệu gốc", "#1a73e8");
@@ -296,7 +300,7 @@ function updateUIForDefaultMode(isDefault) {
 
         const banner = document.createElement('div');
         banner.className = 'vnpt-default-banner';
-        banner.innerHTML = `<span> Lưu ý: đây là Dữ liệu mặc định (Có thể sửa/lưu)</span>`;
+        banner.innerHTML = `<span style="color: red;"> LƯU Ý: ĐÂY LÀ DỮ LIỆU MẶC ĐỊNH</span>`;
         AppState.bannerArea.appendChild(banner);
 
         const overrides = Storage.get(LOCAL_KEY_DEFAULT_FIELDS);
