@@ -50,25 +50,23 @@ function renderDocx(arrayBuffer, dataToFill, exportFileName) {
 }
 
 /**
- * Render text template với placeholder {key} → value rồi tải xuống .txt
- * @param {string} template  — chuỗi văn bản có dạng "Tôi là {tenDaiDienn}"
+ * Render text template với placeholder {key} → value rồi sao chép vào clipboard
+ * @param {string} template  — chuỗi văn bản có dạng "Tôi là @tenDaiDienn"
  * @param {Object} data      — map key→value từ bảng fields
- * @param {string} fileName  — tên file xuất (sẽ đổi đuôi sang .txt)
  */
-function exportTxt(template, data, fileName) {
+function copyTxtToClipboard(template, data) {
     // Thay thế @key bằng giá trị tương ứng trong data
     const result = template.replace(/@(\w+)/g, (match, key) => {
         return data[key] !== undefined ? data[key] : match;
     });
 
-    const blob = new Blob([result], { type: 'text/plain; charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName.replace(/\.docx$/i, '') + '.txt';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+    navigator.clipboard.writeText(result).then(() => {
+        // Tạo hiệu ứng thông báo nhẹ nhàng (alert hoặc có thể dùng toast sau này)
+        alert('✅ Đã sao chép nội dung vào Clipboard!');
+    }).catch(err => {
+        console.error('Lỗi khi copy:', err);
+        alert('❌ Lỗi khi sao chép vào Clipboard. Vui lòng thử lại!');
+    });
 }
 
 export function initDocExport() {
@@ -227,8 +225,7 @@ export function initDocExport() {
                 alert('Bạn chưa Quét dữ liệu hoặc chưa có Biến nào.'); return;
             }
 
-            const exportFileName = document.getElementById('vnpt-export-filename').value.trim() || 'Export_Auto';
-            exportTxt(template, dataToFill, exportFileName);
+            copyTxtToClipboard(template, dataToFill);
         });
     }
 }

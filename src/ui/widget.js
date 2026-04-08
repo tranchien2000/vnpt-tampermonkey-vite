@@ -101,10 +101,6 @@ export function initWidget() {
 
                 <!-- Text Template Section -->
                 <div id="vnpt-txt-section">
-                    <div class="vnpt-txt-header">
-                        <span>📝 Text Template</span>
-                        <button id="vnpt-txt-toggle" title="Ẩn/Hiện">▶</button>
-                    </div>
                     <div id="vnpt-txt-body" style="display:none;">
                         <textarea
                             id="vnpt-txt-template"
@@ -112,6 +108,10 @@ export function initWidget() {
                             placeholder="Nhập nội dung, dùng @key làm placeholder&#10;Ví dụ: Tôi là @tenDaiDienn chào bạn"
                             rows="4"
                         ></textarea>
+                    </div>
+                    <div class="vnpt-txt-header">
+                        <span>📝 Text Template</span>
+                        <button id="vnpt-txt-toggle" title="Ẩn/Hiện">▶</button>
                     </div>
                 </div>
 
@@ -130,7 +130,7 @@ export function initWidget() {
                     <div class="vnpt-control-group">
                         <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
                     </div>
-                    <button class="vnpt-btn-action btn-export-txt" id="vnpt-btn-export-txt" title="Xuất ra file TXT dựa trên Text Template">📄 TXT</button>
+                    <button class="vnpt-btn-action btn-export-txt" id="vnpt-btn-export-txt" title="Sao chép nội dung dựa trên Text Template">📋 COPY</button>
                     <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
                 </div>
             </div>
@@ -240,7 +240,7 @@ export function initWidget() {
             e.stopPropagation();
             const isCollapsed = txtBody.style.display === 'none';
             txtBody.style.display = isCollapsed ? '' : 'none';
-            txtToggleBtn.textContent = isCollapsed ? '▼' : '▶';
+            txtToggleBtn.textContent = isCollapsed ? '▲' : '▶';
         });
     }
 

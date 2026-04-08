@@ -51,7 +51,7 @@ export function injectStyles() {
         #vnpt-toggle-btn.btn-closed:hover { transform: scale(1.1) rotate(5deg); background: var(--vnpt-primary-hover); }
 
         #vnpt-toggle-btn.btn-opened {
-            position: absolute; right: 10px; top: 10px;
+            position: absolute; right: 10px; top: 2px;
             width: 32px; height: 32px; font-size: 14px; border-radius: 8px;
             background: var(--vnpt-danger); color: white; border: none;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -153,7 +153,7 @@ export function injectStyles() {
         .vnpt-field-row.over { background-color: #e8f0fe; border: 1px dashed var(--vnpt-primary); }
 
         .vnpt-field-row input { 
-            flex: 1; padding: 4px 8px; border: 1px solid #dadce0; border-radius: 6px; 
+            flex: 1; padding: 4px 8px; border: 1px solid #1f5bd2ff; border-radius: 6px; 
             font-size: 11.5px; transition: all 0.2s; background: #fff;
         }
         .vnpt-field-row input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
@@ -173,7 +173,7 @@ export function injectStyles() {
         .vnpt-control-group label { display: block; font-weight: 700; font-size: 12px; color: #3c4043; margin-bottom: 2px; }
         .vnpt-control-group input[type="text"] { 
             width: 100%; box-sizing: border-box; padding: 8px 12px; 
-            border: 1px solid #dadce0; border-radius: 8px; font-size: 12px;
+            border: 1px solid #0055ffff; border-radius: 8px; font-size: 12px;
             background: #fff; transition: all 0.2s;
         }
         .vnpt-control-group input[type="text"]:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1); outline: none; }
@@ -182,7 +182,7 @@ export function injectStyles() {
            SECTION 4: CONTROL BUTTONS
            ═══════════════════════════════════════════ */
         .vnpt-btn-action { 
-            border: none; padding: 0 10px; height: 30px; 
+            padding: 0 10px; height: 30px; 
             display: flex; align-items: center; justify-content: center; 
             font-weight: 700; font-size: 11px; cursor: pointer; 
             border-radius: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -194,7 +194,8 @@ export function injectStyles() {
         .vnpt-btn-action:active { transform: translateY(0) scale(0.96); }
 
         .vnpt-btn-icon {
-            background: rgba(0,0,0,0.03); border: none; width: 30px; height: 30px;
+            border: 1px solid #1f5bd2ff;
+            background: rgba(0,0,0,0.03); width: 30px; height: 30px;
             display: flex; align-items: center; justify-content: center;
             font-size: 15px; cursor: pointer; border-radius: 8px;
             color: #5f6368; transition: all 0.2s;
@@ -321,7 +322,7 @@ export function injectStyles() {
         }
         .vnpt-txt-header {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 2px; margin-bottom: 2px;
+            padding: 2px; margin-top: 2px;
         }
         .vnpt-txt-header span {
             font-size: 11px; font-weight: 800; color: #1a73e8;
@@ -335,7 +336,7 @@ export function injectStyles() {
         #vnpt-txt-toggle:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); }
         #vnpt-txt-template {
             width: 100%; box-sizing: border-box;
-            padding: 8px 10px; border: 1px solid #dadce0; border-radius: 8px;
+            padding: 8px 10px; border: 1px solid #0055ffff; border-radius: 8px;
             font-size: 11.5px; font-family: 'Courier New', Courier, monospace;
             resize: vertical; min-height: 72px; max-height: 200px;
             background: rgba(255,255,255,0.8); color: #3c4043;
@@ -404,7 +405,7 @@ export function injectStyles() {
         .cw-body-inline { display: flex; flex-direction: column; gap: 3px; }
         .cw-inline-row { display: flex; align-items: center; gap: 3px; width: 100%; box-sizing: border-box; }
         .cw-input-inline { 
-            flex: 1; min-width: 60px; padding: 4px 10px; border: 1px solid #dadce0; border-radius: 8px; 
+            flex: 1; min-width: 60px; padding: 4px 10px; border: 1px solid #0055ffff; border-radius: 8px; 
             font-size: 11.5px; font-weight: 600; height: 28px; box-sizing: border-box;
             background: #fff; transition: all 0.2s;
         }
