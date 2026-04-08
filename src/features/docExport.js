@@ -9,7 +9,8 @@
 // src/features/docExport.js
 import { AppState } from '../core/state.js';
 import { storage } from '../api/storage/index.js';
-import { DEFAULT_LABELS, REQUIRED_KEYS } from '../core/constants.js';
+import { DEFAULT_LABELS, REQUIRED_KEYS, SK_TXT_TEMPLATE } from '../core/constants.js';
+import { Storage } from '../utils/storage.js';
 
 function renderDocx(arrayBuffer, dataToFill, exportFileName) {
     try {
@@ -46,6 +47,28 @@ function renderDocx(arrayBuffer, dataToFill, exportFileName) {
         alert(msg);
         console.error('DocX Error:', error);
     }
+}
+
+/**
+ * Render text template với placeholder {key} → value rồi tải xuống .txt
+ * @param {string} template  — chuỗi văn bản có dạng "Tôi là {tenDaiDienn}"
+ * @param {Object} data      — map key→value từ bảng fields
+ * @param {string} fileName  — tên file xuất (sẽ đổi đuôi sang .txt)
+ */
+function exportTxt(template, data, fileName) {
+    // Thay thế @key bằng giá trị tương ứng trong data
+    const result = template.replace(/@(\w+)/g, (match, key) => {
+        return data[key] !== undefined ? data[key] : match;
+    });
+
+    const blob = new Blob([result], { type: 'text/plain; charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName.replace(/\.docx$/i, '') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
 }
 
 export function initDocExport() {
@@ -168,4 +191,44 @@ export function initDocExport() {
 
         alert('Vui lòng chọn Template: nhấn "✔ Dùng" từ danh sách hoặc chọn file local bên dưới.');
     });
+
+    // ── Nút Xuất TXT ──────────────────────────────────────────────────────────
+    const btnExportTxt = document.getElementById('vnpt-btn-export-txt');
+    const txtTemplateArea = document.getElementById('vnpt-txt-template');
+
+    // Khôi phục nội dung đã lưu
+    if (txtTemplateArea) {
+        const saved = Storage.get(SK_TXT_TEMPLATE);
+        if (saved) txtTemplateArea.value = saved;
+        txtTemplateArea.addEventListener('input', () => {
+            Storage.setDebounced(SK_TXT_TEMPLATE, txtTemplateArea.value, 800);
+        });
+    }
+
+    if (btnExportTxt) {
+        btnExportTxt.addEventListener('click', () => {
+            const template = txtTemplateArea ? txtTemplateArea.value : '';
+            if (!template.trim()) {
+                alert('Bạn chưa nhập nội dung Text Template!\n\nSử dụng @key làm placeholder, ví dụ: Tôi là @tenDaiDienn');
+                return;
+            }
+
+            // Thu thập dữ liệu từ bảng fields
+            const dataToFill = {};
+            const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
+            rows.forEach(row => {
+                const rawKey = row.querySelector('.f-key').value.trim();
+                const k = rawKey.split(',')[0].trim();
+                const v = row.querySelector('.f-val').value;
+                if (k) dataToFill[k] = v;
+            });
+
+            if (Object.keys(dataToFill).length === 0) {
+                alert('Bạn chưa Quét dữ liệu hoặc chưa có Biến nào.'); return;
+            }
+
+            const exportFileName = document.getElementById('vnpt-export-filename').value.trim() || 'Export_Auto';
+            exportTxt(template, dataToFill, exportFileName);
+        });
+    }
 }

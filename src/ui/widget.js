@@ -99,19 +99,39 @@ export function initWidget() {
                     </div>
                 </div>
 
+                <!-- Text Template Section -->
+                <div id="vnpt-txt-section">
+                    <div class="vnpt-txt-header">
+                        <span>📝 Text Template</span>
+                        <button id="vnpt-txt-toggle" title="Ẩn/Hiện">▶</button>
+                    </div>
+                    <div id="vnpt-txt-body" style="display:none;">
+                        <textarea
+                            id="vnpt-txt-template"
+                            name="vnpt-txt-template"
+                            placeholder="Nhập nội dung, dùng @key làm placeholder&#10;Ví dụ: Tôi là @tenDaiDienn chào bạn"
+                            rows="4"
+                        ></textarea>
+                    </div>
+                </div>
+
                 <!-- Template Manager -->
                 <div id="vnpt-template-section">
                     <div id="vnpt-template-manager"></div>
                 </div>
 
+
+
                 <div class="bottom-export-row">
                     <div class="vnpt-control-group" id="vnpt-local-file-group">
-                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" title="Hoặc sử dụng File nội bộ từ máy" />
+                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
+                        <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
                     </div>
                     <div class="vnpt-control-group">
                         <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
                     </div>
-                    <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT FILE</button>
+                    <button class="vnpt-btn-action btn-export-txt" id="vnpt-btn-export-txt" title="Xuất ra file TXT dựa trên Text Template">📄 TXT</button>
+                    <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
                 </div>
             </div>
         </div>
@@ -191,9 +211,9 @@ export function initWidget() {
     const moreBtn = document.getElementById('vnpt-btn-more');
     const utilMenu = document.getElementById('vnpt-util-menu');
     const SIZE_PRESETS = {
-        'S': { width: '320px', height: '380px' },
-        'M': { width: '440px', height: '600px' },
-        'L': { width: '600px', height: '800px' },
+        'S': { width: '380px', height: '420px' },
+        'M': { width: '460px', height: '600px' },
+        'L': { width: '620px', height: '800px' },
         'Full': { width: '98vw', height: '92vh' }
     };
 
@@ -211,6 +231,19 @@ export function initWidget() {
     });
 
     document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup();
+
+    // Toggle collapse Text Template section
+    const txtToggleBtn = document.getElementById('vnpt-txt-toggle');
+    const txtBody = document.getElementById('vnpt-txt-body');
+    if (txtToggleBtn && txtBody) {
+        txtToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isCollapsed = txtBody.style.display === 'none';
+            txtBody.style.display = isCollapsed ? '' : 'none';
+            txtToggleBtn.textContent = isCollapsed ? '▼' : '▶';
+        });
+    }
+
     const btnImport = document.getElementById('vnpt-btn-import-json');
     const fileImport = document.getElementById('vnpt-file-import-json');
 

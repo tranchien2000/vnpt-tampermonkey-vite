@@ -72,22 +72,22 @@ export function injectStyles() {
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid var(--vnpt-border-bright);
-            border-radius: var(--vnpt-radius); padding: 10px; 
+            border-radius: var(--vnpt-radius); padding: 4px; 
             box-shadow: var(--vnpt-shadow);
             transition: width 0.2s ease, height 0.2s ease;
         }
         #vnpt-export-panel.vnpt-resizing { transition: none !important; user-select: none !important; }
         
-        #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 6px; border-radius: 12px; }
+        #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 4px; border-radius: 12px; }
 
         #vnpt-panel-header { 
-            margin: -10px -10px 0 -10px; padding: 8px 12px;
+            margin: -4px -4px 0 -4px; padding: 4px 8px;
             border-bottom: 1px solid var(--vnpt-border); 
             cursor: move; user-select: none; 
             display: flex; align-items: center; justify-content: space-between; 
             background: rgba(255, 255, 255, 0.4);
             border-radius: var(--vnpt-radius) var(--vnpt-radius) 0 0;
-            gap: 10px;
+            gap: 4px;
             position: relative;
         }
         #vnpt-panel-header::after {
@@ -97,11 +97,11 @@ export function injectStyles() {
         }
         #vnpt-panel-header:hover { background: rgba(255, 255, 255, 0.6); }
         
-        .header-left { display: flex; align-items: center; min-width: 80px; }
-        .header-center { display: flex; gap: 8px; flex: 1; justify-content: center; }
+        .header-left { display: flex; align-items: center; min-width: 60px; flex-shrink: 0; }
+        .header-center { display: flex; gap: 4px; flex: 1; justify-content: center; min-width: 0; overflow: hidden; }
         .header-right { 
-            display: flex; gap: 6px; align-items: center; 
-            margin-right: 34px; /* Cách nút đóng khoảng 34px */
+            display: flex; gap: 4px; align-items: center; 
+            margin-right: 34px; flex-shrink: 0;
         }
 
         #vnpt-panel-title { 
@@ -118,13 +118,13 @@ export function injectStyles() {
         #vnpt-fields-container { 
             flex: 1; overflow: hidden; background: rgba(255, 255, 255, 0.3); 
             border: 1px solid var(--vnpt-border); border-radius: 12px; 
-            margin-bottom: 6px; position: relative; display: flex; flex-direction: column; 
+            margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
         }
-        #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 6px; }
+        #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
 
         .vnpt-fields-header {
-            display: flex; gap: 6px; padding: 4px 8px;
+            display: flex; gap: 4px; padding: 2px 4px;
             background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid var(--vnpt-border);
             font-size: 10px; font-weight: 800; color: #5f6368;
             align-items: center; text-transform: uppercase; letter-spacing: 0.5px;
@@ -135,11 +135,11 @@ export function injectStyles() {
         .vnpt-fields-header .h-key { flex: 0.45; display: none; padding-left: 5px; }
         .show-ids .vnpt-fields-header .h-key { display: block; }
         .vnpt-fields-header .h-drag { flex: 0 0 18px; }
-        .vnpt-fields-header .h-val { flex: 1; padding-left: 5px; }
+        .vnpt-fields-header .h-val { flex: 1; padding-left: 50px; }
 
         .vnpt-field-row { 
-            display: flex; gap: 6px; margin-bottom: 4px; align-items: center; 
-            padding: 4px; border-radius: 10px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; gap: 4px; margin-bottom: 2px; align-items: center; 
+            padding: 2px; border-radius: 10px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: rgba(255, 255, 255, 0.6); border: 1px solid transparent;
         }
         .vnpt-field-row:hover { 
@@ -169,8 +169,8 @@ export function injectStyles() {
         .vnpt-btn-del { background: #fce8e6; color: var(--vnpt-danger); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
         .vnpt-btn-del:hover { background: #f9d7d1; }
 
-        .vnpt-control-group { margin-bottom: 12px; }
-        .vnpt-control-group label { display: block; font-weight: 700; font-size: 12px; color: #3c4043; margin-bottom: 6px; }
+        .vnpt-control-group { margin-bottom: 5px; }
+        .vnpt-control-group label { display: block; font-weight: 700; font-size: 12px; color: #3c4043; margin-bottom: 2px; }
         .vnpt-control-group input[type="text"] { 
             width: 100%; box-sizing: border-box; padding: 8px 12px; 
             border: 1px solid #dadce0; border-radius: 8px; font-size: 12px;
@@ -182,12 +182,13 @@ export function injectStyles() {
            SECTION 4: CONTROL BUTTONS
            ═══════════════════════════════════════════ */
         .vnpt-btn-action { 
-            border: none; padding: 0 12px; height: 30px; 
+            border: none; padding: 0 10px; height: 30px; 
             display: flex; align-items: center; justify-content: center; 
             font-weight: 700; font-size: 11px; cursor: pointer; 
             border-radius: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             white-space: nowrap; box-sizing: border-box; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            flex-shrink: 1; min-width: 0;
         }
         .vnpt-btn-action:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .vnpt-btn-action:active { transform: translateY(0) scale(0.96); }
@@ -226,7 +227,7 @@ export function injectStyles() {
             border: 1px solid var(--vnpt-border); border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15); z-index: 100000;
             display: none; flex-direction: column; min-width: 280px;
-            padding: 12px 0; animation: menuFadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            padding: 6px 0; animation: menuFadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
             transform-origin: top right;
         }
         @keyframes menuFadeIn { 
@@ -236,10 +237,10 @@ export function injectStyles() {
         .vnpt-util-menu.show { display: flex; }
         
         .util-item {
-            background: none; border: none; padding: 12px 24px; width: 100%;
+            background: none; border: none; padding: 6px 16px; width: 100%;
             text-align: left; font-size: 13px; cursor: pointer;
             color: #3c4043; font-weight: 600; transition: all 0.2s;
-            display: flex; align-items: center; gap: 14px;
+            display: flex; align-items: center; gap: 8px;
             border-left: 4px solid transparent;
         }
         .util-item:hover { 
@@ -254,17 +255,17 @@ export function injectStyles() {
             border-left-color: var(--vnpt-danger);
         }
         
-        .util-separator { height: 1px; background: rgba(0,0,0,0.05); margin: 8px 0; }
+        .util-separator { height: 1px; background: rgba(0,0,0,0.05); margin: 4px 0; }
         .util-submenu-title { 
-            padding: 10px 20px 6px 20px; font-size: 10.5px; font-weight: 800; 
+            padding: 6px 16px 4px 16px; font-size: 10.5px; font-weight: 800; 
             color: #1a73e8; text-transform: uppercase; letter-spacing: 1px; 
-            background: rgba(26, 115, 232, 0.04); margin-bottom: 4px;
+            background: rgba(26, 115, 232, 0.04); margin-bottom: 2px;
         }
 
         /* Mapping Rows in Utility Menu */
         .cw-row-map {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 4px 20px; gap: 10px;
+            padding: 2px 16px; gap: 4px;
         }
         .cw-row-map span { font-size: 11px; font-weight: 700; color: #5f6368; flex: 0 0 75px; }
         .cw-map-input {
@@ -274,7 +275,7 @@ export function injectStyles() {
         .cw-map-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px var(--vnpt-primary-light); outline: none; }
 
         /* System Data Actions */
-        .util-action-row { display: flex; padding: 6px 16px; gap: 8px; }
+        .util-action-row { display: flex; padding: 4px 12px; gap: 4px; }
         .util-item-small {
             flex: 1; border: 1px solid #e0e0e0; background: #fff; color: #3c4043;
             padding: 8px 0; border-radius: 10px; font-size: 11px; font-weight: 700;
@@ -282,7 +283,7 @@ export function injectStyles() {
         }
         .util-item-small:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); border-color: var(--vnpt-primary); }
         
-        .size-options { display: flex; padding: 10px 18px 12px 18px; gap: 8px; }
+        .size-options { display: flex; padding: 4px 12px; gap: 4px; }
         .size-options button {
             flex: 1; padding: 8px 0; border: 1px solid #e0e0e0; border-radius: 10px;
             background: #fff; font-size: 12px; font-weight: 700; cursor: pointer;
@@ -311,20 +312,80 @@ export function injectStyles() {
         /* ═══════════════════════════════════════════
            SECTION 5: TEMPLATE MANAGER
            ═══════════════════════════════════════════ */
-        #vnpt-template-section { border-top: 1px solid var(--vnpt-border); margin-top: 8px; padding-top: 10px; }
+        #vnpt-template-section { border-top: 1px solid var(--vnpt-border); margin-top: 4px; padding-top: 4px; }
         
+        /* Text Template Section */
+        #vnpt-txt-section {
+            border-top: 1px solid var(--vnpt-border);
+            margin-top: 4px; padding-top: 4px;
+        }
+        .vnpt-txt-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 2px; margin-bottom: 2px;
+        }
+        .vnpt-txt-header span {
+            font-size: 11px; font-weight: 800; color: #1a73e8;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        #vnpt-txt-toggle {
+            background: none; border: none; cursor: pointer;
+            font-size: 10px; color: #5f6368; padding: 2px 6px;
+            border-radius: 4px; transition: all 0.2s;
+        }
+        #vnpt-txt-toggle:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); }
+        #vnpt-txt-template {
+            width: 100%; box-sizing: border-box;
+            padding: 8px 10px; border: 1px solid #dadce0; border-radius: 8px;
+            font-size: 11.5px; font-family: 'Courier New', Courier, monospace;
+            resize: vertical; min-height: 72px; max-height: 200px;
+            background: rgba(255,255,255,0.8); color: #3c4043;
+            transition: all 0.2s; line-height: 1.6;
+        }
+        #vnpt-txt-template:focus {
+            border-color: var(--vnpt-primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            outline: none;
+        }
+        #vnpt-txt-template::placeholder { color: #aaa; font-style: italic; }
+
         .bottom-export-row { 
-            display: flex; gap: 8px; align-items: flex-end; 
+            display: flex; gap: 4px; align-items: center; 
             border-top: 1px solid var(--vnpt-border); 
-            margin: 8px -12px -12px -12px; padding: 12px;
+            margin: 4px -4px -4px -4px; padding: 4px;
             background: rgba(248, 249, 250, 0.5);
             border-radius: 0 0 var(--vnpt-radius) var(--vnpt-radius);
         }
         .bottom-export-row .vnpt-control-group { margin-bottom: 0; flex: 1; min-width: 0; }
+        #vnpt-local-file-group { flex: 0 0 auto !important; }
         .bottom-export-row .vnpt-control-group input[type="text"] { height: 32px; padding: 6px 10px; }
         .bottom-export-row .btn-export { flex: 0 0 auto; height: 32px; margin: 0; border-radius: 8px; }
 
-        .text-hint { font-size: 11px; color: #70757a; font-style: italic; text-align: center; margin-bottom: 8px; }
+        /* Nút Upload File Local (icon-only) */
+        .btn-upload-local {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(0,0,0,0.04); border: 1px solid #dadce0;
+            font-size: 15px; cursor: pointer; transition: all 0.2s;
+            color: #5f6368; box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .btn-upload-local:hover { 
+            background: var(--vnpt-primary-light); border-color: var(--vnpt-primary);
+            color: var(--vnpt-primary); transform: scale(1.05);
+        }
+        .btn-upload-local:active { transform: scale(0.95); }
+
+        /* Nút Xuất TXT */
+        .btn-export-txt {
+            background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+            color: white; padding: 0 14px; font-weight: 800;
+            height: 32px; flex: 0 0 auto; border-radius: 8px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .btn-export-txt:hover { box-shadow: 0 6px 20px rgba(0, 137, 123, 0.4); }
+
+
+        .text-hint { font-size: 11px; color: #70757a; font-style: italic; text-align: center; margin-bottom: 4px; }
 
         #vnpt-fields-list::-webkit-scrollbar { width: 6px; }
         #vnpt-fields-list::-webkit-scrollbar-track { background: transparent; }
@@ -336,12 +397,12 @@ export function injectStyles() {
            ═══════════════════════════════════════════ */
         #vnpt-inline-calc { 
             background: rgba(255, 255, 255, 0.3); 
-            padding: 6px 10px; 
+            padding: 2px 6px; 
             border-bottom: 1px solid var(--vnpt-border);
             display: block;
         }
-        .cw-body-inline { display: flex; flex-direction: column; gap: 6px; }
-        .cw-inline-row { display: flex; align-items: center; gap: 6px; width: 100%; box-sizing: border-box; }
+        .cw-body-inline { display: flex; flex-direction: column; gap: 3px; }
+        .cw-inline-row { display: flex; align-items: center; gap: 3px; width: 100%; box-sizing: border-box; }
         .cw-input-inline { 
             flex: 1; min-width: 60px; padding: 4px 10px; border: 1px solid #dadce0; border-radius: 8px; 
             font-size: 11.5px; font-weight: 600; height: 28px; box-sizing: border-box;

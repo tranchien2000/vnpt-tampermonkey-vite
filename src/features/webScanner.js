@@ -49,7 +49,7 @@ export function initWebScanner() {
                     val = capitalizeName(val);
                 } else if (['sdt'].includes(primaryId)) {
                     val = formatPhoneNumber(val);
-                } else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan', 'ngayThangNamKy'].includes(primaryId)) {
+                } else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan'].includes(primaryId)) {
                     val = normalizeDate(val);
                 }
             }

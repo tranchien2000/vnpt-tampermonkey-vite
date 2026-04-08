@@ -18,16 +18,16 @@ export const DEFAULT_LABELS = {
     'emailDaiDien': 'Email Nhận TK',
     'tenToChuc': 'Tên Tổ Chức',
     'ngayCapSoDkdnCustomer': 'Ngày Cấp ĐKKD',
-    'soDkdn': 'Số GPKD | MST',
+    'soDkdn': 'Mã số thuế | GPKD',
     'goiDV': 'Gói Dịch Vụ',
     'ngayKy, ngayKy1': 'Ngày ký',
     'thangKy, thangKy1': 'Tháng Ký',
     'namKy, namKy1': 'Năm ký',
-    'ngayTiepNhan': 'Ngày tiếp nhận',
-    'ngayThangNamKy': 'Ngày tháng năm ký',
+    'ngayTiepNhan, ngayThangNamKy': 'Ngày tiếp nhận / Ngày tháng năm ký',
     'soHopDong, inputContractGroupName, contractNumber, contractName': 'SỐ HỢP ĐỒNG',
     'soLuongGoi': 'Số Lượng Gói',
-    'noiKy': 'Nơi ký'
+    'noiKy': 'Nơi ký',
+    'lienheHopDongA, lienheTuVanA, lienheHoaDonA, sucoCap1A, sucoCap2A, sucoCap3A, sucoCap4A': 'Liên hệ A',
 };
 
 export const REQUIRED_KEYS = ['soHopDong', 'tenDaiDienn', 'cmnd', 'sdt', 'diaChi', 'tenToChuc', 'ngayCapCustomer', 'emailDaiDien', 'soDkdn', 'goiDV', 'soHopDong'];
@@ -51,4 +51,5 @@ export const SK_COLLAPSE = 'vnpt_widget_collapsed'; // 'calc' | 'data' | ''
 export const SK_CALC_MAP = 'vnd_calc_map';
 export const SK_DATATAB = 'vnpt_widget_datatab';   // 'default' | 'custom'
 export const SK_TEMPLATES = 'vnpt_templates';       // [{name, url, lastUsed}]
+export const SK_TXT_TEMPLATE = 'vnpt_txt_template'; // string — nội dung text template
 //

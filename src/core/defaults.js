@@ -30,7 +30,6 @@ export const DEFAULT_DATA = {
     "tenTiepNhan, tenNguoiNhan": { label: "Người tiếp nhận", value: "Bùi Anh" },
     dienThoaiB: { label: "Điện thoại B", value: "02436686868" },
     diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 " },
-    //"soHopDong, inputContractGroupName, contractNumber, contractName": { label: "Hợp đồng", value: "Hà Nội" },
     noiKy: { label: "Nơi ký", value: "Hà Nội" },
     emailB: { label: "Email B", value: "" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh" }

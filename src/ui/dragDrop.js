@@ -18,7 +18,10 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
     let isDragging = false;
     let offsetX = 0;
     let offsetY = 0;
+    let startX = 0;
+    let startY = 0;
     let isDocked = false;
+    const DRAG_THRESHOLD = 5; // Ngưỡng để xác nhận là đang kéo (pixels)
 
     function setDocked(docked) {
         if (isDocked === docked) return;
@@ -35,8 +38,9 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
 
         isDragging = true;
         
-        // Cập nhật state toàn cục để UI khác biết đang drag (ví dụ toggleBtn)
         AppState.hasDragged = false;
+        startX = e.clientX;
+        startY = e.clientY;
         
         const rect = widgetEl.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
@@ -57,7 +61,15 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
 
     document.addEventListener('mousemove', function (e) {
         if (!isDragging) return;
-        AppState.hasDragged = true;
+        
+        if (!AppState.hasDragged) {
+            const dist = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2));
+            if (dist > DRAG_THRESHOLD) {
+                AppState.hasDragged = true;
+            } else {
+                return; // Chưa vượt ngưỡng di chuyển, không làm gì để giữ sự kiện click
+            }
+        }
 
         let newX = e.clientX - offsetX;
         let newY = e.clientY - offsetY;
@@ -153,14 +165,19 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
                 docked: isDocked
             });
         }
+        
+        // Reset hasDragged sau một khoảng thời gian ngắn để các listener click (nếu có) kịp kiểm tra
+        setTimeout(() => {
+            AppState.hasDragged = false;
+        }, 100);
     });
 
     return { isDocked: () => isDocked, setDocked };
 }
 
 export function initDragDrop() {
-    if (AppState.widget && AppState.header && AppState.toggleBtn) {
-        makeDraggable(AppState.widget, [AppState.header, AppState.toggleBtn], LOCAL_KEY_POS);
+    if (AppState.widget && AppState.header) {
+        makeDraggable(AppState.widget, [AppState.header], LOCAL_KEY_POS);
 
         window.addEventListener('resize', () => {
             const w = window.innerWidth;

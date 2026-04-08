@@ -16,6 +16,8 @@ export function getScannerFallback(id_can_tim) {
     const lKey = id_can_tim.toLowerCase();
     const { ngay, thang, nam } = getVNPTDateStrings();
 
+    const fullDate = `${ngay}/${thang}/${nam}`;
+
     const fallbacks = {
         'ngayky, ngayky1': ngay,
         'ngayky': ngay,
@@ -23,11 +25,13 @@ export function getScannerFallback(id_can_tim) {
         'thangky': thang,
         'namky, namky1': nam,
         'namky': nam,
+        'ngaytiepnhan, ngaythangnamky': fullDate,
+        'ngaytiepnhan': fullDate,
+        'ngaythangnamky': fullDate,
         'soluonggoi': '1',
         'noiky': 'Hà Nội',
         'noicap': 'Cục trưởng Cục Cảnh sát QLHC về TTXH',
         'noicapsodkdn': '',
-
         'chucvu': 'Giám Đốc'
     };
 
