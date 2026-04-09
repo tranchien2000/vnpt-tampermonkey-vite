@@ -46,11 +46,11 @@ function getFileSummary(relativeRef) {
     const content = fs.readFileSync(fullPath, 'utf8');
     const lines = content.split('\n');
     
-    // Thu thập các dòng comment đầu file (JSDoc hoặc block comment)
     let summary = '';
     let inComment = false;
+    let lineCount = 0;
 
-    for (let i = 0; i < Math.min(lines.length, 50); i++) {
+    for (let i = 0; i < Math.min(lines.length, 30); i++) {
         const line = lines[i].trim();
         if (line.startsWith('/**') || line.startsWith('/*')) {
             inComment = true;
@@ -62,62 +62,73 @@ function getFileSummary(relativeRef) {
         } else if (line.startsWith('//')) {
             summary += line + '\n';
         } else if (line !== '' && !inComment) {
-            break; // Dừng lại khi gặp mã nguồn thực tế
+            break; 
         }
+        lineCount++;
+        if (lineCount > 10) break; // Limit to 10 lines max per file
     }
 
     return summary.trim() || 'No description available.';
 }
 
 function generate() {
-    console.log('--- Đang tổng hợp dữ liệu cho NotebookLM ---');
-    let output = `# VNPT PROJECT BRAIN CONTEXT\n`;
+    console.log('--- Đang tổng hợp dữ liệu rút gọn cho NotebookLM ---');
+    let output = `# VNPT PROJECT BRAIN CONTEXT (OPTIMIZED)\n`;
     output += `*Ngày cập nhật: ${new Date().toLocaleString('vi-VN')}*\n\n`;
 
-    // 1. Thêm các file tài liệu chính
+    // 1. Thêm các file tài liệu chính (có giới hạn)
     output += `## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)\n\n`;
     for (const doc of DOCS_TO_INCLUDE) {
         const docPath = path.join(ROOT_DIR, doc);
         if (fs.existsSync(docPath)) {
             console.log(`Đang đọc: ${doc}`);
             output += `### File: ${doc}\n\n`;
-            output += fs.readFileSync(docPath, 'utf8') + '\n\n---\n\n';
+            
+            let docContent = fs.readFileSync(docPath, 'utf8');
+            if (doc === 'README.md') {
+                // Chỉ lấy 100 dòng đầu của README
+                const lines = docContent.split('\n');
+                docContent = lines.slice(0, 100).join('\n') + '\n\n... (phần còn lại đã được lược bỏ để tiết kiệm context) ...';
+            }
+            output += docContent + '\n\n---\n\n';
         }
     }
 
     // 2. Thêm tóm tắt cấu trúc code
     output += `## 2. TÓM TẮT CẤU TRÚC MÃ NGUỒN (CODE LOGIC SUMMARIES)\n\n`;
-    output += `Phần này chứa mô tả chức năng của từng file quan trọng trong dự án.\n\n`;
-
+    
     for (const dir of CODE_DIRS) {
         const fullDirPath = path.join(ROOT_DIR, dir);
         if (fs.existsSync(fullDirPath)) {
             output += `### Thư mục: ${dir}\n\n`;
             const files = fs.readdirSync(fullDirPath);
             
+            output += `| File | Mô tả |\n| :--- | :--- |\n`;
             for (const file of files) {
                 const relativeFile = path.join(dir, file);
                 const fullFilePath = path.join(ROOT_DIR, relativeFile);
                 
                 if (fs.statSync(fullFilePath).isFile() && (file.endsWith('.js') || file.endsWith('.ts'))) {
-                    const summary = getFileSummary(relativeFile);
-                    output += `#### File: ${file}\n`;
-                    output += `**Mô tả:**\n\`\`\`javascript\n${summary}\n\`\`\`\n\n`;
+                    const summary = getFileSummary(relativeFile).replace(/\n/g, '<br>');
+                    output += `| ${file} | ${summary} |\n`;
                 }
             }
+            output += '\n';
         }
     }
 
-    // 3. Thêm Workflows
-    output += `## 3. QUY TRÌNH HỆ THỐNG (SYSTEM WORKFLOWS)\n\n`;
+    // 3. Thêm Workflows (Chỉ lấy Description)
+    output += `## 3. DANH MỤC QUY TRÌNH (WORKFLOWS MAP)\n\n`;
     const workflowsPath = path.join(ROOT_DIR, WORKFLOWS_DIR);
     if (fs.existsSync(workflowsPath)) {
-        console.log(`Đang quét Workflows trong: ${WORKFLOWS_DIR}`);
         const wfFiles = fs.readdirSync(workflowsPath).filter(f => f.endsWith('.md'));
         for (const wf of wfFiles) {
-            output += `### Workflow: ${wf}\n\n`;
-            output += fs.readFileSync(path.join(workflowsPath, wf), 'utf8') + '\n\n---\n\n';
+            const content = fs.readFileSync(path.join(workflowsPath, wf), 'utf8');
+            const descMatch = content.match(/description:\s*(.*)/);
+            const description = descMatch ? descMatch[1] : 'Không có mô tả.';
+            output += `- **/${wf.replace('.md', '')}**: ${description}\n`;
         }
+        output += `\n> *Lưu ý: Để xem chi tiết workflow, hãy dùng lệnh view_file trực tiếp vào file trong thư mục .agents/workflows/*\n\n`;
     }
 
     // 4. Quy tắc dự án (Cursorrules/Settings)

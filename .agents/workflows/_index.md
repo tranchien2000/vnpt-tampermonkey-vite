@@ -6,6 +6,7 @@ description: Danh mục nhanh (Cheat-sheet) các workflow hệ thống
 
 Dưới đây là danh sách tất cả các workflows trong thư mục `.agents/workflows/`. AI **HÃY XEM Ở ĐÂY TIÊN QUYẾT** thay vì dùng lệnh `list_dir` để liệt kê thư mục gây tốn Action Token.
 
+- /start: Khôi phục bối cảnh dự án và tóm tắt trạng thái phiên làm việc trước đó.
 - `/add-feature`: Quy trình chuẩn để tạo một module tính năng mới từ A-Z.
 - `/add-field`: Cách thêm một trường dữ liệu (field) mới vào nền tảng.
 - `/add-helper`: Quy trình thêm một hàm bổ trợ vào nhóm utility.

@@ -6,8 +6,8 @@ Write-Host "Cleaning up old processes..." -ForegroundColor Yellow
 taskkill /F /IM msedge.exe /T 2>$null
 taskkill /F /IM node.exe /T 2>$null
 
-$env:CHROME_PATH="E:\CENT_BROWER\CentBrowser\Application\chrome.exe"
+$env:CHROME_PATH="C:\Program Files\Google\Chrome\Application\chrome.exe"
 $env:HEADLESS="false"
 
-Write-Host "Launching Authentication Window via CentBrowser..." -ForegroundColor Green
+Write-Host "Launching Authentication Window via Chrome..." -ForegroundColor Green
 npx -y notebooklm-mcp-ultimate setup-auth

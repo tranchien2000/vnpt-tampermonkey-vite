@@ -9,6 +9,8 @@ import { SK_GEMINI_KEY, SK_GEMINI_MODEL } from '../../core/constants.js';
 import { fileToBase64, extractWithGemini } from './geminiOcr.js';
 import { showPdfConfirmDialog, showPdfLoading, hidePdfLoading } from './pdfScanUI.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from '../fieldsManager.js';
+import { showToast } from '../../ui/toast.js';
+
 
 export function initPdfScan() {
     const btnScan = document.getElementById('vnpt-btn-scan-pdf');
@@ -18,8 +20,24 @@ export function initPdfScan() {
 
     btnScan.addEventListener('click', (e) => {
         e.preventDefault();
+        
+        const apiKey = Storage.get(SK_GEMINI_KEY);
+        if (!apiKey) {
+            // Nếu chưa có Key, copy link hướng dẫn vào clipboard
+            const guideUrl = 'https://github.com/tranchien2000/vnpt-tampermonkey-vite/blob/main/docs/GEMINI_API_GUIDE.md';
+            navigator.clipboard.writeText(guideUrl).then(() => {
+                showToast("Đã copy link hướng dẫn cài đặt API Key vào bộ nhớ tạm", "#f44336");
+            }).catch(err => {
+                console.error('Không thể copy link:', err);
+                alert("Công cụ chưa được cài đặt API Key!");
+            });
+            return;
+        }
+
+
         inputPdf.click(); // Mở hộp thoại chọn file
     });
+
 
     inputPdf.addEventListener('change', async (e) => {
         const file = e.target.files[0];
