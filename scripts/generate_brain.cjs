@@ -27,6 +27,9 @@ const CODE_DIRS = [
     'src/utils'
 ];
 
+// Thư mục chứa Workflows
+const WORKFLOWS_DIR = '.agents/workflows';
+
 function ensureDirectoryExistence(filePath) {
     const dirname = path.dirname(filePath);
     if (fs.existsSync(dirname)) {
@@ -105,10 +108,22 @@ function generate() {
         }
     }
 
-    // 3. Quy tắc dự án (Cursorrules/Settings)
+    // 3. Thêm Workflows
+    output += `## 3. QUY TRÌNH HỆ THỐNG (SYSTEM WORKFLOWS)\n\n`;
+    const workflowsPath = path.join(ROOT_DIR, WORKFLOWS_DIR);
+    if (fs.existsSync(workflowsPath)) {
+        console.log(`Đang quét Workflows trong: ${WORKFLOWS_DIR}`);
+        const wfFiles = fs.readdirSync(workflowsPath).filter(f => f.endsWith('.md'));
+        for (const wf of wfFiles) {
+            output += `### Workflow: ${wf}\n\n`;
+            output += fs.readFileSync(path.join(workflowsPath, wf), 'utf8') + '\n\n---\n\n';
+        }
+    }
+
+    // 4. Quy tắc dự án (Cursorrules/Settings)
     const cursorRulesPath = path.join(ROOT_DIR, '.cursorrules');
     if (fs.existsSync(cursorRulesPath)) {
-        output += `## 3. QUY TẮC DỰ ÁN (.cursorrules)\n\n`;
+        output += `## 4. QUY TẮC DỰ ÁN (.cursorrules)\n\n`;
         output += fs.readFileSync(cursorRulesPath, 'utf8') + '\n\n';
     }
 

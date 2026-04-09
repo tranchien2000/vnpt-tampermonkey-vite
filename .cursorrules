@@ -1,23 +1,11 @@
-1. AI **LUÔN LUÔN** phải ưu tiên đọc [.notebooklm/brain_context.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.notebooklm/brain_context.md) làm bộ nhớ lõi và nguồn chính yếu (Primary context source) ngay khi bắt đầu phiên làm việc hoặc hỏi ý kiến NotebookLM thay vì dò tìm lại code từ đầu.
-2. **Planning First**: Khi nhận yêu cầu mới (ngoại trừ hỏi đáp đơn thuần), AI **PHẢI** lập kế hoạch chi tiết trong `implementation_plan.md` (brain artifact) và chờ xác nhận.
-3. **Execution Trigger**: AI chỉ được phép chỉnh sửa code (EXECUTION) sau khi người dùng ra lệnh "ok", "trien khai" hoặc đồng ý với kế hoạch.
-4. AI phải đọc **JSDoc header** (20 dòng đầu) của file `src/` trước khi đọc toàn bộ.
-5. **Grep-First Mandate**: Nếu file > 100 dòng, AI **PHẢI** dùng `grep_search` để tìm đoạn code cần sửa trước khi dùng `view_file`.
-6. **Exclusion List**: Tuyệt đối KHÔNG đọc: `dist/`, `node_modules/`, `.git/`, `package-lock.json`, `original_script.js`, `source.js`, `temp_vnpt*.js`.
-7. **Language Mandate**: Toàn bộ phản hồi, tài liệu, commit message và **code comments** phải dùng **Tiếng Việt**.
-8. **Concise Response**: Phản hồi ngắn gọn, tập trung vào logic và diff code, không chào hỏi rườm rà.
-9. **Workflow First**: Luôn kiểm tra thư mục `.agents/workflows/` trước khi thực hiện các tác vụ như thêm field, thêm feature, hoặc sửa UI.
-10. **Error Handling**: Các hàm xử lý DOM hoặc API phải có `try-catch` và sử dụng `logger` từ `src/utils/logger.js`.
-11. **JSDoc Style**: Mọi hàm export mới phải có JSDoc mô tả tham số và giá trị trả về.
-12. **Tool Optimization**: Ưu tiên dùng `multi_replace_file_content` cho các thay đổi không liên tục trong cùng file.
-13. **State Management Pattern**: Luôn sử dụng singleton `AppState` từ `src/core/state.js` để quản lý trạng thái runtime. Tuyệt đối không dùng biến toàn cục rải rác.
-14. **Commit Message Standard**: Sử dụng định dạng: `[loại]: [mô tả ngắn bằng tiếng Việt]` (VD: `feat: thêm nút quét dữ liệu`). Loại bao gồm: `feat`, `fix`, `refactor`, `docs`, `style`.
-15. **Advanced Error Handling**: Mọi hàm `async` phải bọc trong `try-catch`. Sử dụng `logger.error` để ghi lại lỗi và hiển thị `toast` cho người dùng nếu cần thiết.
+AI **PHẢI** tuân thủ bộ quy tắc trung tâm tại: [docs/RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md)
 
-## 2. UI/Aesthetics (Premium Standard)
-- Theme: Dark Mode + Glassmorphism (blur, semi-transparent borders).
-- Colors: HSL curated palettes (e.g., Indigo primary, Slate background).
-- Typography: Outfit, Inter, hoặc Roboto (Google Fonts).
-- Micro-animations: Hover effects, smooth transitions, loading states.
-- Không dùng placeholder; dùng `generate_image`.
+### 🚀 Quy tắc Ưu tiên (Quick Reference):
+1. AI **PHẢI** đọc [.notebooklm/brain_context.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.notebooklm/brain_context.md) ngay khi bắt đầu.
+2. **Planning First**: Lập `implementation_plan.md` và chờ xác nhận trước khi code.
+3. **Execution**: Chỉ code sau khi người dùng gõ "ok", "trien khai" hoặc "y".
+4. **Grep-First**: Dùng `grep_search` cho file > 100 dòng.
+5. **Language**: Toàn bộ phản hồi và code comments là **Tiếng Việt**.
+6. **Manual Slash Commands**: Kiểm tra `.agents/workflows/` để tham chiếu quy trình. Gõ lệnh trực tiếp (ví dụ: `/update-memory`) và nhấn Enter (KHÔNG có menu gợi ý tự động).
 
+Xem chi tiết tại [RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md) để biết về tiêu chuẩn JSDoc, Error Handling, State Management và Design System (Glassmorphism).

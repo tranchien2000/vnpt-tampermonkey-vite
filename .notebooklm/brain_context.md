@@ -1,99 +1,7 @@
- VNPT PROJECT BRAIN CONTEXT
-*Ngày cập nhật: 22:27:53 9/4/2026*
+# VNPT PROJECT BRAIN CONTEXT
+*Ngày cập nhật: 00:34:04 10/4/2026*
 
 ## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)
-
-### File: ARCHITECTURE.md
-
-# VNPT Tampermonkey Script Architecture
-
-## Overview
-Dự án là một Tampermonkey Userscript dùng để tự động hóa việc nhập liệu và xuất file DOCX từ các biểu mẫu web của VNPT. Script được cấu trúc theo dạng module ESM, sử dụng Vite để build.
-
-```mermaid
-graph TD;
-  Core[Core (constants, state, defaults)] --> UI[UI (widget, styles)];
-  UI --> Features[Features];
-  Features --> Utils[Utils];
-  Features -->|điền dữ liệu| DataFill[dataFill];
-  Features -->|tạo file| DocExport[docExport];
-```
-
-## Module Map
-
-### 1. Core (State & Constants)
-Các file lưu trữ cấu hình tĩnh và trạng thái runtime. AI nên đọc các file này trước để biết các hằng số và keys.
-
-- [constants.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/constants.js): Chứa mapping nhãn (DEFAULT_LABELS) và các key của localStorage.
-- [state.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/state.js): Singleton AppState lưu giữ tham chiếu đến các thành phần UI (DOM) và các cờ trạng thái (flags).
-- [defaults.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/defaults.js): Chứa dữ liệu bên B mặc định (DEFAULT_DATA) và danh sách trường bên A (fieldsA).
-- [scannerFallbacks.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/scannerFallbacks.js): [NEW] Xử lý logic dự phòng khi quét dữ liệu trang web không tìm thấy nhãn chuẩn.
-
-### 2. UI (Giao diện)
-Phần render và điều khiển layout của widget.
-
-- [styles.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/styles.js): Chứa toàn bộ CSS (với 6 Section Comments giúp AI định vị nhanh).
-- [widget.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/widget.js): Khởi tạo giao diện chính (Export Widget), quản lý resize/đóng mở.
-- [dragDrop.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/dragDrop.js): Logic kéo thả chung cho cả 2 widget chính.
-- [toast.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/toast.js): Hiển thị thông báo góc màn hình.
-
-### 3. API (Giao tiếp & Lưu trữ)
-Quản lý các kết nối ngoại vi và lưu trữ tập trung.
-
-- [storage/](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/api/storage/): Quản lý lưu trữ dữ liệu (localStorage, GM_setValue) với cơ chế debounce và caching.
-
-### 3. Features (Tính năng)
-Logic nghiệp vụ chính của script.
-
-- [calc/](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/calc/): Thư mục quản lý Calc Widget (Gồm Logic, UI, History).
-  - [calcLogic.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/calc/calcLogic.js): Logic tính thuế & format số.
-  - [calcUI.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/calc/calcUI.js): Khởi tạo DOM & Event Listeners.
-- [dataFill/](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/dataFill/): Thư mục quản lý dữ liệu và đồng bộ (Tabs UI, Sync Engine).
-  - [syncEngine.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/dataFill/syncEngine.js): Logic điền dữ liệu & lắng nghe sự kiện input toàn trang.
-  - [dataFillUI.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/dataFill/dataFillUI.js): Giao diện 3 tab dữ liệu & Import/Export.
-- [fieldsManager.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/fieldsManager.js): Quản lý bảng dữ liệu trung tâm của widget Export (CRUD, drag-sort).
-- [docExport.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/docExport.js): Logic render file .docx bằng docxtemplater.
-- [templateManager.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/templateManager.js): Quản lý các mẫu .docx (URL hoặc file local lưu trong IndexedDB).
-- [webScanner.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/webScanner.js): Quét dữ liệu từ trang web đưa vào bảng quản lý.
-- [autoFillForm.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/autoFillForm.js): Tự động điền các trường cố định ngay khi load form.
-
-### 4. Utils (Tiện ích)
-- [domHelper.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/utils/domHelper.js): Các hàm thao tác DOM (setValue, setPageField).
-- [numberHelper.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/utils/numberHelper.js): Chuyển số -> chữ tiếng Việt, format tiền.
-- [logger.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/utils/logger.js): Logging quản lý log ra console.
-
-## Data Flow
-1. **Quét dữ liệu**: Người dùng bấm nút "Quét" (`webScanner.js`) -> Dữ liệu đổ vào `fieldsManager.js` -> Lưu vào `localStorage (LOCAL_KEY_FIELDS)`.
-2. **Xuất file**: Người dùng bấm "Xuất file" (`docExport.js`) -> Lấy template từ `templateManager.js` -> Lấy data từ `fieldsManager.js` -> Tải file về.
-3. **Tính toán**: Nhập liệu vào Calc Widget (`calcWidgetFeature.js`) -> Đồng bộ ngược vào web hoặc Data Tabs (`dataFillFeature.js`).
-4. **Tự động**: `autoFillForm.js` tự động điền ngay khi form xuất hiện qua `MutationObserver`.
-
-## Token Optimization & Cheat Sheet
-
-### 1. Cheat Sheet (Lược đồ nhanh)
-
-| Component | File chính | Chức năng |
-| :--- | :--- | :--- |
-| **Giao diện** | [styles.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/styles.js) | Chứa 100% CSS (Tìm theo Section Comments) |
-| **Widget** | [widget.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/widget.js) | Khung sườn UI chính |
-| **Dữ liệu** | [constants.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/constants.js) | Chứa nhãn (Labels) và Keys cho storage |
-| **Logic Tính** | [calcLogic.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/calc/calcLogic.js) | Thuế, format tiền, số -> chữ |
-| **Đồng bộ** | [syncEngine.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/dataFill/syncEngine.js) | Điền dữ liệu từ widget vào trang web |
-| **Xuất file** | [docExport.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/docExport.js) | Tạo file .docx |
-
-### 2. Quy trình "Tiết kiệm Token" cho AI
-
-1. **Grep-First**: Thay vì `view_file` toàn bộ 400 dòng `styles.js`, hãy dùng `grep_search` với từ khóa của Section (ví dụ: `/* Section 3: Tabs */`).
-2. **Context-Aware Mapping**: Luôn đối chiếu `constants.js` trước khi sửa bất kỳ logic lấy dữ liệu nào.
-3. **Skip Large Files**: Tuyệt đối không đọc `original_script.js` hay `source.js` trừ khi có chỉ thị đặc biệt.
-4. **Workflow Check**: Xem `.agents/workflows/` để biết các bước thực hiện chuẩn cho các tác vụ lặp lại.
-5. **JSDoc Header**: Chỉ đọc 20 dòng đầu của file để hiểu nhiệm vụ trước khi đào sâu code.
-
----
-*Lưu ý: Toàn bộ code comments và tài liệu phải duy trì bằng Tiếng Việt.*
-
-
----
 
 ### File: PROJECT_MEMORY.md
 
@@ -105,21 +13,24 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Triển khai giao diện Glassmorphism cao cấp.
 - [x] Hợp nhất menu cài đặt và sao lưu.
 - [x] Hệ thống kiểm tra dữ liệu bắt buộc (Required Fields Validation).
-- [/] Cải thiện hệ thống "Trí nhớ dự án" (Task hiện tại).
+- [x] Cải thiện hệ thống "Trí nhớ dự án" (Đã khôi phục và đồng bộ).
+- [x] Kiểm tra tính nhất quán của hệ thống Rules/Workflow với người dùng.
 
 ## 2. Nhật ký Quyết định (Decision Log)
 - **2026-04-07 (Glassmorphism UI)**: Thay thế hoàn toàn giao diện cũ sang phong cách mờ đục (blur) với màu Indigo/Slate để tăng tính sang trọng.
 - **2026-04-07 (Storage Abstraction)**: Di chuyển toàn bộ logic `localStorage` vào `src/api/storage/` để quản lý tập trung và tránh xung đột dữ liệu.
-- **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn thay vì chỉ dựa vào Context Window.
+- **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn.
+- **2026-04-09 (Rules & Workflow Alignment)**: Giải thích cơ chế Slash Commands cho người dùng (không có menu tự động) và cập nhật hướng dẫn vào `RULES.md`.
+- **2026-04-10 (Fix Slash Command Confusion)**: Cập nhật `.cursorrules` và `RULES.md` để nhấn mạnh lệnh manual và không có autocomplete.
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
-- **VNPT Selectors**: Các input trên trang VNPT thường không có ID cố định hoặc ID thay đổi theo phiên. Luôn ưu tiên dùng `placeholder` hoặc `label` text thông qua `webScanner.js`.
-- **Z-Index Layering**: Widget cần có `z-index: 99999` để không bị đè bởi các modal của hệ thống VNPT.
-- **MutationObserver Performance**: Khi quét form tự động, chỉ quan sát các node cụ thể thay vì toàn bộ `document.body` để tránh lag trang (đã tối ưu trong `autoFillForm.js`).
+- **VNPT Selectors**: Các input trên trang VNPT thường không có ID cố định. Luôn ưu tiên dùng `placeholder` hoặc `label` text qua `webScanner.js`.
+- **Z-Index Layering**: Widget cần có `z-index: 99999`.
+- **MutationObserver Performance**: Chỉ quan sát các node cụ thể để tránh lag trang.
 
 ## 4. Trạng thái các tính năng (Status Map)
-- **Export DOCX**: Hoạt động ổn định (Dùng docxtemplater).
-- **Calc Widget**: Đã hợp nhất vào settings chính.
+- **Export DOCX**: Hoạt động ổn định.
+- **Calc Widget**: Đã hợp nhất vào settings.
 - **Sync Engine**: Hỗ trợ lắng nghe sự kiện `input` thời gian thực.
 
 ---
@@ -979,30 +890,455 @@ No description available.
 */
 ```
 
-## 3. QUY TẮC DỰ ÁN (.cursorrules)
+## 3. QUY TRÌNH HỆ THỐNG (SYSTEM WORKFLOWS)
 
-1. AI **LUÔN LUÔN** phải đọc [ARCHITECTURE.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/ARCHITECTURE.md) và [PROJECT_MEMORY.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/PROJECT_MEMORY.md) ngay khi bắt đầu phiên làm việc.
-2. **Planning First**: Khi nhận yêu cầu mới (ngoại trừ hỏi đáp đơn thuần), AI **PHẢI** lập kế hoạch chi tiết trong `implementation_plan.md` (brain artifact) và chờ xác nhận.
-3. **Execution Trigger**: AI chỉ được phép chỉnh sửa code (EXECUTION) sau khi người dùng ra lệnh "ok", "trien khai" hoặc đồng ý với kế hoạch.
-4. AI phải đọc **JSDoc header** (20 dòng đầu) của file `src/` trước khi đọc toàn bộ.
-5. **Grep-First Mandate**: Nếu file > 100 dòng, AI **PHẢI** dùng `grep_search` để tìm đoạn code cần sửa trước khi dùng `view_file`.
-6. **Exclusion List**: Tuyệt đối KHÔNG đọc: `dist/`, `node_modules/`, `.git/`, `package-lock.json`, `original_script.js`, `source.js`, `temp_vnpt*.js`.
-7. **Language Mandate**: Toàn bộ phản hồi, tài liệu, commit message và **code comments** phải dùng **Tiếng Việt**.
-8. **Concise Response**: Phản hồi ngắn gọn, tập trung vào logic và diff code, không chào hỏi rườm rà.
-9. **Workflow First**: Luôn kiểm tra thư mục `.agents/workflows/` trước khi thực hiện các tác vụ như thêm field, thêm feature, hoặc sửa UI.
-10. **Error Handling**: Các hàm xử lý DOM hoặc API phải có `try-catch` và sử dụng `logger` từ `src/utils/logger.js`.
-11. **JSDoc Style**: Mọi hàm export mới phải có JSDoc mô tả tham số và giá trị trả về.
-12. **Tool Optimization**: Ưu tiên dùng `multi_replace_file_content` cho các thay đổi không liên tục trong cùng file.
-13. **State Management Pattern**: Luôn sử dụng singleton `AppState` từ `src/core/state.js` để quản lý trạng thái runtime. Tuyệt đối không dùng biến toàn cục rải rác.
-14. **Commit Message Standard**: Sử dụng định dạng: `[loại]: [mô tả ngắn bằng tiếng Việt]` (VD: `feat: thêm nút quét dữ liệu`). Loại bao gồm: `feat`, `fix`, `refactor`, `docs`, `style`.
-15. **Advanced Error Handling**: Mọi hàm `async` phải bọc trong `try-catch`. Sử dụng `logger.error` để ghi lại lỗi và hiển thị `toast` cho người dùng nếu cần thiết.
+### Workflow: add-feature.md
 
-## 2. UI/Aesthetics (Premium Standard)
-- Theme: Dark Mode + Glassmorphism (blur, semi-transparent borders).
-- Colors: HSL curated palettes (e.g., Indigo primary, Slate background).
-- Typography: Outfit, Inter, hoặc Roboto (Google Fonts).
-- Micro-animations: Hover effects, smooth transitions, loading states.
-- Không dùng placeholder; dùng `generate_image`.
+---
+description: Quy trình chuẩn để tạo một module tính năng mới từ A-Z
+---
 
+Để thêm một tính năng lớn (ví dụ: "Thống kê báo cáo"), hãy tuân thủ cấu trúc module:
+
+1. **Tạo thư mục**: `src/features/tenTinhNang/`.
+2. **Chia nhỏ logic**:
+   - `logic.js`: Chỉ chứa tính toán, xử lý dữ liệu, không có DOM.
+   - `ui.js`: Chỉ chứa tạo DOM và gán Event Listeners.
+   - `index.js`: Export hàm khởi tạo chính (ví dụ: `initStats`).
+3. **Khai báo hằng số**: Thêm các key Storage mới vào [constants.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/constants.js).
+4. **Khởi tạo**: Import và gọi hàm init trong [main.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/main.js).
+5. **Cập nhật tài liệu**: Thêm module mới vào [ARCHITECTURE.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/ARCHITECTURE.md).
+
+
+---
+
+### Workflow: add-field.md
+
+---
+description: Cách thêm một trường dữ liệu (field) mới vào toàn bộ hệ thống
+---
+
+Để thêm một trường mới (ví dụ: "Mã số thuế" - `maSoThue`), hãy thực hiện các bước sau:
+
+1. **Core - Constants**:
+   Mở [constants.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/constants.js) và thêm key-label vào `DEFAULT_LABELS`.
+   ```js
+   'maSoThue': 'Mã số thuế',
+   ```
+
+2. **Core - Defaults**:
+   Nếu trường này cần giá trị mặc định cho VNPT Hà Nội, hãy thêm vào `src/core/defaults.js`.
+
+3. **Features - Web Scanner**:
+   [webScanner.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/webScanner.js) sẽ tự động nhận diện field này từ `DEFAULT_LABELS`, nhưng nếu cần logic lấy giá trị đặc biệt (ví dụ từ `select` hoặc `span`), hãy cập nhật hàm `initWebScanner`.
+
+4. **Verify**:
+   Chạy `npm run build` và kiểm tra nút "Quét" trên widget.
+
+
+---
+
+### Workflow: add-helper.md
+
+---
+description: Cách thêm một hàm bổ trợ (helper) vào hệ thống
+---
+
+Để thêm một hàm format tiền, ngày tháng hoặc xử lý chuỗi:
+
+1. **Chọn vị trí**:
+   - Thao tác số/tiền: [numberHelper.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/utils/numberHelper.js)
+   - Thao tác DOM: [domHelper.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/utils/domHelper.js)
+   - Logic chung: Tạo file mới trong `src/utils/`.
+
+2. **Viết JSDoc**:
+   Luôn bắt đầu hàm với JSDoc rành mạch để AI có thể hiểu mà không cần đọc logic:
+   ```js
+   /**
+    * @param {number} val
+    * @returns {string} định dạng dd/mm/yyyy
+    */
+   export function formatDate(val) { ... }
+   ```
+
+3. **Sử dụng**:
+   Import hàm vào các `features/` tương ứng. Nếu là logic tính toán cho Calc, hãy cập nhật [calcLogic.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/calc/calcLogic.js).
+
+
+---
+
+### Workflow: add-template.md
+
+---
+description: Quy trình thêm một mẫu Template DOCX từ Google Drive hoặc URL
+---
+
+Mặc định các mẫu được lưu trong LocalStorage, nếu bạn muốn AI thêm một mẫu cố định vào danh sách cho người dùng khác:
+
+1. **Chuẩn bị Link**:
+   Link Google Drive phải ở dạng "Bất kỳ ai có liên kết đều có thể đọc".
+
+2. **Khởi tạo Code**:
+   Mẫu thường được render bởi `renderTemplateManager` trong [widget.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/widget.js).
+   Để thêm mẫu mặc định, AI cần chèn logic nạp mẫu vào `localStorage (SK_TEMPLATES)` nếu nó chưa tồn tại trong [templateManager.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/templateManager.js).
+
+3. **Xử lý URL**:
+   Sử dụng hàm `normalizeUrl(url)` để chuyển link trực tiếp của GDrive thành link tải file `uc?export=download`.
+
+4. **Verify**:
+   Chạy `npm run build` và kiểm tra xem template có xuất hiện trong danh sách "📁 Bộ nhớ Templates" hay không.
+
+
+---
+
+### Workflow: api-request.md
+
+---
+description: Cách gọi API ngoài an toàn và đúng chuẩn Tampermonkey
+---
+
+Do chính sách bảo mật (CORS), bạn không nên dùng `fetch` thông thường. Hãy dùng `GM_xmlhttpRequest`:
+
+1. **Mô tả**:
+   Hàm này cho phép gọi API từ cross-domain (ví dụ: gọi từ `vnpt.vn` tới `api.google.com`).
+
+2. **Cách dùng**:
+   ```js
+   GM_xmlhttpRequest({
+     method: "GET",
+     url: "https://api.example.com/data",
+     onload: function(response) {
+       console.log(JSON.parse(response.responseText));
+     }
+   });
+   ```
+
+3. **Lưu ý**:
+   - Luôn kiểm tra `response.status` trước khi xử lý.
+   - Tránh truyền dữ liệu nhạy cảm qua URL không mã hóa.
+
+
+---
+
+### Workflow: bug-report.md
+
+---
+description: Quy trình báo cáo và sửa lỗi hiệu quả, tối thiểu token đầu vào.
+---
+
+# Quy trình xử lý lỗi (Bug Report Workflow)
+
+## Context
+Quy trình này áp dụng khi User báo lỗi (Bug) liên quan đến runtime hoặc console error.
+
+## Các bước xử lý của AI (Tự động thực hiện)
+1. **Tiếp nhận Error Trace:** Nhận dạng Error Message và File location từ tin nhắn của user. Nếu user chỉ nói "bị lỗi code", AI sẽ hỏi user "Bạn hãy chỉ cung cấp tên file và dòng lỗi (ví dụ: `src/main.js:154`) thay vì dán toàn bộ log."
+// turbo
+2. **View Context Hẹp:** Khởi tạo `view_file` tới đúng file đó, với `StartLine` = (Dòng lỗi - 15) và `EndLine` = (Dòng lỗi + 15).
+3. **Phân tích Nhanh:** Thông báo cho user một dòng ngắn gọn tại sao bị lỗi.
+4. **Sửa & Diff:** Dùng `replace_file_content` hoặc `multi_replace_file_content` để sửa trực tiếp và chỉ báo cho user biết đoạn file đã sửa hoàn tất. Không in lại nguyên khối code to ra cửa sổ chat.
+
+
+---
+
+### Workflow: debug-ui.md
+
+---
+description: Quy trình sửa lỗi hiển thị và tương tác trên web đích
+---
+
+Sử dụng khi Widget bị lỗi (không hiện, bị che, hoặc click không ăn):
+
+1. **Z-Index**:
+   Kiểm tra xem `z-index` của widget có đủ lớn không (mặc định nên là `999999`).
+
+2. **Conflict Style**:
+   Trang VNPT có thể có CSS trùng tên. Hãy sử dụng các class prefix `vnpt-` hoặc `cw-` (đã triển khai) để tránh xung đột.
+
+3. **DOM Selector**:
+   Nếu nút "Quét" hoặc "Điền" không hoạt động, hãy dùng Console kiểm tra xem ID của phần tử trên trang web có bị thay đổi không.
+
+4. **IFrame**:
+   Nếu form nằm trong IFrame, script cần được cấu chỉnh trong UserScript header để chạy vào nội dung IFrame.
+
+
+---
+
+### Workflow: dev-all.md
+
+---
+description: Quy trình build và chạy server phát triển song song
+---
+
+// turbo-all
+
+Để chạy toàn bộ môi trường development:
+
+1. Dọn dẹp bản build cũ:
+```cmd
+rmdir /s /q dist
+```
+
+2. Chạy lệnh build và serve song song:
+```cmd
+npm run dev:all
+```
+
+Sau khi chạy thành công, script sẽ có tại `http://localhost:8788/myscript.user.js`.
+
+
+---
+
+### Workflow: export-json.md
+
+---
+description: Quy trình bảo trì và cập nhật chức năng xuất/nhập file JSON (Backup)
+---
+
+# Workflow Xuất/Nhập file JSON (Backup)
+
+Chức năng **xuất file cấu hình JSON** là tính năng cốt lõi để người dùng có thể chia sẻ, lưu trữ sao lưu, và đồng bộ hóa các thiết lập (Template, Mapping, Fields form, v.v.) giữa nhiều thiết bị và trình duyệt khác nhau.
+
+## Vị trí xử lý logic
+Toàn bộ logic thao tác xử lý file import/export đều nằm ở một module duy nhất:
+- **File:** `src/utils/backupHelper.js`
+
+## Nguyên tắc Xuất Dữ liệu (Export)
+1. **Dữ liệu trải phẳng (Flatten Data)** 
+Khi xuất dữ liệu `dataDefault` hoặc `dataCustom`, chúng ta thường gặp các key gộp với dấu phẩy do người dùng khai báo ở giao diện (ví dụ `"MST, Mã khách hàng, Tên KH": "Thông tin KH"`).
+Hệ thống **BẮT BUỘC PHẢI** sử dụng hàm `flattenData` nội bộ để tách các key này thành key độc lập trên cấu trúc JSON xuất ra để đảm bảo dữ liệu chuẩn khi sử dụng API hoặc nhập lại vào máy khác.
+
+   ```javascript
+   // LUÔN DÙNG flattenData cho dataDefault và dataCustom
+   dataDefault: flattenData(Storage.get(SK_DATA_DEF)),
+   dataCustom: flattenData(Storage.get(SK_DATA_CUS)),
+   ```
+
+2. **Dọn dẹp rác**
+Tuyệt đối không lưu dữ liệu cache hoặc temp (chỉ tồn tại trong session) vào file JSON để giảm dung lượng tải và tránh bị sai logic luồng chạy trên thiết bị đích.
+
+## Quy trình Thêm Mới Dữ Liệu vào file Backup
+Khi bạn code xong một tính năng mới yêu cầu lưu cài đặt/trường vào `localStorage` (Ví dụ: Thêm tính năng cấu hình proxy mới với key `SK_PROXY_CONFIG`). Phải đảm bảo cập nhật đồng bộ Backup:
+
+1. **Bước 1:** Mở file `src/utils/backupHelper.js`.
+2. **Bước 2 (Export):** Tìm đến hàm `exportFullBackup()` và bổ sung key vào block payload `backup`:
+   ```javascript
+   backup: {
+       // ... các settings cũ
+       proxyConfig: Storage.get(SK_PROXY_CONFIG)
+   }
+   ```
+3. **Bước 3 (Import):** Tìm đến hàm `importFullBackup()` và bổ sung lệnh phục hồi (kèm check dữ liệu undefined):
+   ```javascript
+   if (b.proxyConfig !== undefined) Storage.set(SK_PROXY_CONFIG, b.proxyConfig);
+   ```
+
+## Thay đổi cấu trúc và Tương thích ngược (Backward Compatibility)
+Khi thay đổi lớn về cách cấu trúc mã đối tượng lưu trong JSON, bạn **PHẢI** lưu ý các file `.json` cũ mà người dùng có.
+Trong hàm `importFullBackup()`, nếu một version `JSON` được import không có trường dữ liệu mới tạo (do là bản cũ), hàm phục hồi phải xử lý khéo léo để gán fallback (Ví dụ không đè lên giá trị Default vừa sinh ra lúc load trang lần đầu).
+Làm sao ghi file báo lỗi (showToast) cụ thể nhất khi JSON parse fail.
+
+
+---
+
+### Workflow: polish-ui.md
+
+---
+description: Quy trình kiểm tra và làm đẹp giao diện (UI Polish)
+---
+
+Sử dụng workflow này khi cần nâng cấp giao diện lên mức "Premium":
+
+1. **Kiểm tra Shadow & Border**:
+   - Thay `border: 1px solid #ccc` bằng `border: 1px solid #dadce0` hoặc `rgba(0,0,0,0.1)`.
+   - Sử dụng `box-shadow: 0 4px 24px rgba(0,0,0,0.2)` cho các panel chính.
+
+2. **Gradients & Colors**:
+   - Sử dụng Linear Gradient cho Header (ví dụ: `linear-gradient(135deg, #1a73e8, #1557b0)`).
+   - Đảm bảo độ tương phản (Contrast) tốt cho văn bản.
+
+3. **Micro-animations**:
+   - Thêm `transition: all 0.2s ease` cho các hiệu ứng hover.
+   - Các nút bấm nên có hiệu ứng `:active { transform: scale(0.95); }`.
+
+4. **Glassmorphism (nếu cần)**:
+   - Sử dụng `backdrop-filter: blur(10px)` và `background: rgba(255,255,255,0.8)`.
+
+
+---
+
+### Workflow: reset-all.md
+
+---
+description: Quy trình xóa sạch dữ liệu cũ để bắt đầu môi trường test mới
+---
+
+Để xóa toàn bộ dữ liệu lưu trong trình duyệt (LocalStorage & IndexedDB):
+
+1. **Xóa SQL/IDB**:
+   AI hoặc người dùng có thể chạy mã sau trong Console trình duyệt:
+   ```js
+   localStorage.clear();
+   indexedDB.deleteDatabase("VNPT_Templates_DB");
+   location.reload();
+   ```
+
+2. **Xóa Build**:
+   Sử dụng lệnh hệ thống để xóa thư mục `dist/`:
+   ```cmd
+   rmdir /s /q dist
+   ```
+
+3. **Re-init**:
+   Sử dụng workflow `/dev-all` để cài đặt lại.
+
+
+---
+
+### Workflow: sync-logic.md
+
+---
+description: Cách cấu hình để Widget tự động điền dữ liệu lên trang web
+---
+
+Có 2 cấp độ đồng bộ (Sync) dữ liệu:
+
+1. **Cấp độ Field (Widget Export)**:
+   - Trong bảng Fields, điền vào cột **🔗 Sync (Mã ID)**. 
+   - Mã này có thể là ID hoặc Name của phần tử trên trang web.
+   - Phân cách nhiều ID bằng dấu phẩy nháy (ví dụ: `hoTen, hoTen_A, recipient_name`).
+
+2. **Cấp độ Tab Sync (Calc Widget)**:
+   - Mở Tab **🔗 Sync** trong Calc Widget.
+   - Thêm một cặp: `Nguồn (Label/ID trên trang)` → `Đích (Các ID/Name đích)`.
+   - Cơ chế này sử dụng `doSyncData` trong [dataFillFeature.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/dataFillFeature.js).
+
+3. **Sửa logic đồng bộ**:
+   - Mọi thao tác gán giá trị đều đi qua [domHelper.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/utils/domHelper.js) (hàm `setPageField` hoặc `syncSetValue`).
+
+
+---
+
+### Workflow: test-sync.md
+
+---
+description: Công cụ/Quy trình debug nhanh CSS selectors và IDs trên trang web VNPT
+---
+
+Dùng khi bạn muốn biết một ô nhập liệu trên web có ID hay Name gì để cấu hình Sync:
+
+1. **Console Snippet**:
+   Dán mã này vào Console trình duyệt để hiện ID/Name của phần tử đang được focus:
+   ```js
+   document.addEventListener('focusin', (e) => {
+     console.log('ID:', e.target.id, '| Name:', e.target.name);
+   });
+   ```
+
+2. **Quét tự động**:
+   Sử dụng nút **[Quét]** trên Widget Export. AI sẽ đối chiếu `DEFAULT_LABELS` trong [constants.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/core/constants.js) để tìm phần tử tương ứng.
+
+3. **Lỗi không quét được**:
+   Nếu selector sai, hãy cập nhật `DEFAULT_LABELS` với ID/Name chính xác nhất vừa tìm được ở Bước 1.
+
+
+---
+
+### Workflow: update-memory.md
+
+---
+description: Quy trình tóm tắt và cập nhật "Bộ nhớ dự án" sau mỗi task lớn.
+---
+
+# /update-memory
+
+Workflow này được sử dụng khi AI hoàn thành một tính năng mới, sửa một bug phức tạp, hoặc thay đổi kiến trúc hệ thống.
+
+## Các bước thực hiện
+
+1. **Phân tích kết quả**: Xác định những gì đã thay đổi (Code, UI, Logic).
+2. **Cập nhật Status**: Sửa trạng thái trong mục `Current Objective` của [PROJECT_MEMORY.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/PROJECT_MEMORY.md).
+3. **Ghi nhật ký quyết định**: Thêm một dòng mới vào `Decision Log` với định dạng: `YYYY-MM-DD (Tên tính năng): [Mô tả ngắn gọn lý do và kết quả]`.
+4. **Ghi lại "Gotchas"**: Nếu trong quá trình làm có gặp lỗi khó hiểu hoặc phải tìm giải pháp đặc biệt, hãy ghi vào mục `Technical Gotchas`.
+5. **Dọn dẹp Task**: Đảm bảo [task.md](file:///C:/Users/Chien/.gemini/antigravity/brain/8bc212f9-41fc-446c-8f50-02b7b74f5b9c/task.md) được đánh dấu hoàn thành.
+6. **Làm mới bộ não NotebookLM**: Chạy lệnh `node scripts/generate_brain.cjs` để làm mới file tổng hợp tại `.notebooklm/brain_context.md`.
+
+## Lưu ý cho AI
+- Không cần ghi chép những thay đổi nhỏ (fix typo, đổi màu nút).
+- Chỉ tập trung vào những thông tin mà phiên AI kế tiếp cần biết để không làm sai.
+
+
+---
+
+### Workflow: update-ui.md
+
+---
+description: Quy trình cập nhật hoặc sửa đổi giao diện (CSS) cho các widget
+---
+
+Để cập nhật giao diện mà không làm mất tính thẩm mỹ và cấu trúc, hãy thực hiện:
+
+1. **Tìm đúng Section**:
+   Mở [styles.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/ui/styles.js) và định vị mã CSS trong 6 SECTION:
+   - SECTION 1: Khung bao ngoài & nút Toggle.
+   - SECTION 2-5: Export Panel & Template Manager.
+   - SECTION 6: Calc Widget (bao gồm cả các Tab Data).
+
+2. **Tiêu chuẩn thiết kế (Antigravity Standard)**:
+   - **Màu sắc**: Không dùng màu cơ bản (Red/Blue/Green). Hãy dùng HSL hoặc HEX phối hợp (ví dụ: `#1a73e8`, `#1e8e3e`).
+   - **Hiệu ứng**: Ưu tiên Gradients, Box-Shadow nhẹ, và Border-Radius (thường là 8px-15px).
+   - **Tương tác**: Thêm `:hover` hoặc `:active` với `transition: 0.2s`.
+
+3. **Verify**:
+   Chạy `npm run build` và kiểm tra trên trình duyệt để đảm bảo không lỗi cú pháp CSS trong template string.
+
+
+---
+
+### Workflow: _index.md
+
+---
+description: Danh mục nhanh (Cheat-sheet) các workflow hệ thống
+---
+
+# Workflow Index (Reference)
+
+Dưới đây là danh sách tất cả các workflows trong thư mục `.agents/workflows/`. AI **HÃY XEM Ở ĐÂY TIÊN QUYẾT** thay vì dùng lệnh `list_dir` để liệt kê thư mục gây tốn Action Token.
+
+- `/add-feature`: Quy trình chuẩn để tạo một module tính năng mới từ A-Z.
+- `/add-field`: Cách thêm một trường dữ liệu (field) mới vào nền tảng.
+- `/add-helper`: Quy trình thêm một hàm bổ trợ vào nhóm utility.
+- `/add-template`: Thêm mẫu Template DOCX từ URL ngoài.
+- `/api-request`: Cách gọi API Cross-origin an toàn trong môi trường Tampermonkey.
+- `/debug-ui`: Sửa lỗi hiển thị UI nội tuyến trên web host.
+- `/dev-all`: Các lệnh chạy server development song song.
+- `/export-json`: Quy trình bảo trì, cập nhật xuất/nhập trạng thái JSON (Backup).
+- `/polish-ui`: Quy chuẩn làm đẹp giao diện, tinh chỉnh CSS.
+- `/reset-all`: Xóa dữ liệu cache/log để test trắng.
+- `/sync-logic`: Cấu hình Widget tự động điền form trên trang host.
+- `/test-sync`: Sandbox/debug nhanh CSS Selectors trên trang đích.
+- `/update-ui`: Cập nhật cấu trúc CSS của widget chung.
+- `/update-memory`: Quy trình tóm tắt và cập nhật "Bộ nhớ dự án" sau mỗi task lớn.
+- `/bug-report`: *(Mới)* Quy trình tối ưu xử lý bug tiết kiệm Tokens.
+
+> [!TIP]
+> Sử dụng lệnh view_file file `[tên].md` tương ứng khi cần xem chi tiết quy trình.
+
+
+---
+
+## 4. QUY TẮC DỰ ÁN (.cursorrules)
+
+AI **PHẢI** tuân thủ bộ quy tắc trung tâm tại: [docs/RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md)
+
+### 🚀 Quy tắc Ưu tiên (Quick Reference):
+1. AI **PHẢI** đọc [.notebooklm/brain_context.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.notebooklm/brain_context.md) ngay khi bắt đầu.
+2. **Planning First**: Lập `implementation_plan.md` và chờ xác nhận trước khi code.
+3. **Execution**: Chỉ code sau khi người dùng gõ "ok", "trien khai" hoặc "y".
+4. **Grep-First**: Dùng `grep_search` cho file > 100 dòng.
+5. **Language**: Toàn bộ phản hồi và code comments là **Tiếng Việt**.
+6. **Manual Slash Commands**: Kiểm tra `.agents/workflows/` để tham chiếu quy trình. Gõ lệnh trực tiếp (ví dụ: `/update-memory`) và nhấn Enter (KHÔNG có menu gợi ý tự động).
+
+Xem chi tiết tại [RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md) để biết về tiêu chuẩn JSDoc, Error Handling, State Management và Design System (Glassmorphism).
 
 

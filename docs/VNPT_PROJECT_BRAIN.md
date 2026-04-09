@@ -31,6 +31,7 @@ Cấu trúc có 4 phần chính: Core, UI, Features, Utils.
 - **Storage**: Mọi tương tác local storage quy về `src/api/storage/`.
 
 ## 5. Hướng dẫn cho AI
+- **QUY TẮC CỐT LÕI**: Luôn tuân thủ [RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md) (Planning First, Tiếng Việt Mandate...).
 - Mọi CSS nằm trong `styles.js`.
 - Luôn kiểm tra `constants.js` khi thêm trường dữ liệu.
 - Mọi Workflow có sẵn trong `.agents/workflows/`. Đọc các workflow để xử lý task lặp lại.
