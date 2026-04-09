@@ -175,6 +175,55 @@ export function injectStyles() {
         .vnpt-btn-del { background: #fce8e6; color: var(--vnpt-danger); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
         .vnpt-btn-del:hover { background: #f9d7d1; }
 
+        /* MST Lookup Button */
+        .mst-lookup-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        .btn-mst-lookup {
+            position: absolute;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            border: none;
+            background: var(--vnpt-primary-light);
+            color: var(--vnpt-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.2s;
+            z-index: 5;
+            padding: 0;
+            line-height: 1;
+        }
+        .btn-mst-lookup:hover {
+            background: var(--vnpt-primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        .btn-mst-lookup.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .btn-mst-lookup .spinner {
+            display: none;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin-small 0.8s linear infinite;
+        }
+        .btn-mst-lookup.loading .spinner { display: block; }
+        .btn-mst-lookup.loading .icon { display: none; }
+
+        @keyframes spin-small { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .vnpt-control-group { margin-bottom: 5px; }
         .vnpt-control-group label { display: block; font-weight: 700; font-size: 12px; color: #3c4043; margin-bottom: 2px; }
         .vnpt-control-group input[type="text"] { 

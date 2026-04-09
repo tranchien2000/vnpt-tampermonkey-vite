@@ -10,6 +10,7 @@ import { showToast } from '../ui/toast.js';
 import { DEFAULT_DATA, DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { doFillData } from './dataFill/syncEngine.js';
 import { Storage } from '../utils/storage.js';
+import { mstService } from '../api/mstService.js';
 
 export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '') {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
@@ -60,7 +61,17 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
             <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
             <span class="row-drag-handle" title="Kéo">=</span>
-            <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" />
+            ${primaryKey === 'soDkdn' ? `
+                <div class="mst-lookup-wrapper">
+                    <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" placeholder="Mã số thuế..." />
+                    <button class="btn-mst-lookup" title="Tra cứu Mã số thuế">
+                        <span class="icon">🔍</span>
+                        <div class="spinner"></div>
+                    </button>
+                </div>
+            ` : `
+                <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" />
+            `}
         `;
         const fVal = row.querySelector('.f-val');
         const fKey = row.querySelector('.f-key');
@@ -100,6 +111,49 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         fVal.addEventListener('change', function () {
             syncThisRow();
         });
+
+        // MST Lookup button handler
+        if (primaryKey === 'soDkdn') {
+            const btnLookup = row.querySelector('.btn-mst-lookup');
+            btnLookup.onclick = async () => {
+                const mst = fVal.value.trim();
+                if (!mst) {
+                    showToast("⚠️ Vui lòng nhập mã số thuế", "#ffc107");
+                    return;
+                }
+                
+                btnLookup.classList.add('loading');
+                try {
+                    const info = await mstService.lookupMST(mst);
+                    if (info) {
+                        // Update current MST row (might have been normalized or cleaned)
+                        fVal.value = mst;
+                        
+                        // Find and update other linked fields
+                        // Tên tổ chức
+                        addOrUpdateFieldRow('tenToChuc', info.name);
+                        // Địa chỉ
+                        addOrUpdateFieldRow('diaChi', info.address);
+                        // Đại diện (nếu có)
+                        if (info.representative) {
+                            addOrUpdateFieldRow('tenDaiDienn', info.representative);
+                        }
+                        
+                        saveFieldsToLocal();
+                        // Sync all updated fields to page
+                        setTimeout(() => syncAllFields(), 300); 
+                        
+                        showToast(`✅ Đã tìm thấy: ${info.name}`, "#1a73e8");
+                    } else {
+                        showToast("❌ Không tìm thấy thông tin MST này", "#ea4335");
+                    }
+                } catch (err) {
+                    showToast("❌ Lỗi khi tra cứu MST", "#ea4335");
+                } finally {
+                    btnLookup.classList.remove('loading');
+                }
+            };
+        }
 
         // Khởi tạo trạng thái ban đầu
         checkRequired();
@@ -301,18 +355,22 @@ export function initFieldsManager() {
 
     // Điền ngược (Reverse Fill)
     document.getElementById('vnpt-btn-fill-back').onclick = () => {
-        doFillData();
-        let count = 0;
-        AppState.fieldsContainer.querySelectorAll('.vnpt-field-row').forEach(row => {
-            const rawKey = row.querySelector('.f-key').value.trim();
-            const val = row.querySelector('.f-val').value;
-            rawKey.split(',').map(x => x.trim()).filter(Boolean).forEach(t => {
-                const el = document.getElementById(t) || document.getElementsByName(t)[0];
-                if (el) { setPageField(t, val); count++; }
-            });
-        });
-        count > 0 ? showToast(`✅ Đã điền ngược ${count} trường`, '#198754') : showToast(`⚠️ Không khớp trường nào`, '#ffc107');
+        syncAllFields();
     };
+}
+
+export function syncAllFields() {
+    doFillData(); // Đồng bộ dữ liệu Tab Calc
+    let count = 0;
+    AppState.fieldsContainer.querySelectorAll('.vnpt-field-row').forEach(row => {
+        const rawKey = row.querySelector('.f-key').value.trim();
+        const val = row.querySelector('.f-val').value;
+        rawKey.split(',').map(x => x.trim()).filter(Boolean).forEach(t => {
+            const el = document.getElementById(t) || document.getElementsByName(t)[0];
+            if (el) { setPageField(t, val); count++; }
+        });
+    });
+    count > 0 ? showToast(`✅ Đã đồng bộ ${count} trường lên web`, '#198754') : showToast(`⚠️ Không có trường nào để đồng bộ`, '#ffc107');
 }
 
 function updateUIForDefaultMode(isDefault) {
