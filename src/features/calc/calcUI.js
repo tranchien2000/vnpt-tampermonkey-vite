@@ -102,24 +102,32 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     renderHist(SK_HIST_B, 'wg-before-list');
     renderHist(SK_HIST_A, 'wg-after-list');
 
-    function update(type, val) {
+    function updateLocal(type, val) {
         const res = calculateValues(type, val, TAX_RATE);
         els.before.value = res.beforeStr;
         els.tax.value = res.taxStr;
         els.after.value = res.afterStr;
         els.text.value = res.textStr;
+        return res;
+    }
 
-        // Luôn lấy mapping mới nhất từ Storage
+    function doSync(type, val) {
+        const res = calculateValues(type, val, TAX_RATE);
         const currentMaps = ld(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
         syncToPage(res, currentMaps);
     }
 
-    els.taxRate.oninput = () => { TAX_RATE = Number(els.taxRate.value) / 100 || 0; sv(SK_TAX, TAX_RATE); update('before', els.before.value); };
-    els.before.oninput = () => { const res = calculateValues('before', els.before.value, TAX_RATE); els.tax.value = res.taxStr; els.after.value = res.afterStr; els.text.value = res.textStr; };
-    els.before.onchange = () => { update('before', els.before.value); saveHist(SK_HIST_B, els.before.value); renderHist(SK_HIST_B, 'wg-before-list'); };
-    els.tax.oninput = () => update('tax', els.tax.value);
-    els.after.oninput = () => update('after', els.after.value);
-    els.after.onchange = () => { update('after', els.after.value); saveHist(SK_HIST_A, els.after.value); renderHist(SK_HIST_A, 'wg-after-list'); };
+    els.taxRate.oninput = () => { TAX_RATE = Number(els.taxRate.value) / 100 || 0; sv(SK_TAX, TAX_RATE); updateLocal('before', els.before.value); };
+    els.taxRate.onchange = () => { doSync('before', els.before.value); };
+
+    els.before.oninput = () => { updateLocal('before', els.before.value); };
+    els.before.onchange = () => { doSync('before', els.before.value); saveHist(SK_HIST_B, els.before.value); renderHist(SK_HIST_B, 'wg-before-list'); };
+    
+    els.tax.oninput = () => { updateLocal('tax', els.tax.value); };
+    els.tax.onchange = () => { doSync('tax', els.tax.value); };
+
+    els.after.oninput = () => { updateLocal('after', els.after.value); };
+    els.after.onchange = () => { doSync('after', els.after.value); saveHist(SK_HIST_A, els.after.value); renderHist(SK_HIST_A, 'wg-after-list'); };
 
     // Copy on click/focus
     [els.before, els.tax, els.after, els.text].forEach(el => {

@@ -50,8 +50,9 @@ export function initWidget() {
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
                             <div class="util-submenu-title">Cấu hình hệ thống</div>
+                            <button class="util-item" id="vnpt-btn-clean-data">🧹 Clean Data (Về mặc định)</button>
                             <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
-                            <button class="util-item danger" id="vnpt-btn-reset-default" >🔄 Khôi phục dữ liệu gốc</button>
+                            <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
                             
                             
                             <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>

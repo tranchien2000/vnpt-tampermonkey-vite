@@ -24,7 +24,7 @@ export const DEFAULT_LABELS = {
     'thangKy, thangKy1': 'Tháng Ký',
     'namKy, namKy1': 'Năm ký',
     'ngayTiepNhan, ngayThangNamKy': 'Ngày tiếp nhận / Ngày tháng năm ký',
-    'soHopDong, inputContractGroupName, contractNumber, contractName': 'SỐ HỢP ĐỒNG',
+    'soHopDong, inputContractGroupName': 'SỐ HỢP ĐỒNG',
     'soLuongGoi': 'Số Lượng Gói',
     'noiKy': 'Nơi ký',
     'lienheHopDongA, lienheTuVanA, lienheHoaDonA, sucoCap1A, sucoCap2A, sucoCap3A, sucoCap4A': 'Liên hệ A',

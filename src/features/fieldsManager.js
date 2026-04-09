@@ -7,7 +7,7 @@ import { AppState } from '../core/state.js';
 import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS, SK_TAX, SK_CALC_MAP, REQUIRED_KEYS } from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
-import { DEFAULT_DATA } from '../core/defaults.js';
+import { DEFAULT_DATA, DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { doFillData } from './dataFill/syncEngine.js';
 import { Storage } from '../utils/storage.js';
 
@@ -219,6 +219,33 @@ export function initFieldsManager() {
     // Nút Ẩn/Hiện Mã ID
     document.getElementById('vnpt-btn-toggle-id').onclick = () => AppState.fieldsContainer.classList.toggle('show-ids');
 
+    // Nút Clean Data
+    const btnCleanData = document.getElementById('vnpt-btn-clean-data');
+    if (btnCleanData) {
+        btnCleanData.onclick = () => {
+            if (confirm("Làm sạch dữ liệu hiện tại và tải lại toàn bộ cấu trúc mặc định?")) {
+                Storage.remove(LOCAL_KEY_FIELDS);
+                Storage.remove(SK_CALC_MAP);
+                Storage.remove(SK_TAX);
+
+                // Cập nhật lại giao diện các ô Mapping Calc
+                document.querySelectorAll('input[data-clink]').forEach(inp => {
+                    const k = inp.dataset.clink;
+                    inp.value = (DEFAULT_CALC_MAP[k] || []).join(', ');
+                });
+
+                if (AppState.isDefaultMode) {
+                    // Nếu đang ở mode default, clean default data và reload default data
+                    Storage.remove(LOCAL_KEY_DEFAULT_FIELDS);
+                    updateUIForDefaultMode(true);
+                } else {
+                    loadSavedData();
+                }
+                showToast("🧹 Đã làm sạch toàn bộ dữ liệu & cấu hình", "#1a73e8");
+            }
+        };
+    }
+
     // Nút chuyển chế độ mặc định
     document.getElementById('vnpt-btn-default').onclick = () => { AppState.isDefaultMode = !AppState.isDefaultMode; };
 
@@ -295,7 +322,7 @@ function updateUIForDefaultMode(isDefault) {
         btn.classList.add('active');
         btn.innerHTML = '✅ Chế độ: Dữ liệu mặc định';
         if (resetBtn) resetBtn.style.display = 'flex';
-        AppState.fieldsContainer.classList.add('vnpt-mode-default');
+        document.getElementById('vnpt-fields-container').classList.add('vnpt-mode-default');
         showToast("📌 Chế độ Dữ liệu mặc định (Có thể sửa)", "#ea4335");
 
         const banner = document.createElement('div');
@@ -321,7 +348,7 @@ function updateUIForDefaultMode(isDefault) {
         btn.classList.remove('active');
         btn.innerHTML = '🛠 Dữ liệu mặc định VNPT';
         if (resetBtn) resetBtn.style.display = 'none';
-        AppState.fieldsContainer.classList.remove('vnpt-mode-default');
+        document.getElementById('vnpt-fields-container').classList.remove('vnpt-mode-default');
         showToast("📋 Đã quay lại Dữ liệu cá nhân");
         loadSavedData();
     }

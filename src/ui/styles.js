@@ -120,6 +120,12 @@ export function injectStyles() {
             border: 1px solid var(--vnpt-border); border-radius: 12px; 
             margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        #vnpt-fields-container.vnpt-mode-default {
+            border: 2px dashed var(--vnpt-danger);
+            background: rgba(234, 67, 53, 0.05);
+            box-shadow: inset 0 0 15px rgba(234, 67, 53, 0.1);
         }
         #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
 
