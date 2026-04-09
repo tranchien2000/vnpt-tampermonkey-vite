@@ -247,7 +247,7 @@ export function initWidget() {
         const val = calcMaps[k] || DEFAULT_CALC_MAP[k] || [];
         inp.value = val.join(', ');
 
-        inp.oninput = () => {
+        inp.onchange = () => {
             const currentMaps = Storage.get(SK_CALC_MAP) || {};
             currentMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s);
             Storage.set(SK_CALC_MAP, currentMaps);
@@ -262,7 +262,7 @@ export function initWidget() {
             geminiKeyInput.value = Storage.get(SK_GEMINI_KEY) || '';
             geminiModelSelect.value = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.0-flash';
             
-            geminiKeyInput.oninput = () => {
+            geminiKeyInput.onchange = () => {
                 Storage.set(SK_GEMINI_KEY, geminiKeyInput.value.trim());
             };
             geminiModelSelect.onchange = () => {

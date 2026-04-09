@@ -87,14 +87,18 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             saveFieldsToLocal();
             const firstKey = this.value.split(',')[0].trim();
             fVal.style.textAlign = firstKey === 'tenToChuc' ? 'right' : '';
+        });
+        fKey.addEventListener('change', function () {
             syncThisRow();
         });
         row.querySelector('.f-label').addEventListener('input', saveFieldsToLocal);
 
         fVal.addEventListener('input', function () {
             saveFieldsToLocal();
-            syncThisRow();
             checkRequired();
+        });
+        fVal.addEventListener('change', function () {
+            syncThisRow();
         });
 
         // Khởi tạo trạng thái ban đầu

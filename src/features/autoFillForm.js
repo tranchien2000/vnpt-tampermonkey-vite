@@ -41,7 +41,7 @@ export function setupAutoFillForm() {
             const targetEl = document.getElementById(pair.target);
             if (srcEl && targetEl && !srcEl.dataset.bound) {
                 srcEl.dataset.bound = "1";
-                srcEl.addEventListener('input', () => syncSetValue(targetEl, srcEl.value));
+                srcEl.addEventListener('change', () => syncSetValue(targetEl, srcEl.value));
             }
         });
     }

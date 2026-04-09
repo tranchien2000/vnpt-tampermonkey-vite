@@ -254,8 +254,11 @@ export function initCalcWidget() {
     taxRateEl.addEventListener('input', () => {
         TAX_RATE = Number(taxRateEl.value) / 100 || 0;
         Storage.set(SK_TAX, TAX_RATE);
-        fromBefore();
+        const b = parseNum(beforeEl.value), t = Math.round(b * TAX_RATE), a = b + t;
+        taxEl.value = formatNum(t); afterEl.value = formatNum(a);
+        textEl.value = capFirst(numToVN(a)) + ' đồng';
     });
+    taxRateEl.addEventListener('change', fromBefore);
     beforeEl.addEventListener('input', () => {
         const b = parseNum(beforeEl.value), t = Math.round(b * TAX_RATE), a = b + t;
         taxEl.value = formatNum(t); afterEl.value = formatNum(a);
@@ -272,8 +275,18 @@ export function initCalcWidget() {
         renderHist(SK_HIST_B, 'wg-before-list');
         fromBefore();
     });
-    taxEl.addEventListener('input', fromTax);
-    afterEl.addEventListener('input', fromAfter);
+    taxEl.addEventListener('input', () => {
+        const t = parseNum(taxEl.value), b = Math.round(t / TAX_RATE), a = b + t;
+        beforeEl.value = formatNum(b); afterEl.value = formatNum(a);
+        textEl.value = capFirst(numToVN(a)) + ' đồng';
+    });
+    taxEl.addEventListener('change', fromTax);
+    
+    afterEl.addEventListener('input', () => {
+        const a = parseNum(afterEl.value), b = Math.round(a / (1 + TAX_RATE)), t = a - b;
+        beforeEl.value = formatNum(b); taxEl.value = formatNum(t);
+        textEl.value = capFirst(numToVN(a)) + ' đồng';
+    });
     afterEl.addEventListener('blur', () => {
         afterEl.value = formatNum(parseNum(afterEl.value));
         saveHist(SK_HIST_A, afterEl.value);
