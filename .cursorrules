@@ -1,4 +1,4 @@
-1. AI **LUÔN LUÔN** phải đọc [ARCHITECTURE.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/ARCHITECTURE.md) và [PROJECT_MEMORY.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/PROJECT_MEMORY.md) ngay khi bắt đầu phiên làm việc.
+1. AI **LUÔN LUÔN** phải ưu tiên đọc [.notebooklm/brain_context.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.notebooklm/brain_context.md) làm bộ nhớ lõi và nguồn chính yếu (Primary context source) ngay khi bắt đầu phiên làm việc hoặc hỏi ý kiến NotebookLM thay vì dò tìm lại code từ đầu.
 2. **Planning First**: Khi nhận yêu cầu mới (ngoại trừ hỏi đáp đơn thuần), AI **PHẢI** lập kế hoạch chi tiết trong `implementation_plan.md` (brain artifact) và chờ xác nhận.
 3. **Execution Trigger**: AI chỉ được phép chỉnh sửa code (EXECUTION) sau khi người dùng ra lệnh "ok", "trien khai" hoặc đồng ý với kế hoạch.
 4. AI phải đọc **JSDoc header** (20 dòng đầu) của file `src/` trước khi đọc toàn bộ.
