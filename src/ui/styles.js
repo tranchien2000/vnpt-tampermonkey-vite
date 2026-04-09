@@ -233,8 +233,8 @@ export function injectStyles() {
             backdrop-filter: blur(15px);
             border: 1px solid var(--vnpt-border); border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15); z-index: 100000;
-            display: none; flex-direction: column; min-width: 280px;
-            padding: 6px 0; animation: menuFadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: none; flex-direction: column; min-width: 500px;
+            padding: 4px 0; animation: menuFadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
             transform-origin: top right;
         }
         @keyframes menuFadeIn { 
@@ -244,16 +244,16 @@ export function injectStyles() {
         .vnpt-util-menu.show { display: flex; }
         
         .util-item {
-            background: none; border: none; padding: 6px 16px; width: 100%;
-            text-align: left; font-size: 13px; cursor: pointer;
+            background: none; border: none; padding: 4px 12px; width: 100%;
+            text-align: left; font-size: 12px; cursor: pointer;
             color: #3c4043; font-weight: 600; transition: all 0.2s;
-            display: flex; align-items: center; gap: 8px;
-            border-left: 4px solid transparent;
+            display: flex; align-items: center; gap: 6px;
+            border-left: 3px solid transparent;
         }
         .util-item:hover { 
             background: rgba(26, 115, 232, 0.05); color: var(--vnpt-primary); 
             border-left-color: var(--vnpt-primary);
-            padding-left: 28px;
+            padding-left: 18px;
         }
         
         .util-item.danger { color: var(--vnpt-danger); }
@@ -264,36 +264,45 @@ export function injectStyles() {
         
         .util-separator { height: 1px; background: rgba(0,0,0,0.05); margin: 4px 0; }
         .util-submenu-title { 
-            padding: 6px 16px 4px 16px; font-size: 10.5px; font-weight: 800; 
-            color: #1a73e8; text-transform: uppercase; letter-spacing: 1px; 
-            background: rgba(26, 115, 232, 0.04); margin-bottom: 2px;
+            padding: 4px 12px 2px 12px; font-size: 9.5px; font-weight: 800; 
+            color: #1a73e8; text-transform: uppercase; letter-spacing: 0.8px; 
+            background: rgba(26, 115, 232, 0.04); margin-bottom: 1px;
         }
+
+        /* 2-Column Grid for Top Config */
+        .util-config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 0;
+        }
+        .util-column { display: flex; flex-direction: column; }
+        .util-column.vertical-separator { border-left: 1px solid var(--vnpt-border); }
 
         /* Mapping Rows in Utility Menu */
         .cw-row-map {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 2px 16px; gap: 4px;
+            padding: 1px 12px; gap: 4px;
         }
         .cw-row-map span { font-size: 11px; font-weight: 700; color: #5f6368; flex: 0 0 75px; }
         .cw-map-input {
-            flex: 1; padding: 5px 10px; border: 1px solid #dadce0; border-radius: 8px;
-            font-size: 11px; background: #fff; transition: all 0.2s;
+            flex: 1; padding: 4px 8px; border: 1px solid #dadce0; border-radius: 6px;
+            font-size: 10.5px; background: #fff; transition: all 0.2s;
         }
         .cw-map-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px var(--vnpt-primary-light); outline: none; }
 
         /* System Data Actions */
-        .util-action-row { display: flex; padding: 4px 12px; gap: 4px; }
+        .util-action-row { display: flex; padding: 3px 8px; gap: 4px; }
         .util-item-small {
             flex: 1; border: 1px solid #e0e0e0; background: #fff; color: #3c4043;
-            padding: 8px 0; border-radius: 10px; font-size: 11px; font-weight: 700;
+            padding: 5px 0; border-radius: 8px; font-size: 10.5px; font-weight: 700;
             cursor: pointer; transition: all 0.2s; text-align: center;
         }
         .util-item-small:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); border-color: var(--vnpt-primary); }
         
-        .size-options { display: flex; padding: 4px 12px; gap: 4px; }
+        .size-options { display: flex; padding: 3px 8px; gap: 4px; }
         .size-options button {
-            flex: 1; padding: 8px 0; border: 1px solid #e0e0e0; border-radius: 10px;
-            background: #fff; font-size: 12px; font-weight: 700; cursor: pointer;
+            flex: 1; padding: 5px 0; border: 1px solid #e0e0e0; border-radius: 8px;
+            background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             color: #5f6368;
         }
@@ -302,6 +311,35 @@ export function injectStyles() {
             transform: translateY(-2px); box-shadow: 0 4px 8px rgba(26, 115, 232, 0.2);
         }
         .size-options button:active { transform: translateY(0); }
+
+        /* Hotkey Config UI */
+        .vnpt-hotkey-list { display: flex; flex-direction: column; padding: 3px 8px; gap: 3px; }
+        .vnpt-hotkey-row {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(0,0,0,0.02); padding: 3px 8px; border-radius: 8px;
+            transition: all 0.2s; border: 1px solid transparent;
+        }
+        .vnpt-hotkey-row:hover { 
+            background: #fff; border-color: var(--vnpt-primary-light); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .vnpt-hotkey-label { font-size: 10.5px; font-weight: 700; color: #5f6368; }
+        .vnpt-hotkey-btn {
+            background: #fff; border: 1px solid #dadce0; border-radius: 6px;
+            padding: 3px 8px; font-size: 10px; font-weight: 800; cursor: pointer;
+            min-width: 80px; text-align: center; color: var(--vnpt-primary);
+            transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .vnpt-hotkey-btn:hover { border-color: var(--vnpt-primary); background: var(--vnpt-primary-light); }
+        .vnpt-hotkey-btn.recording {
+            background: var(--vnpt-danger); color: #fff; border-color: var(--vnpt-danger);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
 
         /* 4 Corner Resizers */
         .vnpt-resizer {

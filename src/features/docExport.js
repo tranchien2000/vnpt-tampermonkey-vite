@@ -27,7 +27,11 @@ function renderDocx(arrayBuffer, dataToFill, exportFileName) {
 
         const out = doc.getZip().generate({
             type: 'blob',
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            compression: 'DEFLATE',
+            compressionOptions: {
+                level: 9
+            }
         });
         const url = URL.createObjectURL(out);
         const a = document.createElement('a');

@@ -45,9 +45,7 @@ export function initWebScanner() {
 
             // --- Bắt đầu chuẩn hóa dữ liệu ---
             if (val && typeof val === 'string') {
-                if (['tenDaiDienn', 'tenToChuc', 'noiCap', 'noiKy'].includes(primaryId)) {
-                    val = capitalizeName(val);
-                } else if (['sdt'].includes(primaryId)) {
+                if (['sdt'].includes(primaryId)) {
                     val = formatPhoneNumber(val);
                 } else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan'].includes(primaryId)) {
                     val = normalizeDate(val);

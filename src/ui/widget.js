@@ -14,6 +14,9 @@ import { DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { exportConfig } from '../features/configManager.js';
 import { Storage } from '../utils/storage.js';
 import { exportFullBackup, importFullBackup } from '../utils/backupHelper.js';
+import { startRecording, getHotkeyString } from '../features/hotkeys.js';
+import { SK_HOTKEYS } from '../core/constants.js';
+import { DEFAULT_HOTKEYS } from '../core/defaults.js';
 
 export function initWidget() {
     const widget = document.getElementById('vnpt-docx-widget') || document.createElement('div');
@@ -49,12 +52,39 @@ export function initWidget() {
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
-                            <div class="util-submenu-title">Cấu hình hệ thống</div>
-                            <button class="util-item" id="vnpt-btn-clean-data">🧹 Clean Data (Về mặc định)</button>
-                            <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
-                            <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
+                            <div class="util-config-grid">
+                                <div class="util-column">
+                                    <div class="util-submenu-title">Cấu hình hệ thống</div>
+                                    <button class="util-item" id="vnpt-btn-clean-data">🧹 Clean Data (Về mặc định)</button>
+                                    <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
+                                    <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
+
+                                    <div class="util-separator"></div>
+                                    <div class="util-submenu-title">Dữ liệu hệ thống</div>
+                                    <div class="util-action-row">
+                                        <button class="util-item-small" id="vnpt-btn-import-json">📥 Nhập JSON</button>
+                                        <button class="util-item-small" id="vnpt-btn-export-json">📤 Xuất JSON</button>
+                                        <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
+                                    </div>
+
+                                    <div class="util-separator"></div>
+                                    <div class="util-submenu-title">Kích thước bảng:</div>
+                                    <div class="size-options">
+                                        <button data-size="S">S</button>
+                                        <button data-size="M">M</button>
+                                        <button data-size="L">L</button>
+                                        <button data-size="Full">Full</button>
+                                    </div>
+                                </div>
+                                <div class="util-column vertical-separator">
+                                    <div class="util-submenu-title">Cấu hình phím tắt</div>
+                                    <div id="vnpt-hotkey-list" class="vnpt-hotkey-list">
+                                        <!-- Replaced by renderHotkeys -->
+                                    </div>
+                                </div>
+                            </div>
                             
-                            
+                            <div class="util-separator"></div>
                             <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>
                             <div class="cw-row-map">
                                 <span>API Key</span>
@@ -82,23 +112,6 @@ export function initWidget() {
                             <div class="cw-row-map"><span>Tiền thuế</span><input id="vnpt-map-tax" name="vnpt-map-tax" data-clink="tax" class="cw-map-input"></div>
                             <div class="cw-row-map"><span>Sau thuế</span><input id="vnpt-map-after" name="vnpt-map-after" data-clink="after" class="cw-map-input"></div>
                             <div class="cw-row-map"><span>Bằng chữ</span><input id="vnpt-map-text" name="vnpt-map-text" data-clink="text" class="cw-map-input"></div>
-                            
-                            <div class="util-separator"></div>
-                            <div class="util-submenu-title">Dữ liệu hệ thống</div>
-                            <div class="util-action-row">
-                                <button class="util-item-small" id="vnpt-btn-import-json">📥 Nhập JSON</button>
-                                <button class="util-item-small" id="vnpt-btn-export-json">📤 Xuất JSON</button>
-                                <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
-                            </div>
-
-                            <div class="util-separator"></div>
-                            <div class="util-submenu-title">Kích thước bảng:</div>
-                            <div class="size-options">
-                                <button data-size="S">S</button>
-                                <button data-size="M">M</button>
-                                <button data-size="L">L</button>
-                                <button data-size="Full">Full</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -325,6 +338,41 @@ export function initWidget() {
             moreBtn.classList.remove('active');
         });
     });
+
+    // --- Hotkey Manager Logic ---
+    function renderHotkeys() {
+        const hotkeyList = document.getElementById('vnpt-hotkey-list');
+        if (!hotkeyList) return;
+
+        const hotkeys = Storage.get(SK_HOTKEYS, DEFAULT_HOTKEYS);
+        hotkeyList.innerHTML = '';
+
+        Object.entries(hotkeys).forEach(([action, config]) => {
+            const row = document.createElement('div');
+            row.className = 'vnpt-hotkey-row';
+            row.innerHTML = `
+                <span class="vnpt-hotkey-label">${config.label || action}</span>
+                <button class="vnpt-hotkey-btn" data-action="${action}">${getHotkeyString(config)}</button>
+            `;
+            
+            const btn = row.querySelector('.vnpt-hotkey-btn');
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                if (btn.classList.contains('recording')) return;
+
+                btn.classList.add('recording');
+                btn.textContent = 'Bấm phím...';
+
+                startRecording(action, (newConfig) => {
+                    btn.classList.remove('recording');
+                    btn.textContent = getHotkeyString(newConfig);
+                });
+            };
+
+            hotkeyList.appendChild(row);
+        });
+    }
+    renderHotkeys();
 
     // Custom Resizing 4 Corners
     const resizers = AppState.panel.querySelectorAll('.vnpt-resizer');
