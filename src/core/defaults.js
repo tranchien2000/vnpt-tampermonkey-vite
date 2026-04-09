@@ -20,7 +20,7 @@ export const DEFAULT_DATA = {
     maSoThueB: { label: "Mã số thuế B", value: "0100686223" },
     stkB: { label: "Số tài khoản B", value: "1600114156" },
     diaChiStkB: { label: "Ngân hàng/Địa chỉ STK B", value: "Ngân hàng Đầu tư & Phát triển Việt Nam - CN Sở giao dịch 3 (BIDV – CN SGD 3)" },
-    "tenB, nguoiDaiDienB": { label: "Người đại diện B", value: "Phạm Khánh Chung" },
+    "tenB, nguoiDaiDienB, tenDaiDienB": { label: "Người đại diện B", value: "Phạm Khánh Chung" },
     "chucVuB, chucVuDaiDienB": { label: "Chức vụ B", value: "Phó Giám đốc Trung tâm Kinh doanh Khách hàng doanh nghiệp" },
     "giayUyQuyenSoB, soGiayUyQuyenB": { label: "Giấy ủy quyền số B", value: "2628/GUQ-VNPT-HNI-VP" },
     "giayUyQuyenNgayB, ngayGiayUyQuyenB": { label: "Giấy ủy quyền ngày B", value: `1/1/2026 Viễn thông Hà Nội – Chi nhánh Tập đoàn Bưu chính Viễn thông Việt Nam` },
