@@ -19,6 +19,7 @@ Dưới đây là danh sách tất cả các workflows trong thư mục `.agents
 - `/sync-logic`: Cấu hình Widget tự động điền form trên trang host.
 - `/test-sync`: Sandbox/debug nhanh CSS Selectors trên trang đích.
 - `/update-ui`: Cập nhật cấu trúc CSS của widget chung.
+- `/update-memory`: Quy trình tóm tắt và cập nhật "Bộ nhớ dự án" sau mỗi task lớn.
 - `/bug-report`: *(Mới)* Quy trình tối ưu xử lý bug tiết kiệm Tokens.
 
 > [!TIP]
