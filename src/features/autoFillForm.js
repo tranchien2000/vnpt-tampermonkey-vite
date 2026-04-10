@@ -44,6 +44,32 @@ export function setupAutoFillForm() {
                 srcEl.addEventListener('change', () => syncSetValue(targetEl, srcEl.value));
             }
         });
+
+        // ===== 3. ĐỒNG BỘ SKDT TỪ TỈNH =====
+        const provinceIds = ['tinhId', 'tinhIdNew'];
+        provinceIds.forEach(pId => {
+            const pEl = document.getElementById(pId);
+            const targetNoiCap = document.getElementById('noiCapSoDkdn');
+            if (pEl && targetNoiCap && !pEl.dataset.skdtBound) {
+                pEl.dataset.skdtBound = "1";
+                const updateSkdt = () => {
+                    let val = '';
+                    if (pEl.tagName.toLowerCase() === 'ng-select2' || pEl.classList.contains('select2-hidden-accessible')) {
+                        // Với Select2, giá trị thực tế nằm ở span hiển thị
+                        const span = pEl.parentElement.querySelector('.select2-selection__rendered');
+                        val = span ? (span.getAttribute('title') || span.textContent.trim()) : pEl.value;
+                    } else {
+                        val = pEl.value;
+                    }
+                    if (val && val !== '--- Chọn ---') {
+                        syncSetValue(targetNoiCap, "SKDT " + val);
+                    }
+                };
+                pEl.addEventListener('change', updateSkdt);
+                // Với Select2 cần lắng nghe cả sự kiện đặc thù của nó nếu có
+                $(pEl).on('select2:select', updateSkdt);
+            }
+        });
     }
 
     // Khởi tạo MutationObserver để luôn auto-fill kể cả khi trang tải form bằng AJAX

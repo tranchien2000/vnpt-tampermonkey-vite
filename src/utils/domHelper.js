@@ -9,11 +9,13 @@ let FullDOMMap = {
     allInputs: []
 };
 
+let LabelCache = [];
+let lastLabelUpdate = 0;
+
 /**
  * Xóa bộ nhớ đệm DOM khi trang thay đổi cấu trúc lớn.
  */
 export function clearDOMCache() {
-    DOMCache.clear();
     FullDOMMap.byId.clear();
     FullDOMMap.byName.clear();
     FullDOMMap.byPlaceholder.clear();
@@ -38,8 +40,8 @@ export function buildFullDOMMap() {
     const start = performance.now();
     clearDOMCache();
     
-    // 1. Lấy tất cả các control nhập liệu
-    const inputs = Array.from(document.querySelectorAll('input, textarea, select'));
+    // 1. Lấy tất cả các control nhập liệu (Bao gồm ng-select2 của Angular)
+    const inputs = Array.from(document.querySelectorAll('input, textarea, select, ng-select2'));
     FullDOMMap.allInputs = inputs;
 
     inputs.forEach(el => {

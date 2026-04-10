@@ -10,19 +10,32 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Cải thiện hệ thống "Trí nhớ dự án" (Đã khôi phục và đồng bộ).
 - [x] Kiểm tra tính nhất quán của hệ thống Rules/Workflow với người dùng.
 - [x] Triển khai tính năng Phân loại dữ liệu Local (Raw Scan).
+- [x] Xây dựng công cụ Selector Inspector (Bắt selector bằng click).
+- [x] Tích hợp API tra cứu MST doanh nghiệp.
+- [x] Tối ưu hóa hiệu suất quét DOM (O(N+M)).
+- [x] Hoàn thiện logic nút 🗑 (Dọn giá trị / Xóa hàng).
+
 
 ## 2. Nhật ký Quyết định (Decision Log)
 
 - **2026-04-07 (Glassmorphism UI)**: Thay thế hoàn toàn giao diện cũ sang phong cách mờ đục (blur) với màu Indigo/Slate để tăng tính sang trọng.
 - **2026-04-07 (Storage Abstraction)**: Di chuyển toàn bộ logic `localStorage` vào `src/api/storage/` để quản lý tập trung và tránh xung đột dữ liệu.
 - **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn.
-- **2026-04-09 (Rules & Workflow Alignment)**: Giải thích cơ chế Slash Commands cho người dùng (không có menu tự động) và cập nhật hướng dẫn vào `RULES.md`.
+- **2026-04-09 (Rules & Workflow Alignment)**: Giải thích cơ chế Slash Commands cho người dùng (không có menu tự động) v*Ngày cập nhật: 22:45:00 10/4/2026*
+
+> [!NOTE]
+> Để có cái nhìn chi tiết và đầy đủ nhất về toàn bộ logic dự án cho NotebookLM, hãy tham khảo file:
+> [.notebooklm/PROJECT_REPORT_2026.04.10.md](file:///c:/Users/Chien/.gemini/antigravity/scratch/tampermonkey-vite/.notebooklm/PROJECT_REPORT_2026.04.10.md)
+dẫn vào `RULES.md`.
 - **2026-04-10 (Fix Slash Command Confusion)**: Cập nhật `.cursorrules` và `RULES.md` để nhấn mạnh lệnh manual và không có autocomplete.
 - **2026-04-10 (PDF Scan Button Enhancement)**: Bổ sung logic copy link hướng dẫn Gemini (GUIDE) vào clipboard nếu chưa cấu hình API Key khi bấm nút Scan PDF.
 - **2026-04-10 (Startup Workflow)**: Triển khai `/start` để tự động hóa việc load bối cảnh dự án (brain_context + PROJECT_MEMORY).
 - **2026-04-10 (NotebookLM Integration)**: Cấu hình Notebook dự án tại URL: `https://notebooklm.google.com/notebook/7e1829da-588e-42d2-8a87-afef88b6d3e7`. AI sẽ sử dụng URL này cho các tác vụ cập nhật brain mà không cần hỏi lại.
 - **2026-04-10 (DOM Optimization)**: Triển khai `buildFullDOMMap` trong `domHelper.js` để chuyển đổi hiệu suất quét từ O(N*M) sang O(N+M), giúp widget xử lý nhanh ngay cả trên trang phức tạp.
-- **2026-04-10 (Expanded Local Classifier)**: Bổ sung Regex cho Người đại diện, Chức danh, Nơi cấp và tinh chỉnh nhận diện MST/Địa chỉ trong `localClassifier.js`.
+- **2026-04-10 (Selector Inspector)**: Triển khai công cụ soi trường web giúp người dùng tự lấy selector mà không cần mở DevTools.
+- **2026-04-10 (MST API Integration)**: Kết hợp tra cứu MST vào bảng fieldsManager để tự động điền thông tin doanh nghiệp.
+- **2026-04-10 (UI/UX Refinement)**: Nâng cấp nút 🗑 thành Dual-mode (Clean All/JSON Backup/Delete Row).
+
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
 

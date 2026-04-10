@@ -19,6 +19,8 @@ import { SK_HOTKEYS } from '../core/constants.js';
 import { DEFAULT_HOTKEYS } from '../core/defaults.js';
 import { showToast } from './toast.js';
 import { testGeminiConnection } from '../api/gemini.js';
+import { toggleInspector } from '../features/selectorInspector.js';
+
 
 export function initWidget() {
     const widget = document.getElementById('vnpt-docx-widget') || document.createElement('div');
@@ -50,12 +52,14 @@ export function initWidget() {
                 </div>
                 <div class="header-right">
                     <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
-                    <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑</button>
+                    <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Dọn giá trị & Lưu JSON (Shift+Click để Xóa hàng)">🗑</button>
                     <div class="vnpt-restore-dropdown" style="position: relative; display: flex;">
                         <button class="vnpt-btn-icon btn-restore" id="vnpt-btn-restore-last" title="Khôi phục bản gần nhất">⏪</button>
                         <div id="vnpt-backup-history" class="vnpt-backup-history"></div>
                     </div>
                     
+                    <button class="vnpt-btn-icon btn-inspect" id="vnpt-btn-inspect" title="Bật chế độ 'Soi' để bắt selector trường web">🔍</button>
+
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
@@ -63,8 +67,7 @@ export function initWidget() {
                                 <div class="util-column">
                                     <div class="util-submenu-title">Cấu hình hệ thống</div>
                                     <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
-                                    <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
-                                    <button class="util-item" id="vnpt-btn-clean-data">🧹 Clean Data (Về mặc định)</button>
+                                    <button class="util-item danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">🧹 Dọn dẹp & Reset hệ thống</button>
 
 
                                     <div class="util-separator"></div>
@@ -499,4 +502,15 @@ export function initWidget() {
             window.addEventListener('mouseup', onMouseUp);
         });
     });
+
+    // --- Selector Inspector Logic ---
+    const btnInspect = document.getElementById('vnpt-btn-inspect');
+    if (btnInspect) {
+        btnInspect.onclick = () => toggleInspector();
+        
+        // Cập nhật trạng thái nút bấm khi state thay đổi
+        AppState.on('isInspecting', (val) => {
+            btnInspect.classList.toggle('active', val);
+        });
+    }
 }

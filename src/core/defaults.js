@@ -68,6 +68,6 @@ export const DEFAULT_HOTKEYS = {
     //'EXPORT_DOCX': { key: 'e', altKey: true, ctrlKey: false, shiftKey: false, label: 'Xuất DOCX' },
     //'COPY_TXT': { key: 'c', altKey: true, ctrlKey: false, shiftKey: false, label: 'Copy Text (Template)' },
     'TOGGLE': { key: 'w', altKey: true, ctrlKey: false, shiftKey: false, label: 'Đóng/Mở Widget' },
-    'CLEAN': { key: 'd', altKey: true, ctrlKey: false, shiftKey: false, label: 'Clean Data' }
+    'CLEAN': { key: 'd', altKey: true, ctrlKey: false, shiftKey: false, label: 'Dọn dẹp & Reset' }
 };
 

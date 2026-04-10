@@ -264,6 +264,19 @@ export function injectStyles() {
         .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
         .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
 
+        .btn-inspect { background: #fff8e1; color: #f57f17; border: 1px solid rgba(245, 127, 23, 0.1); }
+        .btn-inspect:hover { background: #f57f17; color: #fff; border-color: transparent; }
+        .btn-inspect.active { 
+            background: #f57f17; color: #fff; 
+            box-shadow: 0 4px 12px rgba(245, 127, 23, 0.4);
+            animation: pulse-orange 1.5s infinite;
+        }
+        @keyframes pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(245, 127, 23, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 127, 23, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 127, 23, 0); }
+        }
+
         .btn-restore { background: #e8f0fe; color: var(--vnpt-primary); border: 1px solid rgba(26, 115, 232, 0.1); }
         .vnpt-btn-restore:hover { background: var(--vnpt-primary); color: #fff; border-color: transparent; }
         
@@ -272,14 +285,21 @@ export function injectStyles() {
            ═══════════════════════════════════════════ */
         .vnpt-backup-history {
             position: absolute;
-            top: calc(100% + 10px);
+            top: calc(100% + 8px);
             right: 0;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px); border: 1px solid var(--vnpt-border);
-            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            width: 320px; max-height: 400px; overflow-y: auto;
-            display: none; flex-direction: column; z-index: 2147483647;
-            padding: 8px; animation: menuFadeIn 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(20px); 
+            border: 1px solid var(--vnpt-border);
+            border-radius: 12px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            width: 300px; 
+            max-height: 380px; 
+            overflow-y: auto;
+            display: none; 
+            flex-direction: column; 
+            z-index: 1000000;
+            padding: 6px; 
+            animation: menuFadeIn 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
             transform-origin: top right;
         }
         .vnpt-backup-history.show { display: flex; }
@@ -632,6 +652,25 @@ export function injectStyles() {
         .raw-scan-actions .vnpt-btn-confirm { padding: 6px 12px; font-size: 11px; height: auto; width: 100%; white-space: normal; text-align: center; }
         .btn-local-process { background: var(--vnpt-success) !important; box-shadow: 0 4px 12px rgba(30, 142, 62, 0.2) !important; }
         .btn-local-process:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* ═══════════════════════════════════════════
+           SECTION 9: SELECTOR INSPECTOR
+           ═══════════════════════════════════════════ */
+        .vnpt-inspecting-mode { cursor: crosshair !important; }
+        .vnpt-inspecting-mode * { cursor: crosshair !important; }
+        
+        .vnpt-inspect-highlight {
+            outline: 3px dashed #f57f17 !important;
+            outline-offset: 2px !important;
+            position: relative;
+            z-index: 9999998 !important;
+            animation: borderPulse 1s infinite alternate;
+        }
+
+        @keyframes borderPulse {
+            from { outline-color: #f57f17; outline-offset: 2px; }
+            to { outline-color: #ffb300; outline-offset: 4px; }
+        }
 
     `;
     document.head.appendChild(style);

@@ -10,6 +10,7 @@ import { fileToBase64, extractWithGemini } from './geminiOcr.js';
 import { showPdfConfirmDialog, showPdfLoading, hidePdfLoading } from './pdfScanUI.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from '../fieldsManager.js';
 import { showToast } from '../../ui/toast.js';
+import { createInternalBackup, generateBackupName } from '../../utils/backupHelper.js';
 
 
 export function initPdfScan() {
@@ -72,6 +73,9 @@ async function handlePdfFile(file) {
 
         // Đọc nén thành base 64
         const base64Data = await fileToBase64(file);
+
+        // Tự động sao lưu trước khi ghi đè dữ liệu mới từ PDF
+        createInternalBackup("Trước khi PDF Scan: " + generateBackupName());
 
         // Ném vào LLM phân tích OCR JSON 
         const resultFieldsObj = await extractWithGemini(base64Data, apiKey, apiModel);

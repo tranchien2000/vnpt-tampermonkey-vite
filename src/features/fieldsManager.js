@@ -12,7 +12,7 @@ import { DEFAULT_DATA, DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { doFillData } from './dataFill/syncEngine.js';
 import { Storage } from '../utils/storage.js';
 import { mstService } from '../api/mstService.js';
-import { createInternalBackup, restoreInternalBackup, getInternalBackups } from '../utils/backupHelper.js';
+import { createInternalBackup, restoreInternalBackup, getInternalBackups, exportFullBackup } from '../utils/backupHelper.js';
 
 export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '') {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
@@ -223,14 +223,32 @@ export function saveFieldsToLocal() {
 }
 
 /**
- * Láy tên cho bản sao lưu: [Tên Đại Diện] - [Số HĐ]
+ * Lấy tên cho bản sao lưu: [Tên Đại Diện] - [Số HĐ]
  */
 function getBackupName() {
-    const data = Storage.get(LOCAL_KEY_FIELDS) || {};
+    const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
     const name = data['tenDaiDienn']?.value || '';
     const contract = data['soHopDong']?.value || '';
     if (!name && !contract) return `Bản sao lưu ${new Date().toLocaleString()}`;
     return `${name} - ${contract}`;
+}
+
+/**
+ * Lấy tên file export JSON theo yêu cầu của USER: [Số HĐ] - [Tên tổ chức]
+ */
+function getExportFileName() {
+    const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
+    const contract = data['soHopDong']?.value || '';
+    const org = data['tenToChuc']?.value || '';
+    
+    if (!contract && !org) return `Backup_VNPT_${new Date().toLocaleDateString().replace(/\//g, '-')}`;
+    
+    const parts = [];
+    if (contract) parts.push(contract);
+    if (org) parts.push(org);
+    
+    // Loại bỏ các ký tự không hợp lệ cho tên file (nếu có)
+    return parts.join(' - ').replace(/[\\/:"*?<>|]/g, '_');
 }
 
 export function loadSavedData() {
@@ -290,13 +308,25 @@ export function initFieldsManager() {
     // Nút Ẩn/Hiện Mã ID
     document.getElementById('vnpt-btn-toggle-id').onclick = () => AppState.fieldsContainer.classList.toggle('show-ids');
 
-    // Nút Clean Data
+    // Nút Clean Data / Reset hệ thống
     const btnCleanData = document.getElementById('vnpt-btn-clean-data');
     if (btnCleanData) {
         btnCleanData.onclick = () => {
-            if (confirm("Dữ liệu hiện tại sẽ được Xóa. Bạn có muốn SAO LƯU nhanh trước khi làm sạch không?")) {
-                createInternalBackup(getBackupName()); // Sao lưu trước khi xóa
-                Storage.remove(LOCAL_KEY_FIELDS);
+            const isDefault = AppState.isDefaultMode;
+            const msg = isDefault 
+                ? "BẠN ĐANG Ở CHẾ ĐỘ MẶC ĐỊNH.\nKhôi phục toàn bộ Dữ liệu Mặc định VNPT về ban đầu?"
+                : "Dữ liệu hiện tại sẽ được Xóa. Bạn có muốn SAO LƯU nhanh trước khi làm sạch không?";
+
+            if (confirm(msg)) {
+                if (!isDefault) {
+                    createInternalBackup(getBackupName()); // Sao lưu trước khi xóa dữ liệu cá nhân
+                    Storage.remove(LOCAL_KEY_FIELDS);
+                    showToast("🧹 Đã làm sạch dữ liệu cá nhân", "#1a73e8");
+                } else {
+                    Storage.remove(LOCAL_KEY_DEFAULT_FIELDS);
+                    showToast("🔄 Đã reset dữ liệu hệ thống VNPT", "#1a73e8");
+                }
+
                 Storage.remove(SK_CALC_MAP);
                 Storage.remove(SK_TAX);
 
@@ -306,50 +336,41 @@ export function initFieldsManager() {
                     inp.value = (DEFAULT_CALC_MAP[k] || []).join(', ');
                 });
 
-                if (AppState.isDefaultMode) {
-                    // Nếu đang ở mode default, clean default data và reload default data
-                    Storage.remove(LOCAL_KEY_DEFAULT_FIELDS);
+                if (isDefault) {
                     updateUIForDefaultMode(true);
                 } else {
                     loadSavedData();
                 }
-                showToast("🧹 Đã làm sạch toàn bộ dữ liệu & cấu hình", "#1a73e8");
             }
         };
     }
 
     // Nút Khôi phục bản gần nhất (Hiện danh sách)
-    // Co dãn thời gian một chút để đảm bảo DOM đã thực sự sẵn sàng
-    setTimeout(() => {
-        const btnRestore = document.getElementById('vnpt-btn-restore-last');
-        const backupHistory = document.getElementById('vnpt-backup-history');
-        
-        if (btnRestore && backupHistory) {
-            logger.info("🔄 Restore button found and bound.");
-            btnRestore.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const isShow = backupHistory.classList.contains('show');
-                if (!isShow) {
-                    backupHistory.classList.add('show');
-                    renderBackupHistory(backupHistory);
-                    logger.debug("✨ Backup history displayed.");
-                } else {
-                    backupHistory.classList.remove('show');
-                }
-            };
+    const btnRestore = document.getElementById('vnpt-btn-restore-last');
+    const backupHistory = document.getElementById('vnpt-backup-history');
+    
+    if (btnRestore && backupHistory) {
+        logger.info("🔄 Restore button found and bound successfully.");
+        btnRestore.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isShow = backupHistory.classList.toggle('show');
+            if (isShow) {
+                renderBackupHistory(backupHistory);
+                logger.debug("✨ Backup history displayed.");
+            }
+        };
 
-            // Đóng danh sách khi click ra ngoài
-            document.addEventListener('click', (e) => {
-                if (backupHistory.classList.contains('show') && !backupHistory.contains(e.target) && !btnRestore.contains(e.target)) {
-                    backupHistory.classList.remove('show');
-                }
-            });
-        } else {
-            logger.error("❌ Fix UI: Could not find Restore button or History list container.");
-        }
-    }, 500);
+        // Đóng danh sách khi click ra ngoài
+        document.addEventListener('click', (e) => {
+            if (backupHistory.classList.contains('show') && !backupHistory.contains(e.target) && !btnRestore.contains(e.target)) {
+                backupHistory.classList.remove('show');
+            }
+        });
+    } else {
+        logger.error("❌ Fix UI: Could not find Restore button (#vnpt-btn-restore-last) or History container (#vnpt-backup-history).");
+    }
 
     function renderBackupHistory(container) {
         const backups = getInternalBackups();
@@ -394,39 +415,64 @@ export function initFieldsManager() {
     // Register Listener cho isDefaultMode (Reactivity)
     AppState.on('isDefaultMode', (newVal) => updateUIForDefaultMode(newVal));
 
-    // Reset dữ liệu mặc định
-    document.getElementById('vnpt-btn-reset-default').onclick = () => {
-        if (confirm("Khôi phục toàn bộ Dữ liệu Mặc định VNPT về ban đầu?")) {
-            Storage.remove(LOCAL_KEY_DEFAULT_FIELDS);
-            Storage.remove(SK_CALC_MAP);
-            Storage.remove(SK_TAX);
+    // Reset dữ liệu mặc định (Đã gộp vào Clean Data)
 
-            if (AppState.isDefaultMode) {
-                updateUIForDefaultMode(true);
-                showToast("🔄 Đã khôi phục dữ liệu gốc", "#1a73e8");
-            }
-        }
-    };
 
-    // Batch Xóa
-    document.getElementById('vnpt-btn-batch-del').onclick = () => {
+    // Batch Xóa / Dọn dẹp
+    document.getElementById('vnpt-btn-batch-del').onclick = (e) => {
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
+        const isDeleteMode = e.shiftKey; // Shift+Click = Xóa hàng, Click thường = Dọn giá trị
         let checkedCount = 0;
+
+        // Xử lý các hàng được chọn qua checkbox
         rows.forEach(row => {
             if (row.querySelector('.row-chk')?.checked) {
-                row.remove();
+                if (isDeleteMode) {
+                    row.remove();
+                } else {
+                    const fVal = row.querySelector('.f-val');
+                    if (fVal) fVal.value = "";
+                }
                 checkedCount++;
             }
         });
+
         if (checkedCount === 0) {
-            if (confirm("Xóa TOÀN BỘ dữ liệu các trường? Hệ thống sẽ tự động SAO LƯU bản hiện tại.")) {
-                createInternalBackup(getBackupName()); // Sao lưu tự động
-                rows.forEach(r => r.remove());
-                showToast("🗑️ Đã xóa toàn bộ", "#ff5252");
-                saveFieldsToLocal();
+            // Trường hợp không chọn hàng nào -> Xử lý toàn bộ
+            const fileName = getExportFileName();
+            
+            if (isDeleteMode) {
+                // Shift+Click: Xóa toàn bộ hàng
+                if (confirm(`Xóa TOÀN BỘ hàng dữ liệu?\n\n(Hệ thống sẽ tự động lưu một bản nội bộ để có thể khôi phục).`)) {
+                    createInternalBackup(getBackupName()); 
+                    rows.forEach(r => r.remove());
+                    showToast("🗑️ Đã xóa toàn bộ hàng", "#ff5252");
+                    saveFieldsToLocal();
+                }
+            } else {
+                // Click thường: Dọn dẹp giá trị & Xuất JSON
+                if (confirm(`Dọn dẹp TOÀN BỘ giá trị và Xuất JSON dự phòng?\n\nFile: "${fileName}.json"\n\n(Hệ thống vẫn tự động lưu một bản nội bộ).`)) {
+                    // 1. Xuất file JSON
+                    exportFullBackup(fileName);
+                    
+                    // 2. Sao lưu nội bộ (safety net)
+                    createInternalBackup(getBackupName()); 
+                    
+                    // 3. Thực hiện dọn giá trị
+                    rows.forEach(row => {
+                        const fVal = row.querySelector('.f-val');
+                        if (fVal) fVal.value = "";
+                    });
+                    
+                    showToast("🧹 Đã lưu JSON & Dọn dẹp giá trị", "#1a73e8");
+                    saveFieldsToLocal();
+                }
             }
         } else {
-            showToast(`🗑️ Đã xóa ${checkedCount} trường`, "#ff5252");
+            // Thông báo kết quả cho các hàng được chọn
+            const actionText = isDeleteMode ? "Xóa" : "Dọn giá trị";
+            const icon = isDeleteMode ? "🗑️" : "🧹";
+            showToast(`${icon} Đã ${actionText} ${checkedCount} trường`, isDeleteMode ? "#ff5252" : "#1a73e8");
             saveFieldsToLocal();
         }
     };
@@ -460,7 +506,6 @@ export function syncAllFields() {
 
 function updateUIForDefaultMode(isDefault) {
     const btn = document.getElementById('vnpt-btn-default');
-    const resetBtn = document.getElementById('vnpt-btn-reset-default');
 
     AppState.fieldsContainer.innerHTML = '';
     AppState.bannerArea.innerHTML = '';
@@ -468,7 +513,6 @@ function updateUIForDefaultMode(isDefault) {
     if (isDefault) {
         btn.classList.add('active');
         btn.innerHTML = '✅ Chế độ: Dữ liệu mặc định';
-        if (resetBtn) resetBtn.style.display = 'flex';
         document.getElementById('vnpt-fields-container').classList.add('vnpt-mode-default');
         showToast("📌 Chế độ Dữ liệu mặc định (Có thể sửa)", "#ea4335");
 
@@ -494,7 +538,6 @@ function updateUIForDefaultMode(isDefault) {
     } else {
         btn.classList.remove('active');
         btn.innerHTML = '🛠 Dữ liệu mặc định VNPT';
-        if (resetBtn) resetBtn.style.display = 'none';
         document.getElementById('vnpt-fields-container').classList.remove('vnpt-mode-default');
         showToast("📋 Đã quay lại Dữ liệu cá nhân");
         loadSavedData();

@@ -5,6 +5,7 @@ import { extractFieldsFromText, extractFieldsLocally } from './rawScan.js';
 import { showPdfConfirmDialog, showPdfLoading, hidePdfLoading } from '../pdfScan/pdfScanUI.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from '../fieldsManager.js';
 import { showToast } from '../../ui/toast.js';
+import { createInternalBackup, generateBackupName } from '../../utils/backupHelper.js';
 
 export function initRawScan() {
     const btnRaw = document.getElementById('vnpt-btn-scan-raw');
@@ -66,6 +67,8 @@ export function initRawScan() {
             }
 
             try {
+                // Tự động sao lưu trước khi ghi đè
+                createInternalBackup("Trước khi phân loại Local: " + generateBackupName());
                 const resultFields = extractFieldsLocally(text);
                 handleExtractionResults(resultFields, 'Local', 'PHÂN LOẠI DỮ LIỆU THÔ (LOCAL)');
             } catch (err) {
@@ -92,6 +95,8 @@ export function initRawScan() {
 
         try {
             showPdfLoading(); 
+            // Tự động sao lưu trước khi ghi đè
+            createInternalBackup("Trước khi phân loại AI: " + generateBackupName());
             const resultFields = await extractFieldsFromText(text, apiKey, model);
             hidePdfLoading();
 

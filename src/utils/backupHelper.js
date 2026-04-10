@@ -32,8 +32,9 @@ function flattenData(obj) {
 
 /**
  * Xuất toàn bộ dữ liệu ra file JSON.
+ * @param {string} customFileName - Tên file tùy chỉnh (không bắt buộc)
  */
-export function exportFullBackup() {
+export function exportFullBackup(customFileName = '') {
     const data = {
         version: '1.0',
         timestamp: new Date().toISOString(),
@@ -53,10 +54,19 @@ export function exportFullBackup() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `vnpt_full_backup_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+    
+    let fileName = customFileName;
+    if (!fileName) {
+        fileName = `vnpt_full_backup_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+    } else {
+        // Đảm bảo có đuôi .json
+        if (!fileName.toLowerCase().endsWith('.json')) fileName += '.json';
+    }
+
+    a.download = fileName;
     a.click();
     URL.revokeObjectURL(url);
-    showToast("✅ Đã xuất file sao lưu hệ thống.");
+    showToast(`✅ Đã xuất file: ${fileName}`);
 }
 
 /**
@@ -114,11 +124,23 @@ export function createInternalBackup(name = '') {
     // Đưa lên đầu mảng
     backups.unshift(newEntry);
     
-    // Giới hạn 10 bản
-    const limitedBackups = backups.slice(0, 10);
+    // Giới hạn 15 bản cho VNPT Export
+    const limitedBackups = backups.slice(0, 15);
     
     Storage.set(LOCAL_KEY_AUTO_BACKUP, limitedBackups);
     console.log(`✅ Field backup created: ${newEntry.name}`);
+}
+
+/**
+ * Lấy tên gợi ý cho bản sao lưu: [Tên Đại Diện] - [Số HĐ]
+ * Thêm helper này vào đây để dùng chung.
+ */
+export function generateBackupName() {
+    const data = Storage.get(LOCAL_KEY_FIELDS) || {};
+    const name = data['tenDaiDienn']?.value || '';
+    const contract = data['soHopDong']?.value || '';
+    if (!name && !contract) return `Quét dữ liệu - ${new Date().toLocaleTimeString()}`;
+    return `${name} - ${contract}`;
 }
 
 /**
