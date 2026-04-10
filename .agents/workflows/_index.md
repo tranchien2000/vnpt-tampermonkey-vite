@@ -21,6 +21,7 @@ Dưới đây là danh sách tất cả các workflows trong thư mục `.agents
 - `/test-sync`: Sandbox/debug nhanh CSS Selectors trên trang đích.
 - `/update-ui`: Cập nhật cấu trúc CSS của widget chung.
 - `/update-memory`: Quy trình tóm tắt và cập nhật "Bộ nhớ dự án" sau mỗi task lớn.
+- `/upnote`: Tổng hợp brain và đẩy lên NotebookLM dự án.
 - `/bug-report`: *(Mới)* Quy trình tối ưu xử lý bug tiết kiệm Tokens.
 
 > [!TIP]
