@@ -9,6 +9,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Hệ thống kiểm tra dữ liệu bắt buộc (Required Fields Validation).
 - [x] Cải thiện hệ thống "Trí nhớ dự án" (Đã khôi phục và đồng bộ).
 - [x] Kiểm tra tính nhất quán của hệ thống Rules/Workflow với người dùng.
+- [x] Triển khai tính năng Phân loại dữ liệu Local (Raw Scan).
 
 ## 2. Nhật ký Quyết định (Decision Log)
 
@@ -20,6 +21,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-10 (PDF Scan Button Enhancement)**: Bổ sung logic copy link hướng dẫn Gemini (GUIDE) vào clipboard nếu chưa cấu hình API Key khi bấm nút Scan PDF.
 - **2026-04-10 (Startup Workflow)**: Triển khai `/start` để tự động hóa việc load bối cảnh dự án (brain_context + PROJECT_MEMORY).
 - **2026-04-10 (NotebookLM Integration)**: Cấu hình Notebook dự án tại URL: `https://notebooklm.google.com/notebook/7e1829da-588e-42d2-8a87-afef88b6d3e7`. AI sẽ sử dụng URL này cho các tác vụ cập nhật brain mà không cần hỏi lại.
+- **2026-04-10 (DOM Optimization)**: Triển khai `buildFullDOMMap` trong `domHelper.js` để chuyển đổi hiệu suất quét từ O(N*M) sang O(N+M), giúp widget xử lý nhanh ngay cả trên trang phức tạp.
+- **2026-04-10 (Expanded Local Classifier)**: Bổ sung Regex cho Người đại diện, Chức danh, Nơi cấp và tinh chỉnh nhận diện MST/Địa chỉ trong `localClassifier.js`.
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
 

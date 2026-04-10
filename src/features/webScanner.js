@@ -12,7 +12,7 @@ import { addOrUpdateFieldRow, saveFieldsToLocal } from './fieldsManager.js';
 import { getScannerFallback } from '../core/scannerFallbacks.js';
 import { AppState } from '../core/state.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
-import { findPageInput } from '../utils/domHelper.js';
+import { buildFullDOMMap, findPageInput } from '../utils/domHelper.js';
 import { capitalizeName, formatPhoneNumber, normalizeDate } from '../utils/stringHelper.js';
 
 export function initWebScanner() {
@@ -27,6 +27,9 @@ export function initWebScanner() {
         }
 
         let foundCount = 0;
+        
+        // --- Tối ưu: Xây dựng Map trước khi quét hàng loạt ---
+        buildFullDOMMap();
 
         Object.keys(DEFAULT_LABELS).forEach(id_can_tim => {
             const labelText = DEFAULT_LABELS[id_can_tim];

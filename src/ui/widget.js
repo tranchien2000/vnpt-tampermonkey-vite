@@ -62,9 +62,10 @@ export function initWidget() {
                             <div class="util-config-grid">
                                 <div class="util-column">
                                     <div class="util-submenu-title">Cấu hình hệ thống</div>
-                                    <button class="util-item" id="vnpt-btn-clean-data">🧹 Clean Data (Về mặc định)</button>
                                     <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
                                     <button class="util-item danger" id="vnpt-btn-reset-default" style="display: none;">🔄 Khôi phục dữ liệu gốc</button>
+                                    <button class="util-item" id="vnpt-btn-clean-data">🧹 Clean Data (Về mặc định)</button>
+
 
                                     <div class="util-separator"></div>
                                     <div class="util-submenu-title">Dữ liệu hệ thống</div>
@@ -134,7 +135,8 @@ export function initWidget() {
                 <div id="vnpt-raw-scan-section" class="vnpt-raw-scan-section" style="display: none;">
                     <textarea id="vnpt-raw-scan-input" placeholder="Dán nội dung văn bản thô vào đây... AI sẽ tự động phân loại thông tin vào bảng."></textarea>
                     <div class="raw-scan-actions">
-                        <button id="vnpt-btn-raw-process" class="vnpt-btn-confirm">✨ Phân loại dữ liệu</button>
+                        <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh không dùng AI (Regex)">⚡ Phân loại (Local)</button>
+                        <button id="vnpt-btn-raw-process" class="vnpt-btn-confirm">✨ Phân loại (AI)</button>
                     </div>
                 </div>
 

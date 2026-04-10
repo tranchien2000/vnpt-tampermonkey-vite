@@ -36,7 +36,6 @@ Lưu ý quan trọng:
 - Các trường MST (Mã số thuế / GPKD) điền vào key "soDkdn".
 `;
 };
-
 import { callGemini } from '../../api/gemini.js';
 
 /**

@@ -4,6 +4,7 @@
  */
 import { callGemini } from '../../api/gemini.js';
 import { REQUIRED_KEYS, DEFAULT_LABELS } from '../../core/constants.js';
+import { classifyTextLocally } from '../../utils/localClassifier.js';
 
 /**
  * Lời nhắc hệ thống chuyên dụng cho văn bản thô (Raw Text)
@@ -35,7 +36,7 @@ Lưu ý:
 };
 
 /**
- * Thực hiện trích xuất thông tin từ đoạn text thô.
+ * Thực hiện trích xuất thông tin từ đoạn text thô (Dùng AI Gemini).
  */
 export async function extractFieldsFromText(rawText, apiKey, modelName = 'gemini-2.0-flash') {
     if (!rawText || !rawText.trim()) throw new Error("Vui lòng nhập nội dung văn bản cần phân loại.");
@@ -46,4 +47,12 @@ export async function extractFieldsFromText(rawText, apiKey, modelName = 'gemini
         systemInstruction: getRawTextSystemPrompt(),
         userText: `Hãy phân loại thông tin từ đoạn văn bản sau đây: \n\n${rawText}`
     });
+}
+
+/**
+ * Thực hiện trích xuất thông tin từ đoạn text thô (Dùng Regex Local).
+ */
+export function extractFieldsLocally(rawText) {
+    if (!rawText || !rawText.trim()) throw new Error("Vui lòng nhập nội dung văn bản cần phân loại.");
+    return classifyTextLocally(rawText);
 }

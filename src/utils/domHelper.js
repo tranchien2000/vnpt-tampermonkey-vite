@@ -1,18 +1,24 @@
 import { findBestMatch } from './stringHelper.js';
 
-// ─── DOM Cache ───
-const DOMCache = new Map();
-let LabelCache = []; // Bộ nhớ đệm danh sách các nhãn (label, .label, ...)
-let lastLabelUpdate = 0;
-const CACHE_TTL = 3000; // 3 giây mới quét label 1 lần nếu không được trigger
+// ─── DOM Map ───
+let FullDOMMap = {
+    byId: new Map(),
+    byName: new Map(),
+    byPlaceholder: new Map(),
+    byLabel: new Map(),
+    allInputs: []
+};
 
 /**
  * Xóa bộ nhớ đệm DOM khi trang thay đổi cấu trúc lớn.
  */
 export function clearDOMCache() {
     DOMCache.clear();
-    // Không xóa LabelCache ở đây để tránh giật, 
-    // sẽ được refresh riêng hoặc theo TTL
+    FullDOMMap.byId.clear();
+    FullDOMMap.byName.clear();
+    FullDOMMap.byPlaceholder.clear();
+    FullDOMMap.byLabel.clear();
+    FullDOMMap.allInputs = [];
 }
 
 /**
@@ -21,7 +27,62 @@ export function clearDOMCache() {
 export function refreshLabelsCache() {
     LabelCache = Array.from(document.querySelectorAll('label, .label, .label-text, span.title, .form-label'));
     lastLabelUpdate = Date.now();
-    // console.debug(`[DOM] Refreshed ${LabelCache.length} labels`);
+    return LabelCache;
+}
+
+/**
+ * Xây dựng bản đồ toàn bộ DOM để truy vấn nhanh O(1).
+ * Nên gọi hàm này trước khi thực hiện Quét hàng loạt.
+ */
+export function buildFullDOMMap() {
+    const start = performance.now();
+    clearDOMCache();
+    
+    // 1. Lấy tất cả các control nhập liệu
+    const inputs = Array.from(document.querySelectorAll('input, textarea, select'));
+    FullDOMMap.allInputs = inputs;
+
+    inputs.forEach(el => {
+        if (el.id) FullDOMMap.byId.set(el.id, el);
+        if (el.name) FullDOMMap.byName.set(el.name, el);
+        
+        const placeholder = el.getAttribute('placeholder');
+        if (placeholder) FullDOMMap.byPlaceholder.set(placeholder.trim(), el);
+        
+        const fcn = el.getAttribute('formcontrolname');
+        if (fcn) FullDOMMap.byName.set(fcn, el);
+    });
+
+    // 2. Lấy và ánh xạ Label
+    const labels = refreshLabelsCache();
+    labels.forEach(lbl => {
+        const text = lbl.innerText.trim();
+        if (!text) return;
+
+        let targetEl = null;
+        if (lbl.htmlFor) {
+            targetEl = document.getElementById(lbl.htmlFor);
+        }
+        
+        if (!targetEl) {
+            // Tìm trong phạm vi gần (cha hoặc anh em)
+            let p = lbl.parentElement;
+            let depth = 0;
+            while (p && depth < 2) {
+                targetEl = p.querySelector('input, textarea, select');
+                if (targetEl) break;
+                p = p.parentElement;
+                depth++;
+            }
+        }
+
+        if (targetEl) {
+            FullDOMMap.byLabel.set(text, targetEl);
+        }
+    });
+
+    const end = performance.now();
+    console.debug(`[DOM] Build map in ${(end - start).toFixed(2)}ms for ${inputs.length} inputs and ${labels.length} labels.`);
 }
 
 export function triggerCustom(el) {
@@ -44,68 +105,41 @@ export function syncSetValue(el, value) {
 
 // Tìm input theo id, name, hoặc nhãn thẻ label (Hỗ trợ Fuzzy Search)
 export function findPageInput(name, labelText = null) {
-    if (!name) return null;
+    if (!name && !labelText) return null;
     
-    // Kiểm tra cache trước
-    const cached = DOMCache.get(name);
-    if (cached && document.contains(cached)) return cached;
-
-    // 1. Tìm chính xác theo ID
-    const byId = document.getElementById(name);
-    if (byId && (byId.tagName === 'INPUT' || byId.tagName === 'TEXTAREA' || byId.tagName === 'SELECT')) {
-        DOMCache.set(name, byId);
-        return byId;
+    // 1. Thử tra cứu từ Map (O(1))
+    if (name) {
+        let el = FullDOMMap.byId.get(name) || FullDOMMap.byName.get(name) || FullDOMMap.byPlaceholder.get(name);
+        if (el && document.contains(el)) return el;
     }
 
-    // 2. Tìm theo các thuộc tính thông dụng
-    const selector = `input[id="${name}"], textarea[id="${name}"], select[id="${name}"], input[name="${name}"], textarea[name="${name}"], input[formcontrolname="${name}"], textarea[formcontrolname="${name}"], input[placeholder="${name}"], textarea[placeholder="${name}"]`;
-    const byAttr = document.querySelector(selector);
-    if (byAttr) {
-        DOMCache.set(name, byAttr);
-        return byAttr;
+    if (labelText) {
+        let el = FullDOMMap.byLabel.get(labelText);
+        if (el && document.contains(el)) return el;
     }
-    
-    // 3. Tìm theo nhãn thẻ label (Chính xác hoặc Mờ)
+
+    // 2. Nếu Map chưa có (hoặc hỏng), thử tìm trực tiếp (Fallback)
+    if (name) {
+        const byId = document.getElementById(name);
+        if (byId && ['INPUT', 'TEXTAREA', 'SELECT'].includes(byId.tagName)) return byId;
+
+        const selector = `input[id="${name}"], textarea[id="${name}"], select[id="${name}"], input[name="${name}"], textarea[name="${name}"], [placeholder="${name}"]`;
+        const byAttr = document.querySelector(selector);
+        if (byAttr) return byAttr;
+    }
+
+    // 3. Fuzzy Match trên Label (Tốn kém hơn)
     const targetLabel = labelText || name;
+    if (targetLabel && targetLabel.length > 2) {
+        const labelTexts = Array.from(FullDOMMap.byLabel.keys());
+        if (labelTexts.length === 0 && LabelCache.length > 0) {
+             // Fallback nếu Map chưa được build nhưng LabelCache đã có
+             labelTexts.push(...LabelCache.map(l => l.innerText.trim()).filter(t => t.length > 0));
+        }
 
-    // Cập nhật LabelCache nếu chưa có hoặc quá lâu chưa cập nhật
-    if (LabelCache.length === 0 || (Date.now() - lastLabelUpdate > CACHE_TTL)) {
-        refreshLabelsCache();
-    }
-    
-    const allLabels = LabelCache;
-    
-    // Thử tìm chính xác trước
-    let foundLabel = allLabels.find(lbl => lbl.innerText.trim() === targetLabel);
-    
-    // Nếu không thấy, dùng Fuzzy Match
-    if (!foundLabel && targetLabel.length > 2) {
-        const labelTexts = allLabels.map(l => l.innerText.trim()).filter(t => t.length > 0);
-        const bestText = findBestMatch(targetLabel, labelTexts, 0.8);
+        const bestText = findBestMatch(targetLabel, labelTexts, 0.82);
         if (bestText) {
-            foundLabel = allLabels.find(lbl => lbl.innerText.trim() === bestText);
-        }
-    }
-
-    if (foundLabel) {
-        let el = null;
-        if (foundLabel.htmlFor) { 
-            el = document.getElementById(foundLabel.htmlFor); 
-        }
-        if (!el) {
-            // Tìm input lân cận (trong cùng cha hoặc anh em)
-            let p = foundLabel.parentElement;
-            let depth = 0;
-            while (p && depth < 3) { 
-                const inp = p.querySelector('input, textarea, select'); 
-                if (inp) { el = inp; break; }
-                p = p.parentElement; 
-                depth++;
-            }
-        }
-        if (el) {
-            DOMCache.set(name, el);
-            return el;
+            return FullDOMMap.byLabel.get(bestText) || null;
         }
     }
 

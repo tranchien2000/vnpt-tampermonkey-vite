@@ -1,11 +1,7 @@
-/**
- * @file index.js
- * @desc Entry point điều phối phân loại văn bản thô.
- */
 import { AppState } from '../../core/state.js';
 import { Storage } from '../../utils/storage.js';
 import { SK_GEMINI_KEY, SK_GEMINI_MODEL } from '../../core/constants.js';
-import { extractFieldsFromText } from './rawScan.js';
+import { extractFieldsFromText, extractFieldsLocally } from './rawScan.js';
 import { showPdfConfirmDialog, showPdfLoading, hidePdfLoading } from '../pdfScan/pdfScanUI.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from '../fieldsManager.js';
 import { showToast } from '../../ui/toast.js';
@@ -14,6 +10,7 @@ export function initRawScan() {
     const btnRaw = document.getElementById('vnpt-btn-scan-raw');
     const rawSection = document.getElementById('vnpt-raw-scan-section');
     const btnProcess = document.getElementById('vnpt-btn-raw-process');
+    const btnProcessLocal = document.getElementById('vnpt-btn-raw-process-local');
     const rawInput = document.getElementById('vnpt-raw-scan-input');
 
     if (!btnRaw || !rawSection || !btnProcess || !rawInput) return;
@@ -27,7 +24,57 @@ export function initRawScan() {
         if (isHidden) rawInput.focus();
     });
 
-    // Xử lý khi nhấn nút Phân loại
+    /**
+     * Hàm chung xử lý kết quả trích xuất
+     */
+    const handleExtractionResults = (resultFields, sourcePrefix, title) => {
+        const resultsArray = Object.keys(resultFields).map(key => ({
+            key: key,
+            value: resultFields[key],
+            label: `${sourcePrefix}: ${key}`
+        })).filter(item => item.value !== "" && item.value !== null);
+
+        if (resultsArray.length === 0) {
+            alert(sourcePrefix === 'AI' ? "AI không tìm thấy thông tin hợp lệ nào." : "Không tìm thấy thông tin phù hợp theo mẫu trích xuất Local.");
+            return;
+        }
+
+        showPdfConfirmDialog(resultsArray, (selected) => {
+            selected.forEach(res => {
+                addOrUpdateFieldRow(res.key, res.value, res.label);
+            });
+            saveFieldsToLocal();
+            showToast(`✅ Đã nạp ${selected.length} trường từ văn bản thô.`);
+
+            rawSection.style.display = 'none';
+            btnRaw.classList.remove('active');
+            rawInput.value = '';
+        });
+
+        // Đổi tiêu đề dialog
+        const dlgHeader = document.querySelector('#vnpt-pdf-dialog h3');
+        if (dlgHeader) dlgHeader.textContent = title;
+    };
+
+    // Xử lý khi nhấn nút Phân loại (Local)
+    if (btnProcessLocal) {
+        btnProcessLocal.addEventListener('click', () => {
+            const text = rawInput.value.trim();
+            if (!text) {
+                showToast("⚠️ Vui lòng nhập nội dung văn bản!", "#ffc107");
+                return;
+            }
+
+            try {
+                const resultFields = extractFieldsLocally(text);
+                handleExtractionResults(resultFields, 'Local', 'PHÂN LOẠI DỮ LIỆU THÔ (LOCAL)');
+            } catch (err) {
+                showToast("❌ Lỗi: " + err.message, "#f44336");
+            }
+        });
+    }
+
+    // Xử lý khi nhấn nút Phân loại (AI)
     btnProcess.addEventListener('click', async () => {
         const text = rawInput.value.trim();
         if (!text) {
@@ -44,43 +91,16 @@ export function initRawScan() {
         }
 
         try {
-            showPdfLoading(); // Dùng chung loader của PDF cho đồng bộ
+            showPdfLoading(); 
             const resultFields = await extractFieldsFromText(text, apiKey, model);
             hidePdfLoading();
 
-            const resultsArray = Object.keys(resultFields).map(key => ({
-                key: key,
-                value: resultFields[key],
-                label: `AI: ${key}`
-            })).filter(item => item.value !== "" && item.value !== null);
-
-            if (resultsArray.length === 0) {
-                alert("AI không tìm thấy thông tin hợp lệ nào để phân loại.");
-                return;
-            }
-
-            // Hiện dialog xác nhận (Dùng chung UI của PDF nhưng đổi text header sau khi inject)
-            showPdfConfirmDialog(resultsArray, (selected) => {
-                selected.forEach(res => {
-                    addOrUpdateFieldRow(res.key, res.value, res.label);
-                });
-                saveFieldsToLocal();
-                showToast(`✅ Đã nạp ${selected.length} trường từ văn bản thô.`);
-                
-                // Sau khi xong thì ẩn khung nhập đi cho gọn
-                rawSection.style.display = 'none';
-                btnRaw.classList.remove('active');
-                rawInput.value = '';
-            });
-
-            // Hack nhỏ để đổi tiêu đề dialog cho đúng ngữ cảnh RAW
-            const dlgHeader = document.querySelector('#vnpt-pdf-dialog h3');
-            if (dlgHeader) dlgHeader.textContent = '✨ PHÂN LOẠI DỮ LIỆU THÔ (AI)';
+            handleExtractionResults(resultFields, 'AI', 'PHÂN LOẠI DỮ LIỆU THÔ (AI)');
 
         } catch (err) {
             hidePdfLoading();
-            console.error("Raw Scan Error:", err);
-            alert("Lỗi phân loại dữ liệu: " + err);
+            console.error("Raw Scan AI Error:", err);
+            alert("Lỗi AI: " + err);
         }
     });
 }
