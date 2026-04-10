@@ -37,6 +37,8 @@ Lưu ý quan trọng:
 `;
 };
 
+import { callGemini } from '../../api/gemini.js';
+
 /**
  * @param {string} base64PDF Chuỗi base64 của file
  * @param {string} apiKey Khóa API Google Gemini
@@ -44,76 +46,14 @@ Lưu ý quan trọng:
  * @returns {Promise<Object>} JSON đã parse
  */
 export function extractWithGemini(base64PDF, apiKey, modelName = 'gemini-2.0-flash') {
-    return new Promise((resolve, reject) => {
-        if (!apiKey) return reject("Vui lòng nhập API Key Gemini trong Cài đặt.");
-
-        const cleanKey = apiKey.trim();
-        const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${cleanKey}`;
-
-        const requestData = {
-            system_instruction: {
-                parts: { text: getSystemPrompt() }
-            },
-            contents: [
-                {
-                    parts: [
-                        { text: "Đọc file hợp đồng này và trích xuất thành JSON." },
-                        { inline_data: { mime_type: 'application/pdf', data: base64PDF } }
-                    ]
-                }
-            ],
-            generationConfig: {
-                // Ép buộc LLM trả về JSON 
-                responseMimeType: "application/json",
-            }
-        };
-
-        // Do đang chạy trong userscript, gọi thông qua GM_xmlhttpRequest để bypass CORS
-        if (typeof GM_xmlhttpRequest !== 'undefined') {
-            GM_xmlhttpRequest({
-                method: "POST",
-                url: apiUrl,
-                headers: { "Content-Type": "application/json" },
-                data: JSON.stringify(requestData),
-                timeout: 30000,
-                onload: (response) => {
-                    if (response.status >= 200 && response.status < 300) {
-                        try {
-                            const resObj = JSON.parse(response.responseText);
-                            const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
-                            if (textResponse) {
-                                // Xóa block `json nếu AI vô tình trả về
-                                let cleanJson = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                                resolve(JSON.parse(cleanJson));
-                            } else {
-                                reject("AI không trả về kết quả hợp lệ.");
-                            }
-                        } catch (e) {
-                            console.error("Lỗi parse JSON từ Gemini", e, response.responseText);
-                            reject("Lỗi Parse kết quả từ Gemini.");
-                        }
-                    } else {
-                        reject(`API Gemini lỗi (${response.status}): ${response.responseText}`);
-                    }
-                },
-                ontimeout: () => reject("Quá hạn thời gian gọi API (30s)"),
-                onerror: (e) => reject("Lỗi kết nối đến Google Gemini API.")
-            });
-        } else {
-            // Nền tảng môi trường dev bình thường 
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestData)
-            })
-                .then(r => r.json())
-                .then(resObj => {
-                    if (resObj.error) return reject(resObj.error.message);
-                    const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    let cleanJson = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                    resolve(JSON.parse(cleanJson));
-                })
-                .catch(e => reject(e.message));
+    return callGemini({
+        apiKey,
+        model: modelName,
+        systemInstruction: getSystemPrompt(),
+        userText: "Đọc file hợp đồng này và trích xuất thành JSON.",
+        fileData: {
+            mimeType: 'application/pdf',
+            base64: base64PDF
         }
     });
 }

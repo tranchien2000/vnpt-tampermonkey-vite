@@ -38,6 +38,7 @@ export const LOCAL_KEY_DEFAULT_FIELDS = 'vnpt_docx_default_fields';
 export const LOCAL_KEY_POS = 'vnpt_docx_position';
 export const LOCAL_KEY_SIZE = 'vnpt_docx_size';
 export const LOCAL_KEY_OPENED = 'vnpt_docx_opened';
+export const LOCAL_KEY_AUTO_BACKUP = 'vnpt_docx_auto_backup';
 
 // VNPT Calc & AutoFill Widget Keys
 export const SK_DATA_DEF = 'vnpt_autofill_data_default';

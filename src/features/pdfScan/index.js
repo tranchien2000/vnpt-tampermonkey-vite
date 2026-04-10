@@ -20,7 +20,7 @@ export function initPdfScan() {
 
     btnScan.addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         const apiKey = Storage.get(SK_GEMINI_KEY);
         if (!apiKey) {
             // Nếu chưa có Key, copy link hướng dẫn vào clipboard
@@ -55,8 +55,8 @@ export function initPdfScan() {
  */
 async function handlePdfFile(file) {
     const apiKey = Storage.get(SK_GEMINI_KEY);
-    const apiModel = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.0-flash';
-    
+    const apiModel = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.5-flash';
+
     // Yêu cầu API Key nếu chưa có
     if (!apiKey) {
         const wantGuide = confirm("Chưa cài đặt Gemini API Key!\n\nAI Scanner (PDF) yêu cầu cần có mã Google AI Studio cấp phát Miễn phí.\n\nNhấn 'OK' để xem hướng dẫn tự tạo mã Key nhé!");
@@ -99,7 +99,7 @@ async function handlePdfFile(file) {
                 addOrUpdateFieldRow(res.key, res.value, `AI: ${res.key}`);
             });
             saveFieldsToLocal();
-            
+
             // Render Toast gọn nhẹ nếu có system notification
             console.log(`✅ [OCR Pdf] Đã điền thành công ${selectedResults.length} trường.`);
         });

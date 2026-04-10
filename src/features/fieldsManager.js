@@ -3,6 +3,7 @@
  * @desc Quản lý bảng fields (danh sách key-value-label-sync) trong VNPT Export Widget.
  *       Đã tối ưu: Sử dụng Storage utility, Reactive State (AppState.on), DOM Cache.
  */
+import { logger } from '../utils/logger.js';
 import { AppState } from '../core/state.js';
 import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS, SK_TAX, SK_CALC_MAP, REQUIRED_KEYS } from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
@@ -11,6 +12,7 @@ import { DEFAULT_DATA, DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { doFillData } from './dataFill/syncEngine.js';
 import { Storage } from '../utils/storage.js';
 import { mstService } from '../api/mstService.js';
+import { createInternalBackup, restoreInternalBackup, getInternalBackups } from '../utils/backupHelper.js';
 
 export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '') {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
@@ -220,6 +222,17 @@ export function saveFieldsToLocal() {
     Storage.setDebounced(key, data, 1000);
 }
 
+/**
+ * Láy tên cho bản sao lưu: [Tên Đại Diện] - [Số HĐ]
+ */
+function getBackupName() {
+    const data = Storage.get(LOCAL_KEY_FIELDS) || {};
+    const name = data['tenDaiDienn']?.value || '';
+    const contract = data['soHopDong']?.value || '';
+    if (!name && !contract) return `Bản sao lưu ${new Date().toLocaleString()}`;
+    return `${name} - ${contract}`;
+}
+
 export function loadSavedData() {
     try {
         AppState.fieldsContainer.innerHTML = '';
@@ -281,7 +294,8 @@ export function initFieldsManager() {
     const btnCleanData = document.getElementById('vnpt-btn-clean-data');
     if (btnCleanData) {
         btnCleanData.onclick = () => {
-            if (confirm("Làm sạch dữ liệu hiện tại và tải lại toàn bộ cấu trúc mặc định?")) {
+            if (confirm("Dữ liệu hiện tại sẽ được Xóa. Bạn có muốn SAO LƯU nhanh trước khi làm sạch không?")) {
+                createInternalBackup(getBackupName()); // Sao lưu trước khi xóa
                 Storage.remove(LOCAL_KEY_FIELDS);
                 Storage.remove(SK_CALC_MAP);
                 Storage.remove(SK_TAX);
@@ -302,6 +316,76 @@ export function initFieldsManager() {
                 showToast("🧹 Đã làm sạch toàn bộ dữ liệu & cấu hình", "#1a73e8");
             }
         };
+    }
+
+    // Nút Khôi phục bản gần nhất (Hiện danh sách)
+    // Co dãn thời gian một chút để đảm bảo DOM đã thực sự sẵn sàng
+    setTimeout(() => {
+        const btnRestore = document.getElementById('vnpt-btn-restore-last');
+        const backupHistory = document.getElementById('vnpt-backup-history');
+        
+        if (btnRestore && backupHistory) {
+            logger.info("🔄 Restore button found and bound.");
+            btnRestore.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const isShow = backupHistory.classList.contains('show');
+                if (!isShow) {
+                    backupHistory.classList.add('show');
+                    renderBackupHistory(backupHistory);
+                    logger.debug("✨ Backup history displayed.");
+                } else {
+                    backupHistory.classList.remove('show');
+                }
+            };
+
+            // Đóng danh sách khi click ra ngoài
+            document.addEventListener('click', (e) => {
+                if (backupHistory.classList.contains('show') && !backupHistory.contains(e.target) && !btnRestore.contains(e.target)) {
+                    backupHistory.classList.remove('show');
+                }
+            });
+        } else {
+            logger.error("❌ Fix UI: Could not find Restore button or History list container.");
+        }
+    }, 500);
+
+    function renderBackupHistory(container) {
+        const backups = getInternalBackups();
+        logger.debug("📋 Rendering backups count:", backups.length);
+        container.innerHTML = '';
+        
+        if (backups.length === 0) {
+            container.innerHTML = '<div class="backup-history-empty">Chưa có bản sao lưu nào. Hãy thử Clean Data để tạo bản mới!</div>';
+            return;
+        }
+
+        backups.forEach((b) => {
+            const item = document.createElement('div');
+            item.className = 'backup-history-item';
+            const timeStr = new Date(b.id * 1).toLocaleString();
+            item.innerHTML = `
+                <div class="backup-history-name" title="${b.name}">${b.name}</div>
+                <div class="backup-history-time">${timeStr}</div>
+            `;
+            item.onclick = (e) => {
+                e.stopPropagation();
+                if (confirm(`Bạn có chắc muốn khôi phục dữ liệu từ bản: \n${b.name}?`)) {
+                    const success = restoreInternalBackup(b.id);
+                    if (success) {
+                        container.classList.remove('show');
+                        // Tự động load lại dữ liệu
+                        if (AppState.isDefaultMode) {
+                            document.getElementById('vnpt-btn-default')?.click();
+                        } else {
+                            loadSavedData();
+                        }
+                    }
+                }
+            };
+            container.appendChild(item);
+        });
     }
 
     // Nút chuyển chế độ mặc định
@@ -335,7 +419,8 @@ export function initFieldsManager() {
             }
         });
         if (checkedCount === 0) {
-            if (confirm("Xóa TOÀN BỘ dữ liệu các trường?")) {
+            if (confirm("Xóa TOÀN BỘ dữ liệu các trường? Hệ thống sẽ tự động SAO LƯU bản hiện tại.")) {
+                createInternalBackup(getBackupName()); // Sao lưu tự động
                 rows.forEach(r => r.remove());
                 showToast("🗑️ Đã xóa toàn bộ", "#ff5252");
                 saveFieldsToLocal();

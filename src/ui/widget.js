@@ -13,10 +13,12 @@ import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS, SK_CALC_MAP } from '..
 import { DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { exportConfig } from '../features/configManager.js';
 import { Storage } from '../utils/storage.js';
-import { exportFullBackup, importFullBackup } from '../utils/backupHelper.js';
+import { exportFullBackup, importFullBackup, getInternalBackups, restoreInternalBackup } from '../utils/backupHelper.js';
 import { startRecording, getHotkeyString } from '../features/hotkeys.js';
 import { SK_HOTKEYS } from '../core/constants.js';
 import { DEFAULT_HOTKEYS } from '../core/defaults.js';
+import { showToast } from './toast.js';
+import { testGeminiConnection } from '../api/gemini.js';
 
 export function initWidget() {
     const widget = document.getElementById('vnpt-docx-widget') || document.createElement('div');
@@ -40,14 +42,19 @@ export function initWidget() {
                 </div>
                 <div class="header-center">
                     <button class="vnpt-btn-action btn-scan-pdf" id="vnpt-btn-scan-pdf" title="Scan file PDF bằng AI để tự động điền">📄 PDF</button>
+                    <button class="vnpt-btn-action btn-scan-raw" id="vnpt-btn-scan-raw" title="Dán text thô để AI tự phân loại">📄 RAW</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">Hiện/Ẩn Mã ID</button>
+                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">ID</button>
                     <input type="file" id="vnpt-pdf-input" accept=".pdf" style="display:none;" />
                 </div>
                 <div class="header-right">
                     <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
                     <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Xóa chọn / Xóa tất cả">🗑</button>
+                    <div class="vnpt-restore-dropdown" style="position: relative; display: flex;">
+                        <button class="vnpt-btn-icon btn-restore" id="vnpt-btn-restore-last" title="Khôi phục bản gần nhất">⏪</button>
+                        <div id="vnpt-backup-history" class="vnpt-backup-history"></div>
+                    </div>
                     
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
@@ -93,17 +100,19 @@ export function initWidget() {
                             <div class="cw-row-map">
                                 <span>Mô hình</span>
                                 <select id="vnpt-gemini-model" class="cw-map-input">
-                                    <optgroup label="Thế hệ 2.0 (Khuyên dùng)">
-                                        <option value="gemini-2.0-flash-001">Gemini 2.0 Flash (Cân bằng)</option>
-                                        <option value="gemini-2.0-flash-lite-preview-02-05">Gemini 2.0 Flash-Lite (Siêu nhanh)</option>
-                                        <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Experimental (Cao cấp nhất)</option>
+                                    <optgroup label="Khuyên dùng (Ổn định & Miễn phí)">
+                                        <option value="gemini-2.5-pro">Gemini 1.5 Flash (Nhanh & Ổn định)</option>
+                                        <option value="gemini-2.5-flash">Gemini 2.0 Flash (Mới nhất)</option>
                                     </optgroup>
-                                    <optgroup label="Thế hệ 1.5 (Ổn định)">
-                                        <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Tốc độ)</option>
-                                        <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Thông minh)</option>
-                                        <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B (Tối ưu số lượng)</option>
+                                    <optgroup label="Cao cấp & Thử nghiệm">
+                                        <option value="gemini-3.1-pro-preview">Gemini 1.5 Pro (Thông minh nhất)</option>
+                                        <option value="gemini-2.5-flash">Gemini 2.0 Flash-Lite</option>
+                                        <option value="gemini-2.5-flash-lite">Gemini 2.0 Pro Exp</option>
                                     </optgroup>
                                 </select>
+                            </div>
+                            <div class="cw-row-map" style="margin-top: 4px; justify-content: flex-end;">
+                                <button class="util-item-small" id="vnpt-btn-test-gemini" style="width: auto; padding: 4px 12px; background: var(--vnpt-primary-light); color: var(--vnpt-primary); border-color: var(--vnpt-primary);">⚡ Kiểm tra kết nối</button>
                             </div>
 
                             <div class="util-separator"></div>
@@ -121,6 +130,13 @@ export function initWidget() {
             <div id="vnpt-inline-calc"></div>
 
             <div id="vnpt-panel-body">
+                <!-- Raw Scan Area (Hidden by default) -->
+                <div id="vnpt-raw-scan-section" class="vnpt-raw-scan-section" style="display: none;">
+                    <textarea id="vnpt-raw-scan-input" placeholder="Dán nội dung văn bản thô vào đây... AI sẽ tự động phân loại thông tin vào bảng."></textarea>
+                    <div class="raw-scan-actions">
+                        <button id="vnpt-btn-raw-process" class="vnpt-btn-confirm">✨ Phân loại dữ liệu</button>
+                    </div>
+                </div>
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
@@ -269,18 +285,45 @@ export function initWidget() {
 
     const geminiKeyInput = document.getElementById('vnpt-gemini-key');
     const geminiModelSelect = document.getElementById('vnpt-gemini-model');
-    
+
     if (geminiKeyInput && geminiModelSelect) {
         import('../core/constants.js').then(({ SK_GEMINI_KEY, SK_GEMINI_MODEL }) => {
             geminiKeyInput.value = Storage.get(SK_GEMINI_KEY) || '';
             geminiModelSelect.value = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.0-flash';
-            
+
             geminiKeyInput.onchange = () => {
                 Storage.set(SK_GEMINI_KEY, geminiKeyInput.value.trim());
             };
             geminiModelSelect.onchange = () => {
                 Storage.set(SK_GEMINI_MODEL, geminiModelSelect.value);
             };
+
+            // Nút kiểm tra kết nối
+            const btnTest = document.getElementById('vnpt-btn-test-gemini');
+            if (btnTest) {
+                btnTest.onclick = async () => {
+                    const key = geminiKeyInput.value.trim();
+                    const model = geminiModelSelect.value;
+
+                    if (!key) {
+                        showToast("⚠️ Vui lòng nhập API Key trước khi thử", "#ffc107");
+                        return;
+                    }
+
+                    btnTest.disabled = true;
+                    btnTest.textContent = "⏳ Đang thử...";
+
+                    try {
+                        await testGeminiConnection(key, model);
+                        showToast("✅ Kết nối tới Gemini thành công!", "#1e8e3e");
+                    } catch (err) {
+                        showToast("❌ Kết nối thất bại: " + err, "#ea4335");
+                    } finally {
+                        btnTest.disabled = false;
+                        btnTest.textContent = "⚡ Kiểm tra kết nối";
+                    }
+                };
+            }
         });
     }
 
@@ -354,7 +397,7 @@ export function initWidget() {
                 <span class="vnpt-hotkey-label">${config.label || action}</span>
                 <button class="vnpt-hotkey-btn" data-action="${action}">${getHotkeyString(config)}</button>
             `;
-            
+
             const btn = row.querySelector('.vnpt-hotkey-btn');
             btn.onclick = (e) => {
                 e.stopPropagation();

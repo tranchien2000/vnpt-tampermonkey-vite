@@ -15,6 +15,7 @@ import { initWebScanner } from './features/webScanner.js';
 import { initDocExport } from './features/docExport.js';
 import { setupAutoFillForm } from './features/autoFillForm.js';
 import { initPdfScan } from './features/pdfScan/index.js';
+import { initRawScan } from './features/rawScan/index.js';
 import { initSyncEngine } from './features/dataFill/syncEngine.js';
 import { initCalcWidget } from './features/calc/index.js';
 import { clearDOMCache, refreshLabelsCache } from './utils/domHelper.js';
@@ -45,6 +46,7 @@ function init() {
     initDocExport();
     setupAutoFillForm();
     initPdfScan();
+    initRawScan();
     
     initSyncEngine();    // Khởi tạo engine đồng bộ gõ phím ngầm
     initHotkeys();       // Khởi tạo phím tắt

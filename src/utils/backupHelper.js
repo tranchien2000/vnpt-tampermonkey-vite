@@ -3,7 +3,7 @@
  * @desc Hỗ trợ xuất/nhập toàn bộ cấu hình dự án ra file JSON.
  */
 import { 
-    LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, 
+    LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_AUTO_BACKUP,
     SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, 
     SK_TAX, SK_CALC_MAP, SK_TEMPLATES 
 } from '../core/constants.js';
@@ -91,4 +91,68 @@ export async function importFullBackup(file) {
         };
         reader.readAsText(file);
     });
+}
+
+/**
+ * Tạo bản sao lưu nội bộ vào localStorage (Lưu 10 bản gần nhất).
+ * @param {string} name - Tên định danh bản sao lưu
+ */
+export function createInternalBackup(name = '') {
+    let backups = Storage.get(LOCAL_KEY_AUTO_BACKUP);
+    if (!Array.isArray(backups)) backups = [];
+    
+    const newEntry = {
+        id: Date.now().toString(),
+        name: name || `Bản sao lưu ${new Date().toLocaleString()}`,
+        timestamp: new Date().toISOString(),
+        data: {
+            fields: Storage.get(LOCAL_KEY_FIELDS),
+            defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS)
+        }
+    };
+
+    // Đưa lên đầu mảng
+    backups.unshift(newEntry);
+    
+    // Giới hạn 10 bản
+    const limitedBackups = backups.slice(0, 10);
+    
+    Storage.set(LOCAL_KEY_AUTO_BACKUP, limitedBackups);
+    console.log(`✅ Field backup created: ${newEntry.name}`);
+}
+
+/**
+ * Lấy danh sách các bản sao lưu nội bộ.
+ * @returns {Array}
+ */
+export function getInternalBackups() {
+    const backups = Storage.get(LOCAL_KEY_AUTO_BACKUP);
+    if (backups && !Array.isArray(backups)) {
+        // Nếu là dữ liệu cũ kiểu object, xóa đi để khởi tạo lại mảng
+        Storage.remove(LOCAL_KEY_AUTO_BACKUP);
+        return [];
+    }
+    return Array.isArray(backups) ? backups : [];
+}
+
+/**
+ * Khôi phục dữ liệu từ một bản sao lưu nội bộ cụ thể.
+ * @param {string} backupId - ID của bản sao lưu cần khôi phục
+ * @returns {boolean}
+ */
+export function restoreInternalBackup(backupId) {
+    const backups = getInternalBackups();
+    const entry = backups.find(b => b.id === backupId);
+    
+    if (!entry || !entry.data) {
+        showToast("⚠️ Không tìm thấy bản sao lưu hợp lệ!", "#ffc107");
+        return false;
+    }
+
+    const data = entry.data;
+    if (data.fields) Storage.set(LOCAL_KEY_FIELDS, data.fields);
+    if (data.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, data.defaultFields);
+
+    showToast(`✅ Đã khôi phục các trường: ${entry.name}`, "#1e8e3e");
+    return true;
 }

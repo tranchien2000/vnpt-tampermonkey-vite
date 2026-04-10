@@ -264,8 +264,34 @@ export function injectStyles() {
         .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
         .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
 
-        .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
-        .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
+        .btn-restore { background: #e8f0fe; color: var(--vnpt-primary); border: 1px solid rgba(26, 115, 232, 0.1); }
+        .vnpt-btn-restore:hover { background: var(--vnpt-primary); color: #fff; border-color: transparent; }
+        
+        /* ═══════════════════════════════════════════
+           SECTION: BACKUP HISTORY DROPDOWN
+           ═══════════════════════════════════════════ */
+        .vnpt-backup-history {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px); border: 1px solid var(--vnpt-border);
+            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 320px; max-height: 400px; overflow-y: auto;
+            display: none; flex-direction: column; z-index: 2147483647;
+            padding: 8px; animation: menuFadeIn 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transform-origin: top right;
+        }
+        .vnpt-backup-history.show { display: flex; }
+        .backup-history-item {
+            padding: 8px 10px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; border-bottom: 1px solid rgba(0,0,0,0.03);
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .backup-history-item:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); }
+        .backup-history-name { font-size: 11.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .backup-history-time { font-size: 9px; opacity: 0.6; }
+        .backup-history-empty { padding: 20px; text-align: center; font-size: 11px; color: #999; font-style: italic; }
         
         .btn-export { 
             background: var(--vnpt-primary-grad); 
@@ -572,6 +598,32 @@ export function injectStyles() {
             color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s;
         }
         .pdf-btn-confirm:hover { background: var(--vnpt-primary-hover); box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3); }
+
+        /* ═══════════════════════════════════════════
+           SECTION 8: RAW SCAN UI
+           ═══════════════════════════════════════════ */
+        .btn-scan-raw { background: rgba(26, 115, 232, 0.08); color: var(--vnpt-primary); border: 1px solid rgba(26, 115, 232, 0.1); }
+        .btn-scan-raw:hover { background: var(--vnpt-primary); color: #fff; border-color: transparent; }
+        .btn-scan-raw.active { background: var(--vnpt-primary); color: #fff; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
+
+        .vnpt-raw-scan-section {
+            padding: 8px; background: rgba(255, 255, 255, 0.4);
+            border-bottom: 1px solid var(--vnpt-border);
+            display: flex; flex-direction: column; gap: 8px;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #vnpt-raw-scan-input {
+            width: 100%; height: 100px; padding: 10px; border-radius: 12px;
+            border: 1px solid #1f5bd2ff; background: rgba(255, 255, 255, 0.8);
+            font-size: 12px; font-family: inherit; resize: vertical; line-height: 1.5;
+            transition: all 0.2s;
+        }
+        #vnpt-raw-scan-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 3px var(--vnpt-primary-light); outline: none; }
+        
+        .raw-scan-actions { display: flex; justify-content: flex-end; }
+        .raw-scan-actions .vnpt-btn-confirm { padding: 6px 16px; font-size: 12px; }
 
     `;
     document.head.appendChild(style);
