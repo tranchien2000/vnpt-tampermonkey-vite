@@ -6,6 +6,6 @@ AI **PHẢI** tuân thủ bộ quy tắc trung tâm tại: [docs/RULES.md](file:
 3. **Execution**: Chỉ code sau khi người dùng gõ "ok", "trien khai" hoặc "y".
 4. **Grep-First**: Dùng `grep_search` cho file > 100 dòng.
 5. **Language**: Toàn bộ phản hồi và code comments là **Tiếng Việt**.
-6. **Manual Slash Commands**: Kiểm tra `.agents/workflows/` để tham chiếu quy trình. Gõ lệnh trực tiếp (ví dụ: `/update-memory`) và nhấn Enter (KHÔNG có menu gợi ý tự động).
+6. **Slash Commands**: Dùng phím `/` để mở menu gợi ý và chọn các workflow từ `.agents/workflows/` (ví dụ: `/update-memory`).
 
 Xem chi tiết tại [RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md) để biết về tiêu chuẩn JSDoc, Error Handling, State Management và Design System (Glassmorphism).

@@ -1,9 +1,5 @@
 # 📜 Quy tắc Dự án VNPT (Global Rules)
 
-> [!IMPORTANT]
-> **Cách sử dụng Workflows:** Để kích hoạt các quy trình tự động, bạn cần gõ **đầy đủ** lệnh trực tiếp vào Chat (ví dụ: `/add-feature`, `/update-memory`) và nhấn Enter. 
-> **Lưu ý:** Hệ thống KHÔNG có menu gợi ý (autocomplete) tự động cho các lệnh này.
-
 Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi AI Agent và con người khi làm việc trên dự án **VNPT Tampermonkey Script**.
 
 ---
