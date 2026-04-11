@@ -82,26 +82,37 @@ function scanFullAddress() {
  * @returns {string} Tên tỉnh/thành phố hoặc rỗng
  */
 function getProvinceName() {
+    let rawVal = '';
     const provinceIds = ['tinhId', 'tinhIdNew'];
     for (const id of provinceIds) {
         const el = findPageInput(id);
         if (el) {
-            let val = '';
             if (el.tagName.toLowerCase() === 'ng-select2') {
                 const span = el.querySelector('.select2-selection__rendered');
-                val = span ? (span.getAttribute('title') || span.textContent.trim()) : '';
+                rawVal = span ? (span.getAttribute('title') || span.textContent.trim()) : '';
             } else {
-                val = el.value || el.getAttribute('title') || '';
+                rawVal = el.value || el.getAttribute('title') || '';
             }
-            if (val && val !== '--- Chọn ---') return val.trim();
+            if (rawVal && rawVal !== '--- Chọn ---') break;
         }
     }
-    // Tìm theo Title (Select2)
-    const s2List = document.querySelectorAll('ng-select2');
-    for (const s2 of s2List) {
-        const span = s2.querySelector('.select2-selection__rendered');
-        const title = (span?.getAttribute('title') || span?.textContent || '').trim();
-        if (title && (title.startsWith('Tỉnh') || title.startsWith('Thành phố'))) return title;
+    
+    if (!rawVal || rawVal === '--- Chọn ---') {
+        // Tìm theo Title (Select2)
+        const s2List = document.querySelectorAll('ng-select2');
+        for (const s2 of s2List) {
+            const span = s2.querySelector('.select2-selection__rendered');
+            const title = (span?.getAttribute('title') || span?.textContent || '').trim();
+            if (title && (title.startsWith('Tỉnh') || title.startsWith('Thành phố'))) {
+                rawVal = title;
+                break;
+            }
+        }
+    }
+
+    if (rawVal) {
+        // Cắt bỏ "Tỉnh " hoặc "Thành phố " theo yêu cầu USER
+        return rawVal.trim().replace(/^(Tỉnh|Thành phố)\s+/i, '');
     }
     return '';
 }
@@ -226,7 +237,39 @@ export function initWebScanner() {
         }
     }
 
+    // Đặc trị cho Tỉnh (Real-time OnChange) vì Select2 đôi khi không bubble event
+    function setupProvinceSync() {
+        const provinceIds = ['tinhId', 'tinhIdNew'];
+        provinceIds.forEach(pId => {
+            const el = document.getElementById(pId);
+            if (el && !el.dataset.widgetSyncBound) {
+                el.dataset.widgetSyncBound = "1";
+                const updateWidgetSkdt = () => {
+                    const province = getProvinceName();
+                    if (province) {
+                        const skdtVal = "SKDT " + province;
+                        const skdtKey = Object.keys(DEFAULT_LABELS).find(k => k.includes('noiCapSoDkdn'));
+                        if (skdtKey) {
+                            addOrUpdateFieldRow(skdtKey, skdtVal, null);
+                            saveFieldsToLocal();
+                        }
+                    }
+                };
+                el.addEventListener('change', updateWidgetSkdt);
+                // Với Select2 (VNPT) cần listener đặc thù qua jQuery nếu có
+                if (typeof $ !== 'undefined') {
+                    $(el).on('select2:select change', updateWidgetSkdt);
+                }
+            }
+        });
+    }
+
     document.addEventListener('input', handleSyncEvent);
     document.addEventListener('change', handleSyncEvent);
     document.addEventListener('keydown', handleSyncEvent);
+
+    // Chạy setupProvinceSync định kỳ hoặc qua MutationObserver để bắt các form load chậm
+    setupProvinceSync();
+    const observer = new MutationObserver(() => setupProvinceSync());
+    observer.observe(document.body, { childList: true, subtree: true });
 }

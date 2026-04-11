@@ -32,6 +32,8 @@ Lưu ý:
 - Chuẩn hóa ngày tháng về dd/MM/yyyy.
 - Chuẩn hóa Số điện thoại (xóa khoảng cách, dấu chấm).
 - Mọi MST/Số GCPKD đều cho vào key "soDkdn".
+- Trường "noiCapSoDkdn": Trả về định dạng "SKDT {Tỉnh}" (ví dụ: "SKDT Hà Nội", "SKDT TP.HCM"). KHÔNG bao gồm chữ "Nơi cấp...".
+- Tuyệt đối KHÔNG bao gồm tên nhãn (Label) vào giá trị trích xuất.
 - Bỏ qua các dữ liệu rác không liên quan.`;
 };
 

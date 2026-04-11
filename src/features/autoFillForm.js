@@ -62,7 +62,9 @@ export function setupAutoFillForm() {
                         val = pEl.value;
                     }
                     if (val && val !== '--- Chọn ---') {
-                        syncSetValue(targetNoiCap, "SKDT " + val);
+                        // Cắt bỏ "Tỉnh " hoặc "Thành phố "
+                        const cleanProvince = val.trim().replace(/^(Tỉnh|Thành phố)\s+/i, '');
+                        syncSetValue(targetNoiCap, "SKDT " + cleanProvince);
                     }
                 };
                 pEl.addEventListener('change', updateSkdt);

@@ -1,8 +1,36 @@
 /**
  * @file localClassifier.js
  * @desc Logic bóc tách dữ liệu từ văn bản thô bằng Regex (không dùng AI).
- *       Tối ưu cho mẫu Giấy đăng ký doanh nghiệp.
+ *       Tối ưu cho mẫu Giấy đăng ký doanh nghiệp và căn cước công dân.
  */
+
+/**
+ * Các hàm helper chuẩn hóa dữ liệu
+ */
+const normalize = {
+    // Viết hoa toàn bộ và trim
+    name: (s) => s ? s.trim().toUpperCase().replace(/\s+/g, ' ') : '',
+    // Làm sạch MST (chỉ giữ số)
+    mst: (s) => s ? s.replace(/[^\d]/g, '').trim() : '',
+    // Chuẩn hóa ngày về dd/MM/yyyy
+    date: (d, m, y) => `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`,
+    // Làm sạch text chung
+    text: (s) => s ? s.trim().replace(/\s+/g, ' ') : ''
+};
+
+/**
+ * Tìm kiếm giá trị dựa trên danh sách các mẫu (Patterns).
+ * @param {string} text 
+ * @param {RegExp[]} patterns 
+ * @returns {string|null}
+ */
+function findFirstMatch(text, patterns) {
+    for (const regex of patterns) {
+        const match = text.match(regex);
+        if (match && match[1]) return match[1].trim();
+    }
+    return null;
+}
 
 /**
  * Phân loại văn bản thô dựa trên các mẫu Regex phổ biến.
@@ -13,70 +41,95 @@ export function classifyTextLocally(text) {
     if (!text) return {};
 
     const results = {};
+    const cleanText = text.replace(/\r/g, ''); // Đồng nhất xuống dòng
 
-    // 1. Tên tổ chức/công ty
-    const companyMatch = text.match(/(?:Tên công ty viết bằng tiếng Việt|Tên tổ chức):?\s*([\s\S]+?)(?=\n|Tên công ty|$)/i);
-    if (companyMatch) results.tenToChuc = companyMatch[1].trim();
+    // 1. Tên tổ chức/công ty (Ưu tiên tiếng Việt -> Tiếng Anh -> Viết tắt)
+    const companyPatterns = [
+        /(?:Tên công ty viết bằng tiếng Việt|Tên tổ chức):?\s*([\s\S]+?)(?=\n|Tên công ty|$)/i,
+        /Tên công ty viết bằng tiếng nước ngoài:?\s*([\s\S]+?)(?=\n|Tên công ty|$)/i,
+        /Tên công ty viết tắt:?\s*([\s\S]+?)(?=\n|Địa chỉ|$)/i
+    ];
+    const companyName = findFirstMatch(cleanText, companyPatterns);
+    if (companyName) results.tenToChuc = normalize.text(companyName);
 
     // 2. Mã số doanh nghiệp / Mã số thuế
-    const mstMatch = text.match(/(?:Mã số doanh nghiệp|Mã số thuế):?\s*(\d{10,13})/i);
-    if (mstMatch) results.soDkdn = mstMatch[1].trim();
+    const mstPatterns = [
+        /(?:Mã số doanh nghiệp|Mã số thuế):?\s*([\d\s.]{10,16})/i,
+        /MST:?\s*([\d\s.]{10,16})/i
+    ];
+    const mstRaw = findFirstMatch(cleanText, mstPatterns);
+    if (mstRaw) results.soDkdn = normalize.mst(mstRaw);
 
     // 3. Người đại diện / Tên đại diện
-    let dirmMatch = text.match(/(?:Họ và tên|Tên đại diện|Người đại diện theo pháp luật):?\s*([\s\S]+?)(?=\n|Chức vụ|Chức danh|Giới tính|Sinh ngày|$)/i);
-    if (dirmMatch) {
-        let name = dirmMatch[1].trim();
-        // Loại bỏ tiền tố nếu bị dính (do nested labels)
-        name = name.replace(/^(?:Họ và tên|Tên đại diện|Người đại diện theo pháp luật):?\s*/i, '');
-        results.tenDaiDienn = name.toUpperCase();
+    const dirmPatterns = [
+        /(?:Họ và tên|Người đại diện theo pháp luật|Tên đại diện|Full name):?\s*([\s\S]+?)(?=\n|Chức danh|Chức vụ|Giới tính|Sinh ngày|Date of birth|$)/i,
+        /Người đại diện:?\s*([\s\S]+?)(?=\n|Chức vụ|$)/i
+    ];
+    let repName = findFirstMatch(cleanText, dirmPatterns);
+    if (repName) {
+        // Loại bỏ nhãn nếu bị bám dính do regex lỏng (đặc biệt cho mẫu song ngữ CCCD)
+        repName = repName.replace(/^(?:Họ và tên|Người đại diện theo pháp luật|Tên đại diện|Full name|[\/\s]*Full name):?\s*/i, '')
+                         .replace(/^\/\s*/, ''); // Xóa dấu gạch chéo dư thừa
+        results.tenDaiDienn = normalize.name(repName);
     }
 
     // 4. Chức danh / Chức vụ
-    const posMatch = text.match(/(?:Chức danh|Chức vụ):?\s*([\s\S]+?)(?=\n|Sinh ngày|$)/i);
-    if (posMatch) results.chucVu = posMatch[1].trim();
+    const posPatterns = [
+        /(?:Chức danh|Chức vụ):?\s*([\s\S]+?)(?=\n|Sinh ngày|Giới tính|Quốc tịch|$)/i
+    ];
+    const pos = findFirstMatch(cleanText, posPatterns);
+    if (pos) results.chucVu = normalize.text(pos);
 
     // 5. Ngày cấp đăng ký kinh doanh
-    const ngayCapDkMatch = text.match(/(?:Đăng ký|Đảng kỷ) lần đầu:?\s*ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i);
+    const ngayCapDkMatch = cleanText.match(/(?:Đăng ký|Đảng kỷ|Cấp ngày|Ngày cấp) (?:lần đầu|thay đổi):?\s*ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i);
     if (ngayCapDkMatch) {
-        results.ngayCapSoDkdnCustomer = `${ngayCapDkMatch[1].padStart(2, '0')}/${ngayCapDkMatch[2].padStart(2, '0')}/${ngayCapDkMatch[3]}`;
+        results.ngayCapSoDkdnCustomer = normalize.date(ngayCapDkMatch[1], ngayCapDkMatch[2], ngayCapDkMatch[3]);
     }
 
     // 6. Số điện thoại
-    const sdtMatch = text.match(/(?:Điện thoại|SĐT):?\s*([\d\s.-]{9,15})/i);
-    if (sdtMatch) results.sdt = sdtMatch[1].replace(/[\s.-]/g, '').trim();
+    const sdtPatterns = [
+        /(?:Điện thoại|SĐT|Tel):?\s*([\d\s.-]{9,15})/i
+    ];
+    const sdt = findFirstMatch(cleanText, sdtPatterns);
+    if (sdt) results.sdt = sdt.replace(/[\s.-]/g, '').trim();
 
     // 7. Email
-    const emailMatch = text.match(/(?:Thư điện tử|Email):?\s*([^\s\n]+)/i);
-    if (emailMatch) {
-        results.emailDaiDien = emailMatch[1].replace(/\(a\)/g, '@').trim();
+    const emailPatterns = [
+        /(?:Thư điện tử|Email):?\s*([^\s\n]+)/i
+    ];
+    const email = findFirstMatch(cleanText, emailPatterns);
+    if (email) results.emailDaiDien = email.replace(/\(a\)/g, '@').trim();
+
+    // 8. CMND / CCCD / Hộ chiếu
+    const cccdPatterns = [
+        /(?:Số định danh cá nhân|Số CMND|Số CCCD|Số Hộ chiếu|Số \/ No\.):?\s*(\d[\d\s]{8,13})/i,
+        /(?:CMND|CCCD) số:?\s*(\d[\d\s]{8,13})/i
+    ];
+    const cccdRaw = findFirstMatch(cleanText, cccdPatterns);
+    if (cccdRaw) results.cmnd = normalize.mst(cccdRaw); 
+
+    // 9. Nơi cấp (Ưu tiên nơi cấp CCCD)
+    const noiCapPatterns = [
+        /Nơi cấp:?\s*([\s\S]+?)(?=\n|Ngày cấp|$)/i,
+        /Cục trưởng Cục Cảnh sát ([\s\S]+?)(?=\n|$)/i
+    ];
+    const noiCap = findFirstMatch(cleanText, noiCapPatterns);
+    if (noiCap) results.noiCap = normalize.text(noiCap);
+
+    // 10. Ngày cấp CMND/CCCD
+    const ngayCapMatch = cleanText.match(/Ngày cấp:?\s*(\d{1,2})[\/\-. ](\d{1,2})[\/\-. ](\d{4})/i);
+    if (ngayCapMatch) {
+        results.ngayCapCustomer = normalize.date(ngayCapMatch[1], ngayCapMatch[2], ngayCapMatch[3]);
     }
 
-    // 8. Địa chỉ (Trụ sở hoặc Liên lạc)
-    const addressMatch = text.match(/(?:Địa chỉ trụ sở chính|Địa chỉ liên lạc|Nơi thường trú|Nơi ở hiện nay):?\s*([\s\S]+?)(?=\n|Điện thoại|Thư điện tử|Mã số thuế|$)/i);
-    if (addressMatch) results.diaChi = addressMatch[1].trim().replace(/\s+/g, ' ');
-
-    // 9. CMND / CCCD / Hộ chiếu
-    const cccdMatch = text.match(/(?:Số định danh cá nhân|Số CMND|Số CCCD|Số Hộ chiếu):?\s*(\d{9,12})/i);
-    if (cccdMatch) results.cmnd = cccdMatch[1].trim(); 
-
-    // 10. Nơi cấp
-    const noiCapMatch = text.match(/(?:Nơi cấp):?\s*([\s\S]+?)(?=\n|$)/i);
-    if (noiCapMatch) results.noiCap = noiCapMatch[1].trim();
-
-    // 11. Ngày cấp CMND/CCCD
-    const ngayCapCccdMatch = text.match(/(?:Ngày cấp):?\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i);
-    if (ngayCapCccdMatch) {
-        results.ngayCapCustomer = `${ngayCapCccdMatch[1].padStart(2, '0')}/${ngayCapCccdMatch[2].padStart(2, '0')}/${ngayCapCccdMatch[3]}`;
-    }
-
-    // 12. Ngày sinh
-    const dobMatch = text.match(/(?:Ngày, tháng, năm sinh|Sinh ngày):?\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i);
+    // 11. Ngày sinh
+    const dobMatch = cleanText.match(/(?:Ngày, tháng, năm sinh|Sinh ngày|Ngày sinh):?\s*ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i);
     if (dobMatch) {
-        results.ngaySinhCustomer = `${dobMatch[1].padStart(2, '0')}/${dobMatch[2].padStart(2, '0')}/${dobMatch[3]}`;
+        results.ngaySinhCustomer = normalize.date(dobMatch[1], dobMatch[2], dobMatch[3]);
     } else {
-        const dobVnMatch = text.match(/(?:Ngày, tháng, năm sinh|Sinh ngày):?\s*ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i);
-        if (dobVnMatch) {
-            results.ngaySinhCustomer = `${dobVnMatch[1].padStart(2, '0')}/${dobVnMatch[2].padStart(2, '0')}/${dobVnMatch[3]}`;
+        const dobSimpleMatch = cleanText.match(/(?:Ngày sinh|Sinh ngày):?\s*(\d{1,2})[\/\-. ](\d{1,2})[\/\-. ](\d{4})/i);
+        if (dobSimpleMatch) {
+            results.ngaySinhCustomer = normalize.date(dobSimpleMatch[1], dobSimpleMatch[2], dobSimpleMatch[3]);
         }
     }
 

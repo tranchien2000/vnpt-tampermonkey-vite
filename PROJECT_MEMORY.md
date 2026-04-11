@@ -11,9 +11,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Kiểm tra tính nhất quán của hệ thống Rules/Workflow với người dùng.
 - [x] Triển khai tính năng Phân loại dữ liệu Local (Raw Scan).
 - [x] Xây dựng công cụ Selector Inspector (Bắt selector bằng click).
-- [x] Tích hợp API tra cứu MST doanh nghiệp.
-- [x] Tối ưu hóa hiệu suất quét DOM (O(N+M)).
-- [x] Hoàn thiện logic nút 🗑 (Dọn giá trị / Xóa hàng).
+- [x] Tích hợp API tra cứu MST doanh nghiệp (Xinvoice).
+- [x] Tự động hóa trường Nơi cấp ĐKDN theo Tỉnh (`SKDT {Tỉnh}`).
 
 
 ## 2. Nhật ký Quyết định (Decision Log)
@@ -35,6 +34,8 @@ dẫn vào `RULES.md`.
 - **2026-04-10 (Selector Inspector)**: Triển khai công cụ soi trường web giúp người dùng tự lấy selector mà không cần mở DevTools.
 - **2026-04-10 (MST API Integration)**: Kết hợp tra cứu MST vào bảng fieldsManager để tự động điền thông tin doanh nghiệp.
 - **2026-04-10 (UI/UX Refinement)**: Nâng cấp nút 🗑 thành Dual-mode (Clean All/JSON Backup/Delete Row).
+- **2026-04-11 (XInvoice API)**: Tích hợp API XInvoice để tra cứu MST chính xác hơn, thay thế cơ chế cũ. Cấu hình headers `client-id` và `api-key`.
+- **2026-04-11 (SKDT Automation)**: Triển khai logic tự động cập nhật trường "Nơi cấp ĐKDN" thành "SKDT {Tỉnh}" khi người dùng chọn Tỉnh/Thành phố.
 
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
