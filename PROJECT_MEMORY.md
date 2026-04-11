@@ -24,6 +24,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Thư viện mẫu dùng chung (Shared Cloud Templates).
 - [x] Hệ thống Selectors từ Cloud (Remote UI Patches).
 - [x] Phân quyền Workspace (Workspace ID).
+- [ ] Triển khai Cloud Integration Phase 3 (Real-time Collaboration & Backup Auto-sync).
 - [ ] Phân nhóm Fields (Đã gỡ bỏ theo yêu cầu người dùng).
 
 
@@ -60,6 +61,8 @@ dẫn vào `RULES.md`.
 - **2026-04-11 (Cloud Migration - Firebase)**: Chuyển đổi toàn bộ hạ tầng Cloud dự kiến từ Supabase sang Firebase theo yêu cầu người dùng. Triển khai Firebase Auth, Firestore Sync cho Profiles và mã hóa API Keys.
 - **2026-04-11 (Calc Mapping UI Enhancement)**: Tích hợp hiển thị và chỉnh sửa trực tiếp 4 biến "Mapping Calc" vào khu vực banner khi ở chế độ "Dữ liệu mặc định VNPT", giúp tập trung toàn bộ cấu hình hệ thống vào một chỗ.
 - **2026-04-11 (Process Optimization)**: Lược bỏ bước `npm run build` khỏi tất cả các quy trình Markdown (.agents/workflows/) để tối ưu hóa tốc độ phát triển. AI sẽ chỉ build khi thực sự cần thiết hoặc người dùng yêu cầu.
+- **2026-04-11 (Shared Template Library)**: Hoàn thành Phase 2 Cloud Integration. Refactor `TemplateManager` hỗ trợ giao diện Tab (Local vs Cloud). Tích hợp logic lọc mẫu theo `workspace_id`.
+- **2026-04-11 (Remote Config & Selectors)**: Triển khai `RemoteConfig` module để lấy selectors động từ Firebase, giúp fix lỗi UI trang đích mà không cần cập nhật mã nguồn Extension.
 
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
@@ -75,7 +78,7 @@ dẫn vào `RULES.md`.
 - **Export DOCX**: Hoạt động ổn định.
 - **Calc Widget**: Hoạt động ổn định, tích hợp sâu vào giao diện nhúng.
 - **Sync Engine**: Hoạt động ổn định, hỗ trợ Sync thủ công (🔄) và tự động build DOM map trước khi điền.
-- **Cloud Sync**: Đã triển khai Giai đoạn 1 & 2 (Firebase). Hỗ trợ đồng bộ Profiles, API Keys, Thư viện mẫu dùng chung và Selectors từ xa.
+- **Cloud Sync**: Hoạt động ổn định (Phòng làm việc Firebase). Hỗ trợ đồng bộ Profiles, API Keys, Thư viện mẫu dùng chung, Config tổng quát và Selectors từ xa.
 - **Default Data Mode**: Hoàn thiện giao diện cấu hình tập trung, bao gồm cả biến dữ liệu và Mapping Calc.
 
 ---
