@@ -12,8 +12,9 @@ import { AppState } from '../core/state.js';
 import { SK_POS_CALC, SK_TAX, SK_HIST_B, SK_HIST_A, SK_COLLAPSE, SK_CALC_MAP } from '../core/constants.js';
 import { makeDraggable } from '../ui/dragDrop.js';
 import { formatNum, parseNum, numToVN, capFirst } from '../utils/numberHelper.js';
-import { setPageField } from '../utils/domHelper.js';
+import { setPageField, buildFullDOMMap } from '../utils/domHelper.js';
 import { renderDataFillTabs } from './dataFillFeature.js'; // We will import rendering for the bottom half
+import { DEFAULT_CALC_MAP } from '../core/defaults.js';
 
 import { Storage } from '../utils/storage.js';
 
@@ -194,7 +195,7 @@ export function initCalcWidget() {
 
     const mapBtn = document.getElementById('wg-calc-map-btn');
     const mapWrap = document.getElementById('wg-calc-map-wrap');
-    let calcMaps = Storage.get(SK_CALC_MAP) ?? {};
+    let calcMaps = Storage.get(SK_CALC_MAP) ?? { ...DEFAULT_CALC_MAP };
 
     mapBtn.onclick = (e) => {
         // Toggle Map popup
@@ -228,6 +229,16 @@ export function initCalcWidget() {
     function calcUpdate(before, tax, after) {
         const txt = capFirst(numToVN(after)) + ' đồng';
         textEl.value = txt;
+
+        // Lazy build DOM map nếu calcMap có cấu hình nhưng map chưa được khởi tạo
+        const hasMappings = (calcMaps.before || []).length > 0
+            || (calcMaps.tax || []).length > 0
+            || (calcMaps.after || []).length > 0
+            || (calcMaps.text || []).length > 0;
+
+        if (hasMappings) {
+            buildFullDOMMap();
+        }
 
         (calcMaps.before || []).forEach(n => setPageField(n, formatNum(before)));
         (calcMaps.tax || []).forEach(n => setPageField(n, formatNum(tax)));

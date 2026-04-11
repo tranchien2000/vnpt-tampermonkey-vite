@@ -16,7 +16,7 @@
  * @param {string} options.fileData.base64 - Chuỗi base64 của file
  * @returns {Promise<Object>} JSON response từ AI
  */
-export async function callGemini({ apiKey, model, systemInstruction, userText, fileData }) {
+export async function callGemini({ apiKey, model, systemInstruction, userText, fileData, filesData }) {
     return new Promise((resolve, reject) => {
         if (!apiKey) return reject("Vui lòng nhập API Key Gemini trong Cài đặt.");
 
@@ -38,12 +38,26 @@ export async function callGemini({ apiKey, model, systemInstruction, userText, f
             }
         };
 
-        // Nếu có file data (multimodal)
+        // Nếu có file data (multimodal cũ)
         if (fileData && fileData.base64) {
             requestData.contents[0].parts.push({
                 inline_data: {
                     mime_type: fileData.mimeType,
                     data: fileData.base64
+                }
+            });
+        }
+
+        // Hàng đợi nhiều hình ảnh / file (multimodal multi-parts)
+        if (filesData && Array.isArray(filesData)) {
+            filesData.forEach(file => {
+                if (file.base64) {
+                    requestData.contents[0].parts.push({
+                        inline_data: {
+                            mime_type: file.mimeType,
+                            data: file.base64
+                        }
+                    });
                 }
             });
         }

@@ -57,4 +57,11 @@ export const SK_TXT_TEMPLATE = 'vnpt_txt_template'; // string — nội dung tex
 export const SK_GEMINI_KEY = 'vnpt_gemini_api_key'; // string — Google Gemini API Key
 export const SK_GEMINI_MODEL = 'vnpt_gemini_model'; // string — Model name (flash 1.5, pro, flash 2.0)
 export const SK_HOTKEYS = 'vnpt_hotkeys';           // object — mapping action -> keyConfig
-//
+export const LOCAL_KEY_PROFILES = 'vnpt_docx_profiles';
+export const LOCAL_KEY_ACTIVE_PROFILE_ID = 'vnpt_docx_active_profile_id';
+
+export const VALIDATION_REGEX = {
+    MST: /^\d{10}(-\d{3})?$/, // 10 số hoặc 10 số - 3 số
+    PHONE: /^(0|\+84)[3|5|7|8|9]\d{8}$/, // Định dạng SĐT Việt Nam
+    EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+};

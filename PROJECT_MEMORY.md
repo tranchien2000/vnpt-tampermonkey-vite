@@ -15,12 +15,24 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Tự động hóa trường Nơi cấp ĐKDN theo Tỉnh (`SKDT {Tỉnh}`).
 
 
+- [x] Chế độ Xem trước OCR (Side-by-Side Review).
+- [x] Quản lý Profile Side B (Đã gỡ bỏ theo yêu cầu người dùng).
+- [x] Hệ thống Validation & Error Highlighting.
+- [x] Mở rộng Multi-Source Scan (Ảnh/PDF) & Tối ưu hóa AI Prompt (Snippet).
+- [x] Tái cấu trúc UI AI Mode (Hàng đợi File, Glow Animation, Multi-Media).
+- [x] Triển khai Cloud Integration Phase 2 (Team Collaboration).
+- [x] Thư viện mẫu dùng chung (Shared Cloud Templates).
+- [x] Hệ thống Selectors từ Cloud (Remote UI Patches).
+- [x] Phân quyền Workspace (Workspace ID).
+- [ ] Phân nhóm Fields (Đã gỡ bỏ theo yêu cầu người dùng).
+
+
 ## 2. Nhật ký Quyết định (Decision Log)
 
 - **2026-04-07 (Glassmorphism UI)**: Thay thế hoàn toàn giao diện cũ sang phong cách mờ đục (blur) với màu Indigo/Slate để tăng tính sang trọng.
 - **2026-04-07 (Storage Abstraction)**: Di chuyển toàn bộ logic `localStorage` vào `src/api/storage/` để quản lý tập trung và tránh xung đột dữ liệu.
 - **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn.
-- **2026-04-09 (Rules & Workflow Alignment)**: Giải thích cơ chế Slash Commands cho người dùng (không có menu tự động) v*Ngày cập nhật: 22:45:00 10/4/2026*
+- **2026-04-09 (Rules & Workflow Alignment)**: Giải thích cơ chế Slash Commands cho người dùng (không có menu tự động) v*Ngày cập nhật: 16:45:00 11/4/2026*
 
 > [!NOTE]
 > Để có cái nhìn chi tiết và đầy đủ nhất về toàn bộ logic dự án cho NotebookLM, hãy tham khảo file:
@@ -36,6 +48,18 @@ dẫn vào `RULES.md`.
 - **2026-04-10 (UI/UX Refinement)**: Nâng cấp nút 🗑 thành Dual-mode (Clean All/JSON Backup/Delete Row).
 - **2026-04-11 (XInvoice API)**: Tích hợp API XInvoice để tra cứu MST chính xác hơn, thay thế cơ chế cũ. Cấu hình headers `client-id` và `api-key`.
 - **2026-04-11 (SKDT Automation)**: Triển khai logic tự động cập nhật trường "Nơi cấp ĐKDN" thành "SKDT {Tỉnh}" khi người dùng chọn Tỉnh/Thành phố.
+- **2026-04-11 (Premium Upgrade Plan)**: Đề xuất 4 tính năng nâng cao (Grouping, OCR Review, Profiles, Validation) để chuyên nghiệp hóa công cụ.
+- **2026-04-11 (Premium Implementation)**: Hoàn thành triển khai toàn bộ 4 tính năng Premium. Cấu trúc lại giao diện sang hệ thống Tab và Modal đối soát AI.
+- **2026-04-11 (Grouping Revert)**: Gỡ bỏ tính năng Phân nhóm (Tabs) theo yêu cầu người dùng để quay lại danh sách phẳng.
+- **2026-04-11 (PDF Scan UI Enhancement)**: Nâng cấp Modal đối soát PDF để luôn hiển thị đầy đủ các trường thông dụng (REQUIRED_KEYS) với nhãn Tiếng Việt, hỗ trợ nhập liệu thủ công khi AI bỏ sót.
+- **2026-04-11 (Multi-Source Scan & Clipboard)**: Mở rộng khả năng quét AI cho cả định dạng Hình ảnh (.jpg, .png) và hỗ trợ thao tác Dán trực tiếp từ Clipboard (Ctrl+V), giúp tối ưu hóa quy trình làm việc từ ảnh chụp màn hình.
+- **2026-04-11 (AI Model Upgrade & Prompt Optimization)**: Cập nhật danh sách Model AI chuẩn (Flash 2.0, Flash-Lite) và tối ưu hóa System Prompt để tăng tốc độ xử lý cho tài liệu nhiều trang, đảm bảo cân bằng giữa hiệu suất và độ chính xác.
+- **2026-04-11 (AI Scanner UI Restructure)**: Tái cấu trúc lại luồng giao diện AI Mode. Gộp tính năng quét PDF/Ảnh và phân loại văn bản thô (Raw) vào một bảng điều khiển duy nhất. Hỗ trợ hiển thị "Hàng đợi tệp" (Queue) và hiệu ứng quét (Glow Animation) trực quan. Cập nhật Gemini API hỗ trợ truyền mảng file (Multimodal with array base64).
+- **2026-04-11 (Calc Sync Fix)**: Sửa lỗi Sync không hoạt động bằng cách bổ sung nút kích hoạt thủ công (🔄), gán sự kiện onclick bị thiếu, và tích hợp tự động gọi buildFullDOMMap trước khi điền dữ liệu.
+- **2026-04-11 (Dual-Action Restore)**: Nâng cấp nút Restore Last (⏪) hỗ trợ Click trái (Khôi phục ngay bản gần nhất) và Click phải (Mở menu lịch sử) để tối ưu hóa trải nghiệm người dùng.
+- **2026-04-11 (Cloud Migration - Firebase)**: Chuyển đổi toàn bộ hạ tầng Cloud dự kiến từ Supabase sang Firebase theo yêu cầu người dùng. Triển khai Firebase Auth, Firestore Sync cho Profiles và mã hóa API Keys.
+- **2026-04-11 (Calc Mapping UI Enhancement)**: Tích hợp hiển thị và chỉnh sửa trực tiếp 4 biến "Mapping Calc" vào khu vực banner khi ở chế độ "Dữ liệu mặc định VNPT", giúp tập trung toàn bộ cấu hình hệ thống vào một chỗ.
+- **2026-04-11 (Process Optimization)**: Lược bỏ bước `npm run build` khỏi tất cả các quy trình Markdown (.agents/workflows/) để tối ưu hóa tốc độ phát triển. AI sẽ chỉ build khi thực sự cần thiết hoặc người dùng yêu cầu.
 
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
@@ -43,12 +67,16 @@ dẫn vào `RULES.md`.
 - **VNPT Selectors**: Các input trên trang VNPT thường không có ID cố định. Luôn ưu tiên dùng `placeholder` hoặc `label` text qua `webScanner.js`.
 - **Z-Index Layering**: Widget cần có `z-index: 99999`.
 - **MutationObserver Performance**: Chỉ quan sát các node cụ thể để tránh lag trang.
+- **File Read Error**: tool `view_file` có thể lỗi "unsupported mime type" với file `.md` trong `graphify-out`. Khắc phục: Dùng lệnh `type` của CMD/PowerShell.
+- **Calc Sync vs DOM Map**: Tính năng Sync của Calculator phụ thuộc vào FullDOMMap. Nếu Map chưa được build (do chưa Quét dữ liệu), Sync sẽ không tìm thấy các trường trên web. Đã khắc phục bằng cách gọi buildFullDOMMap() bên trong logic Sync.
 
 ## 4. Trạng thái các tính năng (Status Map)
 
 - **Export DOCX**: Hoạt động ổn định.
-- **Calc Widget**: Đã hợp nhất vào settings.
-- **Sync Engine**: Hỗ trợ lắng nghe sự kiện `input` thời gian thực.
+- **Calc Widget**: Hoạt động ổn định, tích hợp sâu vào giao diện nhúng.
+- **Sync Engine**: Hoạt động ổn định, hỗ trợ Sync thủ công (🔄) và tự động build DOM map trước khi điền.
+- **Cloud Sync**: Đã triển khai Giai đoạn 1 & 2 (Firebase). Hỗ trợ đồng bộ Profiles, API Keys, Thư viện mẫu dùng chung và Selectors từ xa.
+- **Default Data Mode**: Hoàn thiện giao diện cấu hình tập trung, bao gồm cả biến dữ liệu và Mapping Calc.
 
 ---
 

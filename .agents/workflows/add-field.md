@@ -17,4 +17,4 @@ description: Cách thêm một trường dữ liệu (field) mới vào toàn b�
    [webScanner.js](file:///c:/Users/Chien/vnpt-tampermonkey-vite/src/features/webScanner.js) sẽ tự động nhận diện field này từ `DEFAULT_LABELS`, nhưng nếu cần logic lấy giá trị đặc biệt (ví dụ từ `select` hoặc `span`), hãy cập nhật hàm `initWebScanner`.
 
 4. **Verify**:
-   Chạy `npm run build` và kiểm tra nút "Quét" trên widget.
+   Kiểm tra nút "Quét" trên widget để xác nhận trường mới đã được nhận diện.

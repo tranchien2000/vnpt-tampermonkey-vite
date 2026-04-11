@@ -20,6 +20,7 @@ import { DEFAULT_HOTKEYS } from '../core/defaults.js';
 import { showToast } from './toast.js';
 import { testGeminiConnection } from '../api/gemini.js';
 import { toggleInspector } from '../features/selectorInspector.js';
+import { initCloudSyncUI } from './components/CloudSyncUI.js';
 
 
 export function initWidget() {
@@ -43,12 +44,11 @@ export function initWidget() {
                     <span id="vnpt-panel-title">VNPT PRO</span>
                 </div>
                 <div class="header-center">
-                    <button class="vnpt-btn-action btn-scan-pdf" id="vnpt-btn-scan-pdf" title="Scan file PDF bằng AI để tự động điền">📄 PDF</button>
-                    <button class="vnpt-btn-action btn-scan-raw" id="vnpt-btn-scan-raw" title="Dán text thô để AI tự phân loại">📄 RAW</button>
+                    <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">✨ AI Scanner</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">ID</button>
-                    <input type="file" id="vnpt-pdf-input" accept=".pdf" style="display:none;" />
+                    <input type="file" id="vnpt-pdf-input" accept=".pdf,image/*" style="display:none;" />
                 </div>
                 <div class="header-right">
                     <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
@@ -68,7 +68,6 @@ export function initWidget() {
                                     <div class="util-submenu-title">Cấu hình hệ thống</div>
                                     <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
                                     <button class="util-item danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">🧹 Dọn dẹp & Reset hệ thống</button>
-
 
                                     <div class="util-separator"></div>
                                     <div class="util-submenu-title">Dữ liệu hệ thống</div>
@@ -94,7 +93,10 @@ export function initWidget() {
                                     </div>
                                 </div>
                             </div>
-                            
+                                                        
+                            <div class="util-separator"></div>
+                            <div id="vnpt-cloud-sync-container"></div>
+
                             <div class="util-separator"></div>
                             <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>
                             <div class="cw-row-map">
@@ -104,14 +106,14 @@ export function initWidget() {
                             <div class="cw-row-map">
                                 <span>Mô hình</span>
                                 <select id="vnpt-gemini-model" class="cw-map-input">
-                                    <optgroup label="Khuyên dùng (Ổn định & Miễn phí)">
-                                        <option value="gemini-2.5-pro">Gemini 1.5 Flash (Nhanh & Ổn định)</option>
-                                        <option value="gemini-2.5-flash">Gemini 2.0 Flash (Mới nhất)</option>
+                                    <optgroup label="Thế hệ 2.5 (Ổn định nhất)">
+                                        <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Cân bằng / Khuyên dùng)</option>
+                                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (Suy luận sâu / Thông minh)</option>
+                                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (Tốc độ cao / Tiết kiệm)</option>
                                     </optgroup>
-                                    <optgroup label="Cao cấp & Thử nghiệm">
-                                        <option value="gemini-3.1-pro-preview">Gemini 1.5 Pro (Thông minh nhất)</option>
-                                        <option value="gemini-2.5-flash">Gemini 2.0 Flash-Lite</option>
-                                        <option value="gemini-2.5-flash-lite">Gemini 2.0 Pro Exp</option>
+                                    <optgroup label="Thế hệ 3.1 (Thử nghiệm)">
+                                        <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview (Mới nhất)</option>
+                                        <option value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash-Lite Preview</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -134,12 +136,29 @@ export function initWidget() {
             <div id="vnpt-inline-calc"></div>
 
             <div id="vnpt-panel-body">
-                <!-- Raw Scan Area (Hidden by default) -->
-                <div id="vnpt-raw-scan-section" class="vnpt-raw-scan-section" style="display: none;">
-                    <textarea id="vnpt-raw-scan-input" placeholder="Dán nội dung văn bản thô vào đây... AI sẽ tự động phân loại thông tin vào bảng."></textarea>
+                <!-- AI Scanner Section (Hidden by default) -->
+                <div id="vnpt-ai-scanner-section" class="vnpt-ai-scanner-section" style="display: none;">
+                    <div class="ai-scanner-header" style="margin-bottom: -2px;">
+                        <span class="ai-title">🤖 Khu vực tải tệp & Nhập văn bản:</span>
+                    </div>
+                    
+                    <div class="ai-scan-row">
+                        <div class="ai-queue-container" id="vnpt-ai-queue-container" title="Bấm để chọn file hoặc dán (Ctrl+V) file/ảnh vào đây">
+                            <div class="ai-queue-placeholder" id="vnpt-ai-queue-placeholder">
+                                <span>📁</span>
+                                <span>Kéo thả / Ctrl+V</span>
+                            </div>
+                            <div class="ai-queue-list" id="vnpt-ai-queue-list"></div>
+                        </div>
+
+                        <textarea id="vnpt-raw-scan-input" placeholder="Nội dung file sau khi quét sẽ xuất hiện ở đây để bạn kiểm tra, HOẶC bạn có thể dán trực tiếp Text vào đây để phân loại..."></textarea>
+                    </div>
+                    
                     <div class="raw-scan-actions">
-                        <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh không dùng AI (Regex)">⚡ Phân loại (Local)</button>
-                        <button id="vnpt-btn-raw-process" class="vnpt-btn-confirm">✨ Phân loại (AI)</button>
+                        <button class="vnpt-btn-icon" id="vnpt-btn-show-pdf" title="Xem lại Kết quả cũ">📝</button>
+                        <button class="vnpt-btn-icon" id="vnpt-btn-clear-queue" title="Xóa hàng đợi & nội dung">🗑️</button>
+                        <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex">⚡ QR Text</button>
+                        <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process">✨ QUÉT AI MỚI</button>
                     </div>
                 </div>
 
@@ -291,10 +310,14 @@ export function initWidget() {
     const geminiKeyInput = document.getElementById('vnpt-gemini-key');
     const geminiModelSelect = document.getElementById('vnpt-gemini-model');
 
+
     if (geminiKeyInput && geminiModelSelect) {
         import('../core/constants.js').then(({ SK_GEMINI_KEY, SK_GEMINI_MODEL }) => {
             geminiKeyInput.value = Storage.get(SK_GEMINI_KEY) || '';
-            geminiModelSelect.value = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.0-flash';
+            const savedModel = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.5-flash';
+            // Cập nhật giá trị hiển thị để khớp với bộ nhớ mới
+            let isModelExist = Array.from(geminiModelSelect.options).some(opt => opt.value === savedModel);
+            geminiModelSelect.value = isModelExist ? savedModel : 'gemini-2.5-flash';
 
             geminiKeyInput.onchange = () => {
                 Storage.set(SK_GEMINI_KEY, geminiKeyInput.value.trim());
@@ -507,10 +530,16 @@ export function initWidget() {
     const btnInspect = document.getElementById('vnpt-btn-inspect');
     if (btnInspect) {
         btnInspect.onclick = () => toggleInspector();
-        
+
         // Cập nhật trạng thái nút bấm khi state thay đổi
         AppState.on('isInspecting', (val) => {
             btnInspect.classList.toggle('active', val);
         });
+    }
+
+    // --- Cloud Sync UI ---
+    const cloudContainer = document.getElementById('vnpt-cloud-sync-container');
+    if (cloudContainer) {
+        initCloudSyncUI(cloudContainer);
     }
 }
