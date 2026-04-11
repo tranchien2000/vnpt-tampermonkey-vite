@@ -19,8 +19,8 @@ import { Storage } from '../utils/storage.js';
 import { FirebaseService } from '../api/firebaseService.js';
 
 export function loadTemplates() {
-    try { 
-        const list = Storage.get(SK_TEMPLATES) || []; 
+    try {
+        const list = Storage.get(SK_TEMPLATES) || [];
         // Remove old 'local' only items that don't have base64 (to prevent the blocking alert)
         const validList = list.filter(t => t.type !== 'local');
         if (validList.length !== list.length) saveTemplates(validList);
@@ -82,14 +82,14 @@ export async function saveLocalTemplate(file, container, onSelectTemplate) {
         const arrayBuffer = await file.arrayBuffer();
         await idbSave(name.trim(), arrayBuffer);
         const list = loadTemplates();
-        
+
         // Xoá trùng tên
         const filtered = list.filter(t => t.name !== name.trim() && t.fileName !== file.name);
         filtered.unshift({ name: name.trim(), type: 'local_idb', fileName: file.name, lastUsed: Date.now() });
         saveTemplates(filtered);
-        
+
         renderTemplateManager(container, onSelectTemplate);
-        
+
         // Auto Select sau khi thêm:
         if (onSelectTemplate) onSelectTemplate(arrayBuffer, name.trim());
     } catch (err) {
@@ -108,11 +108,11 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         container.innerHTML = '';
         mainWrap = document.createElement('div');
         mainWrap.className = 'vnpt-template-manager-inner';
-        
+
         // ── Tabs ──
         const tabContainer = document.createElement('div');
         tabContainer.className = 'vnpt-tabs';
-        
+
         const btnLocal = document.createElement('button');
         btnLocal.className = `vnpt-tab-btn ${currentTab === 'local' ? 'active' : ''}`;
         btnLocal.textContent = 'Cá nhân';
@@ -140,7 +140,7 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         const title = document.createElement('span');
         title.className = 'vnpt-title-main';
         title.style.cssText = 'font-size:11px;font-weight:700;color:#444;';
-        
+
         btnWrap = document.createElement('div');
         btnWrap.className = 'vnpt-btn-wrap';
         btnWrap.style.cssText = 'display:flex;gap:4px;';
@@ -153,7 +153,7 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         localListWrapper.className = 'vnpt-local-list-container';
         localListWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
         mainWrap.appendChild(localListWrapper);
-        
+
         cloudListWrapper = document.createElement('div');
         cloudListWrapper.className = 'vnpt-cloud-list-container';
         cloudListWrapper.style.cssText = 'display:none;flex-direction:column;gap:4px;';
@@ -164,14 +164,14 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         localListWrapper = mainWrap.querySelector('.vnpt-local-list-container');
         cloudListWrapper = mainWrap.querySelector('.vnpt-cloud-list-container');
         btnWrap = mainWrap.querySelector('.vnpt-btn-wrap');
-        
+
         const tabs = mainWrap.querySelectorAll('.vnpt-tab-btn');
         tabs[0].className = `vnpt-tab-btn ${currentTab === 'local' ? 'active' : ''}`;
         tabs[1].className = `vnpt-tab-btn ${currentTab === 'cloud' ? 'active' : ''}`;
     }
 
     const titleEl = mainWrap.querySelector('.vnpt-title-main');
-    
+
     if (currentTab === 'local') {
         localListWrapper.style.display = 'flex';
         cloudListWrapper.style.display = 'none';
@@ -195,7 +195,7 @@ function renderLocalTemplates(wrapper, titleEl, onSelectTemplate, currentActiveN
         return;
     }
     wrapper.innerHTML = '';
-    
+
     templates.forEach((tpl, idx) => {
         const row = createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, container);
         wrapper.appendChild(row);
@@ -218,7 +218,7 @@ function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, contai
 
     const badgeText = (tpl.type === 'local' || tpl.type === 'local_base64' || tpl.type === 'local_idb') ? 'OFF' : 'ON';
     const badgeColor = badgeText === 'OFF' ? '#6c757d' : '#28a745';
-    
+
     const badge = document.createElement('span');
     badge.textContent = badgeText;
     badge.style.cssText = `font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:${badgeColor};color:#fff;`;
@@ -226,7 +226,7 @@ function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, contai
     const nameEl = document.createElement('span');
     nameEl.textContent = tpl.name;
     nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#212529;white-space:nowrap;';
-    
+
     row.onclick = () => {
         row.focus();
         selectTemplate(tpl, onSelectTemplate, currentActiveName, container);
@@ -267,7 +267,7 @@ function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, contai
                     const item = list[itemIdx];
                     list.splice(itemIdx, 1);
                     saveTemplates(list);
-                    if (item.type === 'local_idb') await idbDelete(item.name).catch(()=>null);
+                    if (item.type === 'local_idb') await idbDelete(item.name).catch(() => null);
                     renderTemplateManager(container, onSelectTemplate, currentActiveName === item.name ? null : currentActiveName);
                 }
             }
@@ -295,7 +295,7 @@ function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, contai
 async function renderCloudTemplates(wrapper, titleEl, onSelectTemplate, currentActiveName, container) {
     titleEl.textContent = 'Thư viện dùng chung';
     wrapper.innerHTML = `<div style="text-align:center;padding:10px;font-size:10px;color:#666;">⏳ Đang tải từ Cloud...</div>`;
-    
+
     try {
         const cloudTemplates = await FirebaseService.getSharedTemplates();
         if (cloudTemplates.length === 0) {
@@ -309,7 +309,7 @@ async function renderCloudTemplates(wrapper, titleEl, onSelectTemplate, currentA
             const row = createTemplateRow(cloudTpl, 0, onSelectTemplate, currentActiveName, container);
             row.style.width = '100%'; // Trong tab cloud thì dàn hàng dọc cho đẹp
             row.style.borderRadius = '8px';
-            
+
             // Thêm thông tin phòng ban nếu có
             if (tpl.department) {
                 const dept = document.createElement('span');
@@ -366,7 +366,7 @@ function selectTemplate(tpl, onSelectTemplate, currentActiveName, container) {
             const len = binary_string.length;
             const bytes = new Uint8Array(len);
             for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
-            
+
             if (onSelectTemplate) onSelectTemplate(bytes.buffer, tpl.name);
             renderTemplateManager(container, onSelectTemplate, tpl.name);
         } catch (err) {

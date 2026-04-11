@@ -109,25 +109,49 @@ export function syncSetValue(el, value) {
 export function findPageInput(name, labelText = null) {
     if (!name && !labelText) return null;
     
+    // Auto build map if not initialized
+    if (FullDOMMap.allInputs.length === 0) {
+        buildFullDOMMap();
+    }
+
+    const resolveToInput = (el) => {
+        if (!el) return null;
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || el.getAttribute('contenteditable') === 'true') {
+            return el;
+        }
+        // Nếu không phải input, tìm input con đầu tiên bên trong nó (Smart Proxy)
+        return el.querySelector('input, textarea, select, [contenteditable="true"]');
+    };
+    
     // 1. Thử tra cứu từ Map (O(1))
     if (name) {
-        let el = FullDOMMap.byId.get(name) || FullDOMMap.byName.get(name) || FullDOMMap.byPlaceholder.get(name);
-        if (el && document.contains(el)) return el;
+        let el = FullDOMMap.byId.get(name) || FullDOMMap.byName.get(name) || FullDOMMap.byPlaceholder.get(name) || FullDOMMap.byLabel.get(name);
+        if (el && document.contains(el)) return resolveToInput(el);
     }
 
     if (labelText) {
         let el = FullDOMMap.byLabel.get(labelText);
-        if (el && document.contains(el)) return el;
+        if (el && document.contains(el)) return resolveToInput(el);
     }
 
     // 2. Nếu Map chưa có (hoặc hỏng), thử tìm trực tiếp (Fallback)
     if (name) {
         const byId = document.getElementById(name);
-        if (byId && ['INPUT', 'TEXTAREA', 'SELECT'].includes(byId.tagName)) return byId;
+        if (byId) {
+            const resolved = resolveToInput(byId);
+            if (resolved) return resolved;
+        }
 
-        const selector = `input[id="${name}"], textarea[id="${name}"], select[id="${name}"], input[name="${name}"], textarea[name="${name}"], [placeholder="${name}"]`;
+        const selector = `input[id="${name}"], textarea[id="${name}"], select[id="${name}"], input[name="${name}"], textarea[name="${name}"], [placeholder="${name}"], [formcontrolname="${name}"]`;
         const byAttr = document.querySelector(selector);
         if (byAttr) return byAttr;
+        
+        // Thử tìm bất cứ element nào có ID/Name đó rồi resolve
+        const generalAttr = document.querySelector(`[id="${name}"], [name="${name}"]`);
+        if (generalAttr) {
+            const resolved = resolveToInput(generalAttr);
+            if (resolved) return resolved;
+        }
     }
 
     // 3. Fuzzy Match trên Label (Tốn kém hơn)
@@ -135,13 +159,12 @@ export function findPageInput(name, labelText = null) {
     if (targetLabel && targetLabel.length > 2) {
         const labelTexts = Array.from(FullDOMMap.byLabel.keys());
         if (labelTexts.length === 0 && LabelCache.length > 0) {
-             // Fallback nếu Map chưa được build nhưng LabelCache đã có
              labelTexts.push(...LabelCache.map(l => l.innerText.trim()).filter(t => t.length > 0));
         }
 
         const bestText = findBestMatch(targetLabel, labelTexts, 0.82);
         if (bestText) {
-            return FullDOMMap.byLabel.get(bestText) || null;
+            return resolveToInput(FullDOMMap.byLabel.get(bestText));
         }
     }
 
@@ -156,5 +179,7 @@ export function setPageField(name, value, labelText = null) {
     const el = findPageInput(name, labelText);
     if (el) {
         syncSetValue(el, value);
+        return true;
     }
+    return false;
 }

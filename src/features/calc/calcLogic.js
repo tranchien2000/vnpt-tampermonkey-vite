@@ -6,6 +6,18 @@ import { formatNum, parseNum, numToVN, capFirst } from '../../utils/numberHelper
 import { setPageField } from '../../utils/domHelper.js';
 
 export function calculateValues(type, value, taxRate) {
+    if (value === '' || value === undefined || value === null) {
+        return {
+            beforeNum: 0,
+            taxNum: 0,
+            afterNum: 0,
+            beforeStr: '',
+            taxStr: '',
+            afterStr: '',
+            textStr: ''
+        };
+    }
+
     let b = 0, t = 0, a = 0;
     
     if (type === 'before') {

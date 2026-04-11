@@ -10,8 +10,23 @@ import { DEFAULT_DATA as _DEFAULT_DATA, DEFAULT_SYNC_DATA } from '../../core/def
 import { Storage } from '../../utils/storage.js';
 import { debounce } from '../../utils/common.js';
 
+function loadFreshenedDefaultData() {
+    let cached = Storage.get(SK_DATA_DEF);
+    let fresh = JSON.parse(JSON.stringify(_DEFAULT_DATA));
+    if (!cached) return fresh;
+
+    // Overlay fresh dates onto cached default data
+    const dynamicKeys = ["ngayKy, ngayKy1", "thangKy, thangKy1", "namKy, namKy1", "ngayTiepNhan, ngayThangNamKy"];
+    dynamicKeys.forEach(k => {
+        if (cached[k] && fresh[k]) {
+            cached[k].value = fresh[k].value;
+        }
+    });
+    return cached;
+}
+
 export function doFillData() {
-    const defaultData = Storage.get(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
+    const defaultData = loadFreshenedDefaultData();
     const customData = Storage.get(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
 
