@@ -18,6 +18,237 @@ import { Storage } from '../utils/storage.js';
 import { mstService } from '../api/mstService.js';
 import { createInternalBackup, restoreInternalBackup, getInternalBackups, exportFullBackup } from '../utils/backupHelper.js';
 
+// ─── Field Linker State ───
+let _linkerCleanup = null;
+
+/**
+ * Kích hoạt chế độ Liên kết trực quan: user click vào element nào trên trang,
+ * selector tốt nhất sẽ được điền vào ô f-key của row tương ứng.
+ * @param {HTMLElement} row - Hàng field đang chọn
+ * @param {HTMLInputElement} fKey - Ô input f-key cần cập nhật
+ */
+function startFieldLinker(row, fKey) {
+    if (_linkerCleanup) _linkerCleanup(); // Hủy linker đang hoạt động nếu có
+
+    const widget = AppState.widget;
+    const linkBtn = row.querySelector('.btn-field-link');
+
+    // ── Danh sách elements đã link (xanh lá) ──
+    const existingEls = [];
+    let lastHoverEl = null;
+
+    /** Tìm element thực tế trên trang từ một selector string */
+    const findElBySelector = (sel) => {
+        if (!sel) return null;
+        return document.getElementById(sel)
+            || document.querySelector(`[formcontrolname="${CSS.escape(sel)}"]`)
+            || document.querySelector(`[name="${CSS.escape(sel)}"]`)
+            || document.querySelector(`[placeholder="${CSS.escape(sel)}"]`);
+    };
+
+    /** Highlight các elements đã có trong f-key với màu xanh lá (existing) */
+    const showExistingLinks = () => {
+        const parts = fKey.value.split(',').map(s => s.trim()).filter(s => s);
+        parts.forEach(sel => {
+            const el = findElBySelector(sel);
+            if (el && !widget.contains(el) && !existingEls.includes(el)) {
+                el.classList.add('vnpt-link-existing');
+                existingEls.push(el);
+            }
+        });
+    };
+
+    const clearExistingHighlights = () => {
+        existingEls.forEach(el => {
+            el.classList.remove('vnpt-link-existing');
+            el.classList.remove('vnpt-unlink-hover'); // Dọn cả state đỏ nếu đang hover
+        });
+        existingEls.length = 0;
+    };
+
+    // ── Đếm số sync selectors (trừ primary key) ──
+    const getSyncCount = () => {
+        const parts = fKey.value.split(',').map(s => s.trim()).filter(s => s);
+        return Math.max(0, parts.length - 1);
+    };
+
+    // ── Banner live ──
+    const banner = document.createElement('div');
+    banner.className = 'vnpt-linking-banner';
+    banner.style.pointerEvents = 'auto'; // Banner cần tương tác (nút Xong)
+
+    const updateBanner = () => {
+        const n = getSyncCount();
+        const badge = n > 0
+            ? `<span class="vnpt-link-count-badge">${n} link</span>`
+            : '';
+        banner.innerHTML = `
+            🔗 <b>Liên kết đa điểm</b> ${badge}
+            &nbsp;·&nbsp; <span style="font-size:10px;opacity:0.85;">🔵 Click = link &nbsp; 🔴 Click lại = bỏ link</span>
+            &nbsp;·&nbsp; <button class="vnpt-link-done-btn">✅ Xong</button>
+            &nbsp; <kbd>Esc</kbd>
+        `;
+        banner.querySelector('.vnpt-link-done-btn').onclick = (e) => {
+            e.stopPropagation();
+            cleanup(true);
+        };
+    };
+
+    // ── Kích hoạt ──
+    linkBtn.classList.add('active');
+    document.body.classList.add('vnpt-linking-mode');
+    widget.style.opacity = '0.15';
+    widget.style.pointerEvents = 'none';
+    widget.style.transition = 'opacity 0.3s';
+
+    updateBanner();
+    document.body.appendChild(banner);
+    showExistingLinks(); // Tô màu ngay các links đã có
+
+    // ── Trích xuất selector tốt nhất ──
+    /** @param {Element} el */
+    const getBestSelector = (el) => {
+        // 1. Kiểm tra chính nó (Strong Keys)
+        const strongKey = el.id || el.getAttribute('formcontrolname') || el.name || el.getAttribute('placeholder');
+        if (strongKey) return strongKey;
+
+        // 2. Nếu là Label (hoặc chứa text giống label), dùng InnerText
+        const isLabel = el.tagName === 'LABEL' || el.classList.contains('label') || el.classList.contains('form-label');
+        if (isLabel && el.innerText.trim()) return el.innerText.trim();
+
+        // 3. Tìm xung quanh (Siblings / Parent) để lấy Label hoặc Wrapper ID
+        let p = el.parentElement;
+        let depth = 0;
+        while (p && depth < 3) {
+            // Thử tìm label anh em hoặc trong cha
+            const lbl = p.querySelector('label, .label, .label-text, span.title, .form-label');
+            if (lbl && lbl.innerText.trim()) return lbl.innerText.trim();
+            
+            // Thử lấy ID của cha nếu cha có vẻ là một wrapper định danh tốt
+            if (p.id && !p.id.startsWith('ng-')) return p.id;
+            
+            p = p.parentElement;
+            depth++;
+        }
+
+        // 4. Fallback: Tag + Class
+        const cls = el.className && typeof el.className === 'string' ? el.className.trim().split(/\s+/)[0] : '';
+        return el.tagName.toLowerCase() + (cls ? '.' + cls : '');
+    };
+
+    const LINKABLE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT', 'SPAN', 'DIV', 'P', 'LABEL', 'BUTTON', 'TD', 'TH', 'SECTION']);
+
+    // ── Hover highlight ──
+    const onMouseOver = (e) => {
+        const el = e.target;
+        if (widget.contains(el) || banner.contains(el)) return;
+        if (!LINKABLE_TAGS.has(el.tagName)) return;
+
+        // Dọn state ở element cũ
+        if (lastHoverEl && lastHoverEl !== el) {
+            lastHoverEl.classList.remove('vnpt-link-highlight');
+            lastHoverEl.classList.remove('vnpt-unlink-hover');
+        }
+
+        // Nếu là existing → đỏ (báo sẽ unlink), ngược lại → xanh (sẽ link)
+        if (el.classList.contains('vnpt-link-existing')) {
+            el.classList.add('vnpt-unlink-hover');
+        } else {
+            el.classList.add('vnpt-link-highlight');
+        }
+        lastHoverEl = el;
+    };
+
+    // ── Click để toggle link/unlink ──
+    const onClick = (e) => {
+        const el = e.target;
+        if (widget.contains(el) || banner.contains(el)) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const selector = getBestSelector(el);
+        const currentParts = fKey.value.split(',').map(s => s.trim()).filter(s => s);
+
+        if (currentParts.includes(selector)) {
+            // ── UNLINK: bỏ selector khỏi danh sách ──
+            const newParts = currentParts.filter(p => p !== selector);
+            fKey.value = newParts.join(', ');
+
+            el.classList.remove('vnpt-link-existing');
+            el.classList.remove('vnpt-unlink-hover');
+            // Sau unlink, khôi phục highlight xanh (vẫn đang hover)
+            el.classList.add('vnpt-link-highlight');
+            const idx = existingEls.indexOf(el);
+            if (idx !== -1) existingEls.splice(idx, 1);
+
+            fKey.dispatchEvent(new Event('input', { bubbles: true }));
+            updateBanner();
+            showToast(`🔓 Đã bỏ "${selector}"`, '#ea4335');
+        } else {
+            // ── LINK: thêm selector vào danh sách (giữ TOÀN BỘ các phần hiện có) ──
+            fKey.value = [...currentParts, selector].join(', ');
+
+            el.classList.remove('vnpt-link-highlight');
+            el.classList.add('vnpt-link-existing');
+            if (!existingEls.includes(el)) existingEls.push(el);
+            if (lastHoverEl === el) lastHoverEl = null;
+
+            fKey.dispatchEvent(new Event('input', { bubbles: true }));
+            updateBanner();
+            showToast(`+🔗 "${selector}" — Click lại để bỏ | ✅ Xong`, '#198754');
+        }
+    };
+
+    // ── Esc để hủy (hoàn tác thay đổi không?) ──
+    const onKeydown = (e) => {
+        if (e.key === 'Escape') {
+            showToast('❌ Đã kết thúc liên kết', '#ffc107');
+            cleanup(true); // Vẫn lưu những gì đã chọn được
+        }
+    };
+
+    // ── Cleanup & finish ──
+    const cleanup = (doSync = true) => {
+        // Xóa tất cả hover classes ở element đang hover
+        if (lastHoverEl) {
+            lastHoverEl.classList.remove('vnpt-link-highlight');
+            lastHoverEl.classList.remove('vnpt-unlink-hover');
+        }
+        clearExistingHighlights();
+
+        linkBtn.classList.remove('active');
+        document.body.classList.remove('vnpt-linking-mode');
+        widget.style.opacity = '';
+        widget.style.pointerEvents = '';
+        if (banner.parentNode) banner.parentNode.removeChild(banner);
+
+        if (doSync) {
+            // Dispatch 'change' một lần duy nhất khi xong → syncThisRow()
+            fKey.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        document.removeEventListener('mouseover', onMouseOver, true);
+        document.removeEventListener('click', onClick, true);
+        document.removeEventListener('keydown', onKeydown, true);
+        _linkerCleanup = null;
+    };
+
+    document.addEventListener('mouseover', onMouseOver, true);
+    document.addEventListener('click', onClick, true);
+    document.addEventListener('keydown', onKeydown, true);
+    _linkerCleanup = cleanup;
+
+    const initialCount = getSyncCount();
+    showToast(
+        initialCount > 0
+            ? `🔗 Đang có ${initialCount} link — Click thêm hoặc ✅ Xong`
+            : '🔗 Click vào elements để liên kết. ✅ Xong hoặc Esc khi hoàn tất.',
+        '#f57f17'
+    );
+}
+
+
 /**
  * Kiểm tra định dạng dữ liệu (MST, SĐT, Email)
  */
@@ -93,6 +324,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
             <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
             <span class="row-drag-handle" title="Kéo">=</span>
+            <button class="btn-field-link" title="🔗 Click để liên kết với element trên trang (Esc để hủy)">🔗</button>
             ${primaryKey === 'soDkdn' ? `
                 <div class="mst-lookup-wrapper">
                     <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" placeholder="Mã số thuế..." />
@@ -192,6 +424,15 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
         // Khởi tạo trạng thái ban đầu
         checkRequired();
+
+        // Field Linker Button
+        const linkBtn = row.querySelector('.btn-field-link');
+        if (linkBtn) {
+            linkBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startFieldLinker(row, fKey);
+            });
+        }
 
         // Drag & Drop Logic
         const dragHandle = row.querySelector('.row-drag-handle');
@@ -367,11 +608,7 @@ export function initFieldsManager() {
                 Storage.remove(SK_CALC_MAP);
                 Storage.remove(SK_TAX);
 
-                // Cập nhật lại giao diện các ô Mapping Calc
-                document.querySelectorAll('input[data-clink]').forEach(inp => {
-                    const k = inp.dataset.clink;
-                    inp.value = (DEFAULT_CALC_MAP[k] || []).join(', ');
-                });
+
 
                 if (isDefault) {
                     updateUIForDefaultMode(true);
@@ -560,8 +797,7 @@ export function syncAllFields() {
         const rawKey = row.querySelector('.f-key').value.trim();
         const val = row.querySelector('.f-val').value;
         rawKey.split(',').map(x => x.trim()).filter(Boolean).forEach(t => {
-            const el = document.getElementById(t) || document.getElementsByName(t)[0];
-            if (el) { setPageField(t, val); count++; }
+            if (setPageField(t, val)) { count++; }
         });
     });
     count > 0 ? showToast(`✅ Đã đồng bộ ${count} trường lên web`, '#198754') : showToast(`⚠️ Không có trường nào để đồng bộ`, '#ffc107');
@@ -619,41 +855,62 @@ function renderCalcMappingInBanner() {
     section.style.cssText = 'border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 8px; margin: 8px 0; background: rgba(26, 115, 232, 0.05);';
     
     section.innerHTML = `
-        <div class="util-submenu-title" style="margin-top: 0; color: #1a73e8; font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 6px;">LIÊN KẾT Ô (MAPPING CALC)</div>
-        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <span style="min-width: 80px; font-size: 11px;">Trước thuế</span>
-            <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
+        <div class="vnpt-calc-mapping-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; padding: 2px 0;">
+            <div class="util-submenu-title" style="margin: 0; color: #1a73e8; font-weight: 800; font-size: 10px; text-transform: uppercase;">🛠️ LIÊN KẾT Ô (MAPPING CALC)</div>
+            <span class="toggle-icon" style="font-size: 10px; color: #1a73e8; transition: transform 0.2s;">▶</span>
         </div>
-        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <span style="min-width: 80px; font-size: 11px;">Tiền thuế</span>
-            <input data-clink="tax" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: thue_gtgt">
-        </div>
-        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <span style="min-width: 80px; font-size: 11px;">Sau thuế</span>
-            <input data-clink="after" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_cong">
-        </div>
-        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px;">
-            <span style="min-width: 80px; font-size: 11px;">Bằng chữ</span>
-            <input data-clink="text" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: doc_tien">
+        <div class="vnpt-calc-mapping-body" style="display: none; margin-top: 8px; border-top: 1px dashed rgba(26, 115, 232, 0.2); padding-top: 8px;">
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Trước thuế</span>
+                <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Tiền thuế</span>
+                <input data-clink="tax" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: thue_gtgt">
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Sau thuế</span>
+                <input data-clink="after" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_cong">
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Bằng chữ</span>
+                <input data-clink="text" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: doc_tien">
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
         </div>
     `;
 
+    const header = section.querySelector('.vnpt-calc-mapping-header');
+    const body = section.querySelector('.vnpt-calc-mapping-body');
+    const icon = section.querySelector('.toggle-icon');
+
+    header.onclick = () => {
+        const isHidden = body.style.display === 'none';
+        body.style.display = isHidden ? 'block' : 'none';
+        icon.innerText = isHidden ? '▼' : '▶';
+    };
+
     const calcMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
-    section.querySelectorAll('input[data-clink]').forEach(inp => {
+    section.querySelectorAll('.vnpt-field-row').forEach(row => {
+        const inp = row.querySelector('input[data-clink]');
+        const linkBtn = row.querySelector('.btn-field-link');
         const k = inp.dataset.clink;
-        const val = calcMaps[k] || [];
-        inp.value = Array.isArray(val) ? val.join(', ') : val;
+        
+        inp.value = Array.isArray(calcMaps[k]) ? calcMaps[k].join(', ') : (calcMaps[k] || '');
 
         inp.onchange = () => {
             const currentMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
             currentMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s);
             Storage.set(SK_CALC_MAP, currentMaps);
-            
-            // Đồng bộ ngược lại các ô input trong menu nếu đang mở
-            const sameInpInMenu = document.querySelector(`.vnpt-util-menu input[data-clink="${k}"]`);
-            if (sameInpInMenu) sameInpInMenu.value = inp.value;
-
             showToast("✅ Đã cập nhật Mapping Calc hệ thống");
+        };
+
+        linkBtn.onclick = (e) => {
+            e.stopPropagation();
+            startFieldLinker(row, inp);
         };
     });
     

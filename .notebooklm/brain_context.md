@@ -1,5 +1,5 @@
 # VNPT PROJECT BRAIN CONTEXT (OPTIMIZED)
-*Ngày cập nhật: 22:35:17 11/4/2026*
+*Ngày cập nhật: 00:29:44 12/4/2026*
 
 ## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)
 
@@ -20,6 +20,9 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Xây dựng công cụ Selector Inspector (Bắt selector bằng click).
 - [x] Tích hợp API tra cứu MST doanh nghiệp (Xinvoice).
 - [x] Tự động hóa trường Nơi cấp ĐKDN theo Tỉnh (`SKDT {Tỉnh}`).
+- [x] Sửa lỗi VNPT Calculator tự động nhảy về số 0 khi xóa trắng ô nhập liệu.
+- [x] Cải tiến Field Linker: Hỗ trợ Smart Mapping (tìm label/wrapper id khi input yếu).
+- [x] Tích hợp visual link (🔗) vào phần Mapping Calc trong Banner.
 
 
 - [x] Chế độ Xem trước OCR (Side-by-Side Review).
@@ -31,8 +34,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Thư viện mẫu dùng chung (Shared Cloud Templates).
 - [x] Hệ thống Selectors từ Cloud (Remote UI Patches).
 - [x] Phân quyền Workspace (Workspace ID).
-- [ ] Triển khai Cloud Integration Phase 3 (Real-time Collaboration & Backup Auto-sync).
-- [ ] Phân nhóm Fields (Đã gỡ bỏ theo yêu cầu người dùng).
+- [x] Phân nhóm Fields (Đã gỡ bỏ theo yêu cầu người dùng).
 
 
 ## 2. Nhật ký Quyết định (Decision Log)
@@ -70,6 +72,13 @@ dẫn vào `RULES.md`.
 - **2026-04-11 (Process Optimization)**: Lược bỏ bước `npm run build` khỏi tất cả các quy trình Markdown (.agents/workflows/) để tối ưu hóa tốc độ phát triển. AI sẽ chỉ build khi thực sự cần thiết hoặc người dùng yêu cầu.
 - **2026-04-11 (Shared Template Library)**: Hoàn thành Phase 2 Cloud Integration. Refactor `TemplateManager` hỗ trợ giao diện Tab (Local vs Cloud). Tích hợp logic lọc mẫu theo `workspace_id`.
 - **2026-04-11 (Remote Config & Selectors)**: Triển khai `RemoteConfig` module để lấy selectors động từ Firebase, giúp fix lỗi UI trang đích mà không cần cập nhật mã nguồn Extension.
+- **2026-04-11 (Date Sync Resolution)**: Sửa lỗi `ngayKy` bị treo khi tự động điền form (do LocalStorage lưu tĩnh timestamp). Đã thiết lập hàm `loadFreshenedDefaultData()` để luôn trộn đè các trường ngày tháng realtime (VD: `ngayKy`, `ngayTiepNhan`) từ `defaults.js` trong runtime lên cache của `SK_DATA_DEF` trong `dataFillFeature.js`.
+- **2026-04-11 (Mapping Calc Cleanup)**: Loại bỏ các ô nhập liệu Mapping Calc dư thừa trong dropdown "More Tools" (id="vnpt-btn-more") vì đã được tích hợp tập trung vào giao diện "Dữ liệu mặc định VNPT".
+- **2026-04-11 (Mapping Calc UI Refinement)**: Chuyển phần cấu hình Mapping Calc trong Banner sang dạng thu gọn (Collapsible Header), mặc định chỉ hiển thị 1 dòng tiêu đề để tiết kiệm diện tích.
+- **2026-04-11 (Field Linker v2)**: Tính năng liên kết trực quan multi-link trên mỗi `vnpt-field-row`. Click 🔗 → widget mờ + banner nổi. Hover xanh dương = sẽ link, xanh lá = đã link, đỏ = sẽ unlink (toggle). Click tích lũy nhiều selectors (fix bug chỉ giữ `currentParts[0]`). Esc/✅ Xong dispatch `change` 1 lần → `syncThisRow()`. CSS: 3 states visual + badge counter + nút Xong trong banner.
+- **2026-04-12 (Fix Calc Zero Default)**: Sửa lỗi calculator tự động điền số "0" khi người dùng xóa trắng (backspace hết) ô nhập liệu. Logic mới trong `calcLogic.js` sẽ trả về chuỗi rỗng thay vì "0", đồng thời xóa sạch các trường liên quan (Tiền thuế, Sau thuế, Bằng chữ) để UI sạch sẽ hơn.
+- **2026-04-12 (Smart Field Linker)**: Nâng cấp `getBestSelector` để tự động leo lên thẻ cha tìm ID hoặc tìm Label lân cận nếu input không có thuộc tính định danh. Đồng thời cải tiến `findPageInput` để tự động resolve Wrapper ID về Input con bên trong, giúp mapping cực kỳ linh hoạt và ổn định.
+- **2026-04-12 (Mapping Calc Linker)**: Tích hợp nút 🔗 vào giao diện cấu hình Mapping Calc trong Banner. Giờ đây người dùng có thể click trực tiếp để liên kết các ô Trước thuế, Sau thuế... với các element trên trang web một cách trực quan, tương tự như các field row thông thường.
 
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
@@ -86,7 +95,7 @@ dẫn vào `RULES.md`.
 - **Calc Widget**: Hoạt động ổn định, tích hợp sâu vào giao diện nhúng.
 - **Sync Engine**: Hoạt động ổn định, hỗ trợ Sync thủ công (🔄) và tự động build DOM map trước khi điền.
 - **Cloud Sync**: Hoạt động ổn định (Phòng làm việc Firebase). Hỗ trợ đồng bộ Profiles, API Keys, Thư viện mẫu dùng chung, Config tổng quát và Selectors từ xa.
-- **Default Data Mode**: Hoàn thiện giao diện cấu hình tập trung, bao gồm cả biến dữ liệu và Mapping Calc.
+- **Default Data Mode**: Hoàn thiện giao diện cấu hình tập trung, bao gồm cả biến dữ liệu và Mapping Calc. Đã loại bỏ hoàn toàn các cấu hình dư thừa ở các vị trí khác (như trong menu Công cụ).
 
 ---
 

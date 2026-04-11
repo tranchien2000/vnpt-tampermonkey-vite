@@ -17,46 +17,14 @@ import { Storage } from '../utils/storage.js';
 import { DEFAULT_DATA as _DEFAULT_DATA } from '../core/defaults.js';
 export { DEFAULT_DATA } from '../core/defaults.js'; // re-export cho backward compat
 
-let defaultData = Storage.get(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
+import { doFillData, doSyncData } from './dataFill/syncEngine.js';
+
 let customData = Storage.get(SK_DATA_CUS) ?? {};
 let syncData = Storage.get(SK_DATA_SYNC) ?? {};
 let currentDataTab = Storage.get(SK_DATATAB) ?? 'custom';
 
-export function doFillData() {
-    defaultData = Storage.get(SK_DATA_DEF) ?? { ..._DEFAULT_DATA };
-    customData = Storage.get(SK_DATA_CUS) ?? {};
-    const merged = { ...defaultData, ...customData };
-    
-    Object.keys(merged).forEach(k => {
-        let el = findPageInput(k) || getInputByLabel(k);
-        if (el) {
-            const dataItem = merged[k];
-            const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value')) 
-                        ? dataItem.value 
-                        : dataItem; 
-            syncSetValue(el, val);
-        }
-    });
+let defaultData = Storage.get(SK_DATA_DEF) ?? JSON.parse(JSON.stringify(_DEFAULT_DATA));
 
-    showToast('✅ Auto fill complete');
-}
-
-export function doSyncData() {
-    let syncMap = Storage.get(SK_DATA_SYNC) ?? {};
-    const keys = Object.keys(syncMap);
-    if (keys.length === 0) {
-        showToast('⚠️ No sync mapping', '#ffc107');
-        return;
-    }
-    keys.forEach(src => {
-        let srcEl = findPageInput(src) || getInputByLabel(src);
-        if (srcEl && srcEl.value !== undefined && srcEl.value !== '') {
-            let targets = syncMap[src].split(',').map(s => s.trim()).filter(s => s);
-            targets.forEach(t => setPageField(t, srcEl.value));
-        }
-    });
-    showToast('✅ Sync form complete', '#d39e00');
-}
 
 export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections) {
     // ══════════════ SECTION: DATA TABS ══════════════
@@ -232,7 +200,10 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
             try {
                 const text = await storage.download('local', file, { type: 'text' });
                 const parsed = JSON.parse(text);
-                if (parsed.defaultData) { defaultData = parsed.defaultData; Storage.set(SK_DATA_DEF, defaultData); }
+                if (parsed.defaultData) { 
+                    Storage.set(SK_DATA_DEF, parsed.defaultData); 
+                    defaultData = loadFreshenedDefaultData(); 
+                }
                 if (parsed.customData) { customData = parsed.customData; Storage.set(SK_DATA_CUS, customData); }
                 if (parsed.syncData) { syncData = parsed.syncData; Storage.set(SK_DATA_SYNC, syncData); }
                 renderDataFields();

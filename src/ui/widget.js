@@ -44,7 +44,7 @@ export function initWidget() {
                     <span id="vnpt-panel-title">VNPT PRO</span>
                 </div>
                 <div class="header-center">
-                    <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">✨ AI Scanner</button>
+                    <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">ID</button>
@@ -66,14 +66,14 @@ export function initWidget() {
                             <div class="util-config-grid">
                                 <div class="util-column">
                                     <div class="util-submenu-title">Cấu hình hệ thống</div>
-                                    <button class="util-item" id="vnpt-btn-default">🛠 Dữ liệu mặc định VNPT</button>
-                                    <button class="util-item danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">🧹 Dọn dẹp & Reset hệ thống</button>
+                                    <button class="util-item" id="vnpt-btn-default">Dữ liệu mặc định VNPT</button>
+                                    <button class="util-item danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">Dọn dẹp & Reset hệ thống</button>
 
                                     <div class="util-separator"></div>
                                     <div class="util-submenu-title">Dữ liệu hệ thống</div>
                                     <div class="util-action-row">
-                                        <button class="util-item-small" id="vnpt-btn-import-json">📥 Nhập JSON</button>
-                                        <button class="util-item-small" id="vnpt-btn-export-json">📤 Xuất JSON</button>
+                                        <button class="util-item-small" id="vnpt-btn-import-json">Nhập JSON</button>
+                                        <button class="util-item-small" id="vnpt-btn-export-json">Xuất JSON</button>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>
 
@@ -121,12 +121,7 @@ export function initWidget() {
                                 <button class="util-item-small" id="vnpt-btn-test-gemini" style="width: auto; padding: 4px 12px; background: var(--vnpt-primary-light); color: var(--vnpt-primary); border-color: var(--vnpt-primary);">⚡ Kiểm tra kết nối</button>
                             </div>
 
-                            <div class="util-separator"></div>
-                            <div class="util-submenu-title">Liên kết ô (Mapping Calc)</div>
-                            <div class="cw-row-map"><span>Trước thuế</span><input id="vnpt-map-before" name="vnpt-map-before" data-clink="before" class="cw-map-input"></div>
-                            <div class="cw-row-map"><span>Tiền thuế</span><input id="vnpt-map-tax" name="vnpt-map-tax" data-clink="tax" class="cw-map-input"></div>
-                            <div class="cw-row-map"><span>Sau thuế</span><input id="vnpt-map-after" name="vnpt-map-after" data-clink="after" class="cw-map-input"></div>
-                            <div class="cw-row-map"><span>Bằng chữ</span><input id="vnpt-map-text" name="vnpt-map-text" data-clink="text" class="cw-map-input"></div>
+
                         </div>
                     </div>
                 </div>
@@ -294,18 +289,7 @@ export function initWidget() {
         'Full': { width: '98vw', height: '92vh' }
     };
 
-    const calcMaps = Storage.get(SK_CALC_MAP) || {};
-    utilMenu.querySelectorAll('input[data-clink]').forEach(inp => {
-        const k = inp.dataset.clink;
-        const val = calcMaps[k] || DEFAULT_CALC_MAP[k] || [];
-        inp.value = val.join(', ');
 
-        inp.onchange = () => {
-            const currentMaps = Storage.get(SK_CALC_MAP) || {};
-            currentMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s);
-            Storage.set(SK_CALC_MAP, currentMaps);
-        };
-    });
 
     const geminiKeyInput = document.getElementById('vnpt-gemini-key');
     const geminiModelSelect = document.getElementById('vnpt-gemini-model');
