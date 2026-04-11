@@ -10,6 +10,7 @@ import { formatNum, parseNum } from '../../utils/numberHelper.js';
 import { renderDataFillTabs } from '../dataFill/index.js';
 import { makeDraggable } from '../../ui/dragDrop.js';
 import { DEFAULT_CALC_MAP, DEFAULT_TAX_RATE } from '../../core/defaults.js';
+import { buildFullDOMMap } from '../../utils/domHelper.js';
 
 export function createCalcUI(widget, container, SK_POS_CALC) {
     let TAX_RATE = Number(localStorage.getItem(SK_TAX)) || DEFAULT_TAX_RATE;
@@ -61,6 +62,10 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
             add: mkBtn('Add', 'cw-btn-add'),
             reset: mkBtn('↺', 'cw-btn-reset')
         };
+        btns.sync.onclick = () => {
+            const res = updateLocal('before', els.before.value);
+            doSync('before', res.beforeStr);
+        };
         btns.reset.title = 'Reset Default fields';
         Object.values(btns).forEach(b => btnGroup.appendChild(b));
         titleBar.appendChild(btnGroup);
@@ -79,6 +84,7 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         <input id="wg-after" name="wg-after" class="cw-input-inline" placeholder="Sau thuế" list="wg-after-list" title="Sau thuế">
         <datalist id="wg-after-list"></datalist>
         <input id="wg-text" name="wg-text" class="cw-input-inline cw-input-readonly-inline" placeholder="Bằng chữ" readonly title="Bằng chữ">
+        <button id="wg-sync-manual" class="cw-map-btn-inline" title="Đồng bộ kết quả lên trang web (🔄)">🔄</button>
     </div>`;
 
     if (container) container.appendChild(calcBody);
@@ -112,6 +118,7 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     }
 
     function doSync(type, val) {
+        buildFullDOMMap(); // Đảm bảo map mới nhất trước khi điền
         const res = calculateValues(type, val, TAX_RATE);
         const currentMaps = ld(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
         syncToPage(res, currentMaps);
@@ -128,6 +135,21 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
 
     els.after.oninput = () => { updateLocal('after', els.after.value); };
     els.after.onchange = () => { doSync('after', els.after.value); saveHist(SK_HIST_A, els.after.value); renderHist(SK_HIST_A, 'wg-after-list'); };
+
+    const syncManualBtn = document.getElementById('wg-sync-manual');
+    if (syncManualBtn) {
+        syncManualBtn.onclick = () => {
+            const res = updateLocal('before', els.before.value);
+            doSync('before', res.beforeStr);
+            
+            // Hiệu ứng nháy xanh khi thành công
+            syncManualBtn.style.transform = 'scale(1.2) rotate(360deg)';
+            syncManualBtn.style.transition = 'all 0.4s';
+            setTimeout(() => {
+                syncManualBtn.style.transform = '';
+            }, 400);
+        };
+    }
 
     // Copy on click/focus
     [els.before, els.tax, els.after, els.text].forEach(el => {

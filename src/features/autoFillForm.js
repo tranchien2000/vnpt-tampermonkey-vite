@@ -61,7 +61,7 @@ export function setupAutoFillForm() {
                     } else {
                         val = pEl.value;
                     }
-                    if (val && val !== '--- Chọn ---') {
+                    if (val && val !== '--- Chọn ---' && !val.includes('Chọn')) {
                         // Cắt bỏ "Tỉnh " hoặc "Thành phố "
                         const cleanProvince = val.trim().replace(/^(Tỉnh|Thành phố)\s+/i, '');
                         syncSetValue(targetNoiCap, "SKDT " + cleanProvince);

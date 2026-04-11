@@ -16,6 +16,7 @@ import { SK_TEMPLATES } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
 import { idbSave, idbLoad, idbDelete } from '../api/storage/idb.js';
 import { Storage } from '../utils/storage.js';
+import { FirebaseService } from '../api/firebaseService.js';
 
 export function loadTemplates() {
     try { 
@@ -99,14 +100,40 @@ export async function saveLocalTemplate(file, container, onSelectTemplate) {
 export function renderTemplateManager(container, onSelectTemplate, currentActiveName = null) {
     let mainWrap = container.querySelector('.vnpt-template-manager-inner');
     let localListWrapper;
+    let cloudListWrapper;
     let btnWrap;
+    let currentTab = container.dataset.activeTab || 'local';
 
     if (!mainWrap) {
         container.innerHTML = '';
         mainWrap = document.createElement('div');
         mainWrap.className = 'vnpt-template-manager-inner';
         
-        // ── Header ──
+        // ── Tabs ──
+        const tabContainer = document.createElement('div');
+        tabContainer.className = 'vnpt-tabs';
+        
+        const btnLocal = document.createElement('button');
+        btnLocal.className = `vnpt-tab-btn ${currentTab === 'local' ? 'active' : ''}`;
+        btnLocal.textContent = 'Cá nhân';
+        btnLocal.onclick = () => {
+            container.dataset.activeTab = 'local';
+            renderTemplateManager(container, onSelectTemplate, currentActiveName);
+        };
+
+        const btnCloud = document.createElement('button');
+        btnCloud.className = `vnpt-tab-btn ${currentTab === 'cloud' ? 'active' : ''}`;
+        btnCloud.textContent = 'Thư viện mẫu';
+        btnCloud.onclick = () => {
+            container.dataset.activeTab = 'cloud';
+            renderTemplateManager(container, onSelectTemplate, currentActiveName);
+        };
+
+        tabContainer.appendChild(btnLocal);
+        tabContainer.appendChild(btnCloud);
+        mainWrap.appendChild(tabContainer);
+
+        // ── Header (Title & Buttons) ──
         const headerRow = document.createElement('div');
         headerRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;';
 
@@ -124,70 +151,109 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
 
         localListWrapper = document.createElement('div');
         localListWrapper.className = 'vnpt-local-list-container';
-        localListWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:2px;';
+        localListWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
         mainWrap.appendChild(localListWrapper);
         
+        cloudListWrapper = document.createElement('div');
+        cloudListWrapper.className = 'vnpt-cloud-list-container';
+        cloudListWrapper.style.cssText = 'display:none;flex-direction:column;gap:4px;';
+        mainWrap.appendChild(cloudListWrapper);
+
         container.appendChild(mainWrap);
     } else {
         localListWrapper = mainWrap.querySelector('.vnpt-local-list-container');
+        cloudListWrapper = mainWrap.querySelector('.vnpt-cloud-list-container');
         btnWrap = mainWrap.querySelector('.vnpt-btn-wrap');
+        
+        const tabs = mainWrap.querySelectorAll('.vnpt-tab-btn');
+        tabs[0].className = `vnpt-tab-btn ${currentTab === 'local' ? 'active' : ''}`;
+        tabs[1].className = `vnpt-tab-btn ${currentTab === 'cloud' ? 'active' : ''}`;
     }
 
-    const templates = loadTemplates();
     const titleEl = mainWrap.querySelector('.vnpt-title-main');
+    
+    if (currentTab === 'local') {
+        localListWrapper.style.display = 'flex';
+        cloudListWrapper.style.display = 'none';
+        renderLocalTemplates(localListWrapper, titleEl, onSelectTemplate, currentActiveName, container);
+    } else {
+        localListWrapper.style.display = 'none';
+        cloudListWrapper.style.display = 'flex';
+        renderCloudTemplates(cloudListWrapper, titleEl, onSelectTemplate, currentActiveName, container);
+    }
+}
+
+/**
+ * Render danh sách template Local
+ */
+function renderLocalTemplates(wrapper, titleEl, onSelectTemplate, currentActiveName, container) {
+    const templates = loadTemplates();
     titleEl.innerHTML = 'Templates' + (currentActiveName ? ` <span style="color:#2e7d32;">(Đang dùng: ${currentActiveName})</span>` : '');
 
     if (templates.length === 0) {
-        localListWrapper.innerHTML = `<div style="font-size:10px;color:#999;font-style:italic;padding:2px 0 6px;text-align:center;width:100%;">Chọn file bên dưới để tự ghi nhớ mẫu</div>`;
-    } else {
-        localListWrapper.innerHTML = '';
+        wrapper.innerHTML = `<div style="font-size:10px;color:#999;font-style:italic;padding:12px;text-align:center;width:100%;">Chưa có mẫu nào. Hãy chọn file .docx bên dưới để lưu vào đây.</div>`;
+        return;
     }
+    wrapper.innerHTML = '';
     
     templates.forEach((tpl, idx) => {
-        const row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:3px 6px;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:15px;cursor:pointer;outline:none;';
-        row.title = tpl.fileName || tpl.url || tpl.name;
-        row.tabIndex = 0;
+        const row = createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, container);
+        wrapper.appendChild(row);
+    });
+}
 
-        row.onfocus = () => row.style.boxShadow = '0 0 0 2px #28a745';
-        row.onblur = () => row.style.boxShadow = 'none';
+function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, container) {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:3px 8px;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:15px;cursor:pointer;outline:none;transition:all 0.2s;';
+    if (tpl.name === currentActiveName) {
+        row.style.borderColor = 'var(--vnpt-primary)';
+        row.style.background = 'var(--vnpt-primary-light)';
+    }
 
-        const badgeText = (tpl.type === 'local' || tpl.type === 'local_base64' || tpl.type === 'local_idb') ? 'OFF' : 'ON';
-        const badgeColor = badgeText === 'OFF' ? '#6c757d' : '#28a745';
-        
-        const badge = document.createElement('span');
-        badge.textContent = badgeText;
-        badge.style.cssText = `font-size:9px;padding:2px 6px;border-radius:10px;flex-shrink:0;font-weight:bold;background:${badgeColor};color:#fff;`;
+    row.title = tpl.fileName || tpl.url || tpl.name;
+    row.tabIndex = 0;
 
-        const nameEl = document.createElement('span');
-        nameEl.textContent = tpl.name;
-        nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#212529;white-space:nowrap;';
-        
-        row.onclick = () => {
-            row.focus();
-            selectTemplate(tpl, onSelectTemplate, currentActiveName, container);
-        };
+    row.onfocus = () => row.style.boxShadow = '0 0 0 2px var(--vnpt-primary)';
+    row.onblur = () => row.style.boxShadow = 'none';
 
-        row.appendChild(badge);
-        row.appendChild(nameEl);
+    const badgeText = (tpl.type === 'local' || tpl.type === 'local_base64' || tpl.type === 'local_idb') ? 'OFF' : 'ON';
+    const badgeColor = badgeText === 'OFF' ? '#6c757d' : '#28a745';
+    
+    const badge = document.createElement('span');
+    badge.textContent = badgeText;
+    badge.style.cssText = `font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:${badgeColor};color:#fff;`;
 
+    const nameEl = document.createElement('span');
+    nameEl.textContent = tpl.name;
+    nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#212529;white-space:nowrap;';
+    
+    row.onclick = () => {
+        row.focus();
+        selectTemplate(tpl, onSelectTemplate, currentActiveName, container);
+    };
+
+    row.appendChild(badge);
+    row.appendChild(nameEl);
+
+    if (tpl.type !== 'cloud_shared') {
         // Nút đổi tên
         const renameBtn = document.createElement('button');
         renameBtn.innerHTML = '✎';
-        renameBtn.title = 'Đổi tên template';
         renameBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#555;cursor:pointer;margin-left:auto;';
         renameBtn.onclick = (e) => {
             e.stopPropagation();
             const newName = prompt('Đổi tên template:', tpl.name);
             if (newName && newName.trim() && newName.trim() !== tpl.name) {
                 const list = loadTemplates();
-                list[idx].name = newName.trim();
-                saveTemplates(list);
-                renderTemplateManager(container, onSelectTemplate, currentActiveName);
+                const itemIdx = list.findIndex(t => t.name === tpl.name);
+                if (itemIdx >= 0) {
+                    list[itemIdx].name = newName.trim();
+                    saveTemplates(list);
+                    renderTemplateManager(container, onSelectTemplate, currentActiveName);
+                }
             }
         };
         row.appendChild(renameBtn);
-
 
         const delBtn = document.createElement('button');
         delBtn.innerHTML = '✕';
@@ -196,17 +262,86 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
             e.stopPropagation();
             if (confirm(`Xoá biểu mẫu "${tpl.name}"?`)) {
                 const list = loadTemplates();
-                list.splice(idx, 1);
-                saveTemplates(list);
-                if (tpl.type === 'local_idb') await idbDelete(tpl.name).catch(()=>null);
-                renderTemplateManager(container, onSelectTemplate, currentActiveName === tpl.name ? null : currentActiveName);
+                const itemIdx = list.findIndex(t => t.name === tpl.name);
+                if (itemIdx >= 0) {
+                    const item = list[itemIdx];
+                    list.splice(itemIdx, 1);
+                    saveTemplates(list);
+                    if (item.type === 'local_idb') await idbDelete(item.name).catch(()=>null);
+                    renderTemplateManager(container, onSelectTemplate, currentActiveName === item.name ? null : currentActiveName);
+                }
             }
         };
         row.appendChild(delBtn);
+    } else {
+        // Nút Import cho Cloud Template
+        const importBtn = document.createElement('button');
+        importBtn.innerHTML = '📥';
+        importBtn.title = 'Lưu về danh sách cá nhân';
+        importBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:var(--vnpt-primary);cursor:pointer;margin-left:auto;';
+        importBtn.onclick = (e) => {
+            e.stopPropagation();
+            importCloudTemplate(tpl);
+        }
+        row.appendChild(importBtn);
+    }
 
-        localListWrapper.appendChild(row);
+    return row;
+}
+
+/**
+ * Render danh sách template từ Cloud
+ */
+async function renderCloudTemplates(wrapper, titleEl, onSelectTemplate, currentActiveName, container) {
+    titleEl.textContent = 'Thư viện dùng chung';
+    wrapper.innerHTML = `<div style="text-align:center;padding:10px;font-size:10px;color:#666;">⏳ Đang tải từ Cloud...</div>`;
+    
+    try {
+        const cloudTemplates = await FirebaseService.getSharedTemplates();
+        if (cloudTemplates.length === 0) {
+            wrapper.innerHTML = `<div style="text-align:center;padding:10px;font-size:10px;color:#999;font-style:italic;">Thư viện trống hoặc chưa được cấu hình.</div>`;
+            return;
+        }
+
+        wrapper.innerHTML = '';
+        cloudTemplates.forEach(tpl => {
+            const cloudTpl = { ...tpl, type: 'cloud_shared' };
+            const row = createTemplateRow(cloudTpl, 0, onSelectTemplate, currentActiveName, container);
+            row.style.width = '100%'; // Trong tab cloud thì dàn hàng dọc cho đẹp
+            row.style.borderRadius = '8px';
+            
+            // Thêm thông tin phòng ban nếu có
+            if (tpl.department) {
+                const dept = document.createElement('span');
+                dept.textContent = tpl.department;
+                dept.style.cssText = 'font-size:9px;background:#e3f2fd;color:#1976d2;padding:1px 4px;border-radius:4px;margin-left:4px;';
+                row.insertBefore(dept, row.querySelector('button'));
+            }
+
+            wrapper.appendChild(row);
+        });
+    } catch (err) {
+        wrapper.innerHTML = `<div style="text-align:center;padding:10px;font-size:10px;color:#ea4335;">❌ Lỗi: ${err.message}</div>`;
+    }
+}
+
+async function importCloudTemplate(tpl) {
+    const list = loadTemplates();
+    const isExist = list.some(t => t.url === tpl.url);
+    if (isExist) {
+        showToast("Mẫu này đã có trong danh sách cá nhân của bạn.");
+        return;
+    }
+
+    list.unshift({
+        name: tpl.name,
+        url: tpl.url,
+        type: 'url',
+        fileName: tpl.fileName || tpl.name + '.docx',
+        lastUsed: Date.now()
     });
-
+    saveTemplates(list);
+    showToast(`✅ Đã thêm "${tpl.name}" vào danh sách cá nhân.`);
 }
 
 function selectTemplate(tpl, onSelectTemplate, currentActiveName, container) {

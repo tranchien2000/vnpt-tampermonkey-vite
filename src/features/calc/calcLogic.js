@@ -10,15 +10,15 @@ export function calculateValues(type, value, taxRate) {
     
     if (type === 'before') {
         b = parseNum(value);
-        t = Math.round(b * taxRate);
+        t = taxRate > 0 ? Math.round(b * taxRate) : 0;
         a = b + t;
     } else if (type === 'tax') {
         t = parseNum(value);
-        b = Math.round(t / taxRate);
+        b = taxRate > 0 ? Math.round(t / taxRate) : 0;
         a = b + t;
     } else if (type === 'after') {
         a = parseNum(value);
-        b = Math.round(a / (1 + taxRate));
+        b = taxRate > 0 ? Math.round(a / (1 + taxRate)) : a;
         t = a - b;
     }
     

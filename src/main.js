@@ -22,6 +22,7 @@ import { clearDOMCache, refreshLabelsCache } from './utils/domHelper.js';
 import { debounce } from './utils/common.js';
 import { initHotkeys } from './features/hotkeys.js';
 import { initStorageMerge } from './utils/migrationHelper.js';
+import { RemoteConfig } from './api/remoteConfig.js';
 
 let cacheObserver = null;
 
@@ -36,6 +37,7 @@ function init() {
   initStorageMerge();
 
   try {
+    RemoteConfig.init(); // Tải Selectors từ Cloud (Asynchronous)
     injectStyles();
     initWidget();        // Docx Export Widget
     initCalcWidget();    // Calculator UI (will attach to #vnpt-inline-calc)

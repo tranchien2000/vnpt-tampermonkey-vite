@@ -15,4 +15,4 @@ Mặc định các mẫu được lưu trong LocalStorage, nếu bạn muốn AI
    Sử dụng hàm `normalizeUrl(url)` để chuyển link trực tiếp của GDrive thành link tải file `uc?export=download`.
 
 4. **Verify**:
-   Chạy `npm run build` và kiểm tra xem template có xuất hiện trong danh sách "📁 Bộ nhớ Templates" hay không.
+   Kiểm tra xem template có xuất hiện trong danh sách "📁 Bộ nhớ Templates" hay không.

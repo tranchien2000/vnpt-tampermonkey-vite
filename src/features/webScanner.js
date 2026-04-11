@@ -12,6 +12,7 @@ import { addOrUpdateFieldRow, saveFieldsToLocal } from './fieldsManager.js';
 import { getScannerFallback } from '../core/scannerFallbacks.js';
 import { AppState } from '../core/state.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
+import { RemoteConfig } from '../api/remoteConfig.js';
 import { buildFullDOMMap, findPageInput } from '../utils/domHelper.js';
 import { capitalizeName, formatPhoneNumber, normalizeDate } from '../utils/stringHelper.js';
 import { createInternalBackup, generateBackupName } from '../utils/backupHelper.js';
@@ -22,10 +23,11 @@ import { createInternalBackup, generateBackupName } from '../utils/backupHelper.
  */
 function scanFullAddress() {
     buildFullDOMMap(); // Đảm bảo map mới nhất
-    const keyString = Object.keys(DEFAULT_LABELS).find(k => k.includes('diaChi'));
+    const labels = RemoteConfig.getLabels();
+    const keyString = Object.keys(labels).find(k => k.includes('diaChi'));
     if (!keyString) return '';
     
-    const labelText = DEFAULT_LABELS[keyString];
+    const labelText = labels[keyString];
     const ids = keyString.split(',').map(s => s.trim());
     let addressObj = { detail: '', ward: '', district: '', province: '' };
 
@@ -41,7 +43,7 @@ function scanFullAddress() {
                 val = el.value || el.getAttribute('title') || '';
             }
             val = (val || '').trim();
-            if (val && val !== '--- Chọn ---') {
+            if (val && val !== '--- Chọn ---' && !val.includes('Chọn')) {
                 if (id === 'diaChi' || id === 'duong') addressObj.detail = val;
                 else if (id.includes('tinh')) addressObj.province = val;
                 else if (id.includes('huyen') || id.includes('quan')) addressObj.district = val;
@@ -55,7 +57,7 @@ function scanFullAddress() {
         const span = s2.querySelector('.select2-selection__rendered');
         if (!span) return;
         const title = (span.getAttribute('title') || span.textContent || '').trim();
-        if (!title || title === '--- Chọn ---') return;
+        if (!title || title === '--- Chọn ---' || title.includes('Chọn')) return;
         
         if ((title.startsWith('Xã') || title.startsWith('Phường') || title.startsWith('Thị trấn')) && !addressObj.ward) addressObj.ward = title;
         else if ((title.startsWith('Quận') || title.startsWith('Huyện') || title.startsWith('Thị xã')) && !addressObj.district) addressObj.district = title;
@@ -93,7 +95,7 @@ function getProvinceName() {
             } else {
                 rawVal = el.value || el.getAttribute('title') || '';
             }
-            if (rawVal && rawVal !== '--- Chọn ---') break;
+            if (rawVal && rawVal !== '--- Chọn ---' && !rawVal.includes('Chọn')) break;
         }
     }
     
@@ -103,7 +105,7 @@ function getProvinceName() {
         for (const s2 of s2List) {
             const span = s2.querySelector('.select2-selection__rendered');
             const title = (span?.getAttribute('title') || span?.textContent || '').trim();
-            if (title && (title.startsWith('Tỉnh') || title.startsWith('Thành phố'))) {
+            if (title && (title.startsWith('Tỉnh') || title.startsWith('Thành phố')) && !title.includes('Chọn')) {
                 rawVal = title;
                 break;
             }
@@ -132,8 +134,9 @@ export function initWebScanner() {
         let foundCount = 0;
         buildFullDOMMap();
 
-        Object.keys(DEFAULT_LABELS).forEach(keyString => {
-            const labelText = DEFAULT_LABELS[keyString];
+        const labels = RemoteConfig.getLabels();
+        Object.keys(labels).forEach(keyString => {
+            const labelText = labels[keyString];
             const ids = keyString.split(',').map(s => s.trim());
             const isAddressField = ids.includes('diaChi');
             const isNoiCapDkdn = ids.includes('noiCapSoDkdn');
@@ -197,7 +200,8 @@ export function initWebScanner() {
         const targetId = el.id;
         const targetFcn = el.getAttribute('formcontrolname');
         
-        const matchedKey = Object.keys(DEFAULT_LABELS).find(k => {
+        const labels = RemoteConfig.getLabels();
+        const matchedKey = Object.keys(labels).find(k => {
             const keys = k.split(',').map(s => s.trim());
             return (targetId && keys.includes(targetId)) || (targetFcn && keys.includes(targetFcn));
         });
@@ -248,7 +252,8 @@ export function initWebScanner() {
                     const province = getProvinceName();
                     if (province) {
                         const skdtVal = "SKDT " + province;
-                        const skdtKey = Object.keys(DEFAULT_LABELS).find(k => k.includes('noiCapSoDkdn'));
+                    const labels = RemoteConfig.getLabels();
+                    const skdtKey = Object.keys(labels).find(k => k.includes('noiCapSoDkdn'));
                         if (skdtKey) {
                             addOrUpdateFieldRow(skdtKey, skdtVal, null);
                             saveFieldsToLocal();

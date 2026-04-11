@@ -19,54 +19,65 @@ const getSystemPrompt = () => {
         }
     }
 
-    return `Bạn là một trợ lý ảo chuyên nghiệp trong việc trích xuất dữ liệu từ hợp đồng VNPT.
-Nhiệm vụ của bạn là đọc nội dung của HỢP ĐỒNG ĐIỆN TỬ / PHỤ LỤC / BIÊN BẢN (dưới dạng văn bản/ảnh PDF).
-Tìm và trích xuất các thông tin thuộc về BÊN A (KHÁCH HÀNG / BÊN THUÊ). Bỏ qua dữ liệu của Bên B (VNPT).
+    return `Bạn là chuyên gia trích xuất dữ liệu hợp đồng VNPT.
+Nhiệm vụ: Đọc tài liệu (văn bản/ảnh/PDF) và trích xuất thông tin BÊN A (KHÁCH HÀNG). Bỏ qua Bên B.
 
-Hãy trả về DUY NHẤT một chuỗi JSON thuần tuý (không được bọc trong blockquote markdown \`\`\`json).
-Ví dụ Cấu trúc JSON bắt buộc phải trả về:
+CHỈ TRẢ VỀ JSON THUẦN TÚY, không bao gồm giải thích hay định dạng markdown.
+Cấu trúc JSON yêu cầu:
 {
-${fieldsHint}  "ngayKy": "Ngày tháng năm ký hợp đồng (nếu có)"
+  "fields": {
+${fieldsHint}    "ngayKy": "dd/MM/yyyy"
+  },
+  "rawFullText": "Toàn bộ nội dung văn bản"
 }
 
-Lưu ý quan trọng:
-- Nếu trường nào đó không có/không tìm thấy, hãy xuất ra chuỗi rỗng "".
-- Với trường cmnd: Lấy số Căn cước công dân hoặc CMND mới nhất.
-- Với ngày tháng: Quy đổi về định dạng dd/MM/yyyy.
-- Các trường MST (Mã số thuế / GPKD) điền vào key "soDkdn".
-`;
+Lưu ý:
+- "soDkdn" dùng cho cả MST và Số GPKD.
+- Định dạng ngày: dd/MM/yyyy.
+- Với tài liệu nhiều trang: Tổng hợp dữ liệu từ tất cả các trang. Nếu thông tin xuất hiện nhiều lần, lấy bản mới nhất/chính xác nhất.
+- Nếu không tìm thấy trường thông tin, trả về "".`;
 };
 import { callGemini } from '../../api/gemini.js';
 
 /**
- * @param {string} base64PDF Chuỗi base64 của file
+ * @param {string} base64Data Chuỗi base64 của file
  * @param {string} apiKey Khóa API Google Gemini
  * @param {string} modelName Tên mô hình (ví dụ: gemini-2.0-flash)
+ * @param {string} mimeType Định dạng file (application/pdf, image/png, etc.)
  * @returns {Promise<Object>} JSON đã parse
  */
-export function extractWithGemini(base64PDF, apiKey, modelName = 'gemini-2.0-flash') {
-    return callGemini({
+export function extractWithGemini(base64Data, apiKey, modelName = 'gemini-2.0-flash', mimeType = 'application/pdf', multipleFiles = null) {
+    const options = {
         apiKey,
         model: modelName,
         systemInstruction: getSystemPrompt(),
-        userText: "Đọc file hợp đồng này và trích xuất thành JSON.",
-        fileData: {
-            mimeType: 'application/pdf',
-            base64: base64PDF
-        }
-    });
+        userText: "Đọc tài liệu hợp đồng này và trích xuất thành JSON. Nếu có nhiều trang, hãy kết nối thông tin với nhau để lấy ra thông tin đầy đủ nhất."
+    };
+
+    if (multipleFiles && Array.isArray(multipleFiles)) {
+        options.filesData = multipleFiles;
+    } else if (base64Data) {
+        options.fileData = { mimeType, base64: base64Data };
+    }
+
+    return callGemini(options);
 }
 
 /**
  * Helper biến File thành thẻ Base64
+ * @returns {Promise<{base64: string, mimeType: string}>}
  */
 export function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
+        const mimeType = file.type || 'application/octet-stream';
+
         reader.onload = () => {
-            // Chuỗi data:application/pdf;base64,JVBERi0x...
             const b64 = reader.result.split(',')[1];
-            resolve(b64);
+            resolve({
+                base64: b64,
+                mimeType
+            });
         };
         reader.onerror = error => reject(error);
         reader.readAsDataURL(file);

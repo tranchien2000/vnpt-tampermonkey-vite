@@ -16,4 +16,4 @@ description: Quy trình cập nhật hoặc sửa đổi giao diện (CSS) cho c
    - **Tương tác**: Thêm `:hover` hoặc `:active` với `transition: 0.2s`.
 
 3. **Verify**:
-   Chạy `npm run build` và kiểm tra trên trình duyệt để đảm bảo không lỗi cú pháp CSS trong template string.
+   Kiểm tra trên trình duyệt để đảm bảo không lỗi cú pháp CSS trong template string.

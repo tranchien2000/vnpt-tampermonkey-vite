@@ -5,7 +5,11 @@
  */
 import { logger } from '../utils/logger.js';
 import { AppState } from '../core/state.js';
-import { LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, DEFAULT_LABELS, SK_TAX, SK_CALC_MAP, REQUIRED_KEYS } from '../core/constants.js';
+import { 
+    LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS, 
+    DEFAULT_LABELS, SK_TAX, SK_CALC_MAP, REQUIRED_KEYS,
+    VALIDATION_REGEX
+} from '../core/constants.js';
 import { setPageField } from '../utils/domHelper.js';
 import { showToast } from '../ui/toast.js';
 import { DEFAULT_DATA, DEFAULT_CALC_MAP } from '../core/defaults.js';
@@ -13,6 +17,32 @@ import { doFillData } from './dataFill/syncEngine.js';
 import { Storage } from '../utils/storage.js';
 import { mstService } from '../api/mstService.js';
 import { createInternalBackup, restoreInternalBackup, getInternalBackups, exportFullBackup } from '../utils/backupHelper.js';
+
+/**
+ * Kiểm tra định dạng dữ liệu (MST, SĐT, Email)
+ */
+function validateField(key, value, inputEl) {
+    let isValid = true;
+    let regex = null;
+
+    if (key === 'soDkdn') regex = VALIDATION_REGEX.MST;
+    else if (key === 'sdt') regex = VALIDATION_REGEX.PHONE;
+    else if (key === 'emailDaiDien') regex = VALIDATION_REGEX.EMAIL;
+
+    if (regex && value.trim() !== "") {
+        isValid = regex.test(value.trim());
+    }
+
+    if (!isValid) {
+        inputEl.classList.add('field-error');
+        inputEl.classList.add('vnpt-shake');
+        setTimeout(() => inputEl.classList.remove('vnpt-shake'), 400);
+    } else {
+        inputEl.classList.remove('field-error');
+    }
+    return isValid;
+}
+
 
 export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '') {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
@@ -84,6 +114,8 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             if (REQUIRED_KEYS.includes(incomingPK)) {
                 if (!fVal.value.trim()) {
                     fVal.classList.add('field-required-empty');
+                    fVal.classList.add('vnpt-shake');
+                    setTimeout(() => fVal.classList.remove('vnpt-shake'), 400);
                 } else {
                     fVal.classList.remove('field-required-empty');
                 }
@@ -111,6 +143,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             checkRequired();
         });
         fVal.addEventListener('change', function () {
+            validateField(incomingPK, fVal.value, fVal);
             syncThisRow();
         });
 
@@ -201,6 +234,8 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         });
 
         AppState.fieldsContainer.appendChild(row);
+        
+        
         AppState.fieldsContainer.scrollTop = AppState.fieldsContainer.scrollHeight;
     }
 }
@@ -284,6 +319,7 @@ export function loadSavedData() {
         if (Object.keys(DEFAULT_LABELS).length === 0 && Object.keys(savedFields).length === 0) {
             AppState.fieldsContainer.innerHTML = '<div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>';
         }
+
     } catch (e) {
         console.error('Error loading config:', e);
         Object.keys(DEFAULT_LABELS).forEach(key => addOrUpdateFieldRow(key, '', DEFAULT_LABELS[key]));
@@ -307,6 +343,7 @@ export function loadSavedData() {
 export function initFieldsManager() {
     // Nút Ẩn/Hiện Mã ID
     document.getElementById('vnpt-btn-toggle-id').onclick = () => AppState.fieldsContainer.classList.toggle('show-ids');
+
 
     // Nút Clean Data / Reset hệ thống
     const btnCleanData = document.getElementById('vnpt-btn-clean-data');
@@ -350,15 +387,42 @@ export function initFieldsManager() {
     const backupHistory = document.getElementById('vnpt-backup-history');
     
     if (btnRestore && backupHistory) {
-        logger.info("🔄 Restore button found and bound successfully.");
+        btnRestore.title = "Chuột trái: Khôi phục bản gần nhất | Chuột phải: Lưu lịch sử";
+        
+        // Click chuột trái: Khôi phục bản gần nhất ngay lập tức
         btnRestore.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Đóng menu nếu đang mở
+            backupHistory.classList.remove('show');
+
+            const backups = getInternalBackups();
+            if (backups && backups.length > 0) {
+                const latest = backups[0];
+                if (confirm(`Khôi phục ngay bản sao lưu gần nhất?\n\n"${latest.name}"`)) {
+                    if (restoreInternalBackup(latest.id)) {
+                        if (AppState.isDefaultMode) {
+                            // Chuyển về chế độ cá nhân nếu đang ở mặc định để thấy dữ liệu khôi phục
+                            AppState.isDefaultMode = false;
+                        } else {
+                            loadSavedData();
+                        }
+                    }
+                }
+            } else {
+                showToast("⚠️ Chưa có bản sao lưu nào để khôi phục", "#ffc107");
+            }
+        };
+
+        // Click chuột phải: Hiện danh sách lịch sử
+        btnRestore.oncontextmenu = (e) => {
             e.preventDefault();
             e.stopPropagation();
             
             const isShow = backupHistory.classList.toggle('show');
             if (isShow) {
                 renderBackupHistory(backupHistory);
-                logger.debug("✨ Backup history displayed.");
             }
         };
 
@@ -374,11 +438,10 @@ export function initFieldsManager() {
 
     function renderBackupHistory(container) {
         const backups = getInternalBackups();
-        logger.debug("📋 Rendering backups count:", backups.length);
-        container.innerHTML = '';
+        container.innerHTML = `<div class="backup-history-header">📋 Lịch sử sao lưu nội bộ</div>`;
         
         if (backups.length === 0) {
-            container.innerHTML = '<div class="backup-history-empty">Chưa có bản sao lưu nào. Hãy thử Clean Data để tạo bản mới!</div>';
+            container.innerHTML += '<div class="backup-history-empty">Chưa có bản sao lưu nào. Hãy thử Quét dữ liệu hoặc Clean Data để tạo bản mới!</div>';
             return;
         }
 
@@ -535,6 +598,9 @@ function updateUIForDefaultMode(isDefault) {
                 addOrUpdateFieldRow(key, item.value, item.label, item.sync || '');
             });
         }
+
+        // --- NEW: Hiển thị Mapping Calc trong Banner ---
+        renderCalcMappingInBanner();
     } else {
         btn.classList.remove('active');
         btn.innerHTML = '🛠 Dữ liệu mặc định VNPT';
@@ -542,5 +608,55 @@ function updateUIForDefaultMode(isDefault) {
         showToast("📋 Đã quay lại Dữ liệu cá nhân");
         loadSavedData();
     }
+}
+
+/**
+ * Hiển thị phần cấu hình Mapping Calc ngay trong vùng banner của Dữ liệu mặc định.
+ */
+function renderCalcMappingInBanner() {
+    const section = document.createElement('div');
+    section.className = 'vnpt-calc-mapping-default-section';
+    section.style.cssText = 'border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 8px; margin: 8px 0; background: rgba(26, 115, 232, 0.05);';
+    
+    section.innerHTML = `
+        <div class="util-submenu-title" style="margin-top: 0; color: #1a73e8; font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 6px;">LIÊN KẾT Ô (MAPPING CALC)</div>
+        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="min-width: 80px; font-size: 11px;">Trước thuế</span>
+            <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
+        </div>
+        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="min-width: 80px; font-size: 11px;">Tiền thuế</span>
+            <input data-clink="tax" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: thue_gtgt">
+        </div>
+        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="min-width: 80px; font-size: 11px;">Sau thuế</span>
+            <input data-clink="after" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_cong">
+        </div>
+        <div class="cw-row-map" style="display: flex; align-items: center; gap: 8px;">
+            <span style="min-width: 80px; font-size: 11px;">Bằng chữ</span>
+            <input data-clink="text" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: doc_tien">
+        </div>
+    `;
+
+    const calcMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
+    section.querySelectorAll('input[data-clink]').forEach(inp => {
+        const k = inp.dataset.clink;
+        const val = calcMaps[k] || [];
+        inp.value = Array.isArray(val) ? val.join(', ') : val;
+
+        inp.onchange = () => {
+            const currentMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
+            currentMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s);
+            Storage.set(SK_CALC_MAP, currentMaps);
+            
+            // Đồng bộ ngược lại các ô input trong menu nếu đang mở
+            const sameInpInMenu = document.querySelector(`.vnpt-util-menu input[data-clink="${k}"]`);
+            if (sameInpInMenu) sameInpInMenu.value = inp.value;
+
+            showToast("✅ Đã cập nhật Mapping Calc hệ thống");
+        };
+    });
+    
+    AppState.bannerArea.appendChild(section);
 }
 
