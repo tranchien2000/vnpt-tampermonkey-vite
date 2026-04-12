@@ -1,5 +1,5 @@
 {
   "version": "1.6.9",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.9 - Tối ưu điền địa chỉ đồng thời (Group-by-Rank) và Drag & Drop 60fps"
+  "message": "chore: update project memory for v1.6.9 release"
 }
