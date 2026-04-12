@@ -218,12 +218,20 @@ export function syncSetValue(el, value) {
         }
 
         if (foundOption) {
+            const $ = window.jQuery || window.$;
+            if ($ && typeof $(selectEl).val === 'function') {
+                $(selectEl).val(foundOption.value).trigger('change').trigger('select2:select');
+            }
             selectEl.value = foundOption.value;
             isSuccess = true;
         } else if (value && !foundOption) {
             // Thử gán trực tiếp nếu không khớp option nào (Dành cho case ID).
             // NHƯNG nếu chuỗi có dấu phẩy (địa chỉ full) thì không gán, tránh làm xoá Select2!
             if (!value.toString().includes(',')) {
+                const $ = window.jQuery || window.$;
+                if ($ && typeof $(selectEl).val === 'function') {
+                    $(selectEl).val(value).trigger('change').trigger('select2:select');
+                }
                 selectEl.value = value;
             }
         }
