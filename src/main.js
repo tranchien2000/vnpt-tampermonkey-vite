@@ -24,6 +24,9 @@ import { initHotkeys } from './features/hotkeys.js';
 import { initStorageMerge } from './utils/migrationHelper.js';
 import { RemoteConfig } from './api/remoteConfig.js';
 import { injectMailBridge } from './features/mailScan/mailScanner.js';
+import { APP_VERSION } from './core/constants.js';
+import { Storage } from './utils/storage.js';
+import { showToast } from './ui/toast.js';
 
 /** Danh sách domain của các dịch vụ mail được hỗ trợ */
 const MAIL_DOMAINS = [
@@ -37,7 +40,7 @@ const isMailDomain = MAIL_DOMAINS.some(d => window.location.hostname.includes(d)
 
 let cacheObserver = null;
 
-function init() {
+async function init() {
   // Chống chạy 2 lần
   if (window.__vnptInited) return;
   window.__vnptInited = true;
@@ -63,6 +66,13 @@ function init() {
     
     initSyncEngine();    // Khởi tạo engine đồng bộ gõ phím ngầm
     initHotkeys();       // Khởi tạo phím tắt
+    
+    // ─── Post-Update Notification ───
+    const lastRunVersion = Storage.get('vnpt_last_run_version');
+    if (lastRunVersion && lastRunVersion !== APP_VERSION) {
+        showToast(`🚀 Hợp đồng VNPT đã cập nhật lên v${APP_VERSION}!`, "#1a73e8");
+    }
+    Storage.set('vnpt_last_run_version', APP_VERSION);
 
     // ─── DOM Cache Management ───
     // Xóa cache khi DOM thay đổi lớn (SPA navigation hoặc load form mới)

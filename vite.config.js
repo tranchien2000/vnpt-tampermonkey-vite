@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite';
+import pkg from './package.json';
 
 const tampermonkeyHeader = `// ==UserScript==
 // @name         VNPT Word Automation
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      ${pkg.version}
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
