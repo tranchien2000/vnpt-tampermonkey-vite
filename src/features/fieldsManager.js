@@ -878,7 +878,9 @@ function updateUIForDefaultMode(isDefault) {
                 const item = DEFAULT_DATA[key];
                 const val = (item && typeof item === 'object') ? item.value : item;
                 const lbl = (item && typeof item === 'object') ? item.label : (DEFAULT_LABELS[key] || '');
-                addOrUpdateFieldRow(key, val, lbl);
+                const s = (item && typeof item === 'object' && item.sync) ? item.sync : '';
+                const dir = (item && typeof item === 'object' && item.syncDir) ? item.syncDir : 'down'; // Mặc định bảng default ưu tiên đổ xuống form
+                addOrUpdateFieldRow(key, val, lbl, s, dir);
             });
         } else {
             Object.keys(overrides).forEach(key => {

@@ -74,15 +74,25 @@ export function initCloudSyncUI(container) {
             await FirebaseService.pushProfile(p);
           }
 
-          // 2. Đẩy Cấu hình (Mapping, Hotkeys, Text Template)
-          const { SK_CALC_MAP, SK_HOTKEYS, SK_TXT_TEMPLATE } = await import('../../core/constants.js');
+          // 2. Đẩy Cấu hình (Mapping, Hotkeys, Text Template, Data mặc định...)
+          const { 
+              SK_CALC_MAP, SK_HOTKEYS, SK_TXT_TEMPLATE, 
+              LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
+              SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS 
+          } = await import('../../core/constants.js');
           const { Storage } = await import('../../utils/storage.js');
           const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
+          
           // Dùng DEFAULT_CALC_MAP làm fallback nếu user chưa lưu mapping thủ công
           const globalConfig = {
               calcMap: Storage.get(SK_CALC_MAP) ?? DEFAULT_CALC_MAP,
               hotkeys: Storage.get(SK_HOTKEYS),
-              textTemplate: Storage.get(SK_TXT_TEMPLATE)
+              textTemplate: Storage.get(SK_TXT_TEMPLATE),
+              fields: Storage.get(LOCAL_KEY_FIELDS),
+              taxRate: Storage.get(SK_TAX),
+              templates: Storage.get(SK_TEMPLATES),
+              defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS),
+              dataDefault: Storage.get(SK_DATA_DEF)
           };
           await FirebaseService.pushGlobalConfig(globalConfig);
 
@@ -110,13 +120,23 @@ export function initCloudSyncUI(container) {
 
              // 2. Áp dụng Cấu hình (Nếu có)
              if (cloudConfig) {
-                 const { SK_CALC_MAP, SK_HOTKEYS, SK_TXT_TEMPLATE } = await import('../../core/constants.js');
+                 const { 
+                     SK_CALC_MAP, SK_HOTKEYS, SK_TXT_TEMPLATE, 
+                     LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
+                     SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS 
+                 } = await import('../../core/constants.js');
                  const { Storage } = await import('../../utils/storage.js');
                  const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
-                 // Lưu calcMap vào Storage (dùng DEFAULT nếu cloud không có)
+                 
+                 // Lưu config vào Storage (dùng DEFAULT nếu cloud không có)
                  Storage.set(SK_CALC_MAP, cloudConfig.calcMap ?? DEFAULT_CALC_MAP);
                  if (cloudConfig.hotkeys) Storage.set(SK_HOTKEYS, cloudConfig.hotkeys);
                  if (cloudConfig.textTemplate) Storage.set(SK_TXT_TEMPLATE, cloudConfig.textTemplate);
+                 if (cloudConfig.fields) Storage.set(LOCAL_KEY_FIELDS, cloudConfig.fields);
+                 if (cloudConfig.taxRate !== undefined) Storage.set(SK_TAX, cloudConfig.taxRate);
+                 if (cloudConfig.templates) Storage.set(SK_TEMPLATES, cloudConfig.templates);
+                 if (cloudConfig.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, cloudConfig.defaultFields);
+                 if (cloudConfig.dataDefault) Storage.set(SK_DATA_DEF, cloudConfig.dataDefault);
              }
 
              showToast("✅ Đã khôi phục toàn bộ cấu hình!");
