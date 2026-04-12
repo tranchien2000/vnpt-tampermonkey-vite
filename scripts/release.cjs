@@ -40,6 +40,8 @@ const commitMsg = `release: v${newVersion} - ${userMsg}`;
 // 4. Git actions
 run('git add .');
 run(`git commit -m "${commitMsg}"`);
+// Pull rebase trước để tránh lỗi non-fast-forward (do GitHub Action tạo commit trên remote)
+run('git pull --rebase origin main');
 run('git push');
 
 console.log(`\n🎉 Đã hoàn tất Release v${newVersion}!`);
