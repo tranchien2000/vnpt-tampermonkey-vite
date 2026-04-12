@@ -16,7 +16,7 @@ import { DEFAULT_DATA, DEFAULT_CALC_MAP } from '../core/defaults.js';
 import { doFillData } from './dataFill/syncEngine.js';
 import { Storage } from '../utils/storage.js';
 import { mstService } from '../api/mstService.js';
-import { createInternalBackup, restoreInternalBackup, getInternalBackups, exportFullBackup } from '../utils/backupHelper.js';
+import { createInternalBackup, restoreInternalBackup, getInternalBackups, exportFullBackup, deleteInternalBackup } from '../utils/backupHelper.js';
 
 // ─── Field Linker State ───
 let _linkerCleanup = null;
@@ -503,10 +503,15 @@ export function saveFieldsToLocal() {
  */
 function getBackupName() {
     const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
+    const org = data['tenToChuc']?.value || '';
     const name = data['tenDaiDienn']?.value || '';
     const contract = data['soHopDong']?.value || '';
-    if (!name && !contract) return `Bản sao lưu ${new Date().toLocaleString()}`;
-    return `${name} - ${contract}`;
+    
+    if (!org && !name && !contract) return `Bản sao lưu ${new Date().toLocaleString()}`;
+    
+    let label = org || name;
+    if (contract) label += ` - ${contract}`;
+    return label;
 }
 
 /**
@@ -597,9 +602,9 @@ export function initFieldsManager() {
 
             if (confirm(msg)) {
                 if (!isDefault) {
-                    createInternalBackup(getBackupName()); // Sao lưu trước khi xóa dữ liệu cá nhân
+                    createInternalBackup(getBackupName()); // Tự động lưu Local History
                     Storage.remove(LOCAL_KEY_FIELDS);
-                    showToast("🧹 Đã làm sạch dữ liệu cá nhân", "#1a73e8");
+                    showToast("🧹 Đã làm sạch & lưu bản cũ vào History", "#1a73e8");
                 } else {
                     Storage.remove(LOCAL_KEY_DEFAULT_FIELDS);
                     showToast("🔄 Đã reset dữ liệu hệ thống VNPT", "#1a73e8");
@@ -624,42 +629,36 @@ export function initFieldsManager() {
     const backupHistory = document.getElementById('vnpt-backup-history');
     
     if (btnRestore && backupHistory) {
-        btnRestore.title = "Chuột trái: Khôi phục bản gần nhất | Chuột phải: Lưu lịch sử";
+        btnRestore.title = "Click để xem lịch sử sao lưu (Tối đa 10 bản)";
         
-        // Click chuột trái: Khôi phục bản gần nhất ngay lập tức
+        // Click chuột trái: Hiện danh sách lịch sử (thay vì khôi phục nhanh như cũ)
         btnRestore.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Đóng menu nếu đang mở
-            backupHistory.classList.remove('show');
-
-            const backups = getInternalBackups();
-            if (backups && backups.length > 0) {
-                const latest = backups[0];
-                if (confirm(`Khôi phục ngay bản sao lưu gần nhất?\n\n"${latest.name}"`)) {
-                    if (restoreInternalBackup(latest.id)) {
-                        if (AppState.isDefaultMode) {
-                            // Chuyển về chế độ cá nhân nếu đang ở mặc định để thấy dữ liệu khôi phục
-                            AppState.isDefaultMode = false;
-                        } else {
-                            loadSavedData();
-                        }
-                    }
-                }
-            } else {
-                showToast("⚠️ Chưa có bản sao lưu nào để khôi phục", "#ffc107");
-            }
-        };
-
-        // Click chuột phải: Hiện danh sách lịch sử
-        btnRestore.oncontextmenu = (e) => {
             e.preventDefault();
             e.stopPropagation();
             
             const isShow = backupHistory.classList.toggle('show');
             if (isShow) {
                 renderBackupHistory(backupHistory);
+            }
+        };
+
+        // Click chuột phải: Vẫn giữ tính năng khôi phục bản gần nhất nếu muốn
+        btnRestore.oncontextmenu = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const backups = getInternalBackups();
+            if (backups.length > 0) {
+                const latest = backups[0];
+                if (confirm(`Khôi phục nhanh bản gần nhất?\n"${latest.name}"`)) {
+                    if (restoreInternalBackup(latest.id)) {
+                        if (AppState.isDefaultMode) AppState.isDefaultMode = false;
+                        else loadSavedData();
+                        backupHistory.classList.remove('show');
+                    }
+                }
+            } else {
+                showToast("⚠️ Chưa có bản sao lưu nào", "#ffc107");
             }
         };
 
@@ -675,36 +674,51 @@ export function initFieldsManager() {
 
     function renderBackupHistory(container) {
         const backups = getInternalBackups();
-        container.innerHTML = `<div class="backup-history-header">📋 Lịch sử sao lưu nội bộ</div>`;
+        container.innerHTML = `<div class="backup-history-header">📋 Local History (Max 10)</div>`;
         
         if (backups.length === 0) {
-            container.innerHTML += '<div class="backup-history-empty">Chưa có bản sao lưu nào. Hãy thử Quét dữ liệu hoặc Clean Data để tạo bản mới!</div>';
+            container.innerHTML += '<div class="backup-history-empty">Chưa có lịch sử. Dữ liệu sẽ tự lưu khi bạn Quét hoặc Dọn dẹp!</div>';
             return;
         }
 
         backups.forEach((b) => {
             const item = document.createElement('div');
             item.className = 'backup-history-item';
-            const timeStr = new Date(b.id * 1).toLocaleString();
+            const timeStr = new Date(b.id * 1).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+            
             item.innerHTML = `
-                <div class="backup-history-name" title="${b.name}">${b.name}</div>
-                <div class="backup-history-time">${timeStr}</div>
+                <div class="backup-info">
+                    <div class="backup-history-name" title="${b.name}">${b.name}</div>
+                    <div class="backup-history-time">${timeStr}</div>
+                </div>
+                <div class="backup-actions">
+                    <button class="btn-restore-action" title="Khôi phục">⏪</button>
+                    <button class="btn-delete-action" title="Xóa bản này">🗑️</button>
+                </div>
             `;
-            item.onclick = (e) => {
+
+            // Khôi phục
+            item.querySelector('.btn-restore-action').onclick = (e) => {
                 e.stopPropagation();
-                if (confirm(`Bạn có chắc muốn khôi phục dữ liệu từ bản: \n${b.name}?`)) {
-                    const success = restoreInternalBackup(b.id);
-                    if (success) {
+                if (confirm(`Khôi phục dữ liệu từ bản: \n${b.name}?`)) {
+                    if (restoreInternalBackup(b.id)) {
                         container.classList.remove('show');
-                        // Tự động load lại dữ liệu
-                        if (AppState.isDefaultMode) {
-                            document.getElementById('vnpt-btn-default')?.click();
-                        } else {
-                            loadSavedData();
-                        }
+                        if (AppState.isDefaultMode) AppState.isDefaultMode = false;
+                        else loadSavedData();
                     }
                 }
             };
+
+            // Xoá
+            item.querySelector('.btn-delete-action').onclick = (e) => {
+                e.stopPropagation();
+                if (confirm(`Xoá vĩnh viễn bản sao lưu:\n${b.name}?`)) {
+                    deleteInternalBackup(b.id);
+                    renderBackupHistory(container); // Refresh list
+                    showToast("🗑️ Đã xoá bản sao lưu", "#ff5252");
+                }
+            };
+
             container.appendChild(item);
         });
     }
@@ -738,33 +752,29 @@ export function initFieldsManager() {
         });
 
         if (checkedCount === 0) {
-            // Trường hợp không chọn hàng nào -> Xử lý toàn bộ
-            const fileName = getExportFileName();
-            
+            // Lấy tên công ty để hiển thị thông báo
+            const fields = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
+            const orgName = fields['tenToChuc']?.value || "Dữ liệu hiện tại";
+            const displayName = orgName.length > 25 ? orgName.substring(0, 25) + "..." : orgName;
             if (isDeleteMode) {
                 // Shift+Click: Xóa toàn bộ hàng
-                if (confirm(`Xóa TOÀN BỘ hàng dữ liệu?\n\n(Hệ thống sẽ tự động lưu một bản nội bộ để có thể khôi phục).`)) {
+                if (confirm(`Xóa TOÀN BỘ hàng dữ liệu của:\n"${orgName}"?\n\n(Hệ thống sẽ tự động lưu một bản vào History).`)) {
                     createInternalBackup(getBackupName()); 
                     rows.forEach(r => r.remove());
-                    showToast("🗑️ Đã xóa toàn bộ hàng", "#ff5252");
+                    showToast(`🗑️ Đã xóa nội dung: ${displayName}`, "#ff5252");
                     saveFieldsToLocal();
                 }
             } else {
-                // Click thường: Dọn dẹp giá trị & Xuất JSON
-                if (confirm(`Dọn dẹp TOÀN BỘ giá trị và Xuất JSON dự phòng?\n\nFile: "${fileName}.json"\n\n(Hệ thống vẫn tự động lưu một bản nội bộ).`)) {
-                    // 1. Xuất file JSON
-                    exportFullBackup(fileName);
-                    
-                    // 2. Sao lưu nội bộ (safety net)
+                // Click thường: Dọn dẹp giá trị
+                if (confirm(`Dọn dẹp TOÀN BỘ giá trị bảng của:\n"${orgName}"?\n\n(Hệ thống sẽ tự động lưu vào History).`)) {
                     createInternalBackup(getBackupName()); 
                     
-                    // 3. Thực hiện dọn giá trị
                     rows.forEach(row => {
                         const fVal = row.querySelector('.f-val');
                         if (fVal) fVal.value = "";
                     });
                     
-                    showToast("🧹 Đã lưu JSON & Dọn dẹp giá trị", "#1a73e8");
+                    showToast(`🧹 Đã dọn dẹp: ${displayName}`, "#1a73e8");
                     saveFieldsToLocal();
                 }
             }

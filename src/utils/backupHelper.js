@@ -124,8 +124,8 @@ export function createInternalBackup(name = '') {
     // Đưa lên đầu mảng
     backups.unshift(newEntry);
     
-    // Giới hạn 15 bản cho VNPT Export
-    const limitedBackups = backups.slice(0, 15);
+    // Giới hạn 10 bản theo yêu cầu người dùng
+    const limitedBackups = backups.slice(0, 10);
     
     Storage.set(LOCAL_KEY_AUTO_BACKUP, limitedBackups);
     console.log(`✅ Field backup created: ${newEntry.name}`);
@@ -177,4 +177,21 @@ export function restoreInternalBackup(backupId) {
 
     showToast(`✅ Đã khôi phục các trường: ${entry.name}`, "#1e8e3e");
     return true;
+}
+
+/**
+ * Xoá một bản sao lưu nội bộ cụ thể.
+ * @param {string} backupId 
+ * @returns {boolean}
+ */
+export function deleteInternalBackup(backupId) {
+    let backups = getInternalBackups();
+    const originalLength = backups.length;
+    backups = backups.filter(b => b.id !== backupId);
+    
+    if (backups.length !== originalLength) {
+        Storage.set(LOCAL_KEY_AUTO_BACKUP, backups);
+        return true;
+    }
+    return false;
 }

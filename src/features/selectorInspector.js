@@ -8,41 +8,97 @@ import { addOrUpdateFieldRow, saveFieldsToLocal } from './fieldsManager.js';
 import { showToast } from '../ui/toast.js';
 
 let lastElement = null;
+let _captureCount = 0;
 
 export function toggleInspector() {
     AppState.isInspecting = !AppState.isInspecting;
 
     if (AppState.isInspecting) {
+        _captureCount = 0;
         startInspecting();
-        showToast("🔍 Chế độ Soi: Đang bật. Hãy di chuột và Click vào ô nhập liệu.", "#1a73e8");
     } else {
         stopInspecting();
-        showToast("🔍 Chế độ Soi: Đã tắt.");
     }
 }
 
 function startInspecting() {
     document.addEventListener('mouseover', handleMouseOver, true);
     document.addEventListener('click', handleClick, true);
+    document.addEventListener('keydown', handleKeyDown, true);
     document.body.classList.add('vnpt-inspecting-mode');
+
+    // Giảm độ mờ widget để dễ soi
+    if (AppState.widget) {
+        AppState.widget.style.opacity = '0.15';
+        AppState.widget.style.pointerEvents = 'none';
+        AppState.widget.style.transition = 'opacity 0.3s';
+    }
+
+    renderInspectorBanner();
+    showToast("🔍 Chế độ Soi: Đang bật. Hãy Click vào các ô nhập liệu trên trang.", "#1a73e8");
 }
 
 function stopInspecting() {
     document.removeEventListener('mouseover', handleMouseOver, true);
     document.removeEventListener('click', handleClick, true);
+    document.removeEventListener('keydown', handleKeyDown, true);
     document.body.classList.remove('vnpt-inspecting-mode');
     
+    if (AppState.widget) {
+        AppState.widget.style.opacity = '';
+        AppState.widget.style.pointerEvents = '';
+    }
+
+    const banner = document.getElementById('vnpt-inspector-banner');
+    if (banner) banner.remove();
+
     if (lastElement) {
         lastElement.classList.remove('vnpt-inspect-highlight');
         lastElement = null;
+    }
+    
+    AppState.isInspecting = false;
+    // Trigger reset trạng thái nút bấm ở UI
+    AppState.trigger('isInspecting', false);
+}
+
+function renderInspectorBanner() {
+    let banner = document.getElementById('vnpt-inspector-banner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'vnpt-inspector-banner';
+        banner.className = 'vnpt-linking-banner'; // Dùng chung style với Linker
+        banner.style.background = 'linear-gradient(135deg, #f57f17 0%, #e65100 100%)';
+        banner.style.boxShadow = '0 8px 28px rgba(245, 127, 23, 0.5)';
+        document.body.appendChild(banner);
+    }
+
+    banner.innerHTML = `
+        🔍 <b>Chế độ Soi (Capture)</b> &nbsp; [${_captureCount} trường]
+        &nbsp;·&nbsp; <span style="font-size:10px;opacity:0.9;">Bấm vào ô web để thêm vào bảng</span>
+        &nbsp;·&nbsp; <button class="vnpt-link-done-btn" id="vnpt-btn-inspect-done">✅ Xong</button>
+        &nbsp; <kbd>Esc</kbd>
+    `;
+
+    document.getElementById('vnpt-btn-inspect-done').onclick = (e) => {
+        e.stopPropagation();
+        stopInspecting();
+        showToast(`✅ Đã bắt xong ${_captureCount} trường!`);
+    };
+}
+
+function handleKeyDown(e) {
+    if (e.key === 'Escape') {
+        stopInspecting();
+        showToast("🔍 Đã tắt chế độ Soi.");
     }
 }
 
 function handleMouseOver(e) {
     if (!AppState.isInspecting) return;
     
-    // Chỉ highlight các phần tử có khả năng là input hoặc container của input
-    const target = e.target.closest('input, select, textarea, ng-select2, label');
+    // Tìm các phần tử có khả năng là target
+    const target = e.target.closest('input, select, textarea, [role="textbox"], .form-control, ng-select2, label');
     if (!target) {
         if (lastElement) {
             lastElement.classList.remove('vnpt-inspect-highlight');
@@ -62,74 +118,88 @@ function handleMouseOver(e) {
 function handleClick(e) {
     if (!AppState.isInspecting) return;
 
-    // Bỏ qua nếu click vào chính Widget
-    if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
+    // Bỏ qua nếu click vào chính Widget hoặc Banner
+    if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inspector-banner')) return;
 
     e.preventDefault();
     e.stopPropagation();
 
-    const target = e.target.closest('input, select, textarea, ng-select2, label');
+    const target = e.target.closest('input, select, textarea, [role="textbox"], .form-control, ng-select2, label');
     if (!target) return;
 
     // Phân tích thông tin phần tử
     const info = extractElementInfo(target);
-    const value = target.getAttribute('title') || target.value || '';
+    const value = target.value || target.innerText || '';
     
     if (info.key) {
-        addOrUpdateFieldRow(info.key, value, info.label || '');
+        addOrUpdateFieldRow(info.key, value, info.label || info.key);
         saveFieldsToLocal();
-        showToast(`✅ Đã bắt được: ${info.label || info.key}${value ? ' (' + value + ')' : ''}`, "#1e8e3e");
+        _captureCount++;
+        renderInspectorBanner();
+        showToast(`+ capture: ${info.label || info.key}`, "#f57f17");
     } else {
-        showToast("⚠️ Không tìm thấy ID hoặc tên cố định cho trường này.", "#ffc107");
+        showToast("⚠️ Không tìm thấy ID/FormControlName cố định.", "#ffc107");
     }
-
-    // Tự động tắt sau khi bắt (tùy chọn: có thể để bật liên tục nếu muốn)
-    // toggleInspector(); 
 }
 
+/**
+ * Logic chiết xuất thông tin thông minh hơn
+ */
 function extractElementInfo(el) {
     let key = '';
     let label = '';
 
-    // 1. Thử lấy từ FormControlName (Angular - chuẩn nhất VNPT)
-    key = el.getAttribute('formcontrolname') || '';
-    
-    // 2. Thử lấy từ Id hoặc Name
-    if (!key) key = el.id || el.getAttribute('name') || '';
+    // Ưu tiên 1: Strong identifiers
+    const strongKey = el.getAttribute('formcontrolname') || el.id || el.getAttribute('name') || el.getAttribute('placeholder');
+    if (strongKey && !strongKey.includes('ng-')) {
+        key = strongKey;
+    }
 
-    // 3. Tìm Label đi kèm
-    label = findLabelText(el);
-
-    // Nếu el là label, tìm input tương ứng
-    if (el.tagName.toLowerCase() === 'label') {
+    // Ưu tiên 2: Nếu là Label, tìm input nó trỏ tới
+    if (el.tagName === 'LABEL') {
+        label = el.innerText.trim();
         const inputId = el.getAttribute('for');
         const input = inputId ? document.getElementById(inputId) : el.querySelector('input, select, textarea');
         if (input) {
             key = input.getAttribute('formcontrolname') || input.id || input.getAttribute('name') || '';
         }
-        if (!label) label = el.innerText.trim();
+    } else {
+        // Tìm label xung quanh
+        label = findLabelText(el);
     }
 
-    return { key, label: label.replace(/[:*]/g, '').trim() };
+    // Fallback key: Dùng chính label nếu không tìm thấy key kỹ thuật
+    if (!key && label) {
+        key = label.replace(/[:*]/g, '').trim();
+    }
+
+    return { 
+        key: key.replace(/[:*]/g, '').trim(), 
+        label: label.replace(/[:*]/g, '').trim() 
+    };
 }
 
 function findLabelText(el) {
-    // Tìm label qua id (htmlFor)
+    // 1. Kiểm tra thuộc tính aria-label hoặc placeholder
+    const hint = el.getAttribute('aria-label') || el.getAttribute('placeholder') || el.title;
+    if (hint) return hint;
+
+    // 2. Tìm label trỏ tới ID của input này
     if (el.id) {
         const lbl = document.querySelector(`label[for="${el.id}"]`);
         if (lbl) return lbl.innerText.trim();
     }
 
-    // Tìm trong cha gần nhất
+    // 3. Tìm trong cha gần nhất có chứa text (vd: form-group)
+    const container = el.closest('.form-group, .row, .col, .field-wrapper, td');
+    if (container) {
+        const lbl = container.querySelector('label, .control-label, span.title');
+        if (lbl) return lbl.innerText.trim();
+    }
+
+    // 4. Tìm thẻ label bọc ngoài
     const parentLabel = el.closest('label');
     if (parentLabel) return parentLabel.innerText.trim();
 
-    // Tìm thẻ span/div chứa text ngay trước đó
-    const prev = el.previousElementSibling;
-    if (prev && (prev.tagName === 'LABEL' || prev.classList.contains('label'))) {
-        return prev.innerText.trim();
-    }
-
-    // fallback: dùng placeholder
-    return el.getAttribute('placeholder') || '';
+    return '';
 }

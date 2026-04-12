@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-12)
 
 ## Corpus Check
-- 62 files · ~54,913 words
+- 62 files · ~54,295 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 210 nodes · 212 edges · 58 communities detected
+- 213 nodes · 219 edges · 58 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -35,24 +35,24 @@ Cohesion: 0.36
 Nodes (9): fetchTemplateFromUrl(), importCloudTemplate(), loadTemplates(), renderCloudTemplates(), renderLocalTemplates(), renderTemplateManager(), saveLocalTemplate(), saveTemplates() (+1 more)
 
 ### Community 2 - "Community 2"
+Cohesion: 0.36
+Nodes (8): extractElementInfo(), findLabelText(), handleClick(), handleKeyDown(), renderInspectorBanner(), startInspecting(), stopInspecting(), toggleInspector()
+
+### Community 3 - "Community 3"
+Cohesion: 0.31
+Nodes (5): deleteInternalBackup(), exportFullBackup(), flattenData(), getInternalBackups(), restoreInternalBackup()
+
+### Community 4 - "Community 4"
 Cohesion: 0.42
 Nodes (8): buildFullDOMMap(), clearDOMCache(), findPageInput(), getInputByLabel(), refreshLabelsCache(), setPageField(), syncSetValue(), triggerCustom()
 
-### Community 3 - "Community 3"
+### Community 5 - "Community 5"
 Cohesion: 0.29
 Nodes (2): getHotkeyString(), handleRecording()
 
-### Community 4 - "Community 4"
+### Community 6 - "Community 6"
 Cohesion: 0.5
 Nodes (6): createProfileFromCurrent(), deleteProfile(), getActiveProfileId(), getProfiles(), importProfiles(), switchProfile()
-
-### Community 5 - "Community 5"
-Cohesion: 0.39
-Nodes (6): extractElementInfo(), findLabelText(), handleClick(), startInspecting(), stopInspecting(), toggleInspector()
-
-### Community 6 - "Community 6"
-Cohesion: 0.32
-Nodes (4): exportFullBackup(), flattenData(), getInternalBackups(), restoreInternalBackup()
 
 ### Community 7 - "Community 7"
 Cohesion: 0.33
