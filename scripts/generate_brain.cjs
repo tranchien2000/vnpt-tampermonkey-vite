@@ -45,7 +45,7 @@ function getFileSummary(relativeRef) {
 
     const content = fs.readFileSync(fullPath, 'utf8');
     const lines = content.split('\n');
-    
+
     let summary = '';
     let inComment = false;
     let lineCount = 0;
@@ -62,7 +62,7 @@ function getFileSummary(relativeRef) {
         } else if (line.startsWith('//')) {
             summary += line + '\n';
         } else if (line !== '' && !inComment) {
-            break; 
+            break;
         }
         lineCount++;
         if (lineCount > 10) break; // Limit to 10 lines max per file
@@ -83,7 +83,7 @@ function generate() {
         if (fs.existsSync(docPath)) {
             console.log(`Đang đọc: ${doc}`);
             output += `### File: ${doc}\n\n`;
-            
+
             let docContent = fs.readFileSync(docPath, 'utf8');
             if (doc === 'README.md') {
                 // Chỉ lấy 100 dòng đầu của README
@@ -96,18 +96,18 @@ function generate() {
 
     // 2. Thêm tóm tắt cấu trúc code
     output += `## 2. TÓM TẮT CẤU TRÚC MÃ NGUỒN (CODE LOGIC SUMMARIES)\n\n`;
-    
+
     for (const dir of CODE_DIRS) {
         const fullDirPath = path.join(ROOT_DIR, dir);
         if (fs.existsSync(fullDirPath)) {
             output += `### Thư mục: ${dir}\n\n`;
             const files = fs.readdirSync(fullDirPath);
-            
+
             output += `| File | Mô tả |\n| :--- | :--- |\n`;
             for (const file of files) {
                 const relativeFile = path.join(dir, file);
                 const fullFilePath = path.join(ROOT_DIR, relativeFile);
-                
+
                 if (fs.statSync(fullFilePath).isFile() && (file.endsWith('.js') || file.endsWith('.ts'))) {
                     const summary = getFileSummary(relativeFile).replace(/\n/g, '<br>');
                     output += `| ${file} | ${summary} |\n`;
