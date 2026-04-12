@@ -5,13 +5,16 @@
  */
 import { AppState } from '../../core/state.js';
 import { Storage } from '../../utils/storage.js';
-import { SK_GEMINI_KEY, SK_GEMINI_MODEL, REQUIRED_KEYS, DEFAULT_LABELS } from '../../core/constants.js';
+import { SK_GEMINI_KEY, SK_GEMINI_MODEL, SK_RAW_SCAN, REQUIRED_KEYS, DEFAULT_LABELS } from '../../core/constants.js';
 import { fileToBase64, extractWithGemini } from './geminiOcr.js';
 import { showPdfConfirmDialog, showPdfLoading, hidePdfLoading } from './pdfScanUI.js';
 import { addOrUpdateFieldRow, saveFieldsToLocal } from '../fieldsManager.js';
 import { showToast } from '../../ui/toast.js';
 import { createInternalBackup, generateBackupName } from '../../utils/backupHelper.js';
 import { extractFieldsFromText, extractFieldsLocally } from '../rawScan/rawScan.js';
+import { MAIL_BRIDGE_KEY } from '../mailScan/mailScanner.js';
+import { scrapeScreenText } from '../screenScan/screenScanner.js';
+import { downloadAsBase64 } from '../../utils/fileHelper.js';
 
 let fileQueue = [];
 
@@ -79,6 +82,19 @@ export function initPdfScan() {
         btnAiMode.classList.toggle('active', isHidden);
     });
 
+    // --- KHÔI PHỤC RAW TEXT TỪ STORAGE ---
+    const savedRaw = Storage.get(SK_RAW_SCAN);
+    if (savedRaw && rawInput) {
+        rawInput.value = savedRaw;
+    }
+
+    // --- LƯU RAW TEXT KHI THAY ĐỔI ---
+    if (rawInput) {
+        rawInput.addEventListener('input', () => {
+            Storage.setDebounced(SK_RAW_SCAN, rawInput.value, 1000);
+        });
+    }
+
     if (btnShowPdf) {
         btnShowPdf.addEventListener('click', (e) => {
             e.preventDefault();
@@ -89,9 +105,25 @@ export function initPdfScan() {
                     });
                     saveFieldsToLocal();
                     showToast(`✅ Đã cập nhật ${selectedResults.length} trường.`);
+                }, (newText) => {
+                    try {
+                        const refreshedFields = extractFieldsLocally(newText);
+                        handleExtractionResults(refreshedFields, newText, 'KẾT QUẢ QUÉT (CẬP NHẬT)');
+                    } catch (err) {
+                        showToast("❌ Lỗi: " + err.message, "#ef4444");
+                    }
                 });
+            } else if (rawInput && rawInput.value.trim()) {
+                // Nếu chưa có cache kết quả nhưng có text ở ô input -> Chạy local scan để mở Dialog
+                const text = rawInput.value.trim();
+                try {
+                    const resultFields = extractFieldsLocally(text);
+                    handleExtractionResults(resultFields, text, 'PHÂN LOẠI DỮ LIỆU THÔ (LOCAL)');
+                } catch (err) {
+                    showToast("❌ Lỗi: " + err.message, "#f44336");
+                }
             } else {
-                showToast("Chưa có kết quả scan AI nào trong phiên này.", "#ffc107");
+                showToast("Chưa có nội dung để hiển thị. Vui lòng nhập text hoặc chọn file.", "#ffc107");
             }
         });
     }
@@ -106,6 +138,90 @@ export function initPdfScan() {
     queueContainer.addEventListener('click', () => {
         inputPdf.click();
     });
+
+    // --- QUÉT MAIL (qua GM_setValue Bridge từ tab Gmail/Outlook) ---
+    const btnScanMail = document.getElementById('vnpt-btn-scan-mail');
+    const btnScanScreen = document.getElementById('vnpt-btn-scan-screen');
+
+    if (btnScanMail) {
+        btnScanMail.addEventListener('click', async () => {
+            // Đọc dữ liệu mail từ GM storage (do tab Gmail/Outlook đã gửi qua)
+            let rawMailJson;
+            try {
+                rawMailJson = GM_getValue(MAIL_BRIDGE_KEY, null);
+            } catch (err) {
+                showToast('❌ Lỗi GM_getValue. Kiểm tra lại grant Tampermonkey.', '#ef4444');
+                return;
+            }
+
+            if (!rawMailJson) {
+                showToast('⚠️ Chưa có mail nào được gửi!\n👉 Mở Gmail/Outlook → chọn email → nhấn nút "📋 Gửi sang VNPT".', '#f59e0b');
+                return;
+            }
+
+            let data;
+            try {
+                data = typeof rawMailJson === 'string' ? JSON.parse(rawMailJson) : rawMailJson;
+            } catch {
+                showToast('❌ Dữ liệu mail bị lỗi định dạng.', '#ef4444');
+                return;
+            }
+
+            // Kiểm tra dữ liệu còn mới (trong vòng 30 phút)
+            const AGE_LIMIT_MS = 30 * 60 * 1000;
+            if (data._timestamp && (Date.now() - data._timestamp) > AGE_LIMIT_MS) {
+                showToast('⚠️ Dữ liệu mail đã quá cũ (>30 phút). Hãy gửi lại từ tab Gmail/Outlook.', '#f59e0b');
+                return;
+            }
+
+            // 1. Đổ text vào ô Raw Scan
+            const newContent = `TIÊU ĐỀ: ${data.subject || ''}\nNGƯỜI GỬI: ${data.sender || ''}\n\nNỘI DUNG EMAIL:\n${data.body || ''}`;
+            if (rawInput.value.trim()) {
+                rawInput.value += `\n\n--- MAIL MỚI ---\n${newContent}`;
+            } else {
+                rawInput.value = newContent;
+            }
+            Storage.set(SK_RAW_SCAN, rawInput.value); // Lưu ngay lập tức khi nhận từ Mail
+            showToast(`📧 Đã nhận mail từ ${data._source || 'tab mail'}.`);
+
+            // 2. Tải tệp đính kèm (nếu có)
+            if (data.attachmentUrls && data.attachmentUrls.length > 0) {
+                showToast(`📂 Đang tải ${data.attachmentUrls.length} tệp đính kèm...`, '#1a73e8');
+                for (const att of data.attachmentUrls) {
+                    try {
+                        const b64Data = await downloadAsBase64(att.url, att.name);
+                        fileQueue.push({ file: { name: att.name }, ...b64Data });
+                    } catch (err) {
+                        console.error('[VNPT] Lỗi tải tệp:', att.name, err);
+                    }
+                }
+                renderQueue(queueList, placeholder);
+                showToast('✅ Đã nạp xong tệp đính kèm!');
+            }
+
+            // 3. Tự động kích hoạt AI
+            btnProcessAI.click();
+        });
+    }
+
+    if (btnScanScreen) {
+        btnScanScreen.addEventListener('click', () => {
+            const content = scrapeScreenText();
+            if (content) {
+                if (rawInput.value.trim()) {
+                    rawInput.value += `\n\n--- NỘI DUNG MÀN HÌNH MỚI ---\n${content}`;
+                } else {
+                    rawInput.value = content;
+                }
+                Storage.set(SK_RAW_SCAN, rawInput.value); // Lưu ngay lập tức khi quét màn hình
+                showToast("🖥️ Đã quét toàn bộ màn hình.");
+                // Tự động kích hoạt hiệu ứng quét
+                btnProcessAI.click();
+            } else {
+                showToast("⚠️ Không thể quét nội dung màn hình", "#ffc107");
+            }
+        });
+    }
 
     queueContainer.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -139,49 +255,85 @@ export function initPdfScan() {
 
     window.addEventListener('paste', async (e) => {
         if (aiSection.style.display === 'none') return;
-        const target = e.target;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
 
         const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        let hasFile = false;
+
         for (let item of items) {
             if (item.type.indexOf('image') !== -1 || item.type.indexOf('pdf') !== -1) {
+                hasFile = true;
                 const file = item.getAsFile();
                 if (file) {
                     const b64 = await fileToBase64(file);
                     fileQueue.push({ file, ...b64 });
                     renderQueue(queueList, placeholder);
-                    showToast("📋 Đã thêm vào hàng đợi.");
+                    showToast("📋 Đã thêm vào hàng đợi ảnh/file.");
                 }
             }
+        }
+
+        const target = e.target;
+        // Nếu người dùng paste ảnh/file vào Textarea (như ô nhập text) -> chặn sự kiện kép (vừa text vừa ảnh), 
+        // để code phía trên đảm nhận thêm vào Queue. Ngược lại nếu paste text tĩnh thì bỏ qua để gõ bình thường.
+        if (hasFile && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+            e.preventDefault();
         }
     });
 
     const handleExtractionResults = (resultFields, rawText, titleTemplate) => {
-        // Build mảng kết quả luôn chứa đầy đủ các trường bắt buộc (REQUIRED_KEYS)
-        const resultsArray = REQUIRED_KEYS.map(key => {
-            return {
-                key: key,
-                value: resultFields[key] || "", 
-                label: DEFAULT_LABELS[key] || key,
-                checked: !!resultFields[key] // Tự check nếu AI có dữ liệu, rỗng thì bỏ check
-            };
+        const usedKeys = new Set();
+        const resultsArray = [];
+
+        // 1. Duyệt qua tất cả các nhãn mặc định (DEFAULT_LABELS) để đảm bảo hiển thị đầy đủ
+        const EXCLUDED_LABELS = ['ngày ký', 'tháng ký', 'năm ký', 'số lượng gói', 'nơi ký', 'liên hệ a'];
+        const EXCLUDED_KEYS = ['ngayKy', 'ngayKy1', 'thangKy', 'thangKy1', 'namKy', 'namKy1', 'soLuongGoi', 'noiKy'];
+
+        Object.entries(DEFAULT_LABELS).forEach(([fullKey, label]) => {
+            const aliases = fullKey.split(',').map(k => k.trim());
+            
+            // Bỏ qua các nhãn trong danh sách loại trừ HOẶC nếu tất cả bí danh đều trong list loại trừ
+            const shouldExclude = EXCLUDED_LABELS.includes(label.toLowerCase()) || 
+                                aliases.every(alias => EXCLUDED_KEYS.includes(alias));
+
+            if (shouldExclude) {
+                // Vẫn đánh dấu vào usedKeys để bước 2 không hiển thị chúng như là "trường mới tìm thấy"
+                aliases.forEach(alias => usedKeys.add(alias));
+                return;
+            }
+
+            // Tìm giá trị từ resultFields bằng cách thử tất cả các bí danh
+            let value = "";
+            for (const alias of aliases) {
+                if (resultFields[alias]) {
+                    value = resultFields[alias];
+                    usedKeys.add(alias);
+                    break; 
+                }
+            }
+
+            resultsArray.push({
+                key: fullKey, 
+                value: value,
+                label: label,
+                checked: !!value
+            });
         });
 
-        // Có thể gộp thêm các trường không nằm trong REQUIRED_KEYS nhưng AI lại parse ra (nếu có)
+        // 2. Bổ sung các trường mà AI tìm thấy nhưng không nằm trong DEFAULT_LABELS (nếu có)
         Object.keys(resultFields).forEach(key => {
-            if (!REQUIRED_KEYS.includes(key) && resultFields[key]) {
+            if (!usedKeys.has(key) && !EXCLUDED_KEYS.includes(key) && resultFields[key]) {
                 resultsArray.push({
                     key: key,
                     value: resultFields[key],
-                    label: DEFAULT_LABELS[key] || key,
+                    label: key, 
                     checked: true
                 });
             }
         });
 
+
         if (resultsArray.every(item => !item.value)) {
             showToast("⚠️ AI hoặc Regex không trích xuất được thông tin nào!", "#ffc107");
-            // Vẫn show dialog để user tự điền nếu muốn
         }
 
         AppState.lastPdfResults = resultsArray;
@@ -201,6 +353,15 @@ export function initPdfScan() {
                 }
                 return { ...orig, checked: false };
             });
+        }, (newText) => {
+            // onReparse: Sử dụng Regex Local để cập nhật lại từ text mới (nhanh chóng)
+            try {
+                const refreshedFields = extractFieldsLocally(newText);
+                handleExtractionResults(refreshedFields, newText, titleTemplate);
+                showToast("🔄 Đã cập nhật lại các trường từ text mới.");
+            } catch (err) {
+                showToast("❌ Lỗi Cập nhật: " + err.message, "#ef4444");
+            }
         });
         
         const dlgHeader = document.querySelector('#vnpt-pdf-dialog h3');
@@ -256,7 +417,12 @@ export function initPdfScan() {
                 rawText = ocrResult.rawTextSnippet || ocrResult.rawFullText || "";
                 
                 // Hiển thị nội dung vừa quét được vào Input (user kiểm tra chéo)
-                rawInput.value = rawText;
+                if (rawInput.value.trim()) {
+                    rawInput.value += `\n\n--- KẾT QUẢ ĐỌC FILE ---\n${rawText}`;
+                } else {
+                    rawInput.value = rawText;
+                }
+                Storage.set(SK_RAW_SCAN, rawInput.value); // Lưu nội dung AI vừa đọc được
             } else {
                 // Thuần text request
                 const text = rawInput.value.trim();

@@ -31,15 +31,16 @@ export function hidePdfLoading() {
  * @param {Array} results [{key, label, value}, ...]
  * @param {string} rawText Văn bản thô AI trích xuất được
  * @param {Function} onConfirm Callback array được tích chọn
+ * @param {Function} onReparse Callback khi nhấn nút phân loại lại từ text thô (truyền vào text mới)
  */
-export function showPdfConfirmDialog(results, rawText, onConfirm) {
+export function showPdfConfirmDialog(results, rawText, onConfirm, onReparse) {
     let dialog = document.getElementById('vnpt-pdf-dialog');
     if (dialog) dialog.remove();
 
     dialog = document.createElement('div');
     dialog.id = 'vnpt-pdf-dialog';
     dialog.className = 'vnpt-pdf-overlay';
-    
+
     // Render TR rows with Inputs for editing
     const tbodyHtml = results.map((res, i) => `
         <tr class="pdf-row-auto">
@@ -54,16 +55,21 @@ export function showPdfConfirmDialog(results, rawText, onConfirm) {
     `).join('');
 
     dialog.innerHTML = `
-        <div class="vnpt-pdf-dialog-box" style="width: 900px; height: 80vh;">
+        <div class="vnpt-pdf-dialog-box" style="width: 1000px; height: 85vh;">
             <div class="pdf-dlg-header">
                 <h3>🔍 KIỂM TRA & XÁC NHẬN KẾT QUẢ AI</h3>
             </div>
             
-            <div class="pdf-dlg-cols">
-                <!-- Cột trái: Nội dung gốc -->
-                <div class="pdf-col-left" title="Nội dung văn bản thô AI đọc được">
-                    <div style="font-weight: 800; color: #5f6368; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px;">VĂN BẢN GỐC (RAW TEXT)</div>
-                    ${rawText || "Không có dữ liệu văn bản thô."}
+            <div class="pdf-dlg-cols" style="gap: 16px;">
+                <!-- Cột trái: Nội dung gốc (Cho phép Edit) -->
+                <div class="pdf-col-left" style="display: flex; flex-direction: column; padding: 0; background: #fff;">
+                    <div style="font-weight: 800; color: #1a73e8; margin-bottom: 0; border-bottom: 2px solid var(--vnpt-primary-light); padding: 12px 14px; background: rgba(26, 115, 232, 0.05); border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                        <span>VĂN BẢN GỐC (CÓ THỂ SỬA)</span>
+                        <span style="font-size: 10px; opacity: 0.7; font-weight: 600;">EDITOR</span>
+                    </div>
+                    <textarea id="pdf-raw-text-edit" style="flex: 1; border: none; background: #fcfdfe; padding: 15px; resize: none; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 12.5px; line-height: 1.6; color: #2c3e50; outline: none; border-bottom: 1px solid #eee;">${rawText || ""}</textarea>
+                    
+
                 </div>
 
                 <!-- Cột phải: Các trường nhận diện được -->
@@ -84,9 +90,12 @@ export function showPdfConfirmDialog(results, rawText, onConfirm) {
             </div>
 
             <div class="vnpt-pdf-actions">
-                <div style="flex:1; font-size:11px; color:#5f6368;">Mẹo: So sánh nội dung bên trái và sửa lại ô bên phải nếu AI nhận diện sai.</div>
-                <button class="pdf-btn-cancel" id="pdf-btn-cancel">✖ Hủy bỏ</button>
-                <button class="pdf-btn-confirm" id="pdf-btn-confirm">✅ Chấp nhận & Lưu</button>
+                <div style="flex:1; font-size:11px; color:#5f6368;">
+                    <strong>Mẹo:</strong> Bạn có thể sửa nội dung bên trái rồi nhấn "Cập nhật" để AI/Regex nhận diện lại nếu dữ liệu thô bị sai/thiếu.
+                </div>
+                <button class="pdf-btn-cancel" id="pdf-btn-cancel">Hủy bỏ(Esc)</button>
+                <button class="pdf-btn-confirm" id="pdf-btn-confirm">Lưu vào bảng(Enter)</button>
+                <button class="pdf-btn-reparse" id="pdf-btn-reparse">CẬP NHẬT</button>
             </div>
         </div>
     `;
@@ -96,33 +105,71 @@ export function showPdfConfirmDialog(results, rawText, onConfirm) {
     // Bắt event
     const btnCancel = dialog.querySelector('#pdf-btn-cancel');
     const btnConfirm = dialog.querySelector('#pdf-btn-confirm');
+    const btnReparse = dialog.querySelector('#pdf-btn-reparse');
     const checkAll = dialog.querySelector('#pdf-check-all');
     const rowChks = dialog.querySelectorAll('.pdf-row-chk');
     const valInputs = dialog.querySelectorAll('.pdf-val-input');
+    const rawTextEdit = dialog.querySelector('#pdf-raw-text-edit');
 
     // Chức năng Check all
-    checkAll.addEventListener('change', (e) => {
-        rowChks.forEach(chk => chk.checked = e.target.checked);
-    });
+    if (checkAll) {
+        checkAll.addEventListener('change', (e) => {
+            rowChks.forEach(chk => chk.checked = e.target.checked);
+        });
+    }
 
-    btnCancel.onclick = () => {
+    const closeDialog = () => {
+        window.removeEventListener('keydown', handleDialogKeys);
         dialog.remove();
     };
 
-    btnConfirm.onclick = () => {
-        const selected = [];
-        rowChks.forEach(chk => {
-            if (chk.checked) {
-                const idx = parseInt(chk.getAttribute('data-index'));
-                // Lấy giá trị từ input (có thể đã được người dùng sửa)
-                const editedValue = valInputs[idx].value;
-                selected.push({
-                    ...results[idx],
-                    value: editedValue
-                });
+    const handleDialogKeys = (e) => {
+        if (e.key === 'Escape') {
+            closeDialog();
+        } else if (e.key === 'Enter') {
+            // Nhấn Enter để lưu, nhưng bỏ qua nếu đang ở ô Textarea (để xuống dòng)
+            if (e.target && e.target.id === 'pdf-raw-text-edit') {
+                return;
             }
-        });
-        dialog.remove();
-        onConfirm(selected);
+            e.preventDefault();
+            btnConfirm.click();
+        }
+    };
+
+    window.addEventListener('keydown', handleDialogKeys);
+
+    btnCancel.onclick = closeDialog;
+
+    btnReparse.onclick = () => {
+        if (onReparse) {
+            const currentText = rawTextEdit.value;
+            onReparse(currentText);
+        }
+    };
+
+    btnConfirm.onclick = () => {
+        try {
+            const selected = [];
+            const rows = dialog.querySelectorAll('.pdf-row-auto');
+            rows.forEach(row => {
+                const chk = row.querySelector('.pdf-row-chk');
+                const valInput = row.querySelector('.pdf-val-input');
+                if (chk && chk.checked && valInput) {
+                    const idx = parseInt(chk.getAttribute('data-index'));
+                    if (results[idx]) {
+                        selected.push({
+                            ...results[idx],
+                            value: valInput.value
+                        });
+                    }
+                }
+            });
+
+            closeDialog();
+            if (onConfirm) onConfirm(selected);
+        } catch (err) {
+            console.error("[VNPT] Lỗi khi xác nhận kết quả:", err);
+            alert("Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.");
+        }
     };
 }

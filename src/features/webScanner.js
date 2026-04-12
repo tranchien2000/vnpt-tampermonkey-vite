@@ -19,10 +19,11 @@ import { createInternalBackup, generateBackupName } from '../utils/backupHelper.
 
 /**
  * Quét tất cả các thành phần địa chỉ trên trang và trả về chuỗi đã nối chuẩn.
+ * @param {boolean} forceRefresh - Nếu true, bắt buộc quét lại DOM.
  * @returns {string} Chuỗi địa chỉ đầy đủ.
  */
-function scanFullAddress() {
-    buildFullDOMMap(); // Đảm bảo map mới nhất
+function scanFullAddress(forceRefresh = false) {
+    if (forceRefresh) buildFullDOMMap(true); // Chỉ ép buộc khi cần thiết (VD: bấm nút Quét)
     const labels = RemoteConfig.getLabels();
     const keyString = Object.keys(labels).find(k => k.includes('diaChi'));
     if (!keyString) return '';
@@ -44,7 +45,12 @@ function scanFullAddress() {
             }
             val = (val || '').trim();
             if (val && val !== '--- Chọn ---' && !val.includes('Chọn')) {
-                if (id === 'diaChi' || id === 'duong') addressObj.detail = val;
+                if (id === 'diaChi' || id === 'duong') {
+                    // Ưu tiên giữ lại nội dung dài nhất (chi tiết nhất)
+                    if (!addressObj.detail || val.length > addressObj.detail.length) {
+                        addressObj.detail = val;
+                    }
+                }
                 else if (id.includes('tinh')) addressObj.province = val;
                 else if (id.includes('huyen') || id.includes('quan')) addressObj.district = val;
                 else if (id.includes('xa') || id.includes('phuong')) addressObj.ward = val;
@@ -143,7 +149,7 @@ export function initWebScanner() {
             
             let val = '';
             if (isAddressField) {
-                val = scanFullAddress();
+                val = scanFullAddress(false); // Map đã được build ở dòng 135
                 if (val) foundCount++;
             } else if (isNoiCapDkdn) {
                 // Tự động tính toán Nơi cấp ĐKDN từ Tỉnh
@@ -209,8 +215,8 @@ export function initWebScanner() {
         if (matchedKey !== undefined) {
             let val = undefined;
             if (matchedKey.includes('diaChi')) {
-                // Đối với nhóm địa chỉ, luôn chạy lại logic nối chuỗi để đảm bảo tính nhất quán
-                val = scanFullAddress();
+                // Sử dụng map hiện tại (đã được xây dựng hoặc lazy build)
+                val = scanFullAddress(false);
                 
                 // --- BỔ SUNG: Cập nhật luôn noiCapSoDkdn trong Widget khi Tỉnh thay đổi ---
                 const province = getProvinceName();

@@ -32,7 +32,18 @@ export const Storage = {
 
             if (data === null || data === undefined) return defaultValue;
             
-            const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+            let parsed;
+            if (typeof data === 'string') {
+                try {
+                    parsed = JSON.parse(data);
+                } catch (e) {
+                    // Nếu không phải JSON (VD: string thuần túy từ bản cũ), trả về chính nó
+                    parsed = data;
+                }
+            } else {
+                parsed = data;
+            }
+
             cache.set(key, parsed);
             return parsed;
         } catch (e) {
@@ -49,10 +60,11 @@ export const Storage = {
     set(key, value) {
         cache.set(key, value);
         try {
+            const stringified = JSON.stringify(value);
             if (this.isGM) {
-                GM_setValue(key, value);
+                GM_setValue(key, stringified);
             } else {
-                localStorage.setItem(key, JSON.stringify(value));
+                localStorage.setItem(key, stringified);
             }
             return true;
         } catch (e) {

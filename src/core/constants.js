@@ -7,10 +7,10 @@
  * @seeAlso core/defaults.js (data mặc định), core/state.js (AppState)
  */
 export const DEFAULT_LABELS = {
-    'tenDaiDienn, tenNguoiNhanCTS ': 'Tên Đại Diện',
+    'tenDaiDienn, tenNguoiNhanCTS': 'Tên Đại Diện',
     'chucVu': 'Chức Vụ',
     'ngaySinhCustomer': 'Ngày Sinh KH',
-    'diaChi, duong, tinhId, tinhIdNew, quanHuyenId, xaPhuongId, phuongXaId': 'Địa chỉ',
+    'diaChi, duong, tinhId, tinhIdNew, quanHuyenId, xaPhuongId, phuongXaId': 'Địa chỉ (Full)',
     'cmnd': 'CMND/CCCD',
     'ngayCapCustomer': 'Ngày Cấp CMND',
     'noiCap': 'Nơi Cấp',
@@ -59,6 +59,7 @@ export const SK_GEMINI_MODEL = 'vnpt_gemini_model'; // string — Model name (fl
 export const SK_HOTKEYS = 'vnpt_hotkeys';           // object — mapping action -> keyConfig
 export const LOCAL_KEY_PROFILES = 'vnpt_docx_profiles';
 export const LOCAL_KEY_ACTIVE_PROFILE_ID = 'vnpt_docx_active_profile_id';
+export const SK_RAW_SCAN = 'vnpt_raw_scan_text';    // string — Lưu nội dung raw text để tránh mất khi refresh
 
 export const VALIDATION_REGEX = {
     MST: /^\d{10}(-\d{3})?$/, // 10 số hoặc 10 số - 3 số

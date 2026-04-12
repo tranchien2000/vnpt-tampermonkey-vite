@@ -32,12 +32,23 @@ export function refreshLabelsCache() {
     return LabelCache;
 }
 
+let lastMapBuild = 0;
+const MAP_BUILD_COOLDOWN = 3000; // 3 seconds cooldown
+
 /**
  * Xây dựng bản đồ toàn bộ DOM để truy vấn nhanh O(1).
  * Nên gọi hàm này trước khi thực hiện Quét hàng loạt.
+ * @param {boolean} force - Nếu true, bắt buộc xây dựng lại bất kể cooldown
  */
-export function buildFullDOMMap() {
+export function buildFullDOMMap(force = false) {
+    const now = Date.now();
+    if (!force && now - lastMapBuild < MAP_BUILD_COOLDOWN && FullDOMMap.allInputs.length > 0) {
+        console.debug(`[DOM] Build map skipped (cooldown): ${now - lastMapBuild}ms`);
+        return;
+    }
+
     const start = performance.now();
+    lastMapBuild = now;
     clearDOMCache();
     
     // 1. Lấy tất cả các control nhập liệu (Bao gồm ng-select2 của Angular)

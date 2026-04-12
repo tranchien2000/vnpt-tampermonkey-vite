@@ -697,6 +697,11 @@ export function injectStyles() {
         }
         .pdf-btn-confirm:hover { background: var(--vnpt-primary-hover); box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3); }
 
+        .pdf-btn-reparse {
+            padding: 8px 16px; background: var(--vnpt-primary); border: none; border-radius: 8px;
+            color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .pdf-btn-reparse:hover { background: var(--vnpt-primary-hover); box-shadow: 0 4px 12px rgba(105, 211, 24, 0.3); }
         /* ═══════════════════════════════════════════
            SECTION 8: AI SCANNER UI
            ═══════════════════════════════════════════ */

@@ -7,12 +7,19 @@ const tampermonkeyHeader = `// ==UserScript==
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
+// @match        *://mail.google.com/*
+// @match        *://outlook.live.com/*
+// @match        *://outlook.office.com/*
+// @match        *://outlook.office365.com/*
 // @require      https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js
 // @require      https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.js
 // @updateURL    https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
 // @downloadURL  https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_addValueChangeListener
 // @connect      localhost
 // @connect      drive.google.com
 // @connect      raw.githubusercontent.com
