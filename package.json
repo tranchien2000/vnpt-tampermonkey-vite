@@ -1,13 +1,14 @@
 {
   "name": "tampermonkey-vite-userscript",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "A minimal Vite setup for Tampermonkey userscripts",
   "type": "module",
   "scripts": {
     "dev": "set VITE_DEV=true && vite build --watch",
     "serve": "serve dist --cors --no-clipboard -p 8788",
     "dev:all": "concurrently \"npm run dev\" \"npm run serve\"",
-    "build": "vite build"
+    "build": "vite build",
+    "release": "node scripts/release.cjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
