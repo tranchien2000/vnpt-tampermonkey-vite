@@ -1,5 +1,5 @@
 {
   "version": "1.6.0",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "Test: Hệ thống tự động thông báo cập nhật qua GitHub"
+  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
 }
