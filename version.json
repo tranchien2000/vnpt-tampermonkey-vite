@@ -1,5 +1,5 @@
 {
-  "version": "1.6.7",
+  "version": "1.6.8",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.7 - Cập nhật thêm dữ liệu đồng bộ lên Firebase"
+  "message": "release: v1.6.8 - Fix Tỉnh/Thành phố bị mất sau khi điền - Ép jQuery trigger để Angular nhận giá trị"
 }
