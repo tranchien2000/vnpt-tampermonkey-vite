@@ -1,4 +1,5 @@
-import { findBestMatch } from './stringHelper.js';
+import { findBestMatch, cleanProvinceName, parseAddressComponents } from './stringHelper.js';
+import { sleep } from './common.js';
 
 // ─── DOM Map ───
 let FullDOMMap = {
@@ -50,7 +51,7 @@ export function buildFullDOMMap(force = false) {
     const start = performance.now();
     lastMapBuild = now;
     clearDOMCache();
-    
+
     // 1. Lấy tất cả các control nhập liệu (Bao gồm ng-select2 của Angular)
     const inputs = Array.from(document.querySelectorAll('input, textarea, select, ng-select2'));
     FullDOMMap.allInputs = inputs;
@@ -58,10 +59,10 @@ export function buildFullDOMMap(force = false) {
     inputs.forEach(el => {
         if (el.id) FullDOMMap.byId.set(el.id, el);
         if (el.name) FullDOMMap.byName.set(el.name, el);
-        
+
         const placeholder = el.getAttribute('placeholder');
         if (placeholder) FullDOMMap.byPlaceholder.set(placeholder.trim(), el);
-        
+
         const fcn = el.getAttribute('formcontrolname');
         if (fcn) FullDOMMap.byName.set(fcn, el);
     });
@@ -76,7 +77,7 @@ export function buildFullDOMMap(force = false) {
         if (lbl.htmlFor) {
             targetEl = document.getElementById(lbl.htmlFor);
         }
-        
+
         if (!targetEl) {
             // Tìm trong phạm vi gần (cha hoặc anh em)
             let p = lbl.parentElement;
@@ -99,27 +100,194 @@ export function buildFullDOMMap(force = false) {
 }
 
 export function triggerCustom(el) {
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-    el.dispatchEvent(new Event('change', { bubbles: true }));
+    if (!el) return;
+
+    // 1. Gửi các sự kiện Native chuẩn (Bao gồm cả Bubbles)
+    const eventOptions = { bubbles: true, cancelable: true, composed: true };
+    el.dispatchEvent(new Event('focus', eventOptions));
+    el.dispatchEvent(new Event('input', eventOptions));
+    el.dispatchEvent(new Event('change', eventOptions));
+
+    // 2. Xử lý đặc thù cho thẻ SELECT (Select2 / ng-select2)
+    if (el.tagName === 'SELECT') {
+        // Gửi event đặc thù của thư viện Select2
+        el.dispatchEvent(new CustomEvent('select2:select', { ...eventOptions, detail: { data: { id: el.value } } }));
+
+        // Tìm và báo hiệu cho component cha (Angular ng-select2)
+        let parentComp = el.closest('ng-select2, .select2-container, .form-group');
+        if (parentComp) {
+            parentComp.dispatchEvent(new Event('change', eventOptions));
+            parentComp.dispatchEvent(new Event('input', eventOptions));
+        }
+
+        // 3. jQuery Fallback (Nếu trang web dùng jQuery, Select2 cần jQuery để trigger phụ thuộc)
+        try {
+            const $ = window.jQuery || window.$;
+            if ($ && typeof $(el).trigger === 'function') {
+                $(el).trigger('change');
+                $(el).trigger('select2:select');
+            }
+        } catch (e) {
+            // Trình duyệt có thể chặn nếu CSP gắt, bỏ qua
+        }
+    }
+
+    el.dispatchEvent(new Event('blur', eventOptions));
 }
 
 export function syncSetValue(el, value) {
-    // Use prototype setter to bypass framework wrappers if any
-    const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
-    const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
-    if (setter) {
-        setter.call(el, value);
+    if (!el || value === undefined || value === null) return false;
+
+    let isSuccess = false;
+
+    // --- Xử lý đặc biệt cho SELECT (Dropdown) ---
+    if (el.tagName === 'SELECT' || el.tagName === 'NG-SELECT2') {
+        const selectEl = el.tagName === 'NG-SELECT2' ? el.querySelector('select') || el : el;
+        const options = Array.from(selectEl.options || []);
+        const optionTexts = options.map(o => o.text.trim());
+
+        let searchVal = value.toString().trim();
+
+        // 1. Thử khớp chính xác Value (Trường hợp dữ liệu nguồn đã là mã ID)
+        let foundOption = options.find(o => o.value === searchVal);
+
+        // 2. Nếu không khớp value, thử logic bóc tách Tỉnh/Huyện/Xã từ địa chỉ Full
+        if (!foundOption) {
+            // Nếu chuỗi có dấu phẩy, khả năng cao là địa chỉ (Số nhà, Phường, Quận, Tỉnh)
+            if (searchVal.includes(',')) {
+                const parsedData = parseAddressComponents(searchVal);
+
+                // --- SMART VNPT SPATIAL DETECTION ---
+                const addressGroup = getVNPTAddressGroup();
+                const wrapperEl = el.closest('ng-select2') || el;
+                const isVNPTTriad = addressGroup && (
+                    wrapperEl === addressGroup.tinh || wrapperEl === addressGroup.xaIdNew || wrapperEl === addressGroup.duong ||
+                    el === addressGroup.tinh || el === addressGroup.xaIdNew || el === addressGroup.duong
+                );
+
+                let idAttr = (wrapperEl.id || wrapperEl.getAttribute('formcontrolname') || wrapperEl.name || el.id || el.name || '').toLowerCase();
+                const labelEl = wrapperEl.id ? document.querySelector(`label[for="${wrapperEl.id}"]`) : (el.id ? document.querySelector(`label[for="${el.id}"]`) : null);
+                const labelText = (labelEl ? labelEl.innerText : '').toLowerCase();
+
+                if (isVNPTTriad) {
+                    // Nếu nằm trong bộ 3 cố định, lấy dữ liệu đã bóc tách chuẩn xác tương ứng
+                    if (wrapperEl === addressGroup.tinh || el === addressGroup.tinh) {
+                        searchVal = parsedData.province;
+                    } else if (addressGroup.xaIdNew && (wrapperEl === addressGroup.xaIdNew || el === addressGroup.xaIdNew)) {
+                        // Form VNPT gộp Huyện vào Xã, ưu tiên tìm Phường/Xã trước, nếu không có mới tìm Quận/Huyện
+                        console.log(`[Sync Address] Phát hiện phần tử xaIdNew (VNPT Triad). Dữ liệu gốc: "${searchVal}". Bóc ra -> (Ward: "${parsedData.ward}", District: "${parsedData.district}")`);
+                        searchVal = parsedData.ward || parsedData.district;
+                    }
+                } else {
+                    // Logic nhận diện cũ dựa trên ID/Label. Đã gộp Quận/Huyện và Xã/Phường
+                    const isXaIdNew = idAttr.includes('xaIdNew') || idAttr.includes('xa') || idAttr.includes('phuong') || idAttr.includes('huyen') || idAttr.includes('quan') || labelText.includes('xã') || labelText.includes('phường') || labelText.includes('thị trấn') || labelText.includes('huyện') || labelText.includes('quận');
+                    const isProvince = !isXaIdNew && (idAttr.includes('tinh') || labelText.includes('tỉnh'));
+
+                    if (isXaIdNew) {
+                        console.log(`[Sync Address] Phát hiện phần tử xaIdNew (tương đối qua ID/Label: "${idAttr}" / "${labelText}"). Dữ liệu gốc: "${searchVal}". Bóc ra -> (Ward: "${parsedData.ward}", District: "${parsedData.district}")`);
+                        searchVal = parsedData.ward || parsedData.district;
+                    } else if (isProvince) {
+                        searchVal = parsedData.province;
+                    }
+                }
+            }
+
+            // --- Logic so khớp 2 bước ---
+            let bestText = findBestMatch(searchVal, optionTexts, 0.75);
+            if (!bestText) {
+                const cleanName = cleanProvinceName(searchVal);
+
+                // Áp dụng clean cho toàn bộ danh sách option để so sánh lõi (Ví dụ: "Hà Nội" == "Thành phố Hà Nội")
+                const cleanOptions = optionTexts.map(t => cleanProvinceName(t));
+                const matchedClean = findBestMatch(cleanName, cleanOptions, 0.65);
+
+                if (matchedClean) {
+                    bestText = optionTexts[cleanOptions.indexOf(matchedClean)];
+                } else {
+                    // Fallback cũ nếu không tìm ra
+                    bestText = findBestMatch(cleanName, optionTexts, 0.65);
+                }
+            }
+
+            if (bestText) {
+                console.log(`[Sync Address] Tiến hành khớp nối "${searchVal}" với Option tốt nhất tìm được: "${bestText}"`);
+                foundOption = options.find(o => o.text.trim() === bestText);
+            } else {
+                console.warn(`[Sync Address] Không tìm thấy Option nào phù hợp cho từ khóa: "${searchVal}"`);
+            }
+        }
+
+        if (foundOption) {
+            selectEl.value = foundOption.value;
+            isSuccess = true;
+        } else if (value && !foundOption) {
+            // Thử gán trực tiếp nếu không khớp option nào (Dành cho case ID).
+            // NHƯNG nếu chuỗi có dấu phẩy (địa chỉ full) thì không gán, tránh làm xoá Select2!
+            if (!value.toString().includes(',')) {
+                selectEl.value = value;
+            }
+        }
+
+        triggerCustom(selectEl);
+        return isSuccess;
+
     } else {
-        el.value = value;
+        // --- Xử lý cho INPUT/TEXTAREA thông thường ---
+
+        // Kiểm xử lý đặc biệt cho phần Đường trong VNPT Triad
+        const addressGroup = getVNPTAddressGroup();
+        if (addressGroup && el === addressGroup.duong && value.includes(',')) {
+            value = parseAddressComponents(value).street;
+        }
+
+        const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+        const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+        if (setter) {
+            setter.call(el, value);
+        } else {
+            el.value = value;
+        }
+        isSuccess = true;
     }
-    
+
     triggerCustom(el);
+    return isSuccess;
+}
+
+/**
+ * Đợi dropdown có options (AJAX load xong).
+ */
+async function waitForOptions(el, timeout = 3000) {
+    const start = Date.now();
+    let selectEl = el.tagName === 'NG-SELECT2' ? el.querySelector('select') || el : el;
+
+    // Nếu không phải là một danh sách chọn, không cần phải đợi AJAX (input thường lấy text)
+    if (selectEl.tagName !== 'SELECT' && selectEl.tagName !== 'NG-SELECT2') {
+        console.log(`[waitForOptions] Phần tử không phải SELECT/NG-SELECT2 (${selectEl.tagName}), bỏ qua bước chờ options.`);
+        return true;
+    }
+
+    while (Date.now() - start < timeout) {
+        // Cố gắng tìm lại nội dung mới nếu DOM bị load lại
+        if (!document.contains(selectEl) && el.tagName === 'NG-SELECT2') {
+            selectEl = el.querySelector('select') || el;
+        }
+
+        if (selectEl.options && selectEl.options.length > 1) {
+            console.log(`[waitForOptions] Đã tìm thấy ${selectEl.options.length} options sau ${Date.now() - start}ms.`);
+            return true;
+        }
+        await sleep(200);
+    }
+
+    console.warn(`[waitForOptions] Timeout ${timeout}ms. Element "${el.id || el.name}" (${selectEl.tagName}) chỉ có ${selectEl.options ? selectEl.options.length : 0} options.`);
+    return false;
 }
 
 // Tìm input theo id, name, hoặc nhãn thẻ label (Hỗ trợ Fuzzy Search)
 export function findPageInput(name, labelText = null) {
     if (!name && !labelText) return null;
-    
+
     // Auto build map if not initialized
     if (FullDOMMap.allInputs.length === 0) {
         buildFullDOMMap();
@@ -133,7 +301,7 @@ export function findPageInput(name, labelText = null) {
         // Nếu không phải input, tìm input con đầu tiên bên trong nó (Smart Proxy)
         return el.querySelector('input, textarea, select, [contenteditable="true"]');
     };
-    
+
     // 1. Thử tra cứu từ Map (O(1))
     if (name) {
         let el = FullDOMMap.byId.get(name) || FullDOMMap.byName.get(name) || FullDOMMap.byPlaceholder.get(name) || FullDOMMap.byLabel.get(name);
@@ -143,6 +311,14 @@ export function findPageInput(name, labelText = null) {
     if (labelText) {
         let el = FullDOMMap.byLabel.get(labelText);
         if (el && document.contains(el)) return resolveToInput(el);
+    }
+
+    // 1.5. Alias fallback cho xaIdNew (Tương thích dữ liệu cũ)
+    if (name && (name.includes('xaId') || name.includes('quanHuyenId') || name.includes('phuongXaId') || name.includes('xaIdNew'))) {
+        const addressGroup = getVNPTAddressGroup();
+        if (addressGroup && addressGroup.xaIdNew) {
+            return resolveToInput(addressGroup.xaIdNew);
+        }
     }
 
     // 2. Nếu Map chưa có (hoặc hỏng), thử tìm trực tiếp (Fallback)
@@ -156,7 +332,7 @@ export function findPageInput(name, labelText = null) {
         const selector = `input[id="${name}"], textarea[id="${name}"], select[id="${name}"], input[name="${name}"], textarea[name="${name}"], [placeholder="${name}"], [formcontrolname="${name}"]`;
         const byAttr = document.querySelector(selector);
         if (byAttr) return byAttr;
-        
+
         // Thử tìm bất cứ element nào có ID/Name đó rồi resolve
         const generalAttr = document.querySelector(`[id="${name}"], [name="${name}"]`);
         if (generalAttr) {
@@ -170,7 +346,7 @@ export function findPageInput(name, labelText = null) {
     if (targetLabel && targetLabel.length > 2) {
         const labelTexts = Array.from(FullDOMMap.byLabel.keys());
         if (labelTexts.length === 0 && LabelCache.length > 0) {
-             labelTexts.push(...LabelCache.map(l => l.innerText.trim()).filter(t => t.length > 0));
+            labelTexts.push(...LabelCache.map(l => l.innerText.trim()).filter(t => t.length > 0));
         }
 
         const bestText = findBestMatch(targetLabel, labelTexts, 0.82);
@@ -193,4 +369,171 @@ export function setPageField(name, value, labelText = null) {
         return true;
     }
     return false;
+}
+
+/**
+ * Trả về thứ tự ưu tiên của trường (Tỉnh=1, Huyện=2, Xã=3, Khác=9).
+ */
+function getFieldRank(name, el) {
+    const id = (name || el?.id || el?.getAttribute('formcontrolname') || '').toLowerCase();
+
+    // Nếu là ID hoặc Name chứa từ khóa
+    if (id.includes('tinh') || id.includes('province') || id.includes('city')) return 1;
+    if (id.includes('xaIdNew') || id.includes('huyen') || id.includes('quan') || id.includes('district') || id.includes('xa') || id.includes('phuong') || id.includes('ward')) return 2;
+
+    // Nếu không, thử tìm label
+    const labelEl = el?.id ? document.querySelector(`label[for="${el.id}"]`) : null;
+    const labelText = (labelEl?.innerText || '').toLowerCase();
+    if (labelText.includes('tỉnh') || labelText.includes('thành phố')) return 1;
+    if (labelText.includes('huyện') || labelText.includes('quận') || labelText.includes('xã') || labelText.includes('phường')) return 2;
+
+    return 9;
+}
+
+/**
+ * Đồng bộ danh sách các trường theo thứ tự ưu tiên (Tỉnh -> Xã/Huyện) và có độ trễ.
+ * @param {Array<string>} names - Danh sách các IDs/Names
+ * @param {string} value - Giá trị đổ vào
+ */
+/**
+ * Đợi một phần tử xuất hiện trong DOM (Hỗ trợ lazy load của Angular).
+ */
+async function waitForElement(name, timeout = 5000) {
+    const start = Date.now();
+    while (Date.now() - start < timeout) {
+        // Luôn force rebuild map vì DOM có thể đã thay đổi
+        buildFullDOMMap(true);
+        const el = findPageInput(name);
+        if (el && document.contains(el)) return el;
+        await sleep(500);
+    }
+    return null;
+}
+
+/**
+ * Đồng bộ danh sách các trường theo thứ tự ưu tiên (Tỉnh -> Xã/Huyện) và có độ trễ.
+ * @param {Array<string>} names - Danh sách các IDs/Names
+ * @param {string} value - Giá trị đổ vào
+ */
+export async function setPageFieldsSequential(names, value) {
+    if (!names || !names.length) return;
+
+    // --- AUTO EXPAND TARGETS FOR FULL ADDRESS ---
+    const lowerNames = names.map(n => n.toLowerCase());
+    const isAddressRow = lowerNames.some(n => n.includes('diachi') || n.includes('địa chỉ'));
+    const isFullAddressValue = typeof value === 'string' && value.includes(',');
+
+    if (isAddressRow && isFullAddressValue) {
+        const addressGroup = getVNPTAddressGroup();
+        if (addressGroup) {
+            if (!names.includes('tinhIdNew')) names.push('tinhIdNew');
+            if (addressGroup.xaIdNew && !names.includes('xaIdNew')) names.push('xaIdNew');
+            if (addressGroup.duong && !names.includes('duong')) names.push('duong');
+        } else {
+            // Fallback checking if they exist
+            if (findPageInput('tinhIdNew') && !names.includes('tinhIdNew')) names.push('tinhIdNew');
+            if (findPageInput('xaIdNew') && !names.includes('xaIdNew')) names.push('xaIdNew');
+        }
+    }
+
+    // 1. Phân loại tasks (Xác định rank dựa trên name trước nếu el chưa có)
+    const tasks = names.map(name => {
+        const el = findPageInput(name);
+        return { name, el, rank: getFieldRank(name, el) };
+    });
+
+    // 2. Sắp xếp theo rank (1 -> 2 -> 9)
+    tasks.sort((a, b) => a.rank - b.rank);
+
+    // 3. Thực hiện tuần tự có kiểm tra điều kiện
+    let lastTaskSuccess = true;
+
+    for (const task of tasks) {
+        // Chỉ tiếp tục chuỗi địa chỉ nếu bước trước đó thành công (Tránh điền Quận/Huyện khi chưa có Tỉnh)
+        if (task.rank <= 2 && !lastTaskSuccess) {
+            console.warn(`[Sync] Skip task ${task.name} because previous address level failed.`);
+            continue;
+        }
+
+        // QUAN TRỌNG: Nếu là Rank 2 (Xã/Huyện), đợi element vì nó có thể hiện muộn sau khi chọn Tỉnh
+        let currentEl = findPageInput(task.name) || task.el;
+        if (!currentEl && task.rank === 2) {
+            console.log(`[Sync Sequential] Đang đợi element Xã/Huyện (${task.name}) xuất hiện...`);
+            currentEl = await waitForElement(task.name, 4000);
+        }
+
+        if (currentEl) {
+            // Đợi Options nếu là dropdown (Trường hợp Xã/Huyện đang load bằng Lazy Load)
+            if (task.rank > 1 && task.rank <= 2) {
+                console.log(`[Sync Sequential] Giả lập Native Click để báo Angular tải Lazy-Load cho ${task.name}...`);
+
+                // --- KÍCH HOẠT VÒNG ĐỜI AJAX (LAZY LOAD) DỰA THEO EVENT THUẦN CỦA TRÌNH DUYỆT ---
+                const actualSelect = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('select') || currentEl) : currentEl;
+                const clickTarget = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('.select2-selection, .select2-choice') || currentEl) : currentEl;
+
+                clickTarget.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
+                clickTarget.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
+                clickTarget.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                clickTarget.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
+
+                console.log(`[Sync Sequential] Đang đợi Options select của trường rank ${task.rank} (ID: ${task.name})...`);
+                await waitForOptions(actualSelect, 4000);
+
+                clickTarget.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Escape', code: 'Escape' }));
+            }
+
+            console.log(`[Sync Sequential] Bắt đầu điền value cho trường Rank ${task.rank} (ID: ${task.name})`);
+            const success = syncSetValue(currentEl, value);
+            console.log(`[Sync Sequential] Kết thúc điền trường ${task.name} - Success: ${success}`);
+
+            // Cập nhật trạng thái cho bước sau
+            if (task.rank < 2) {
+                lastTaskSuccess = success;
+            }
+
+            // Nếu thành công và là cấp Tỉnh/Huyện, đợi một chút để AJAX trigger và làm mới DOM
+            if (success && task.rank <= 2) {
+                await sleep(1000);
+                // Force rebuild map để các bước sau (Xã/Huyện) có thể tìm thấy element mới vừa render
+                buildFullDOMMap(true);
+            }
+        } else {
+            console.warn(`[Sync Sequential] Không tìm thấy phần tử cho task: ${task.name} (Rank: ${task.rank})`);
+        }
+    }
+}
+
+export function getVNPTAddressGroup() {
+    try {
+        // 1. Tìm tất cả hàng form chính
+        const mainRows = Array.from(document.querySelectorAll('form .row.row-form, .row.row-form'));
+        if (mainRows.length < 3) return null;
+
+        // 2. Nhắm vào hàng thứ 3 (Thông tin người đại diện / Địa chỉ)
+        const addressRow = mainRows[2];
+
+        // 3. Lấy 2 cột lớn (col-12 col-sm-6)
+        const mainCols = addressRow.querySelectorAll(':scope > .col-12.col-sm-6');
+        if (mainCols.length < 2) return null;
+
+        const leftCol = mainCols[0]; // Chứa Tỉnh
+        const rightCol = mainCols[1]; // Chứa Xã/Huyện, Đường
+
+        // Tìm tất cả select/input trong từng cột
+        const leftControls = Array.from(leftCol.querySelectorAll('select, ng-select2, input'));
+        const rightControls = Array.from(rightCol.querySelectorAll('select, ng-select2, input'));
+
+        const findDeep = (col, selector) => col.querySelector(selector);
+
+        const xaIdNewEl = findDeep(rightCol, '[formcontrolname*="xaIdNew"], [id*="xaIdNew"], [formcontrolname*="huyen"], [id*="huyenId"], [formcontrolname*="xa"], [id*="xaIdNew"]');
+        const duongEl = findDeep(rightCol, '[formcontrolname*="duong"], [id*="duong"]');
+
+        return {
+            tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew"], [id*="tinhId"]') || leftControls[0],
+            xaIdNew: xaIdNewEl || rightControls[0],
+            duong: duongEl || rightControls[rightControls.length - 1]
+        };
+    } catch (e) {
+        return null;
+    }
 }

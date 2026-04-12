@@ -133,3 +133,89 @@ export function normalizeDate(dateStr) {
     }
     return dateStr;
 }
+/**
+ * Bóc tách địa chỉ Việt Nam thành các phần: Tỉnh, Quận/Huyện, Phường/Xã.
+ * @param {string} address 
+ * @returns {{province: string, district: string, ward: string}}
+ */
+export function parseAddressComponents(address) {
+    if (!address) return { province: '', district: '', ward: '', street: '' };
+
+    const parts = address.split(',').map(p => p.trim()).filter(Boolean);
+    const n = parts.length;
+
+    let province = '', district = '', ward = '', street = '';
+
+    if (n === 0) return { province, district, ward, street };
+
+    // Mặc định bóc từ dưới lên (chuẩn của định dạng địa chỉ VN)
+    province = parts[n - 1] || '';
+    district = n > 1 ? parts[n - 2] : '';
+    ward = n > 2 ? parts[n - 3] : '';
+    
+    // Tìm Phường/Xã & Quận/Huyện bằng Regex chặt chẽ (có ranh giới từ hoặc dấu chấm)
+    const wardRegex = /^(Xã|Phường|Thị trấn|TT|P|X)(?:\.|\s|$)/i;
+    const districtRegex = /^(Quận|Huyện|Thị xã|Thành phố|TP|Q|H)(?:\.|\s|$)/i;
+
+    let foundWard = parts.slice(0, -1).find(p => wardRegex.test(p));
+    let foundDistrict = parts.slice(0, -1).find(p => districtRegex.test(p));
+    
+    if (foundWard) ward = foundWard;
+    if (foundDistrict) district = foundDistrict;
+
+    // Tìm phần cấu thành đường
+    const wardIndex = parts.indexOf(ward);
+    if (wardIndex > 0) {
+        street = parts.slice(0, wardIndex).join(', ');
+    } else if (n >= 4 && !foundWard) {
+        street = parts.slice(0, n - 3).join(', ');
+    } else if (n > 1) {
+        street = parts[0];
+    } else {
+        street = address;
+    }
+
+    return {
+        province: cleanProvinceName(province),
+        district: cleanProvinceName(district),
+        ward: cleanProvinceName(ward),
+        street
+    };
+}
+
+/**
+ * Loại bỏ các tiền tố hành chính để lấy tên lõi của Tỉnh/Quận/Huyện/Xã.
+ * @param {string} name 
+ * @returns {string}
+ */
+export function cleanProvinceName(name) {
+    if (!name) return '';
+    // Xóa "Tỉnh ", "Thành phố ", "Quận ", "Huyện ", "Xã ", "Phường ", "Thị xã "...
+    return name.replace(/^(Tỉnh|Thành phố|Thành Phố|TP\.|TP|T\.|Quận|Huyện|Q\.|H\.|Xã|Phường|P\.|Thị xã|Thị trấn)\s+/i, '').trim();
+}
+
+/**
+ * Trích xuất phần địa chỉ nhà / đường từ một chuỗi địa chỉ đầy đủ.
+ * @param {string} address 
+ * @returns {string}
+ */
+export function getStreetPart(address) {
+    if (!address || !address.includes(',')) return address;
+    const parts = address.split(',').map(p => p.trim()).filter(Boolean);
+    
+    // Tìm index của phần Xã/Phường
+    const wardIndex = parts.findIndex(p => /Xã|Phường|Thị trấn|TT\.|P\.|X\./i.test(p));
+    
+    if (wardIndex > 0) {
+        // Nếu tìm thấy Xã/Phường, phần đường sẽ là từ đầu đến trước Xã
+        return parts.slice(0, wardIndex).join(', ');
+    } else if (parts.length >= 4) {
+        // Nếu không tìm thấy bằng regex, nhưng có từ 4 phần trở lên, giả định 3 phần cuối là Tỉnh, Huyện, Xã
+        return parts.slice(0, parts.length - 3).join(', ');
+    } else if (parts.length > 1) {
+        // Nếu chỉ có 2-3 phần mà không nhận diện được, lấy phần đầu tiên
+        return parts[0];
+    }
+    
+    return address;
+}

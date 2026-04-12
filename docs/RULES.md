@@ -6,7 +6,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 
 ## 🚀 1. Core AI Mindset (Tư duy AI)
 
-- **Planning First**: Khi nhận yêu cầu mới, **PHẢI** lập kế hoạch chi tiết trong `implementation_plan.md` (brain artifact) và chờ người dùng gõ "ok", "trien khai" hoặc "y" mới được code.
+- **Planning First**: Khi nhận yêu cầu mới, **PHẢI** lập kế hoạch chi tiết, tạo thành file `implementation_plan.md` (brain artifact) bằng Tiếng Việt và chờ người dùng gõ "ok", "trien khai" hoặc "y" mới được code.
 - **Memory Optimization**: Sử dụng `.notebooklm/brain_context.md` làm bộ nhớ lõi. Luôn cập nhật `PROJECT_MEMORY.md` sau mỗi task lớn qua workflow `/update-memory`.
 - **Language Mandate**: Toàn bộ phản hồi, tài liệu, commit message và **code comments** phải dùng **Tiếng Việt**.
 - **Graphify Mandate**: Trước khi trả lời về kiến trúc hoặc cấu trúc codebase, PHẢI đọc `graphify-out/GRAPH_REPORT.md`. Luôn chạy lệnh rebuild graph: `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` sau khi sửa code.

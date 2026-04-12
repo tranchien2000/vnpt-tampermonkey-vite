@@ -243,45 +243,4 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     };
 }
 
-// ─── SYNC ENGINE ───
-let isSyncing = false;
-document.addEventListener('input', (e) => {
-    if (isSyncing || !e.target || !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
-    let sMap = Storage.get(SK_DATA_SYNC) ?? {};
-    if (Object.keys(sMap).length === 0) return;
-
-    let keyId = e.target.id;
-    let keyName = e.target.name;
-    let keyLblStr = null;
-    let keyLblText = null;
-
-    if (keyId) {
-        const lblEl = document.querySelector(`label[for="${keyId}"]`);
-        if (lblEl) {
-            keyLblStr = lblEl.textContent.trim();
-            keyLblText = lblEl.innerText?.trim();
-        }
-    }
-    if (!keyLblStr) {
-        const p = e.target.closest('label');
-        if (p) {
-            keyLblStr = Array.from(p.childNodes).find(n => n.nodeType === 3)?.textContent.trim();
-            keyLblText = p.innerText?.trim();
-        }
-    }
-
-    let targets = sMap[keyId] || sMap[keyName] || sMap[keyLblStr] || sMap[keyLblText];
-    if (targets) {
-        isSyncing = true;
-        try {
-            const val = e.target.value;
-            const list = targets.split(',').map(s => s.trim()).filter(s => s);
-            list.forEach(t => {
-                if (t !== keyId && t !== keyName && t !== keyLblStr && t !== keyLblText) setPageField(t, val);
-            });
-        } finally {
-            isSyncing = false;
-        }
-    }
-});

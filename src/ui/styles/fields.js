@@ -38,10 +38,14 @@ export const fieldsStyles = `
         transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
     }
     
-    .row-drag-handle { cursor: grab; padding: 0; font-size: 16px; color: #bdc1c6; user-select: none; flex: 0 0 18px; text-align: center; }
-    .row-drag-handle:active { cursor: grabbing; }
-    .vnpt-field-row.dragging { opacity: 0.4; }
-    .vnpt-field-row.over { background-color: #e8f0fe; border: 1px dashed var(--vnpt-primary); }
+    .btn-sync-dir {
+        cursor: pointer; padding: 0; font-size: 14px; color: #bdc1c6; user-select: none;
+        flex: 0 0 18px; text-align: center; border: none; background: transparent; transition: color 0.2s;
+    }
+    .btn-sync-dir:hover { color: #1a73e8; }
+    .btn-sync-dir[data-dir="both"] { color: #1a73e8; font-weight: bold; }
+    .btn-sync-dir[data-dir="up"] { color: #ea4335; font-weight: bold; }
+    .btn-sync-dir[data-dir="down"] { color: #34a853; font-weight: bold; }
 
     .vnpt-field-row input { 
         flex: 1; padding: 4px 8px; border: 1px solid #1f5bd2ff; border-radius: 6px; 
