@@ -543,7 +543,7 @@ export function initWidget() {
             badge.className = 'vnpt-update-badge';
             badge.textContent = 'NEW';
             badge.title = `Có bản cập nhật mới v${RemoteConfig.info.latestVersion}. Click để xem!`;
-            
+
             badge.onclick = (e) => {
                 e.stopPropagation();
                 if (RemoteConfig.info.updateUrl) {
@@ -559,6 +559,6 @@ export function initWidget() {
     }
 
     // Kiểm tra ngay khi init và sau khi RemoteConfig refresh
-    setTimeout(checkUpdateUI, 1000); 
+    setTimeout(checkUpdateUI, 1000);
     // Lắng nghe RemoteConfig nếu có trigger (hiện tại RemoteConfig chưa có event emitter, nhưng setTimeout là đủ)
 }

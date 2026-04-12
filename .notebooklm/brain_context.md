@@ -1,5 +1,5 @@
 # VNPT PROJECT BRAIN CONTEXT (OPTIMIZED)
-*Ngày cập nhật: 12:31:53 12/4/2026*
+*Ngày cập nhật: 13:27:46 12/4/2026*
 
 ## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)
 
@@ -88,6 +88,10 @@ dẫn vào `RULES.md`.
 - **2026-04-12 (PDF Preview Filtering - Thorough)**: Nâng cấp bộ lọc EXCLUDED_LABELS và bổ sung EXCLUDED_KEYS để loại bỏ hoàn toàn Ngày/Tháng/Năm ký khỏi bảng đối soát, kể cả khi AI trả về các key này ngoài dự kiến. Loại bỏ `ngayKy` khỏi AI Prompt.
 - **2026-04-12 (Storage JSON Bugfix)**: Sửa lỗi `Storage.get()` bị crash khi parse các chuỗi không phải JSON (như API Key). Đồng bộ hóa việc dùng `JSON.stringify` cho cả GM và LocalStorage để đảm bảo tính nhất quán.
 - **2026-04-12 (UI Rule Update)**: Cập nhật quy tắc thiết kế UI: Tiêu đề phải ngắn gọn, đúng chức năng; hạn chế icon đi kèm title; cho phép dùng icon độc lập.
+- **2026-04-12 (Script Update Notification)**: Triển khai hệ thống thông báo cập nhật kép. 1. Pre-update: Kiểm tra version từ GitHub `version.json`, hiện badge "NEW" nếu có bản mới. 2. Post-update: So sánh APP_VERSION với version chạy gần nhất để hiện Toast chúc mừng cập nhật thành công.
+- **2026-04-12 (Startup Update Prompt)**: Bổ sung logic nhắc nhở cập nhật ngay khi F5 trang web. Sử dụng `confirm()` để hỏi ý kiến người dùng. Hỗ trợ bỏ qua (Skip) trong một phiên làm việc (sessionStorage) để tránh gây phiền hà.
+- **2026-04-12 (GitHub Update Automation)**: Thiết lập GitHub Action (`update-version.yml`) tự động đồng bộ hóa `package.json` version và mã commit cuối cùng vào `version.json` mỗi khi push code lên `main`. Giờ đây `package.json` là "Source of Truth" duy nhất cho phiên bản.
+- **2026-04-12 (Release Automation Workflow)**: Tạo script `scripts/release.cjs` và workflow `/release` để tự động hóa quy trình: Tăng version -> Build -> Commit -> Push chỉ bằng 1 lệnh duy nhất.
 
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
@@ -288,6 +292,7 @@ tampermonkey-vite/
 - **/dev-all**: Quy trình build và chạy server phát triển song song
 - **/export-json**: Quy trình bảo trì và cập nhật chức năng xuất/nhập file JSON (Backup)
 - **/polish-ui**: Quy trình kiểm tra và làm đẹp giao diện (UI Polish)
+- **/release**: Quy trình tự động hóa phát hành bản cập nhật (Bump version, Build, Commit, Push)
 - **/reset-all**: Quy trình xóa sạch dữ liệu cũ để bắt đầu môi trường test mới
 - **/start**: Khôi phục bối cảnh dự án và tóm tắt trạng thái phiên làm việc trước đó.
 - **/sync-logic**: Cách cấu hình để Widget tự động điền dữ liệu lên trang web
