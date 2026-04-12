@@ -74,6 +74,26 @@ async function init() {
     }
     Storage.set('vnpt_last_run_version', APP_VERSION);
 
+    // ─── Pre-Update Prompt (F5 Check) ───
+    setTimeout(async () => {
+        // Kiểm tra xem trong phiên làm việc này (session) đã nhắc chưa
+        if (sessionStorage.getItem('vnpt_update_skipped')) return;
+
+        if (RemoteConfig.hasUpdate()) {
+            const confirmed = confirm(`[VNPT PRO] Đã có phiên bản mới v${RemoteConfig.info.latestVersion}.\n\nLời nhắn: ${RemoteConfig.info.message || 'Không có mô tả.'}\n\nBạn có muốn cập nhật ngay không?`);
+            if (confirmed) {
+                if (RemoteConfig.info.updateUrl) {
+                    window.open(RemoteConfig.info.updateUrl, '_blank');
+                } else {
+                    showToast("Vui lòng click vào badge NEW để cập nhật!", "#ea4335");
+                }
+            } else {
+                // Nếu user bấm Cancel, không nhắc lại trong session này để tránh phiền
+                sessionStorage.setItem('vnpt_update_skipped', 'true');
+            }
+        }
+    }, 2000); // Đợi 2s để RemoteConfig hoàn thành fetch ngầm
+
     // ─── DOM Cache Management ───
     // Xóa cache khi DOM thay đổi lớn (SPA navigation hoặc load form mới)
     // Tăng debounce lên 1500ms để tránh việc xóa cache quá liên tục khi trang web đang render
