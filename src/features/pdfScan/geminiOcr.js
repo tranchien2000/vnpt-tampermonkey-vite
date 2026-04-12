@@ -15,27 +15,42 @@ const getSystemPrompt = () => {
         // Chỉ mượn keys chính
         const pKey = key.split(',')[0].trim();
         if (REQUIRED_KEYS.includes(pKey)) {
-            fieldsHint += `"${pKey}": "${label}",\n`;
+            fieldsHint += `    "${pKey}": "${label}",\n`;
         }
     }
 
-    return `Bạn là chuyên gia trích xuất dữ liệu hợp đồng VNPT.
-Nhiệm vụ: Đọc tài liệu (văn bản/ảnh/PDF) và trích xuất thông tin BÊN A (KHÁCH HÀNG). Bỏ qua Bên B.
+    return `Bạn là chuyên gia trích xuất dữ liệu từ Hợp đồng/Phụ lục VNPT.
+Nhiệm vụ: Đọc kỹ tài liệu và trích xuất thông tin của BÊN A (KHÁCH HÀNG). 
+TUYỆT ĐỐI KHÔNG lấy thông tin của Bên B (VNPT).
 
-CHỈ TRẢ VỀ JSON THUẦN TÚY, không bao gồm giải thích hay định dạng markdown.
+CHỈ TRẢ VỀ JSON THUẦN TÚY.
 Cấu trúc JSON yêu cầu:
 {
   "fields": {
 ${fieldsHint}    "ngayKy": "dd/MM/yyyy"
   },
-  "rawFullText": "Toàn bộ nội dung văn bản"
+  "rawFullText": "Toàn bộ nội dung văn bản đã được OCR"
 }
 
-Lưu ý:
-- "soDkdn" dùng cho cả MST và Số GPKD.
-- Định dạng ngày: dd/MM/yyyy.
-- Với tài liệu nhiều trang: Tổng hợp dữ liệu từ tất cả các trang. Nếu thông tin xuất hiện nhiều lần, lấy bản mới nhất/chính xác nhất.
-- Nếu không tìm thấy trường thông tin, trả về "".`;
+QUY TẮC TRÍCH XUẤT:
+1. "soDkdn": Lấy Mã số thuế (10 hoặc 13 số) hoặc số GPKD.
+2. "noiCapSoDkdn": Luôn trả về định dạng "SKDT {Tỉnh}" (VD: "SKDT TP.HCM").
+3. Định dạng ngày: Luôn là dd/MM/yyyy. Nếu chỉ có tháng/năm, hãy để trống ngày.
+4. Ưu tiên lấy thông tin ở các trang có chữ ký/dấu mộc nếu có mâu thuẫn.
+5. Nếu không tìm thấy trường thông tin, trả về "".
+
+VÍ DỤ TRÍCH XUẤT:
+Văn bản: "...Bên A: Công ty TNHH Giải Pháp AI. MST: 0312345678. Đại diện: Ông Trần Văn B. CMND: 123456789 cấp ngày 01/01/2010 tại CA TP.HCM..."
+Kết quả: {
+  "fields": {
+    "tenToChuc": "Công ty TNHH Giải Pháp AI",
+    "soDkdn": "0312345678",
+    "tenDaiDienn": "Trần Văn B",
+    "cmnd": "123456789",
+    "ngayCapCustomer": "01/01/2010"
+  },
+  "rawFullText": "..."
+}`;
 };
 import { callGemini } from '../../api/gemini.js';
 

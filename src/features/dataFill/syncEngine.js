@@ -25,13 +25,14 @@ function loadFreshenedDefaultData() {
     return cached;
 }
 
-export function doFillData() {
+export async function doFillData() {
     const defaultData = loadFreshenedDefaultData();
     const customData = Storage.get(SK_DATA_CUS) ?? {};
     const merged = { ...defaultData, ...customData };
 
     // Fill fields B (Merged)
-    Object.keys(merged).forEach(k => {
+    const keys = Object.keys(merged);
+    for (const k of keys) {
         const dataItem = merged[k];
         const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'))
             ? dataItem.value
@@ -39,11 +40,8 @@ export function doFillData() {
 
         // Hỗ trợ gán nhiều field bằng dấu phẩy
         const targets = k.split(',').map(s => s.trim()).filter(s => s);
-        targets.forEach(t => {
-            let el = findPageInput(t) || getInputByLabel(t);
-            if (el) syncSetValue(el, val);
-        });
-    });
+        await setPageFieldsSequential(targets, val);
+    }
     showToast('✅ Auto fill complete');
 }
 
@@ -121,14 +119,27 @@ const debouncedSync = debounce((target, val) => {
 }, 250);
 
 export function initSyncEngine() {
-    document.addEventListener('input', (e) => {
-        const target = e.target;
-        if (!target || !['INPUT', 'TEXTAREA'].includes(target.tagName)) return;
+    const handleEvents = (e) => {
+        const target = e.target.closest('input, textarea, select, ng-select2');
+        if (!target) return;
 
         // Bỏ qua nếu là input từ trong chính Widget của chúng ta
         if (target.closest('#vnpt-docx-widget') || target.closest('#vnpt-inline-calc')) return;
 
+        let val = target.value;
+        if (target.tagName === 'NG-SELECT2' || target.classList.contains('select2-hidden-accessible')) {
+            const span = target.parentElement ? target.parentElement.querySelector('.select2-selection__rendered') : null;
+            if (span && span.getAttribute('title')) {
+                val = span.getAttribute('title');
+            } else if (span && span.textContent) {
+                val = span.textContent.trim();
+            }
+        }
+
         // Gọi xử lý đồng bộ với debounce (250ms delay)
-        debouncedSync(target, target.value);
-    });
+        debouncedSync(target, val);
+    };
+
+    document.addEventListener('input', handleEvents);
+    document.addEventListener('change', handleEvents);
 }

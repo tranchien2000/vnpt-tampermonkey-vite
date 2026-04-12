@@ -1,5 +1,5 @@
 # VNPT PROJECT BRAIN CONTEXT (OPTIMIZED)
-*Ngày cập nhật: 15:57:16 12/4/2026*
+*Ngày cập nhật: 00:04:37 13/4/2026*
 
 ## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)
 
@@ -11,7 +11,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 
 ## 1. Mục tiêu hiện tại (Current Objective)
 
-- [x] Triển khai giao diện Glassmorphism cao cấp.
+- [x] Triển khai Sync 2 chiều (Reverse Sync) cho trường "Tên Tổ Chức" (Đã bị USER gỡ bỏ thủ công).
+- [x] Sửa lỗi Quét địa chỉ (id="duong", tỉnh) lấy nhầm ID số thay vì Title/Text.
 - [x] Hợp nhất menu cài đặt và sao lưu.
 - [x] Hệ thống kiểm tra dữ liệu bắt buộc (Required Fields Validation).
 - [x] Cải thiện hệ thống "Trí nhớ dự án" (Đã khôi phục và đồng bộ).
@@ -29,21 +30,29 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Quản lý bản ghi (Khôi phục/Xóa) trực tiếp trên nút ⏪.
 - [x] Chuyển đổi cơ chế nút 🗑 sang lưu History thay vì export file JSON.
 - [x] Khử bỏ thông báo "Save password" của trình duyệt cho các trường API Key và Cloud Pass.
-- [x] Tối ưu hóa danh sách mô hình Gemini (Thêm các bản 1.5-8B và 2.0-flash-lite tiết kiệm token).
-
+- [x] Phát hành bản cập nhật v1.6.5 (Tối ưu model, Backup nội bộ, Fix Autofill).
+- [x] Tự động tách Tỉnh/Thành phố từ MST và điền thông tin thông minh vào dropdown (Select2).
+- [x] Cấu trúc lại nhóm địa chỉ (Tỉnh trái, Huyện/Xã/Đường phải) theo layout VNPT mới.
+- [x] Tối ưu Tra cứu MST: Chỉ cập nhật Tên tổ chức/Địa chỉ và đồng bộ có mục tiêu (Targeted Sync).
+- [x] Gộp chung logic xử lý cho trường Xã và Huyện thành một thực thể duy nhất (`xaHuyen`) để phù hợp với thay đổi trên trang web VNPT.
+- [x] Sửa lỗi Tỉnh/Q.Huyện không nhận giá trị khi nhập Địa chỉ Full vào input hoặc qua Data Fill.
+- [x] Phủ sóng tính năng Real-time Sync: (1) Widget cập nhật form ngay khi gõ/paste (không chờ blur), (2) Sync Mapping trang web bắt được sự kiện dropdowns thay đổi.
+- [x] Điều chỉnh hướng sync value (3 chiều: Tự do ↔, Ghi đè form ⬇, Hút từ form ⬆) thay thế biểu tượng = (drag-handle) bằng nút điều hướng.
 
 ## 2. Nhật ký Quyết định (Decision Log)
 
 - **2026-04-07 (Glassmorphism UI)**: Thay thế hoàn toàn giao diện cũ sang phong cách mờ đục (blur) với màu Indigo/Slate để tăng tính sang trọng.
 - **2026-04-07 (Storage Abstraction)**: Di chuyển toàn bộ logic `localStorage` vào `src/api/storage/` để quản lý tập trung và tránh xung đột dữ liệu.
 - **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn.
-- **2026-04-10 (Selector Inspector)**: Triển khai công cụ soi trường web giúp người dùng tự lấy selector mà không cần mở DevTools.
-- **2026-04-11 (Cloud Sync)**: Hoàn thành Cloud Integration với Firebase (Firestore/Auth/Storage).
+- **2026-04-12 (2-Way Sync - Tên Tổ Chức)**: Triển khai tính năng đồng bộ ngược (Page -> Widget). *Lưu ý: USER đã gỡ bỏ tính năng này thủ công ngay sau đó.*
+- **2026-04-12 (Address Title Extraction Fix)**: Sửa lỗi hàm `scanFullAddress` và `getProvinceName` lấy giá trị `.value` (ID) của thẻ SELECT thay vì lấy `.text` (Title), dẫn đến việc địa chỉ "duong" hoặc "tỉnh" chỉ hiện số. Đã gom nhóm logic vào hàm `getElValueText` dùng chung.
 - **2026-04-12 (Local History Enhancement)**: Chuyển đổi cơ chế sao lưu từ file JSON sang Local Storage (tối đa 10 bản) cho nút 🗑. Nâng cấp nút ⏪ thành menu quản lý bản ghi (khôi phục/xoá) để tối ưu trải nghiệm người dùng.
 - **2026-04-12 (No More Password Prompt)**: Chuyển đổi các trường Password/API Key sang `type="text"` kết hợp CSS `-webkit-text-security: disc` để đánh lừa browser password manager, giải quyết triệt để thông báo "Save password?".
 - **2026-04-12 (Advanced Selector Inspector)**: Thay đổi toàn diện công cụ 🔍. Thêm Banner hướng dẫn phía trên, cho phép chọn nhiều trường liên tục (Batch Capture), hỗ trợ phím Esc và cải thiện thuật toán tìm nhãn (label) tự động.
-- **2026-04-12 (AI Models Optimization)**: Cấu trúc lại danh sách mô hình Gemini trong cài đặt. Giữ lại các bản 2.5 và 3.5 theo yêu cầu người dùng, đồng thời bổ sung các mô hình "Lite" (2.0-flash-lite, 1.5-flash-8b) để tối ưu tốc độ và chi phí token.
-
+- **2026-04-12 (Validation Sync Fix)**: Tái cấu trúc logic validation trong `fieldsManager.js`, tách thành hàm `refreshRowValidation` dùng chung. Cho phép cập nhật giá trị rỗng từ AI để kích hoạt cảnh báo `field-required-empty` chính xác hơn.
+- **2026-04-12 (Address Layout Grouping)**: Cập nhật `getVNPTAddressGroup` để gom Huyện và Xã về cột phải (col-sm-6) cùng với trường Đường, tách biệt với Tỉnh ở cột trái. Cải thiện logic tuần tự để đợi AJAX load Huyện/Xã.
+- **2026-04-12 (Real-time Sync Perfection)**: Rút đoạn code duplicate trong `dataFillFeature` xóa bỏ conflict. Bổ sung `change` event listener vào `initSyncEngine` kéo theo khả năng bắt tín hiệu từ các Web-DOM dropdowns (kể cả ng-select2). Tại Widget, gắn debounce sync thẳng vào sự kiện `input` giúp form trên trang luôn cập nhật trực tiếp theo nhịp gõ của user thay vì phải đợi mất focus (blur).
+- **2026-04-12 (Sync Direction Control)**: Thay thế chức năng drag-drop (kéo thả sắp xếp field) bằng nút điều chỉnh hướng sync (`↔`, `⬇`, `⬆`). Bổ sung `isFromWebForm` flag vào `addOrUpdateFieldRow` để kiểm soát dữ liệu sync từ Web Form lên Widget không bị ghi đè thuộc tính hướng, đảm bảo lưu trạng thái hướng độc lập cho người dùng.
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
 
@@ -51,6 +60,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **Address Real-time Lag**: Sử dụng cooldown và cache map trong `domHelper.js` để tránh lag khi gõ địa chỉ.
 - **Storage get/set Inconsistency**: Luôn stringify khi lưu và try-catch khi đọc để tránh crash khi parse dữ liệu không phải JSON.
 - **Browser Password Heuristics**: Browsers như Chrome tự động hiện popup "Save password?" khi thấy `type="password"`. Giải pháp là dùng `type="text"` + `-webkit-text-security: disc` và `autocomplete="new-password"`.
+- **SyncDir Override Issue**: Khởi tạo Field Data (khi load lại từ Web Scanner) có thể vô tình đè mất `syncDir` người dùng đã chọn. Đã thay tham số mặc định của `syncDir` về Null để tự động bỏ qua ghi đè cập nhật hướng khi có cờ `isFromWebForm`.
 
 ## 4. Trạng thái các tính năng (Status Map)
 
@@ -58,6 +68,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 *   **AI Scanner**: Hoạt động ổn định (PDF/Ảnh/Mail/Screen).
 *   **Local History**: Hoạt động ổn định (Tối đa 10 bản, hỗ trợ CRUD).
 - **Cloud Sync**: Hoạt động ổn định (Firebase).
+- **Real-time 2-way Form Sync**: Hỗ trợ đầy đủ Custom Direction (1/2 chiều).
 
 ---
 
@@ -231,17 +242,15 @@ tampermonkey-vite/
 
 - **/add-feature**: Quy trình chuẩn để tạo một module tính năng mới từ A-Z
 - **/add-field**: Cách thêm một trường dữ liệu (field) mới vào toàn bộ hệ thống
-- **/add-helper**: Cách thêm một hàm bổ trợ (helper) vào hệ thống
 - **/add-template**: Quy trình thêm một mẫu Template DOCX từ Google Drive hoặc URL
 - **/api-request**: Cách gọi API ngoài an toàn và đúng chuẩn Tampermonkey
 - **/bug-report**: Quy trình báo cáo và sửa lỗi hiệu quả, tối thiểu token đầu vào.
 - **/debug-ui**: Quy trình sửa lỗi hiển thị và tương tác trên web đích
 - **/dev-all**: Quy trình build và chạy server phát triển song song
 - **/export-json**: Quy trình bảo trì và cập nhật chức năng xuất/nhập file JSON (Backup)
-- **/polish-ui**: Quy trình kiểm tra và làm đẹp giao diện (UI Polish)
 - **/release**: Quy trình tự động hóa phát hành bản cập nhật (Bump version, Build, Commit, Pull Rebase, Push)
 - **/reset-all**: Quy trình xóa sạch dữ liệu cũ để bắt đầu môi trường test mới
-- **/start**: Khôi phục bối cảnh dự án và tóm tắt trạng thái phiên làm việc trước đó.
+- **/start**: Không có mô tả.
 - **/sync-logic**: Cách cấu hình để Widget tự động điền dữ liệu lên trang web
 - **/test-sync**: Công cụ/Quy trình debug nhanh CSS selectors và IDs trên trang web VNPT
 - **/update-memory**: Quy trình tóm tắt và cập nhật "Bộ nhớ dự án" sau mỗi task lớn.

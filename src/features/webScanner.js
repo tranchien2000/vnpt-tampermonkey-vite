@@ -18,6 +18,27 @@ import { capitalizeName, formatPhoneNumber, normalizeDate } from '../utils/strin
 import { createInternalBackup, generateBackupName } from '../utils/backupHelper.js';
 
 /**
+ * Lấy giá trị hiển thị (text/title) của một element.
+ * Tự động xử lý Select, Ng-Select2 và Input thông thường.
+ */
+function getElValueText(el) {
+    if (!el) return '';
+    const tag = el.tagName.toLowerCase();
+
+    if (tag === 'select') {
+        return el.options[el.selectedIndex]?.text || '';
+    }
+
+    if (tag === 'ng-select2') {
+        const span = el.querySelector('.select2-selection__rendered');
+        return span ? (span.getAttribute('title') || span.textContent.trim()) : '';
+    }
+
+    // Với Input thông thường hoặc các element khác có thuộc tính title
+    return (el.value || el.getAttribute('title') || '').trim();
+}
+
+/**
  * Quét tất cả các thành phần địa chỉ trên trang và trả về chuỗi đã nối chuẩn.
  * @param {boolean} forceRefresh - Nếu true, bắt buộc quét lại DOM.
  * @returns {string} Chuỗi địa chỉ đầy đủ.
@@ -27,7 +48,7 @@ function scanFullAddress(forceRefresh = false) {
     const labels = RemoteConfig.getLabels();
     const keyString = Object.keys(labels).find(k => k.includes('diaChi'));
     if (!keyString) return '';
-    
+
     const labelText = labels[keyString];
     const ids = keyString.split(',').map(s => s.trim());
     let addressObj = { detail: '', ward: '', district: '', province: '' };
@@ -36,14 +57,7 @@ function scanFullAddress(forceRefresh = false) {
     ids.forEach(id => {
         const el = findPageInput(id, labelText);
         if (el) {
-            let val = '';
-            if (el.tagName.toLowerCase() === 'ng-select2') {
-                const span = el.querySelector('.select2-selection__rendered');
-                val = span ? (span.getAttribute('title') || span.textContent.trim()) : '';
-            } else {
-                val = el.value || el.getAttribute('title') || '';
-            }
-            val = (val || '').trim();
+            let val = getElValueText(el);
             if (val && val !== '--- Chọn ---' && !val.includes('Chọn')) {
                 if (id === 'diaChi' || id === 'duong') {
                     // Ưu tiên giữ lại nội dung dài nhất (chi tiết nhất)
@@ -52,7 +66,7 @@ function scanFullAddress(forceRefresh = false) {
                     }
                 }
                 else if (id.includes('tinh')) addressObj.province = val;
-                else if (id.includes('huyen') || id.includes('quan')) addressObj.district = val;
+                else if (id.includes('xaIdNew') || id.includes('huyen') || id.includes('quan')) addressObj.district = val;
                 else if (id.includes('xa') || id.includes('phuong')) addressObj.ward = val;
             }
         }
@@ -64,7 +78,7 @@ function scanFullAddress(forceRefresh = false) {
         if (!span) return;
         const title = (span.getAttribute('title') || span.textContent || '').trim();
         if (!title || title === '--- Chọn ---' || title.includes('Chọn')) return;
-        
+
         if ((title.startsWith('Xã') || title.startsWith('Phường') || title.startsWith('Thị trấn')) && !addressObj.ward) addressObj.ward = title;
         else if ((title.startsWith('Quận') || title.startsWith('Huyện') || title.startsWith('Thị xã')) && !addressObj.district) addressObj.district = title;
         else if ((title.startsWith('Tỉnh') || title.startsWith('Thành phố')) && !addressObj.province) addressObj.province = title;
@@ -80,8 +94,8 @@ function scanFullAddress(forceRefresh = false) {
         if (!p.startsWith('Tỉnh') && !p.startsWith('Thành phố')) p = 'Tỉnh ' + p;
         parts.push(p);
     }
-    if (parts.length > 0) parts.push("Việt Nam");
-    
+    if (parts.length > 0) parts.push("");
+
     return parts.filter(p => !!p).join(', ');
 }
 
@@ -91,20 +105,15 @@ function scanFullAddress(forceRefresh = false) {
  */
 function getProvinceName() {
     let rawVal = '';
-    const provinceIds = ['tinhId', 'tinhIdNew'];
+    const provinceIds = ['tinhIdNew', 'tinhId', 'diaChiTruSoTinhIdNew'];
     for (const id of provinceIds) {
         const el = findPageInput(id);
         if (el) {
-            if (el.tagName.toLowerCase() === 'ng-select2') {
-                const span = el.querySelector('.select2-selection__rendered');
-                rawVal = span ? (span.getAttribute('title') || span.textContent.trim()) : '';
-            } else {
-                rawVal = el.value || el.getAttribute('title') || '';
-            }
+            rawVal = getElValueText(el);
             if (rawVal && rawVal !== '--- Chọn ---' && !rawVal.includes('Chọn')) break;
         }
     }
-    
+
     if (!rawVal || rawVal === '--- Chọn ---') {
         // Tìm theo Title (Select2)
         const s2List = document.querySelectorAll('ng-select2');
@@ -127,7 +136,6 @@ function getProvinceName() {
 
 export function initWebScanner() {
     document.getElementById('vnpt-btn-scan').addEventListener('click', function () {
-        createInternalBackup("Trước khi quét mới: " + generateBackupName());
         if (AppState.isDefaultMode) {
             Object.keys(DEFAULT_DATA).forEach(key => {
                 addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
@@ -146,7 +154,7 @@ export function initWebScanner() {
             const ids = keyString.split(',').map(s => s.trim());
             const isAddressField = ids.includes('diaChi');
             const isNoiCapDkdn = ids.includes('noiCapSoDkdn');
-            
+
             let val = '';
             if (isAddressField) {
                 val = scanFullAddress(false); // Map đã được build ở dòng 135
@@ -163,12 +171,12 @@ export function initWebScanner() {
                     if (val) return;
                     const el = findPageInput(id, labelText);
                     if (el) {
-                        if (el.tagName.toLowerCase() === 'select') val = el.options[el.selectedIndex]?.text || '';
-                        else if (el.tagName.toLowerCase() === 'ng-select2') {
-                            const span = el.querySelector('.select2-selection__rendered');
-                            val = span ? (span.getAttribute('title') || span.textContent.trim()) : '';
-                        } else val = el.value || el.getAttribute('title') || '';
-                        if (val) foundCount++;
+                        val = getElValueText(el);
+                        if (val && val !== '--- Chọn ---' && !val.includes('Chọn')) {
+                            foundCount++;
+                        } else {
+                            val = ''; // Reset nếu là text rác "Chọn..."
+                        }
                     }
                 });
             }
@@ -179,7 +187,7 @@ export function initWebScanner() {
                 if (['sdt'].includes(primaryId)) val = formatPhoneNumber(val);
                 else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan'].includes(primaryId)) val = normalizeDate(val);
             }
-            addOrUpdateFieldRow(keyString, val, null);
+            addOrUpdateFieldRow(keyString, val, null, '', null, false); // Nút quét thì xem như lấy từ form lần đầu
         });
 
         saveFieldsToLocal();
@@ -205,7 +213,7 @@ export function initWebScanner() {
 
         const targetId = el.id;
         const targetFcn = el.getAttribute('formcontrolname');
-        
+
         const labels = RemoteConfig.getLabels();
         const matchedKey = Object.keys(labels).find(k => {
             const keys = k.split(',').map(s => s.trim());
@@ -217,30 +225,25 @@ export function initWebScanner() {
             if (matchedKey.includes('diaChi')) {
                 // Sử dụng map hiện tại (đã được xây dựng hoặc lazy build)
                 val = scanFullAddress(false);
-                
+
                 // --- BỔ SUNG: Cập nhật luôn noiCapSoDkdn trong Widget khi Tỉnh thay đổi ---
                 const province = getProvinceName();
                 if (province) {
                     const skdtVal = "SKDT " + province;
                     const skdtKey = Object.keys(DEFAULT_LABELS).find(k => k.includes('noiCapSoDkdn'));
                     if (skdtKey) {
-                        addOrUpdateFieldRow(skdtKey, skdtVal, null);
+                        addOrUpdateFieldRow(skdtKey, skdtVal, null, '', null, true);
                     }
                 }
             } else {
-                const tag = el.tagName.toLowerCase();
-                if (tag === 'select') val = el.options[el.selectedIndex]?.text || '';
-                else if (tag === 'ng-select2') {
-                    const span = el.querySelector('.select2-selection__rendered');
-                    val = span ? (span.getAttribute('title') || span.textContent.trim()) : '';
-                } else val = el.value;
+                val = getElValueText(el);
             }
-            
+
             if (val !== undefined) {
                 // Cập nhật vào Widget ngay lập tức
-                addOrUpdateFieldRow(matchedKey, val, null);
+                addOrUpdateFieldRow(matchedKey, val, null, '', null, true);
                 saveFieldsToLocal();
-                
+
                 // Debug log (ẩn)
                 console.debug(`[Sync] Updated ${matchedKey} with value: "${val}"`);
             }
@@ -249,7 +252,7 @@ export function initWebScanner() {
 
     // Đặc trị cho Tỉnh (Real-time OnChange) vì Select2 đôi khi không bubble event
     function setupProvinceSync() {
-        const provinceIds = ['tinhId', 'tinhIdNew'];
+        const provinceIds = ['tinhId', 'tinhIdNew', 'diaChiTruSoTinhIdNew'];
         provinceIds.forEach(pId => {
             const el = document.getElementById(pId);
             if (el && !el.dataset.widgetSyncBound) {
@@ -258,10 +261,10 @@ export function initWebScanner() {
                     const province = getProvinceName();
                     if (province) {
                         const skdtVal = "SKDT " + province;
-                    const labels = RemoteConfig.getLabels();
-                    const skdtKey = Object.keys(labels).find(k => k.includes('noiCapSoDkdn'));
+                        const labels = RemoteConfig.getLabels();
+                        const skdtKey = Object.keys(labels).find(k => k.includes('noiCapSoDkdn'));
                         if (skdtKey) {
-                            addOrUpdateFieldRow(skdtKey, skdtVal, null);
+                            addOrUpdateFieldRow(skdtKey, skdtVal, null, '', null, true);
                             saveFieldsToLocal();
                         }
                     }

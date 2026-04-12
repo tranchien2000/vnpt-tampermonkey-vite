@@ -14,26 +14,37 @@ const getRawTextSystemPrompt = () => {
     for (const [key, label] of Object.entries(DEFAULT_LABELS)) {
         const pKey = key.split(',')[0].trim();
         if (REQUIRED_KEYS.includes(pKey)) {
-            fieldsHint += `"${pKey}": "${label}",\n`;
+            fieldsHint += `    "${pKey}": "${label}",\n`;
         }
     }
 
-    return `Bạn là một chuyên gia trích xuất dữ liệu từ văn bản thô (có thể là mẫu tin nhắn, email, ghi chú...). 
-Nhiệm vụ của bạn là tìm thông tin của KHÁCH HÀNG (BÊN THUÊ/BÊN A) từ đoạn văn bản được cung cấp.
+    return `Bạn là một chuyên gia trích xuất dữ liệu từ văn bản thô (tin nhắn, email, ghi chú).
+Nhiệm vụ: Tìm thông tin của KHÁCH HÀNG (BÊN A) từ văn bản được cung cấp. Bỏ qua thông tin của nhân viên VNPT hoặc Bên B.
 
-Hãy trả về DUY NHẤT một chuỗi JSON thuần tuý.
-Cấu trúc JSON bắt buộc phải trả về:
+CHỈ TRẢ VỀ JSON THUẦN TÚY.
+Cấu trúc JSON yêu cầu:
 {
+${fieldsHint}    "ngayKy": "Ngày ký hợp đồng"
 }
 
-Lưu ý:
-- Nếu thông tin không có, trả về chuỗi rỗng "".
-- Chuẩn hóa ngày tháng về dd/MM/yyyy.
-- Chuẩn hóa Số điện thoại (xóa khoảng cách, dấu chấm).
-- Mọi MST/Số GCPKD đều cho vào key "soDkdn".
-- Trường "noiCapSoDkdn": Trả về định dạng "SKDT {Tỉnh}" (ví dụ: "SKDT Hà Nội", "SKDT TP.HCM"). KHÔNG bao gồm chữ "Nơi cấp...".
-- Tuyệt đối KHÔNG bao gồm tên nhãn (Label) vào giá trị trích xuất.
-- Bỏ qua các dữ liệu rác không liên quan.`;
+QUY TẮC TRÍCH XUẤT:
+1. "soDkdn": Lấy Mã số thuế (10 hoặc 13 số) hoặc Số GPKD. Xóa dấu chấm/khoảng cách.
+2. "sdt": Lấy số điện thoại di động/cố định. Định dạng chỉ gồm chữ số.
+3. "ngay...": Tất cả các trường ngày tháng phải đưa về định dạng dd/MM/yyyy.
+4. "diaChi": Gộp toàn bộ số nhà, đường, phường, quận, tỉnh thành một chuỗi duy nhất.
+5. "noiCapSoDkdn": Trả về định dạng "SKDT {Tỉnh}" (ví dụ: "SKDT Hà Nội").
+6. Nếu không tìm thấy thông tin cho một trường, trả về "".
+7. Tuyệt đối không tự bịa ra thông tin không có trong văn bản.
+
+VÍ DỤ:
+Văn bản: "Khách hàng Nguyễn Văn A, MST 0101234567, địa chỉ số 1 Tràng Tiền, Hoàn Kiếm, HN. SĐT 0987654321 ký ngày 12 tháng 4 năm 2024"
+Kết quả: {
+  "tenDaiDienn": "Nguyễn Văn A",
+  "soDkdn": "0101234567",
+  "diaChi": "số 1 Tràng Tiền, Hoàn Kiếm, Hà Nội",
+  "sdt": "0987654321",
+  "ngayKy": "12/04/2024"
+}`;
 };
 
 /**

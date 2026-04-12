@@ -1,25 +1,25 @@
 # Graph Report - .  (2026-04-12)
 
 ## Corpus Check
-- 62 files · ~54,295 words
+- 62 files · ~57,341 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 213 nodes · 219 edges · 58 communities detected
+- 224 nodes · 242 edges · 58 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## God Nodes (most connected - your core abstractions)
-1. `loadTemplates()` - 6 edges
-2. `saveTemplates()` - 5 edges
-3. `renderTemplateManager()` - 5 edges
-4. `selectTemplate()` - 5 edges
-5. `getDB()` - 4 edges
-6. `getProfiles()` - 4 edges
-7. `switchProfile()` - 4 edges
-8. `deleteProfile()` - 4 edges
-9. `saveLocalTemplate()` - 4 edges
-10. `getVNPTDateStrings()` - 4 edges
+1. `findPageInput()` - 7 edges
+2. `loadTemplates()` - 6 edges
+3. `buildFullDOMMap()` - 6 edges
+4. `setPageFieldsSequential()` - 6 edges
+5. `saveTemplates()` - 5 edges
+6. `renderTemplateManager()` - 5 edges
+7. `selectTemplate()` - 5 edges
+8. `syncSetValue()` - 5 edges
+9. `getDB()` - 4 edges
+10. `getProfiles()` - 4 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
@@ -27,44 +27,44 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.23
-Nodes (6): addOrUpdateFieldRow(), loadSavedData(), renderCalcMappingInBanner(), saveFieldsToLocal(), updateUIForDefaultMode(), validateField()
+Cohesion: 0.32
+Nodes (12): buildFullDOMMap(), clearDOMCache(), findPageInput(), getInputByLabel(), getVNPTAddressGroup(), refreshLabelsCache(), setPageField(), setPageFieldsSequential() (+4 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.36
-Nodes (9): fetchTemplateFromUrl(), importCloudTemplate(), loadTemplates(), renderCloudTemplates(), renderLocalTemplates(), renderTemplateManager(), saveLocalTemplate(), saveTemplates() (+1 more)
+Cohesion: 0.22
+Nodes (7): addOrUpdateFieldRow(), loadSavedData(), refreshRowValidation(), renderCalcMappingInBanner(), saveFieldsToLocal(), updateUIForDefaultMode(), validateField()
 
 ### Community 2 - "Community 2"
 Cohesion: 0.36
-Nodes (8): extractElementInfo(), findLabelText(), handleClick(), handleKeyDown(), renderInspectorBanner(), startInspecting(), stopInspecting(), toggleInspector()
+Nodes (9): fetchTemplateFromUrl(), importCloudTemplate(), loadTemplates(), renderCloudTemplates(), renderLocalTemplates(), renderTemplateManager(), saveLocalTemplate(), saveTemplates() (+1 more)
 
 ### Community 3 - "Community 3"
+Cohesion: 0.36
+Nodes (8): extractElementInfo(), findLabelText(), handleClick(), handleKeyDown(), renderInspectorBanner(), startInspecting(), stopInspecting(), toggleInspector()
+
+### Community 4 - "Community 4"
+Cohesion: 0.27
+Nodes (5): cleanProvinceName(), findBestMatch(), getLevenshteinDistance(), getSimilarity(), parseAddressComponents()
+
+### Community 5 - "Community 5"
 Cohesion: 0.31
 Nodes (5): deleteInternalBackup(), exportFullBackup(), flattenData(), getInternalBackups(), restoreInternalBackup()
 
-### Community 4 - "Community 4"
-Cohesion: 0.42
-Nodes (8): buildFullDOMMap(), clearDOMCache(), findPageInput(), getInputByLabel(), refreshLabelsCache(), setPageField(), syncSetValue(), triggerCustom()
-
-### Community 5 - "Community 5"
+### Community 6 - "Community 6"
 Cohesion: 0.29
 Nodes (2): getHotkeyString(), handleRecording()
 
-### Community 6 - "Community 6"
+### Community 7 - "Community 7"
 Cohesion: 0.5
 Nodes (6): createProfileFromCurrent(), deleteProfile(), getActiveProfileId(), getProfiles(), importProfiles(), switchProfile()
 
-### Community 7 - "Community 7"
+### Community 8 - "Community 8"
 Cohesion: 0.33
 Nodes (2): injectMailBridge(), _waitForBody()
 
-### Community 8 - "Community 8"
+### Community 9 - "Community 9"
 Cohesion: 0.33
 Nodes (2): clearQueue(), renderQueue()
-
-### Community 9 - "Community 9"
-Cohesion: 0.38
-Nodes (3): findBestMatch(), getLevenshteinDistance(), getSimilarity()
 
 ### Community 10 - "Community 10"
 Cohesion: 0.4
@@ -87,16 +87,16 @@ Cohesion: 0.7
 Nodes (4): getDB(), idbDelete(), idbLoad(), idbSave()
 
 ### Community 15 - "Community 15"
+Cohesion: 0.5
+Nodes (2): getElValueText(), getProvinceName()
+
+### Community 16 - "Community 16"
 Cohesion: 0.7
 Nodes (4): ld(), renderHist(), saveHist(), sv()
 
-### Community 16 - "Community 16"
+### Community 17 - "Community 17"
 Cohesion: 0.67
 Nodes (2): initDocExport(), renderDocx()
-
-### Community 17 - "Community 17"
-Cohesion: 0.5
-Nodes (0): 
 
 ### Community 18 - "Community 18"
 Cohesion: 0.67
@@ -147,12 +147,12 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 30 - "Community 30"
-Cohesion: 1.0
-Nodes (2): classifyTextLocally(), findFirstMatch()
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 31 - "Community 31"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): classifyTextLocally(), findFirstMatch()
 
 ### Community 32 - "Community 32"
 Cohesion: 1.0
@@ -259,27 +259,25 @@ Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **Thin community `Community 31`** (2 nodes): `dev.user.js`, `loadScript()`
+- **Thin community `Community 32`** (2 nodes): `dev.user.js`, `loadScript()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (2 nodes): `vite.config.js`, `generateBundle()`
+- **Thin community `Community 33`** (2 nodes): `vite.config.js`, `generateBundle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (2 nodes): `scannerFallbacks.js`, `getScannerFallback()`
+- **Thin community `Community 34`** (2 nodes): `scannerFallbacks.js`, `getScannerFallback()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (2 nodes): `autoFillForm.js`, `setupAutoFillForm()`
+- **Thin community `Community 35`** (2 nodes): `autoFillForm.js`, `setupAutoFillForm()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (2 nodes): `dataFillFeature.js`, `renderDataFillTabs()`
+- **Thin community `Community 36`** (2 nodes): `dataFillFeature.js`, `renderDataFillTabs()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (2 nodes): `calcUI.js`, `createCalcUI()`
+- **Thin community `Community 37`** (2 nodes): `calcUI.js`, `createCalcUI()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (2 nodes): `screenScanner.js`, `scrapeScreenText()`
+- **Thin community `Community 38`** (2 nodes): `screenScanner.js`, `scrapeScreenText()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (2 nodes): `styles.js`, `injectStyles()`
+- **Thin community `Community 39`** (2 nodes): `styles.js`, `injectStyles()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (2 nodes): `toast.js`, `showToast()`
+- **Thin community `Community 40`** (2 nodes): `toast.js`, `showToast()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (2 nodes): `widget.js`, `initWidget()`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (2 nodes): `common.js`, `debounce()`
+- **Thin community `Community 41`** (2 nodes): `widget.js`, `initWidget()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 42`** (2 nodes): `migrationHelper.js`, `initStorageMerge()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.

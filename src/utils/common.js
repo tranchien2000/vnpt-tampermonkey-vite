@@ -20,3 +20,11 @@ export function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
+/**
+ * Hàm tạm dừng (sleep)
+ * @param {number} ms 
+ * @returns {Promise<void>}
+ */
+export function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

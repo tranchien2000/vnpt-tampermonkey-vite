@@ -1,8 +1,8 @@
 ---
-description: Khôi phục bối cảnh dự án và tóm tắt trạng thái phiên làm việc trước đó.
+trigger: always_on
 ---
 
-# Workflow: Start Project Session (/start)
+# /start
 
 Sử dụng workflow này ngay khi bắt đầu một phiên làm việc mới để AI tự động nắm bắt bối cảnh.
 

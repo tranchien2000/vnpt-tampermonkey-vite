@@ -46,7 +46,7 @@ export function setupAutoFillForm() {
         });
 
         // ===== 3. ĐỒNG BỘ SKDT TỪ TỈNH =====
-        const provinceIds = ['tinhId', 'tinhIdNew'];
+        const provinceIds = ['tinhId', 'tinhIdNew', 'diaChiTruSoTinhIdNew'];
         provinceIds.forEach(pId => {
             const pEl = document.getElementById(pId);
             const targetNoiCap = document.getElementById('noiCapSoDkdn');
