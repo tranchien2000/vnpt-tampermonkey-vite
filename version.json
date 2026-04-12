@@ -1,5 +1,5 @@
 {
-  "version": "1.6.6",
+  "version": "1.6.7",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
+  "message": "release: v1.6.7 - Cập nhật thêm dữ liệu đồng bộ lên Firebase"
 }
