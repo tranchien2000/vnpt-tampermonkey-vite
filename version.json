@@ -1,5 +1,5 @@
 {
-  "version": "1.6.8",
+  "version": "1.6.9",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.8 - Fix Tỉnh/Thành phố bị mất sau khi điền - Ép jQuery trigger để Angular nhận giá trị"
+  "message": "release: v1.6.9 - Tối ưu điền địa chỉ đồng thời (Group-by-Rank) và Drag & Drop 60fps"
 }
