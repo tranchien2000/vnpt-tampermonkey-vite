@@ -112,6 +112,24 @@ export function injectStyles() {
             text-transform: uppercase;
         }
 
+        .vnpt-version {
+            font-size: 9px; font-weight: 700; color: #9aa0a6;
+            margin-left: 4px; vertical-align: bottom; opacity: 0.8;
+        }
+
+        .vnpt-update-badge {
+            font-size: 8px; font-weight: 900; background: var(--vnpt-danger);
+            color: white; padding: 1px 4px; border-radius: 4px;
+            margin-left: 4px; cursor: pointer; text-transform: uppercase;
+            animation: bounce 2s infinite; display: inline-block;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-3px);}
+            60% {transform: translateY(-2px);}
+        }
+
         /* ═══════════════════════════════════════════
            SECTION 3: FIELDS CONTAINER & FIELD ROWS
            ═══════════════════════════════════════════ */

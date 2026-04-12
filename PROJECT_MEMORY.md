@@ -81,6 +81,8 @@ dẫn vào `RULES.md`.
 - **2026-04-12 (PDF Preview Filtering - Thorough)**: Nâng cấp bộ lọc EXCLUDED_LABELS và bổ sung EXCLUDED_KEYS để loại bỏ hoàn toàn Ngày/Tháng/Năm ký khỏi bảng đối soát, kể cả khi AI trả về các key này ngoài dự kiến. Loại bỏ `ngayKy` khỏi AI Prompt.
 - **2026-04-12 (Storage JSON Bugfix)**: Sửa lỗi `Storage.get()` bị crash khi parse các chuỗi không phải JSON (như API Key). Đồng bộ hóa việc dùng `JSON.stringify` cho cả GM và LocalStorage để đảm bảo tính nhất quán.
 - **2026-04-12 (UI Rule Update)**: Cập nhật quy tắc thiết kế UI: Tiêu đề phải ngắn gọn, đúng chức năng; hạn chế icon đi kèm title; cho phép dùng icon độc lập.
+- **2026-04-12 (Script Update Notification)**: Triển khai hệ thống thông báo cập nhật kép. 1. Pre-update: Kiểm tra version từ GitHub `version.json`, hiện badge "NEW" nếu có bản mới. 2. Post-update: So sánh APP_VERSION với version chạy gần nhất để hiện Toast chúc mừng cập nhật thành công.
+- **2026-04-12 (GitHub Update Automation)**: Thiết lập GitHub Action (`update-version.yml`) tự động đồng bộ hóa `package.json` version và mã commit cuối cùng vào `version.json` mỗi khi push code lên `main`. Giờ đây `package.json` là "Source of Truth" duy nhất cho phiên bản.
 
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)

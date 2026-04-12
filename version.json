@@ -1,0 +1,5 @@
+{
+  "version": "1.5",
+  "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
+  "message": "Phiên bản 1.5: Đã hỗ trợ thông báo cập nhật tự động qua GitHub!"
+}

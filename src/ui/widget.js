@@ -21,6 +21,8 @@ import { showToast } from './toast.js';
 import { testGeminiConnection } from '../api/gemini.js';
 import { toggleInspector } from '../features/selectorInspector.js';
 import { initCloudSyncUI } from './components/CloudSyncUI.js';
+import { APP_VERSION } from '../core/constants.js';
+import { RemoteConfig } from '../api/remoteConfig.js';
 
 
 export function initWidget() {
@@ -42,6 +44,8 @@ export function initWidget() {
             <div id="vnpt-panel-header" title="Kẹp chuột vào đây để di chuyển">
                 <div class="header-left">
                     <span id="vnpt-panel-title">VNPT PRO</span>
+                    <span class="vnpt-version">v${APP_VERSION}</span>
+                    <span id="vnpt-update-badge-container"></span>
                 </div>
                 <div class="header-center">
                     <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
@@ -528,4 +532,33 @@ export function initWidget() {
     if (cloudContainer) {
         initCloudSyncUI(cloudContainer);
     }
+
+    // --- Update Notification Logic ---
+    function checkUpdateUI() {
+        const container = document.getElementById('vnpt-update-badge-container');
+        if (!container) return;
+
+        if (RemoteConfig.hasUpdate()) {
+            const badge = document.createElement('span');
+            badge.className = 'vnpt-update-badge';
+            badge.textContent = 'NEW';
+            badge.title = `Có bản cập nhật mới v${RemoteConfig.info.latestVersion}. Click để xem!`;
+            
+            badge.onclick = (e) => {
+                e.stopPropagation();
+                if (RemoteConfig.info.updateUrl) {
+                    window.open(RemoteConfig.info.updateUrl, '_blank');
+                } else {
+                    showToast(`Bản cập nhật v${RemoteConfig.info.latestVersion} đã sẵn sàng!`, "#1a73e8");
+                }
+            };
+
+            container.innerHTML = '';
+            container.appendChild(badge);
+        }
+    }
+
+    // Kiểm tra ngay khi init và sau khi RemoteConfig refresh
+    setTimeout(checkUpdateUI, 1000); 
+    // Lắng nghe RemoteConfig nếu có trigger (hiện tại RemoteConfig chưa có event emitter, nhưng setTimeout là đủ)
 }

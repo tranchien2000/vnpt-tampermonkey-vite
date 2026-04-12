@@ -1,0 +1,53 @@
+name: Auto Update Version Config
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'version.json'
+
+permissions:
+  contents: write
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Userscript
+        run: npm run build
+
+      - name: Extract Metadata
+        id: meta
+        run: |
+          VERSION=$(jq -r .version package.json)
+          MESSAGE=$(git log -1 --pretty=%s)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: Update version.json
+        run: |
+          jq --arg v "${{ steps.meta.outputs.version }}" \
+             --arg m "${{ steps.meta.outputs.message }}" \
+             '.version = $v | .message = $m' version.json > version.json.tmp && mv version.json.tmp version.json
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add version.json dist/
+          git commit -m "chore: update version.json and dist to ${{ steps.meta.outputs.version }} [skip ci]" || echo "No changes to commit"
+          git push

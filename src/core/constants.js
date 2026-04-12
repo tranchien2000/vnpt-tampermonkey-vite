@@ -61,8 +61,12 @@ export const LOCAL_KEY_PROFILES = 'vnpt_docx_profiles';
 export const LOCAL_KEY_ACTIVE_PROFILE_ID = 'vnpt_docx_active_profile_id';
 export const SK_RAW_SCAN = 'vnpt_raw_scan_text';    // string — Lưu nội dung raw text để tránh mất khi refresh
 
+import pkg from '../../package.json';
+
 export const VALIDATION_REGEX = {
     MST: /^\d{10}(-\d{3})?$/, // 10 số hoặc 10 số - 3 số
     PHONE: /^(0|\+84)[3|5|7|8|9]\d{8}$/, // Định dạng SĐT Việt Nam
     EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 };
+
+export const APP_VERSION = pkg.version;
