@@ -9,7 +9,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 - **Planning First**: Khi nhận yêu cầu mới, **PHẢI** lập kế hoạch chi tiết trong `implementation_plan.md` (brain artifact) và chờ người dùng gõ "ok", "trien khai" hoặc "y" mới được code.
 - **Memory Optimization**: Sử dụng `.notebooklm/brain_context.md` làm bộ nhớ lõi. Luôn cập nhật `PROJECT_MEMORY.md` sau mỗi task lớn qua workflow `/update-memory`.
 - **Language Mandate**: Toàn bộ phản hồi, tài liệu, commit message và **code comments** phải dùng **Tiếng Việt**.
-- **Grep-First Mandate**: Nếu file > 100 dòng, PHẢI dùng `grep_search` để tìm đoạn code cần sửa trước khi dùng `view_file`.
+- **Graphify Mandate**: Trước khi trả lời về kiến trúc hoặc cấu trúc codebase, PHẢI đọc `graphify-out/GRAPH_REPORT.md`. Luôn chạy lệnh rebuild graph: `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` sau khi sửa code.
 - **Concise Response**: Phản hồi ngắn gọn, tập trung vào logic, không chào hỏi rườm rà.
 
 ---
@@ -41,6 +41,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 - **Colors**: HSL curated palettes (Indigo `#6366f1` primary, Slate background).
 - **Typography**: `Outfit`, `Inter`, hoặc `Roboto` (Google Fonts).
 - **Micro-animations**: Hover hiệu ứng, smooth transitions, loading states.
+- **UI Title & Icons**: Tiêu đề (title) UI mới phải hiển thị đúng chức năng, ngắn gọn. Hạn chế sử dụng icon đi kèm tiêu đề. Chấp nhận việc chỉ hiển thị icon mà không có tiêu đề.
 - **No Placeholders**: Sử dụng `generate_image` thay vì ảnh placeholder.
 
 ---

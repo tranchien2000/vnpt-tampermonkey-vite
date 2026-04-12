@@ -23,6 +23,17 @@ import { debounce } from './utils/common.js';
 import { initHotkeys } from './features/hotkeys.js';
 import { initStorageMerge } from './utils/migrationHelper.js';
 import { RemoteConfig } from './api/remoteConfig.js';
+import { injectMailBridge } from './features/mailScan/mailScanner.js';
+
+/** Danh sách domain của các dịch vụ mail được hỗ trợ */
+const MAIL_DOMAINS = [
+  'mail.google.com',
+  'outlook.live.com',
+  'outlook.office.com',
+  'outlook.office365.com',
+];
+
+const isMailDomain = MAIL_DOMAINS.some(d => window.location.hostname.includes(d));
 
 let cacheObserver = null;
 
@@ -122,7 +133,17 @@ window.__vnptInit = init;
 
 // Ensure the DOM is fully loaded or run immediately if already loaded
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', () => {
+    if (isMailDomain) {
+      injectMailBridge(); // Chế độ nhẹ: Chỉ inject nút "Gửi sang VNPT" trên trang mail
+    } else {
+      init();             // Chế độ đầy đủ: Load toàn bộ widget VNPT
+    }
+  });
 } else {
-  init();
+  if (isMailDomain) {
+    injectMailBridge();
+  } else {
+    init();
+  }
 }

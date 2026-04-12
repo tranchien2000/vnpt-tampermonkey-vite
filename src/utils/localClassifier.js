@@ -43,9 +43,48 @@ export function classifyTextLocally(text) {
     const results = {};
     const cleanText = text.replace(/\r/g, ''); // Đồng nhất xuống dòng
 
+    // --- 0. KIỂM TRA ĐỊNH DẠNG QR CCCD (ĐỊNH DẠNG ĐƯỜNG ỐNG '|') ---
+    // Ví dụ CCCD QR: 001090123456|012345678|NGUYỄN VĂN A|01011990|Nam|Trần Hưng Đạo, Hoàn Kiếm, Hà Nội|15102021
+    if (cleanText.includes('|')) {
+        const parts = cleanText.split('|').map(p => p.trim());
+        // Ít nhất phải có CCCD, CMND cũ, Họ tên, Ngày sinh, Giới tính, Địa chỉ, Ngày cấp
+        if (parts.length >= 6) {
+            results.cmnd = normalize.mst(parts[0]);
+
+            // Xóa rác và chuẩn hóa họ tên
+            results.tenDaiDienn = normalize.name(parts[2]);
+
+            // Ngày sinh: 01011990 -> 01/01/1990
+            const rawDob = parts[3];
+            if (rawDob && rawDob.length === 8 && !rawDob.includes('/')) {
+                results.ngaySinhCustomer = normalize.date(rawDob.slice(0, 2), rawDob.slice(2, 4), rawDob.slice(4));
+            } else if (rawDob) {
+                results.ngaySinhCustomer = rawDob;
+            }
+
+            // Địa chỉ (Thường trú)
+            if (parts[5]) {
+                results.diaChiCustomer = normalize.text(parts[5]);
+            }
+
+            // Ngày cấp: 15102021 -> 15/10/2021
+            const rawIssue = parts[6];
+            if (rawIssue && rawIssue.length === 8 && !rawIssue.includes('/')) {
+                results.ngayCapCustomer = normalize.date(rawIssue.slice(0, 2), rawIssue.slice(2, 4), rawIssue.slice(4));
+            } else if (rawIssue) {
+                results.ngayCapCustomer = rawIssue;
+            }
+
+            // Mặc định nơi cấp với CCCD gắn chip hiện đại
+            results.noiCap = "Cục Cảnh sát quản lý hành chính về trật tự xã hội";
+
+            return results;
+        }
+    }
+
     // 1. Tên tổ chức/công ty (Ưu tiên tiếng Việt -> Tiếng Anh -> Viết tắt)
     const companyPatterns = [
-        /(?:Tên công ty viết bằng tiếng Việt|Tên tổ chức):?\s*([\s\S]+?)(?=\n|Tên công ty|$)/i,
+        /(?:Tên công ty viết bằng tiếng Việt|Tên doanh nghiệp|Tên tổ chức|Doanh nghiệp|Công ty):?\s*([\s\S]+?)(?=\n|Tên công ty|Mã số|$)/i,
         /Tên công ty viết bằng tiếng nước ngoài:?\s*([\s\S]+?)(?=\n|Tên công ty|$)/i,
         /Tên công ty viết tắt:?\s*([\s\S]+?)(?=\n|Địa chỉ|$)/i
     ];
@@ -69,7 +108,7 @@ export function classifyTextLocally(text) {
     if (repName) {
         // Loại bỏ nhãn nếu bị bám dính do regex lỏng (đặc biệt cho mẫu song ngữ CCCD)
         repName = repName.replace(/^(?:Họ và tên|Người đại diện theo pháp luật|Tên đại diện|Full name|[\/\s]*Full name):?\s*/i, '')
-                         .replace(/^\/\s*/, ''); // Xóa dấu gạch chéo dư thừa
+            .replace(/^\/\s*/, ''); // Xóa dấu gạch chéo dư thừa
         results.tenDaiDienn = normalize.name(repName);
     }
 
@@ -106,7 +145,7 @@ export function classifyTextLocally(text) {
         /(?:CMND|CCCD) số:?\s*(\d[\d\s]{8,13})/i
     ];
     const cccdRaw = findFirstMatch(cleanText, cccdPatterns);
-    if (cccdRaw) results.cmnd = normalize.mst(cccdRaw); 
+    if (cccdRaw) results.cmnd = normalize.mst(cccdRaw);
 
     // 9. Nơi cấp (Ưu tiên nơi cấp CCCD)
     const noiCapPatterns = [
@@ -132,6 +171,13 @@ export function classifyTextLocally(text) {
             results.ngaySinhCustomer = normalize.date(dobSimpleMatch[1], dobSimpleMatch[2], dobSimpleMatch[3]);
         }
     }
+
+    // 12. Địa chỉ
+    const diaChiPatterns = [
+        /(?:Địa chỉ trụ sở chính|Địa chỉ thường trú|Nơi thường trú|Địa chỉ):?\s*([\s\S]+?)(?=\n|Điện thoại|Email|SĐT|$)/i
+    ];
+    const diaChi = findFirstMatch(cleanText, diaChiPatterns);
+    if (diaChi) results.diaChiCustomer = normalize.text(diaChi);
 
     return results;
 }

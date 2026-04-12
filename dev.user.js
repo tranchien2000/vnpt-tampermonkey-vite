@@ -5,10 +5,17 @@
 // @description  DEV ONLY - Load script từ localhost để chỉnh sửa realtime. Chạy: npm run dev:all
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
+// @match        *://mail.google.com/*
+// @match        *://outlook.live.com/*
+// @match        *://outlook.office.com/*
+// @match        *://outlook.office365.com/*
 // @require      https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js
 // @require      https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.js
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_addValueChangeListener
 // @connect      localhost
 // @connect      drive.google.com
 // @connect      raw.githubusercontent.com

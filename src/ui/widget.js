@@ -101,7 +101,7 @@ export function initWidget() {
                             <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>
                             <div class="cw-row-map">
                                 <span>API Key</span>
-                                <input id="vnpt-gemini-key" type="password" placeholder="AIzaSy..." title="Lấy mã Key từ Google AI Studio" class="cw-map-input">
+                                <input id="vnpt-gemini-key" type="password" placeholder="AIzaSy..." title="Lấy mã Key từ Google AI Studio" class="cw-map-input" autocomplete="off">
                             </div>
                             <div class="cw-row-map">
                                 <span>Mô hình</span>
@@ -134,7 +134,7 @@ export function initWidget() {
                 <!-- AI Scanner Section (Hidden by default) -->
                 <div id="vnpt-ai-scanner-section" class="vnpt-ai-scanner-section" style="display: none;">
                     <div class="ai-scanner-header" style="margin-bottom: -2px;">
-                        <span class="ai-title">🤖 Khu vực tải tệp & Nhập văn bản:</span>
+                        <span class="ai-title">Sử lý tệp & Nhập văn bản:</span>
                     </div>
                     
                     <div class="ai-scan-row">
@@ -152,8 +152,10 @@ export function initWidget() {
                     <div class="raw-scan-actions">
                         <button class="vnpt-btn-icon" id="vnpt-btn-show-pdf" title="Xem lại Kết quả cũ">📝</button>
                         <button class="vnpt-btn-icon" id="vnpt-btn-clear-queue" title="Xóa hàng đợi & nội dung">🗑️</button>
-                        <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex">⚡ QR Text</button>
-                        <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process">✨ QUÉT AI MỚI</button>
+                        <button class="vnpt-btn-icon" id="vnpt-btn-scan-mail" title="Trích xuất nội dụng Mail (Gmail/Outlook)">📧</button>
+                        <button class="vnpt-btn-icon" id="vnpt-btn-scan-screen" title="Quét toàn bộ văn bản màn hình">🖥️</button>
+                        <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex">QR Text</button>
+                        <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process">QUÉT AI</button>
                     </div>
                 </div>
 

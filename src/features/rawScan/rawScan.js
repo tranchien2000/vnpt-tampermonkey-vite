@@ -24,7 +24,6 @@ Nhiệm vụ của bạn là tìm thông tin của KHÁCH HÀNG (BÊN THUÊ/BÊN
 Hãy trả về DUY NHẤT một chuỗi JSON thuần tuý.
 Cấu trúc JSON bắt buộc phải trả về:
 {
-${fieldsHint}  "ngayKy": "Ngày tháng năm ký (nếu có)"
 }
 
 Lưu ý:

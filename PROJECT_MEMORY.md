@@ -16,6 +16,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Sửa lỗi VNPT Calculator tự động nhảy về số 0 khi xóa trắng ô nhập liệu.
 - [x] Cải tiến Field Linker: Hỗ trợ Smart Mapping (tìm label/wrapper id khi input yếu).
 - [x] Tích hợp visual link (🔗) vào phần Mapping Calc trong Banner.
+- [x] Tích hợp Quét nội dung Mail (Gmail/Outlook) và Quét Màn hình trực tiếp qua AI Scanner.
 
 
 - [x] Chế độ Xem trước OCR (Side-by-Side Review).
@@ -72,6 +73,14 @@ dẫn vào `RULES.md`.
 - **2026-04-12 (Fix Calc Zero Default)**: Sửa lỗi calculator tự động điền số "0" khi người dùng xóa trắng (backspace hết) ô nhập liệu. Logic mới trong `calcLogic.js` sẽ trả về chuỗi rỗng thay vì "0", đồng thời xóa sạch các trường liên quan (Tiền thuế, Sau thuế, Bằng chữ) để UI sạch sẽ hơn.
 - **2026-04-12 (Smart Field Linker)**: Nâng cấp `getBestSelector` để tự động leo lên thẻ cha tìm ID hoặc tìm Label lân cận nếu input không có thuộc tính định danh. Đồng thời cải tiến `findPageInput` để tự động resolve Wrapper ID về Input con bên trong, giúp mapping cực kỳ linh hoạt và ổn định.
 - **2026-04-12 (Mapping Calc Linker)**: Tích hợp nút 🔗 vào giao diện cấu hình Mapping Calc trong Banner. Giờ đây người dùng có thể click trực tiếp để liên kết các ô Trước thuế, Sau thuế... với các element trên trang web một cách trực quan, tương tự như các field row thông thường.
+- **2026-04-12 (Address Performance Optimization)**: Khắc phục triệt để hiện tượng giật lag khi gõ địa chỉ. Triển khai cơ chế Cooldown (3s) cho `buildFullDOMMap` và tối ưu hóa logic `scanFullAddress` để sử dụng cache thay vì quét lại DOM liên tục. Cải thiện logic ưu tiên chuỗi địa chỉ chi tiết nhất.
+- **2026-04-12 (Full Label PDF Preview)**: Nâng cấp `handleExtractionResults` trong `pdfScan/index.js` để hiển thị toàn bộ danh sách trường từ `DEFAULT_LABELS` trong Dialog đối soát. Giúp người dùng dễ dàng kiểm tra và nhập thủ công mọi trường dữ liệu mà không bị giới hạn bởi danh sách `REQUIRED_KEYS`.
+- **2026-04-12 (PDF Preview Filtering)**: Bổ sung bộ lọc `EXCLUDED_LABELS` vào bảng đối soát PDF để ẩn các trường mang tính chất mặc định hoặc ít thay đổi (Ngày/Tháng/Năm ký, Số lượng gói, Nơi ký, Liên hệ A).
+- **2026-04-12 (Storage Fix - API Key & Raw Text)**: Khắc phục lỗi Raw Text không lưu được (triển khai `SK_RAW_SCAN`). Giữ nguyên sự kiện `onchange` cho API Key để tránh ghi đĩa liên tục.
+- **2026-04-12 (Disable Autofill)**: Thêm `autocomplete="off"` vào input API Key để ngăn trình duyệt tự động điền (autofill) các key không mong muốn.
+- **2026-04-12 (PDF Preview Filtering - Thorough)**: Nâng cấp bộ lọc EXCLUDED_LABELS và bổ sung EXCLUDED_KEYS để loại bỏ hoàn toàn Ngày/Tháng/Năm ký khỏi bảng đối soát, kể cả khi AI trả về các key này ngoài dự kiến. Loại bỏ `ngayKy` khỏi AI Prompt.
+- **2026-04-12 (Storage JSON Bugfix)**: Sửa lỗi `Storage.get()` bị crash khi parse các chuỗi không phải JSON (như API Key). Đồng bộ hóa việc dùng `JSON.stringify` cho cả GM và LocalStorage để đảm bảo tính nhất quán.
+- **2026-04-12 (UI Rule Update)**: Cập nhật quy tắc thiết kế UI: Tiêu đề phải ngắn gọn, đúng chức năng; hạn chế icon đi kèm title; cho phép dùng icon độc lập.
 
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
@@ -80,6 +89,8 @@ dẫn vào `RULES.md`.
 - **Z-Index Layering**: Widget cần có `z-index: 99999`.
 - **MutationObserver Performance**: Chỉ quan sát các node cụ thể để tránh lag trang.
 - **File Read Error**: tool `view_file` có thể lỗi "unsupported mime type" với file `.md` trong `graphify-out`. Khắc phục: Dùng lệnh `type` của CMD/PowerShell.
+- **Address Real-time Lag**: Việc gọi `buildFullDOMMap` trên mỗi sự kiện `input` gây lag cực nặng. Giải pháp: Sử dụng cooldown và cache map in `domHelper.js`.
+- **Storage get/set Inconsistency**: Việc `GM_setValue` lưu raw string trong khi `localStorage` dùng `JSON.stringify` gây lỗi khi `JSON.parse` dữ liệu không phải JSON (như API Key). Giải pháp: Luôn stringify khi lưu và try-catch khi đọc.
 - **Calc Sync vs DOM Map**: Tính năng Sync của Calculator phụ thuộc vào FullDOMMap. Nếu Map chưa được build (do chưa Quét dữ liệu), Sync sẽ không tìm thấy các trường trên web. Đã khắc phục bằng cách gọi buildFullDOMMap() bên trong logic Sync.
 
 ## 4. Trạng thái các tính năng (Status Map)
