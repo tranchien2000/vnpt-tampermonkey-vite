@@ -1,5 +1,5 @@
 {
-  "version": "1.6.5",
+  "version": "1.6.6",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.5 - Tối ưu model gemini, ẩn autofill, cải thiện backup nội bộ"
+  "message": "release: v1.6.6 - Hoàn thiện Sync Direction Controls, bảo mật thông tin và tối ưu layout địa chỉ"
 }
