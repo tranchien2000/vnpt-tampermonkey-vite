@@ -59,20 +59,15 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
         el.addEventListener('mousedown', startDrag);
     });
 
-    document.addEventListener('mousemove', function (e) {
-        if (!isDragging) return;
-        
-        if (!AppState.hasDragged) {
-            const dist = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2));
-            if (dist > DRAG_THRESHOLD) {
-                AppState.hasDragged = true;
-            } else {
-                return; // Chưa vượt ngưỡng di chuyển, không làm gì để giữ sự kiện click
-            }
-        }
+    let animationFrameId = null;
+    let pendingX = 0;
+    let pendingY = 0;
 
-        let newX = e.clientX - offsetX;
-        let newY = e.clientY - offsetY;
+    function updateWidgetPosition() {
+        if (!isDragging) return;
+
+        let newX = pendingX;
+        let newY = pendingY;
 
         const w = window.innerWidth;
         const h = window.innerHeight;
@@ -100,10 +95,11 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
         if (isRightAnchor) {
             shouldDock = false; // Disable docking for vnpt-docx-widget completely
         } else {
+            // Kiểm tra trạng thái chuột để dự đoán docking
             if (!isDocked) {
-                if (e.clientY > h - 10) shouldDock = true;
+                if (pendingY + offsetY > h - 10) shouldDock = true;
             } else {
-                if (e.clientY < h - 40) shouldDock = false;
+                if (pendingY + offsetY < h - 40) shouldDock = false;
             }
         }
 
@@ -111,7 +107,7 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
 
         if (shouldDock) {
             setDocked(true);
-            widgetEl.style.top = (h - widgetEl.offsetHeight) + 'px';
+            widgetEl.style.top = (h - (widgetEl.offsetHeight || 34)) + 'px';
             if (isRightAnchor) {
                 widgetEl.style.right = (w - newX - pWidth) + 'px';
                 widgetEl.style.left = 'auto';
@@ -119,13 +115,9 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
                 widgetEl.style.left = newX + 'px';
                 widgetEl.style.right = 'auto';
             }
-            widgetEl.style.bottom = 'auto';
         } else {
             setDocked(false);
-            
-            // Evaluate height AFTER undocking (in case it expanded)
             let pHeight = widgetEl.offsetHeight || 40;
-            // Widget DOCX có thể kéo được panel ra khỏi màn hình, chỉ giữ lại toggleBtn (top: 10)
             let bottomLimit;
             if (isRightAnchor) {
                 bottomLimit = 10 + iconHeight;
@@ -143,19 +135,48 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
                 widgetEl.style.left = newX + 'px';
                 widgetEl.style.right = 'auto';
             }
-            widgetEl.style.bottom = 'auto';
+        }
+        widgetEl.style.bottom = 'auto';
+        animationFrameId = null;
+    }
+
+    document.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        
+        if (!AppState.hasDragged) {
+            const dist = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2));
+            if (dist > DRAG_THRESHOLD) {
+                AppState.hasDragged = true;
+            } else {
+                return;
+            }
+        }
+
+        pendingX = e.clientX - offsetX;
+        pendingY = e.clientY - offsetY;
+
+        if (!animationFrameId) {
+            animationFrameId = requestAnimationFrame(updateWidgetPosition);
         }
     });
 
     document.addEventListener('mouseup', function () {
         if (!isDragging) return;
         isDragging = false;
-        document.body.style.userSelect = '';
         
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+            // Thực hiện nốt lần cập nhật cuối cùng nếu cần
+            updateWidgetPosition();
+        }
+
+        document.body.style.userSelect = '';
         if (handleEls) handleEls.forEach(el => el.style.cursor = 'grab');
 
         if (storageKey) {
             const isRightAnchor = widgetEl.id === 'vnpt-docx-widget';
+            // Lúc này toạ độ đã được cập nhật ổn định trên style
             Storage.set(storageKey, {
                 left: isRightAnchor ? undefined : widgetEl.style.left,
                 right: isRightAnchor ? widgetEl.style.right : undefined,
@@ -166,7 +187,6 @@ export function makeDraggable(widgetEl, handleEls, storageKey, onDragStartCallba
             });
         }
         
-        // Reset hasDragged sau một khoảng thời gian ngắn để các listener click (nếu có) kịp kiểm tra
         setTimeout(() => {
             AppState.hasDragged = false;
         }, 100);

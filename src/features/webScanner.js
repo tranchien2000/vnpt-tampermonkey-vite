@@ -13,9 +13,10 @@ import { getScannerFallback } from '../core/scannerFallbacks.js';
 import { AppState } from '../core/state.js';
 import { DEFAULT_DATA } from '../core/defaults.js';
 import { RemoteConfig } from '../api/remoteConfig.js';
-import { buildFullDOMMap, findPageInput } from '../utils/domHelper.js';
+import { buildFullDOMMap, findPageInput, invalidateDOMMap } from '../utils/domHelper.js';
 import { capitalizeName, formatPhoneNumber, normalizeDate } from '../utils/stringHelper.js';
 import { createInternalBackup, generateBackupName } from '../utils/backupHelper.js';
+import { debounce } from '../utils/common.js';
 
 /**
  * Lấy giá trị hiển thị (text/title) của một element.
@@ -201,6 +202,27 @@ export function initWebScanner() {
     });
 
     // --- ĐỒNG BỘ THỜI GIAN THỰC ---
+    let labelLookupCache = null;
+    let lastLabelsVersion = 0;
+
+    /**
+     * Tạo bản đồ lookup nhanh từ ID/FCN sang matchedKey
+     */
+    function getLabelLookup() {
+        const labels = RemoteConfig.getLabels();
+        // Giả sử RemoteConfig có version hoặc ta check hash nếu cần, 
+        // ở đây tạm thời check nếu cache chưa có.
+        if (labelLookupCache) return labelLookupCache;
+
+        const lookup = new Map();
+        Object.keys(labels).forEach(matchedKey => {
+            const ids = matchedKey.split(',').map(s => s.trim());
+            ids.forEach(id => lookup.set(id, matchedKey));
+        });
+        labelLookupCache = lookup;
+        return lookup;
+    }
+
     function handleSyncEvent(e) {
         // Bỏ qua nếu sự kiện từ chính widget
         if (e.target.closest('#vnpt-docx-widget') || e.target.closest('#vnpt-inline-calc')) return;
@@ -214,11 +236,8 @@ export function initWebScanner() {
         const targetId = el.id;
         const targetFcn = el.getAttribute('formcontrolname');
 
-        const labels = RemoteConfig.getLabels();
-        const matchedKey = Object.keys(labels).find(k => {
-            const keys = k.split(',').map(s => s.trim());
-            return (targetId && keys.includes(targetId)) || (targetFcn && keys.includes(targetFcn));
-        });
+        const lookup = getLabelLookup();
+        const matchedKey = (targetId && lookup.get(targetId)) || (targetFcn && lookup.get(targetFcn));
 
         if (matchedKey !== undefined) {
             let val = undefined;
@@ -230,7 +249,7 @@ export function initWebScanner() {
                 const province = getProvinceName();
                 if (province) {
                     const skdtVal = "SKDT " + province;
-                    const skdtKey = Object.keys(DEFAULT_LABELS).find(k => k.includes('noiCapSoDkdn'));
+                    const skdtKey = Array.from(lookup.values()).find(k => k.includes('noiCapSoDkdn'));
                     if (skdtKey) {
                         addOrUpdateFieldRow(skdtKey, skdtVal, null, '', null, true);
                     }
@@ -261,8 +280,8 @@ export function initWebScanner() {
                     const province = getProvinceName();
                     if (province) {
                         const skdtVal = "SKDT " + province;
-                        const labels = RemoteConfig.getLabels();
-                        const skdtKey = Object.keys(labels).find(k => k.includes('noiCapSoDkdn'));
+                        const lookup = getLabelLookup();
+                        const skdtKey = Array.from(lookup.values()).find(k => k.includes('noiCapSoDkdn'));
                         if (skdtKey) {
                             addOrUpdateFieldRow(skdtKey, skdtVal, null, '', null, true);
                             saveFieldsToLocal();
@@ -278,12 +297,19 @@ export function initWebScanner() {
         });
     }
 
-    document.addEventListener('input', handleSyncEvent);
-    document.addEventListener('change', handleSyncEvent);
+    // Debounce cho Sync Event và Observer
+    const debouncedHandleSync = debounce(handleSyncEvent, 100);
+    const debouncedOnMutation = debounce(() => {
+        invalidateDOMMap();
+        setupProvinceSync();
+    }, 500);
+
+    document.addEventListener('input', debouncedHandleSync);
+    document.addEventListener('change', handleSyncEvent); // Change thì sync ngay
     document.addEventListener('keydown', handleSyncEvent);
 
     // Chạy setupProvinceSync định kỳ hoặc qua MutationObserver để bắt các form load chậm
     setupProvinceSync();
-    const observer = new MutationObserver(() => setupProvinceSync());
+    const observer = new MutationObserver(() => debouncedOnMutation());
     observer.observe(document.body, { childList: true, subtree: true });
 }

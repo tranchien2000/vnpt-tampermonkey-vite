@@ -25,6 +25,13 @@ export function clearDOMCache() {
 }
 
 /**
+ * Đánh dấu cache DOM map là đã lỗi thời.
+ */
+export function invalidateDOMMap() {
+    lastMapBuild = 0;
+}
+
+/**
  * Cập nhật lại danh sách labels từ DOM.
  */
 export function refreshLabelsCache() {
@@ -43,8 +50,9 @@ const MAP_BUILD_COOLDOWN = 3000; // 3 seconds cooldown
  */
 export function buildFullDOMMap(force = false) {
     const now = Date.now();
-    if (!force && now - lastMapBuild < MAP_BUILD_COOLDOWN && FullDOMMap.allInputs.length > 0) {
-        console.debug(`[DOM] Build map skipped (cooldown): ${now - lastMapBuild}ms`);
+    // Nếu force=true hoặc lastMapBuild=0 (đã bị invalidate), ta sẽ build lại.
+    // Nếu không, chỉ build nếu quá cooldown.
+    if (!force && lastMapBuild !== 0 && now - lastMapBuild < MAP_BUILD_COOLDOWN && FullDOMMap.allInputs.length > 0) {
         return;
     }
 
@@ -96,7 +104,10 @@ export function buildFullDOMMap(force = false) {
     });
 
     const end = performance.now();
-    console.debug(`[DOM] Build map in ${(end - start).toFixed(2)}ms for ${inputs.length} inputs and ${labels.length} labels.`);
+    const duration = end - start;
+    if (duration > 10) {
+        console.debug(`[DOM] Build map in ${duration.toFixed(2)}ms for ${inputs.length} inputs and ${labels.length} labels.`);
+    }
 }
 
 export function triggerCustom(el) {
@@ -175,7 +186,7 @@ export function syncSetValue(el, value) {
                         searchVal = parsedData.province;
                     } else if (addressGroup.xaIdNew && (wrapperEl === addressGroup.xaIdNew || el === addressGroup.xaIdNew)) {
                         // Form VNPT gộp Huyện vào Xã, ưu tiên tìm Phường/Xã trước, nếu không có mới tìm Quận/Huyện
-                        console.log(`[Sync Address] Phát hiện phần tử xaIdNew (VNPT Triad). Dữ liệu gốc: "${searchVal}". Bóc ra -> (Ward: "${parsedData.ward}", District: "${parsedData.district}")`);
+                        console.debug(`[Sync Address] Phát hiện phần tử xaIdNew (VNPT Triad). Dữ liệu gốc: "${searchVal}". Bóc ra -> (Ward: "${parsedData.ward}", District: "${parsedData.district}")`);
                         searchVal = parsedData.ward || parsedData.district;
                     }
                 } else {
@@ -184,7 +195,7 @@ export function syncSetValue(el, value) {
                     const isProvince = !isXaIdNew && (idAttr.includes('tinh') || labelText.includes('tỉnh'));
 
                     if (isXaIdNew) {
-                        console.log(`[Sync Address] Phát hiện phần tử xaIdNew (tương đối qua ID/Label: "${idAttr}" / "${labelText}"). Dữ liệu gốc: "${searchVal}". Bóc ra -> (Ward: "${parsedData.ward}", District: "${parsedData.district}")`);
+                        console.debug(`[Sync Address] Phát hiện phần tử xaIdNew (tương đối qua ID/Label: "${idAttr}" / "${labelText}"). Dữ liệu gốc: "${searchVal}". Bóc ra -> (Ward: "${parsedData.ward}", District: "${parsedData.district}")`);
                         searchVal = parsedData.ward || parsedData.district;
                     } else if (isProvince) {
                         searchVal = parsedData.province;
@@ -210,7 +221,7 @@ export function syncSetValue(el, value) {
             }
 
             if (bestText) {
-                console.log(`[Sync Address] Tiến hành khớp nối "${searchVal}" với Option tốt nhất tìm được: "${bestText}"`);
+                console.debug(`[Sync Address] Tiến hành khớp nối "${searchVal}" với Option tốt nhất tìm được: "${bestText}"`);
                 foundOption = options.find(o => o.text.trim() === bestText);
             } else {
                 console.warn(`[Sync Address] Không tìm thấy Option nào phù hợp cho từ khóa: "${searchVal}"`);
@@ -271,7 +282,7 @@ async function waitForOptions(el, timeout = 3000) {
 
     // Nếu không phải là một danh sách chọn, không cần phải đợi AJAX (input thường lấy text)
     if (selectEl.tagName !== 'SELECT' && selectEl.tagName !== 'NG-SELECT2') {
-        console.log(`[waitForOptions] Phần tử không phải SELECT/NG-SELECT2 (${selectEl.tagName}), bỏ qua bước chờ options.`);
+        console.debug(`[waitForOptions] Phần tử không phải SELECT/NG-SELECT2 (${selectEl.tagName}), bỏ qua bước chờ options.`);
         return true;
     }
 
@@ -282,7 +293,7 @@ async function waitForOptions(el, timeout = 3000) {
         }
 
         if (selectEl.options && selectEl.options.length > 1) {
-            console.log(`[waitForOptions] Đã tìm thấy ${selectEl.options.length} options sau ${Date.now() - start}ms.`);
+            console.debug(`[waitForOptions] Đã tìm thấy ${selectEl.options.length} options sau ${Date.now() - start}ms.`);
             return true;
         }
         await sleep(200);
@@ -426,87 +437,86 @@ async function waitForElement(name, timeout = 5000) {
 export async function setPageFieldsSequential(names, value) {
     if (!names || !names.length) return;
 
-    // --- AUTO EXPAND TARGETS FOR FULL ADDRESS ---
+    // --- 1. TỰ ĐỘNG MỞ RỘNG DANH SÁCH TARGETS CHO ĐỊA CHỈ FULL ---
     const lowerNames = names.map(n => n.toLowerCase());
     const isAddressRow = lowerNames.some(n => n.includes('diachi') || n.includes('địa chỉ'));
     const isFullAddressValue = typeof value === 'string' && value.includes(',');
 
     if (isAddressRow && isFullAddressValue) {
-        const addressGroup = getVNPTAddressGroup();
-        if (addressGroup) {
-            if (!names.includes('tinhIdNew')) names.push('tinhIdNew');
-            if (addressGroup.xaIdNew && !names.includes('xaIdNew')) names.push('xaIdNew');
-            if (addressGroup.duong && !names.includes('duong')) names.push('duong');
-        } else {
-            // Fallback checking if they exist
-            if (findPageInput('tinhIdNew') && !names.includes('tinhIdNew')) names.push('tinhIdNew');
-            if (findPageInput('xaIdNew') && !names.includes('xaIdNew')) names.push('xaIdNew');
-        }
+        // Tự động thêm các field địa chỉ phổ biến nếu chưa có trong list nhưng có trên trang
+        const autoTargets = [
+            'tinhIdNew', 'diaChiTruSoTinhIdNew', 
+            'xaIdNew', 'diaChiTruSoXaIdNew', 
+            'duong', 'diaChiTruSoDuong'
+        ];
+        autoTargets.forEach(t => {
+            if (!names.includes(t) && findPageInput(t)) names.push(t);
+        });
     }
 
-    // 1. Phân loại tasks (Xác định rank dựa trên name trước nếu el chưa có)
+    // --- 2. PHÂN LOẠI & NHÓM THEO RANK ---
     const tasks = names.map(name => {
         const el = findPageInput(name);
         return { name, el, rank: getFieldRank(name, el) };
     });
 
-    // 2. Sắp xếp theo rank (1 -> 2 -> 9)
-    tasks.sort((a, b) => a.rank - b.rank);
+    // Lấy danh sách Rank duy nhất hiện có và sắp xếp (1 -> 2 -> 9)
+    const uniqueRanks = [...new Set(tasks.map(t => t.rank))].sort((a, b) => a - b);
+    let lastRankSuccess = true;
 
-    // 3. Thực hiện tuần tự có kiểm tra điều kiện
-    let lastTaskSuccess = true;
-
-    for (const task of tasks) {
-        // Chỉ tiếp tục chuỗi địa chỉ nếu bước trước đó thành công (Tránh điền Quận/Huyện khi chưa có Tỉnh)
-        if (task.rank <= 2 && !lastTaskSuccess) {
-            console.warn(`[Sync] Skip task ${task.name} because previous address level failed.`);
+    // --- 3. THỰC THI THEO TỪNG CỤM RANK ---
+    for (const rank of uniqueRanks) {
+        // Nếu địa chỉ tầng trên (Tỉnh/Huyện) thất bại hoàn toàn, không điền tầng dưới
+        if (rank <= 2 && !lastRankSuccess) {
+            console.warn(`[Sync Sequential] Bỏ qua Rank ${rank} do cấp trên thất bại.`);
             continue;
         }
 
-        // QUAN TRỌNG: Nếu là Rank 2 (Xã/Huyện), đợi element vì nó có thể hiện muộn sau khi chọn Tỉnh
-        let currentEl = findPageInput(task.name) || task.el;
-        if (!currentEl && task.rank === 2) {
-            console.log(`[Sync Sequential] Đang đợi element Xã/Huyện (${task.name}) xuất hiện...`);
-            currentEl = await waitForElement(task.name, 4000);
+        const groupTasks = tasks.filter(t => t.rank === rank);
+        let groupAnySuccess = false;
+
+        console.debug(`[Sync Sequential] Đang xử lý nhóm Rank ${rank} với ${groupTasks.length} fields.`);
+
+        // Điền tất cả các trường trong cùng nhóm Rank (Đồng bộ đồng thời)
+        for (const task of groupTasks) {
+            let currentEl = findPageInput(task.name) || task.el;
+
+            // Đợi element Rank 2 (Xã/Huyện) vì nó thường render trễ sau khi chọn Tỉnh
+            if (!currentEl && rank === 2) {
+                console.debug(`[Sync Sequential] Đợi element Xã/Huyện (${task.name})...`);
+                currentEl = await waitForElement(task.name, 4000);
+            }
+
+            if (currentEl) {
+                // Kích hoạt AJAX Lazy Load cho Rank 2 dropdowns
+                if (rank > 1 && rank <= 2) {
+                    const actualSelect = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('select') || currentEl) : currentEl;
+                    if (actualSelect.tagName === 'SELECT' || actualSelect.tagName === 'NG-SELECT2') {
+                         const clickTarget = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('.select2-selection, .select2-choice') || currentEl) : currentEl;
+                         clickTarget.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                         clickTarget.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+                         clickTarget.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                         
+                         console.debug(`[Sync Sequential] Đợi Options cho rank ${rank} (${task.name})...`);
+                         await waitForOptions(actualSelect, 4000);
+                         
+                         clickTarget.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape', code: 'Escape' }));
+                    }
+                }
+
+                const success = syncSetValue(currentEl, value);
+                if (success) groupAnySuccess = true;
+                console.debug(`[Sync Sequential] Điền ${task.name}: ${success ? 'OK' : 'FAIL'}`);
+            }
         }
 
-        if (currentEl) {
-            // Đợi Options nếu là dropdown (Trường hợp Xã/Huyện đang load bằng Lazy Load)
-            if (task.rank > 1 && task.rank <= 2) {
-                console.log(`[Sync Sequential] Giả lập Native Click để báo Angular tải Lazy-Load cho ${task.name}...`);
+        lastRankSuccess = groupAnySuccess;
 
-                // --- KÍCH HOẠT VÒNG ĐỜI AJAX (LAZY LOAD) DỰA THEO EVENT THUẦN CỦA TRÌNH DUYỆT ---
-                const actualSelect = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('select') || currentEl) : currentEl;
-                const clickTarget = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('.select2-selection, .select2-choice') || currentEl) : currentEl;
-
-                clickTarget.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
-                clickTarget.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
-                clickTarget.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-                clickTarget.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
-
-                console.log(`[Sync Sequential] Đang đợi Options select của trường rank ${task.rank} (ID: ${task.name})...`);
-                await waitForOptions(actualSelect, 4000);
-
-                clickTarget.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Escape', code: 'Escape' }));
-            }
-
-            console.log(`[Sync Sequential] Bắt đầu điền value cho trường Rank ${task.rank} (ID: ${task.name})`);
-            const success = syncSetValue(currentEl, value);
-            console.log(`[Sync Sequential] Kết thúc điền trường ${task.name} - Success: ${success}`);
-
-            // Cập nhật trạng thái cho bước sau
-            if (task.rank < 2) {
-                lastTaskSuccess = success;
-            }
-
-            // Nếu thành công và là cấp Tỉnh/Huyện, đợi một chút để AJAX trigger và làm mới DOM
-            if (success && task.rank <= 2) {
-                await sleep(1000);
-                // Force rebuild map để các bước sau (Xã/Huyện) có thể tìm thấy element mới vừa render
-                buildFullDOMMap(true);
-            }
-        } else {
-            console.warn(`[Sync Sequential] Không tìm thấy phần tử cho task: ${task.name} (Rank: ${task.rank})`);
+        // Chỉ ngủ 1 lần duy nhất sau khi đã điền xong cả NHÓM Rank (Ví dụ: điền xong cả 2 Tỉnh mới ngủ)
+        if (groupAnySuccess && rank <= 2) {
+            console.debug(`[Sync Sequential] Hoàn tất Rank ${rank}, nghỉ 1s chờ AJAX trigger cấp tiếp theo...`);
+            await sleep(1000);
+            buildFullDOMMap(true);
         }
     }
 }

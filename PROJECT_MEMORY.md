@@ -31,6 +31,10 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Sửa lỗi Tỉnh/Q.Huyện không nhận giá trị khi nhập Địa chỉ Full vào input hoặc qua Data Fill.
 - [x] Phủ sóng tính năng Real-time Sync: (1) Widget cập nhật form ngay khi gõ/paste (không chờ blur), (2) Sync Mapping trang web bắt được sự kiện dropdowns thay đổi.
 - [x] Điều chỉnh hướng sync value (3 chiều: Tự do ↔, Ghi đè form ⬇, Hút từ form ⬆) thay thế biểu tượng = (drag-handle) bằng nút điều hướng.
+- [x] Tối ưu hóa tốc độ điền địa chỉ: Nhóm các trường cùng cấp (Tỉnh/TP) để điền đồng thời, giảm thiểu trễ AJAX lặp lại (Group-by-Rank).
+- [x] Tối ưu hóa mượt mà Drag & Drop: Sử dụng requestAnimationFrame để render 60fps và gom nhóm logic lưu tọa độ một lần duy nhất khi thả chuột (mouseup).
+
+
 
 ## 2. Nhật ký Quyết định (Decision Log)
 
@@ -46,6 +50,10 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-12 (Address Layout Grouping)**: Cập nhật `getVNPTAddressGroup` để gom Huyện và Xã về cột phải (col-sm-6) cùng với trường Đường, tách biệt với Tỉnh ở cột trái. Cải thiện logic tuần tự để đợi AJAX load Huyện/Xã.
 - **2026-04-12 (Real-time Sync Perfection)**: Rút đoạn code duplicate trong `dataFillFeature` xóa bỏ conflict. Bổ sung `change` event listener vào `initSyncEngine` kéo theo khả năng bắt tín hiệu từ các Web-DOM dropdowns (kể cả ng-select2). Tại Widget, gắn debounce sync thẳng vào sự kiện `input` giúp form trên trang luôn cập nhật trực tiếp theo nhịp gõ của user thay vì phải đợi mất focus (blur).
 - **2026-04-12 (Sync Direction Control)**: Thay thế chức năng drag-drop (kéo thả sắp xếp field) bằng nút điều chỉnh hướng sync (`↔`, `⬇`, `⬆`). Bổ sung `isFromWebForm` flag vào `addOrUpdateFieldRow` để kiểm soát dữ liệu sync từ Web Form lên Widget không bị ghi đè thuộc tính hướng, đảm bảo lưu trạng thái hướng độc lập cho người dùng.
+- **2026-04-13 (Address Sync Optimization)**: Tái cấu trúc `setPageFieldsSequential` để nhóm các trường theo Rank (Tỉnh=1, Huyện/Xã=2). Các trường cùng Rank sẽ được điền đồng thời (không đợi trễ giữa các trường cùng cấp), giúp xử lý nhanh các form có nhiều bộ địa chỉ (đại diện + trụ sở) và giảm thời gian chờ AJAX.
+- **2026-04-13 (Drag Performance Optimization)**: Sử dụng `requestAnimationFrame` để xử lý mượt mà việc kéo thả Widget (60fps). Loại bỏ việc ghi Storage liên tục trong sự kiện `mousemove`, chỉ thực hiện lưu tọa độ cuối cùng khi `mouseup`, giúp loại bỏ hoàn toàn hiện tượng "jank" khi kéo.
+
+
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
 
