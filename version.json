@@ -1,5 +1,5 @@
 {
-  "version": "1.6.1",
+  "version": "1.6.3",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.1 - Tính năng: Tự động hóa thông báo và quy trình Release"
+  "message": "release: v1.6.3 - test"
 }
