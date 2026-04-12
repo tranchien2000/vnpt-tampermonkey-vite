@@ -1,5 +1,5 @@
 {
-  "version": "1.6.4",
+  "version": "1.6.5",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.4 - Fix lỗi non-fast-forward khi push, cập nhật tài liệu /release"
+  "message": "release: v1.6.5 - Tối ưu model gemini, ẩn autofill, cải thiện backup nội bộ"
 }
