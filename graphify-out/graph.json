@@ -39,7 +39,7 @@
       "label": "generateBundle()",
       "file_type": "code",
       "source_file": "vite.config.js",
-      "source_location": "L48",
+      "source_location": "L49",
       "id": "vite_config_generatebundle",
       "community": 32
     },
@@ -63,7 +63,7 @@
       "label": "init()",
       "file_type": "code",
       "source_file": "src\\main.js",
-      "source_location": "L40",
+      "source_location": "L43",
       "id": "main_init",
       "community": 22
     },
@@ -71,7 +71,7 @@
       "label": "cleanup()",
       "file_type": "code",
       "source_file": "src\\main.js",
-      "source_location": "L103",
+      "source_location": "L133",
       "id": "main_cleanup",
       "community": 22
     },
@@ -415,7 +415,7 @@
       "label": "getExportFileName()",
       "file_type": "code",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L515",
+      "source_location": "L520",
       "id": "fieldsmanager_getexportfilename",
       "community": 0
     },
@@ -423,7 +423,7 @@
       "label": "loadSavedData()",
       "file_type": "code",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L530",
+      "source_location": "L535",
       "id": "fieldsmanager_loadsaveddata",
       "community": 0
     },
@@ -431,7 +431,7 @@
       "label": "initFieldsManager()",
       "file_type": "code",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L584",
+      "source_location": "L589",
       "id": "fieldsmanager_initfieldsmanager",
       "community": 0
     },
@@ -439,7 +439,7 @@
       "label": "syncAllFields()",
       "file_type": "code",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L793",
+      "source_location": "L803",
       "id": "fieldsmanager_syncallfields",
       "community": 0
     },
@@ -447,7 +447,7 @@
       "label": "updateUIForDefaultMode()",
       "file_type": "code",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L806",
+      "source_location": "L816",
       "id": "fieldsmanager_updateuifordefaultmode",
       "community": 0
     },
@@ -455,7 +455,7 @@
       "label": "renderCalcMappingInBanner()",
       "file_type": "code",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L852",
+      "source_location": "L862",
       "id": "fieldsmanager_rendercalcmappinginbanner",
       "community": 0
     },
@@ -465,7 +465,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L1",
       "id": "hotkeys",
-      "community": 3
+      "community": 5
     },
     {
       "label": "initHotkeys()",
@@ -473,7 +473,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L18",
       "id": "hotkeys_inithotkeys",
-      "community": 3
+      "community": 5
     },
     {
       "label": "isMatch()",
@@ -481,7 +481,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L42",
       "id": "hotkeys_ismatch",
-      "community": 3
+      "community": 5
     },
     {
       "label": "executeAction()",
@@ -489,7 +489,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L59",
       "id": "hotkeys_executeaction",
-      "community": 3
+      "community": 5
     },
     {
       "label": "startRecording()",
@@ -497,7 +497,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L88",
       "id": "hotkeys_startrecording",
-      "community": 3
+      "community": 5
     },
     {
       "label": "handleRecording()",
@@ -505,7 +505,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L98",
       "id": "hotkeys_handlerecording",
-      "community": 3
+      "community": 5
     },
     {
       "label": "getHotkeyString()",
@@ -513,7 +513,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L134",
       "id": "hotkeys_gethotkeystring",
-      "community": 3
+      "community": 5
     },
     {
       "label": "clearHotkey()",
@@ -521,7 +521,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L152",
       "id": "hotkeys_clearhotkey",
-      "community": 3
+      "community": 5
     },
     {
       "label": "profileManager.js",
@@ -529,7 +529,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L1",
       "id": "profilemanager",
-      "community": 4
+      "community": 6
     },
     {
       "label": "initProfiles()",
@@ -537,7 +537,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L12",
       "id": "profilemanager_initprofiles",
-      "community": 4
+      "community": 6
     },
     {
       "label": "getProfiles()",
@@ -545,7 +545,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L28",
       "id": "profilemanager_getprofiles",
-      "community": 4
+      "community": 6
     },
     {
       "label": "getActiveProfileId()",
@@ -553,7 +553,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L35",
       "id": "profilemanager_getactiveprofileid",
-      "community": 4
+      "community": 6
     },
     {
       "label": "switchProfile()",
@@ -561,7 +561,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L42",
       "id": "profilemanager_switchprofile",
-      "community": 4
+      "community": 6
     },
     {
       "label": "createProfileFromCurrent()",
@@ -569,7 +569,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L59",
       "id": "profilemanager_createprofilefromcurrent",
-      "community": 4
+      "community": 6
     },
     {
       "label": "deleteProfile()",
@@ -577,7 +577,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L77",
       "id": "profilemanager_deleteprofile",
-      "community": 4
+      "community": 6
     },
     {
       "label": "importProfiles()",
@@ -585,7 +585,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L93",
       "id": "profilemanager_importprofiles",
-      "community": 4
+      "community": 6
     },
     {
       "label": "selectorInspector.js",
@@ -593,15 +593,15 @@
       "source_file": "src\\features\\selectorInspector.js",
       "source_location": "L1",
       "id": "selectorinspector",
-      "community": 5
+      "community": 2
     },
     {
       "label": "toggleInspector()",
       "file_type": "code",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L12",
+      "source_location": "L13",
       "id": "selectorinspector_toggleinspector",
-      "community": 5
+      "community": 2
     },
     {
       "label": "startInspecting()",
@@ -609,47 +609,63 @@
       "source_file": "src\\features\\selectorInspector.js",
       "source_location": "L24",
       "id": "selectorinspector_startinspecting",
-      "community": 5
+      "community": 2
     },
     {
       "label": "stopInspecting()",
       "file_type": "code",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L30",
+      "source_location": "L41",
       "id": "selectorinspector_stopinspecting",
-      "community": 5
+      "community": 2
+    },
+    {
+      "label": "renderInspectorBanner()",
+      "file_type": "code",
+      "source_file": "src\\features\\selectorInspector.js",
+      "source_location": "L65",
+      "id": "selectorinspector_renderinspectorbanner",
+      "community": 2
+    },
+    {
+      "label": "handleKeyDown()",
+      "file_type": "code",
+      "source_file": "src\\features\\selectorInspector.js",
+      "source_location": "L90",
+      "id": "selectorinspector_handlekeydown",
+      "community": 2
     },
     {
       "label": "handleMouseOver()",
       "file_type": "code",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L41",
+      "source_location": "L97",
       "id": "selectorinspector_handlemouseover",
-      "community": 5
+      "community": 2
     },
     {
       "label": "handleClick()",
       "file_type": "code",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L62",
+      "source_location": "L118",
       "id": "selectorinspector_handleclick",
-      "community": 5
+      "community": 2
     },
     {
       "label": "extractElementInfo()",
       "file_type": "code",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L90",
+      "source_location": "L148",
       "id": "selectorinspector_extractelementinfo",
-      "community": 5
+      "community": 2
     },
     {
       "label": "findLabelText()",
       "file_type": "code",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L116",
+      "source_location": "L182",
       "id": "selectorinspector_findlabeltext",
-      "community": 5
+      "community": 2
     },
     {
       "label": "templateManager.js",
@@ -1223,7 +1239,7 @@
       "label": "initWidget()",
       "file_type": "code",
       "source_file": "src\\ui\\widget.js",
-      "source_location": "L26",
+      "source_location": "L28",
       "id": "widget_initwidget",
       "community": 40
     },
@@ -1281,7 +1297,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L1",
       "id": "backuphelper",
-      "community": 6
+      "community": 3
     },
     {
       "label": "flattenData()",
@@ -1289,7 +1305,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L18",
       "id": "backuphelper_flattendata",
-      "community": 6
+      "community": 3
     },
     {
       "label": "exportFullBackup()",
@@ -1297,7 +1313,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L37",
       "id": "backuphelper_exportfullbackup",
-      "community": 6
+      "community": 3
     },
     {
       "label": "importFullBackup()",
@@ -1305,7 +1321,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L77",
       "id": "backuphelper_importfullbackup",
-      "community": 6
+      "community": 3
     },
     {
       "label": "createInternalBackup()",
@@ -1313,7 +1329,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L110",
       "id": "backuphelper_createinternalbackup",
-      "community": 6
+      "community": 3
     },
     {
       "label": "generateBackupName()",
@@ -1321,7 +1337,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L138",
       "id": "backuphelper_generatebackupname",
-      "community": 6
+      "community": 3
     },
     {
       "label": "getInternalBackups()",
@@ -1329,7 +1345,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L150",
       "id": "backuphelper_getinternalbackups",
-      "community": 6
+      "community": 3
     },
     {
       "label": "restoreInternalBackup()",
@@ -1337,7 +1353,15 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L165",
       "id": "backuphelper_restoreinternalbackup",
-      "community": 6
+      "community": 3
+    },
+    {
+      "label": "deleteInternalBackup()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L187",
+      "id": "backuphelper_deleteinternalbackup",
+      "community": 3
     },
     {
       "label": "common.js",
@@ -1433,7 +1457,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L1",
       "id": "domhelper",
-      "community": 2
+      "community": 4
     },
     {
       "label": "clearDOMCache()",
@@ -1441,7 +1465,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L18",
       "id": "domhelper_cleardomcache",
-      "community": 2
+      "community": 4
     },
     {
       "label": "refreshLabelsCache()",
@@ -1449,7 +1473,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L29",
       "id": "domhelper_refreshlabelscache",
-      "community": 2
+      "community": 4
     },
     {
       "label": "buildFullDOMMap()",
@@ -1457,7 +1481,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L43",
       "id": "domhelper_buildfulldommap",
-      "community": 2
+      "community": 4
     },
     {
       "label": "triggerCustom()",
@@ -1465,7 +1489,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L101",
       "id": "domhelper_triggercustom",
-      "community": 2
+      "community": 4
     },
     {
       "label": "syncSetValue()",
@@ -1473,7 +1497,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L106",
       "id": "domhelper_syncsetvalue",
-      "community": 2
+      "community": 4
     },
     {
       "label": "findPageInput()",
@@ -1481,7 +1505,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L120",
       "id": "domhelper_findpageinput",
-      "community": 2
+      "community": 4
     },
     {
       "label": "getInputByLabel()",
@@ -1489,7 +1513,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L185",
       "id": "domhelper_getinputbylabel",
-      "community": 2
+      "community": 4
     },
     {
       "label": "setPageField()",
@@ -1497,7 +1521,7 @@
       "source_file": "src\\utils\\domHelper.js",
       "source_location": "L189",
       "id": "domhelper_setpagefield",
-      "community": 2
+      "community": 4
     },
     {
       "label": "fileHelper.js",
@@ -1701,7 +1725,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "vite.config.js",
-      "source_location": "L48",
+      "source_location": "L49",
       "weight": 1.0,
       "_src": "vite_config",
       "_tgt": "vite_config_generatebundle",
@@ -1713,7 +1737,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\main.js",
-      "source_location": "L40",
+      "source_location": "L43",
       "weight": 1.0,
       "_src": "main",
       "_tgt": "main_init",
@@ -1725,7 +1749,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\main.js",
-      "source_location": "L103",
+      "source_location": "L133",
       "weight": 1.0,
       "_src": "main",
       "_tgt": "main_cleanup",
@@ -2157,7 +2181,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L515",
+      "source_location": "L520",
       "weight": 1.0,
       "_src": "fieldsmanager",
       "_tgt": "fieldsmanager_getexportfilename",
@@ -2169,7 +2193,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L530",
+      "source_location": "L535",
       "weight": 1.0,
       "_src": "fieldsmanager",
       "_tgt": "fieldsmanager_loadsaveddata",
@@ -2181,7 +2205,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L584",
+      "source_location": "L589",
       "weight": 1.0,
       "_src": "fieldsmanager",
       "_tgt": "fieldsmanager_initfieldsmanager",
@@ -2193,7 +2217,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L793",
+      "source_location": "L803",
       "weight": 1.0,
       "_src": "fieldsmanager",
       "_tgt": "fieldsmanager_syncallfields",
@@ -2205,7 +2229,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L806",
+      "source_location": "L816",
       "weight": 1.0,
       "_src": "fieldsmanager",
       "_tgt": "fieldsmanager_updateuifordefaultmode",
@@ -2217,7 +2241,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L852",
+      "source_location": "L862",
       "weight": 1.0,
       "_src": "fieldsmanager",
       "_tgt": "fieldsmanager_rendercalcmappinginbanner",
@@ -2253,7 +2277,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L845",
+      "source_location": "L855",
       "weight": 1.0,
       "_src": "fieldsmanager_updateuifordefaultmode",
       "_tgt": "fieldsmanager_loadsaveddata",
@@ -2265,7 +2289,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\fieldsManager.js",
-      "source_location": "L839",
+      "source_location": "L849",
       "weight": 1.0,
       "_src": "fieldsmanager_updateuifordefaultmode",
       "_tgt": "fieldsmanager_rendercalcmappinginbanner",
@@ -2541,7 +2565,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0,
       "_src": "selectorinspector",
       "_tgt": "selectorinspector_toggleinspector",
@@ -2565,7 +2589,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L30",
+      "source_location": "L41",
       "weight": 1.0,
       "_src": "selectorinspector",
       "_tgt": "selectorinspector_stopinspecting",
@@ -2577,7 +2601,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L41",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_src": "selectorinspector",
+      "_tgt": "selectorinspector_renderinspectorbanner",
+      "source": "selectorinspector",
+      "target": "selectorinspector_renderinspectorbanner",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\selectorInspector.js",
+      "source_location": "L90",
+      "weight": 1.0,
+      "_src": "selectorinspector",
+      "_tgt": "selectorinspector_handlekeydown",
+      "source": "selectorinspector",
+      "target": "selectorinspector_handlekeydown",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\selectorInspector.js",
+      "source_location": "L97",
       "weight": 1.0,
       "_src": "selectorinspector",
       "_tgt": "selectorinspector_handlemouseover",
@@ -2589,7 +2637,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L62",
+      "source_location": "L118",
       "weight": 1.0,
       "_src": "selectorinspector",
       "_tgt": "selectorinspector_handleclick",
@@ -2601,7 +2649,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L90",
+      "source_location": "L148",
       "weight": 1.0,
       "_src": "selectorinspector",
       "_tgt": "selectorinspector_extractelementinfo",
@@ -2613,7 +2661,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L116",
+      "source_location": "L182",
       "weight": 1.0,
       "_src": "selectorinspector",
       "_tgt": "selectorinspector_findlabeltext",
@@ -2625,7 +2673,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L16",
+      "source_location": "L18",
       "weight": 1.0,
       "_src": "selectorinspector_toggleinspector",
       "_tgt": "selectorinspector_startinspecting",
@@ -2637,7 +2685,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0,
       "_src": "selectorinspector_toggleinspector",
       "_tgt": "selectorinspector_stopinspecting",
@@ -2649,7 +2697,43 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L75",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "selectorinspector_startinspecting",
+      "_tgt": "selectorinspector_renderinspectorbanner",
+      "source": "selectorinspector_startinspecting",
+      "target": "selectorinspector_renderinspectorbanner",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\selectorInspector.js",
+      "source_location": "L92",
+      "weight": 1.0,
+      "_src": "selectorinspector_handlekeydown",
+      "_tgt": "selectorinspector_stopinspecting",
+      "source": "selectorinspector_stopinspecting",
+      "target": "selectorinspector_handlekeydown",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\selectorInspector.js",
+      "source_location": "L138",
+      "weight": 1.0,
+      "_src": "selectorinspector_handleclick",
+      "_tgt": "selectorinspector_renderinspectorbanner",
+      "source": "selectorinspector_renderinspectorbanner",
+      "target": "selectorinspector_handleclick",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\selectorInspector.js",
+      "source_location": "L131",
       "weight": 1.0,
       "_src": "selectorinspector_handleclick",
       "_tgt": "selectorinspector_extractelementinfo",
@@ -2661,7 +2745,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "src\\features\\selectorInspector.js",
-      "source_location": "L101",
+      "source_location": "L168",
       "weight": 1.0,
       "_src": "selectorinspector_extractelementinfo",
       "_tgt": "selectorinspector_findlabeltext",
@@ -3537,7 +3621,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src\\ui\\widget.js",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "_src": "widget",
       "_tgt": "widget_initwidget",
@@ -3654,6 +3738,18 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L187",
+      "weight": 1.0,
+      "_src": "backuphelper",
+      "_tgt": "backuphelper_deleteinternalbackup",
+      "source": "backuphelper",
+      "target": "backuphelper_deleteinternalbackup",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "src\\utils\\backupHelper.js",
@@ -3675,6 +3771,18 @@
       "_tgt": "backuphelper_getinternalbackups",
       "source": "backuphelper_getinternalbackups",
       "target": "backuphelper_restoreinternalbackup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L188",
+      "weight": 1.0,
+      "_src": "backuphelper_deleteinternalbackup",
+      "_tgt": "backuphelper_getinternalbackups",
+      "source": "backuphelper_getinternalbackups",
+      "target": "backuphelper_deleteinternalbackup",
       "confidence_score": 1.0
     },
     {

@@ -56,7 +56,7 @@ export function initWidget() {
                 </div>
                 <div class="header-right">
                     <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
-                    <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Dọn giá trị & Lưu JSON (Shift+Click để Xóa hàng)">🗑</button>
+                    <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Dọn dẹp & Lưu vào History (Shift+Click để Xóa hàng)">🗑</button>
                     <div class="vnpt-restore-dropdown" style="position: relative; display: flex;">
                         <button class="vnpt-btn-icon btn-restore" id="vnpt-btn-restore-last" title="Khôi phục bản gần nhất">⏪</button>
                         <div id="vnpt-backup-history" class="vnpt-backup-history"></div>
@@ -105,19 +105,19 @@ export function initWidget() {
                             <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>
                             <div class="cw-row-map">
                                 <span>API Key</span>
-                                <input id="vnpt-gemini-key" type="password" placeholder="AIzaSy..." title="Lấy mã Key từ Google AI Studio" class="cw-map-input" autocomplete="off">
+                                <input id="vnpt-gemini-key" type="text" placeholder="AIzaSy..." title="Lấy mã Key từ Google AI Studio" class="cw-map-input sensitive-mask" autocomplete="new-password">
                             </div>
                             <div class="cw-row-map">
                                 <span>Mô hình</span>
                                 <select id="vnpt-gemini-model" class="cw-map-input">
-                                    <optgroup label="Thế hệ 2.5 (Ổn định nhất)">
+                                    <optgroup label="Thế hệ 2.5 & 3.5 (Ổn định)">
                                         <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Cân bằng / Khuyên dùng)</option>
-                                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (Suy luận sâu / Thông minh)</option>
                                         <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (Tốc độ cao / Tiết kiệm)</option>
-                                    </optgroup>
-                                    <optgroup label="Thế hệ 3.1 (Thử nghiệm)">
-                                        <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview (Mới nhất)</option>
+                                        <option value="gemini-flash-lite-latest">Gemini Flash-Lite lastest</option>
+                                        </optgroup>
+                                        <optgroup label="Tối ưu Token & Tốc độ (Real-time)">
                                         <option value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash-Lite Preview</option>
+
                                     </optgroup>
                                 </select>
                             </div>

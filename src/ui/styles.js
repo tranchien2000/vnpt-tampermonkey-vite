@@ -36,6 +36,10 @@ export function injectStyles() {
             --vnpt-font: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
+        .sensitive-mask {
+            -webkit-text-security: disc !important;
+        }
+
         /* ═══════════════════════════════════════════
            SECTION 1: WIDGET CONTAINER & TOGGLE BTN
            ═══════════════════════════════════════════ */
@@ -329,38 +333,50 @@ export function injectStyles() {
             border: 1px solid var(--vnpt-border);
             border-radius: 12px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-            width: 300px; 
-            max-height: 380px; 
+            width: 320px; 
+            max-height: 420px; 
             overflow-y: auto;
             display: none; 
             flex-direction: column; 
             z-index: 1000000;
-            padding: 6px; 
+            padding: 8px; 
             animation: menuFadeIn 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
             transform-origin: top right;
         }
         .vnpt-backup-history.show { display: flex; }
         .backup-history-header {
-            padding: 10px 12px;
+            padding: 10px 14px;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--vnpt-primary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             border-bottom: 1px solid rgba(26, 115, 232, 0.1);
-            background: rgba(26, 115, 232, 0.03);
+            background: rgba(26, 115, 232, 0.04);
             border-radius: 12px 12px 0 0;
-            margin-bottom: 4px;
+            margin: -8px -8px 6px -8px;
         }
         .backup-history-item {
-            padding: 8px 10px; border-radius: 8px; cursor: pointer;
-            transition: all 0.2s; border-bottom: 1px solid rgba(0,0,0,0.03);
-            display: flex; flex-direction: column; gap: 2px;
+            padding: 10px 12px; border-radius: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
         }
-        .backup-history-item:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); }
-        .backup-history-name { font-size: 11.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .backup-history-time { font-size: 9px; opacity: 0.6; }
-        .backup-history-empty { padding: 20px; text-align: center; font-size: 11px; color: #999; font-style: italic; }
+        .backup-history-item:hover { background: var(--vnpt-primary-light); transform: scale(1.02); }
+        .backup-info { flex: 1; min-width: 0; }
+        .backup-history-name { font-size: 11.5px; font-weight: 700; color: #3c4043; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .backup-history-time { font-size: 9px; color: #9aa0a6; font-weight: 600; margin-top: 2px; }
+        
+        .backup-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .backup-actions button {
+            width: 28px; height: 28px; border-radius: 6px; border: 1px solid #dadce0;
+            background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; transition: all 0.2s;
+        }
+        .btn-restore-action:hover { background: var(--vnpt-success); color: #fff; border-color: var(--vnpt-success); }
+        .btn-delete-action:hover { background: var(--vnpt-danger); color: #fff; border-color: var(--vnpt-danger); }
+        
+        .backup-history-empty { padding: 30px 20px; text-align: center; font-size: 11px; color: #9aa0a6; font-style: italic; line-height: 1.6; }
         
         .btn-export { 
             background: var(--vnpt-primary-grad); 

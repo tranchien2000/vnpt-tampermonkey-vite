@@ -193,8 +193,8 @@ function showLoginModal() {
         <h3 style="text-align: center;">🔥 Firebase Sync</h3>
       </div>
       <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-        <input type="email" id="cloud-email" placeholder="Email" class="cw-map-input" style="height: 36px; font-size: 13px;">
-        <input type="password" id="cloud-password" placeholder="Mật khẩu" class="cw-map-input" style="height: 36px; font-size: 13px;">
+        <input type="email" id="cloud-email" placeholder="Email" class="cw-map-input" style="height: 36px; font-size: 13px;" autocomplete="new-password">
+        <input type="text" id="cloud-password" placeholder="Mật khẩu" class="cw-map-input sensitive-mask" style="height: 36px; font-size: 13px;" autocomplete="new-password">
       </div>
       <div class="vnpt-pdf-actions" style="flex-direction: column; gap: 8px;">
         <button id="btn-do-login" class="vnpt-btn-confirm" style="width: 100%;">Đăng nhập</button>
