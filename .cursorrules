@@ -2,7 +2,7 @@ AI **PHẢI** tuân thủ bộ quy tắc trung tâm tại: [docs/RULES.md](file:
 
 ### 🚀 Quy tắc Ưu tiên (Quick Reference):
 1. AI **PHẢI** đọc [.notebooklm/brain_context.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.notebooklm/brain_context.md) ngay khi bắt đầu.
-2. **Planning First**: Lập `implementation_plan.md` và chờ xác nhận trước khi code.
+2. **Planning First**: Luôn lập `implementation_plan.md` dưới dạng artifact (file). **KHÔNG** trả lời kế hoạch trực tiếp bằng văn bản. Chờ xác nhận trước khi code.
 3. **Execution**: Chỉ code sau khi người dùng gõ "ok", "trien khai" hoặc "y".
 4. **Graphify**: Đọc `graphify-out/GRAPH_REPORT.md` để hiểu kiến trúc trước khi tìm code.
 5. **Language**: Toàn bộ phản hồi và code comments là **Tiếng Việt**.
