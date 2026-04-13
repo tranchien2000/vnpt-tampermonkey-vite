@@ -1,5 +1,5 @@
 {
-  "version": "1.6.9",
+  "version": "1.6.10",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "chore: update project memory for v1.6.9 release"
+  "message": "release: v1.6.10 - Sửa lỗi điền nhầm Số nhà và tối ưu DOM selectors Case-insensitive"
 }
