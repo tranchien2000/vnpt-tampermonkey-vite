@@ -11,6 +11,7 @@ import { renderDataFillTabs } from '../dataFill/index.js';
 import { makeDraggable } from '../../ui/dragDrop.js';
 import { DEFAULT_CALC_MAP, DEFAULT_TAX_RATE } from '../../core/defaults.js';
 import { buildFullDOMMap } from '../../utils/domHelper.js';
+import { debounce } from '../../utils/common.js';
 
 export function createCalcUI(widget, container, SK_POS_CALC) {
     let TAX_RATE = Number(localStorage.getItem(SK_TAX)) || DEFAULT_TAX_RATE;
@@ -124,16 +125,18 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         syncToPage(res, currentMaps);
     }
 
-    els.taxRate.oninput = () => { TAX_RATE = Number(els.taxRate.value) / 100 || 0; sv(SK_TAX, TAX_RATE); updateLocal('before', els.before.value); };
+    const debouncedSync = debounce((type, val) => doSync(type, val), 400);
+
+    els.taxRate.oninput = () => { TAX_RATE = Number(els.taxRate.value) / 100 || 0; sv(SK_TAX, TAX_RATE); updateLocal('before', els.before.value); debouncedSync('before', els.before.value); };
     els.taxRate.onchange = () => { doSync('before', els.before.value); };
 
-    els.before.oninput = () => { updateLocal('before', els.before.value); };
+    els.before.oninput = () => { updateLocal('before', els.before.value); debouncedSync('before', els.before.value); };
     els.before.onchange = () => { doSync('before', els.before.value); saveHist(SK_HIST_B, els.before.value); renderHist(SK_HIST_B, 'wg-before-list'); };
     
-    els.tax.oninput = () => { updateLocal('tax', els.tax.value); };
+    els.tax.oninput = () => { updateLocal('tax', els.tax.value); debouncedSync('tax', els.tax.value); };
     els.tax.onchange = () => { doSync('tax', els.tax.value); };
 
-    els.after.oninput = () => { updateLocal('after', els.after.value); };
+    els.after.oninput = () => { updateLocal('after', els.after.value); debouncedSync('after', els.after.value); };
     els.after.onchange = () => { doSync('after', els.after.value); saveHist(SK_HIST_A, els.after.value); renderHist(SK_HIST_A, 'wg-after-list'); };
 
     const syncManualBtn = document.getElementById('wg-sync-manual');
