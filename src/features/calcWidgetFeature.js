@@ -270,10 +270,11 @@ export function initCalcWidget() {
         textEl.value = txt;
 
         // Lazy build DOM map nếu calcMap có cấu hình nhưng map chưa được khởi tạo
-        const hasMappings = (calcMaps.before || []).length > 0
-            || (calcMaps.tax || []).length > 0
-            || (calcMaps.after || []).length > 0
-            || (calcMaps.text || []).length > 0;
+        const hasMappings = ['before', 'tax', 'after', 'text'].some(k => {
+            const m = calcMaps[k];
+            if (!m) return false;
+            return Array.isArray(m) ? m.length > 0 : (m.sync || []).length > 0;
+        });
 
         if (hasMappings) {
             buildFullDOMMap();
@@ -320,12 +321,14 @@ export function initCalcWidget() {
         const b = parseNum(beforeEl.value), t = Math.round(b * TAX_RATE), a = b + t;
         taxEl.value = formatNum(t); afterEl.value = formatNum(a);
         textEl.value = capFirst(numToVN(a)) + ' đồng';
+        calcUpdate(b, t, a);
     });
     taxRateEl.addEventListener('change', fromBefore);
     beforeEl.addEventListener('input', () => {
         const b = parseNum(beforeEl.value), t = Math.round(b * TAX_RATE), a = b + t;
         taxEl.value = formatNum(t); afterEl.value = formatNum(a);
         textEl.value = capFirst(numToVN(a)) + ' đồng';
+        calcUpdate(b, t, a);
     });
     beforeEl.addEventListener('blur', () => {
         beforeEl.value = formatNum(parseNum(beforeEl.value));
@@ -342,6 +345,7 @@ export function initCalcWidget() {
         const t = parseNum(taxEl.value), b = Math.round(t / TAX_RATE), a = b + t;
         beforeEl.value = formatNum(b); afterEl.value = formatNum(a);
         textEl.value = capFirst(numToVN(a)) + ' đồng';
+        calcUpdate(b, t, a);
     });
     taxEl.addEventListener('change', fromTax);
     
@@ -349,6 +353,7 @@ export function initCalcWidget() {
         const a = parseNum(afterEl.value), b = Math.round(a / (1 + TAX_RATE)), t = a - b;
         beforeEl.value = formatNum(b); taxEl.value = formatNum(t);
         textEl.value = capFirst(numToVN(a)) + ' đồng';
+        calcUpdate(b, t, a);
     });
     afterEl.addEventListener('blur', () => {
         afterEl.value = formatNum(parseNum(afterEl.value));
