@@ -1,5 +1,5 @@
 {
   "version": "1.6.14",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.14 - Tối ưu Mapping Fields (Label Map) và Cleanup logic khởi tạo"
+  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
 }
