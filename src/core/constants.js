@@ -11,6 +11,7 @@ export const DEFAULT_LABELS = {
     'chucVu': 'Chức Vụ',
     'ngaySinhCustomer': 'Ngày Sinh KH',
     'diaChi': 'Địa chỉ (Full)',
+    'duong': 'Số nhà, tên đường',
     'cmnd': 'CMND/CCCD',
     'ngayCapCustomer': 'Ngày Cấp CMND',
     'noiCap': 'Nơi Cấp',
@@ -29,7 +30,6 @@ export const DEFAULT_LABELS = {
     'ngayTiepNhan, ngayThangNamKy': 'Ngày tiếp nhận / Ngày tháng năm ký',
     'soLuongGoi': 'Số Lượng Gói',
     'noiKy': 'Nơi ký',
-    'duong': 'Số nhà, tên đường',
     'xaIdNew': 'Quận/Huyện - Xã/Phường',
     'tinhIdNew, tinhId, diaChiTruSoTinhIdNew': 'Tỉnh/Thành phố',
 };
