@@ -255,7 +255,7 @@ export function syncSetValue(el, value) {
 
         // Kiểm xử lý đặc biệt cho phần Đường trong VNPT Triad
         const addressGroup = getVNPTAddressGroup();
-        if (addressGroup && el === addressGroup.duong && value.includes(',')) {
+        if (addressGroup && el === addressGroup.duong && typeof value === 'string' && value.includes(',')) {
             value = parseAddressComponents(value).street;
         }
 
@@ -543,13 +543,21 @@ export function getVNPTAddressGroup() {
 
         const findDeep = (col, selector) => col.querySelector(selector);
 
-        const xaIdNewEl = findDeep(rightCol, '[formcontrolname*="xaIdNew"], [id*="xaIdNew"], [formcontrolname*="huyen"], [id*="huyenId"], [formcontrolname*="xa"], [id*="xaIdNew"]');
-        const duongEl = findDeep(rightCol, '[formcontrolname*="duong"], [id*="duong"]');
+        const xaIdNewEl = findDeep(rightCol, '[formcontrolname*="xaIdNew" i], [id*="xaIdNew" i], [formcontrolname*="huyen" i], [id*="huyenId" i], [formcontrolname*="xa" i], [id*="xaIdNew" i]');
+        const duongEl = findDeep(rightCol, '[formcontrolname*="duong" i], [id*="duong" i]');
+        const soNhaEl = findDeep(rightCol, '[formcontrolname*="soNha" i], [id*="sonha" i]');
+
+        let fallbackDuong = null;
+        if (!duongEl && (!soNhaEl || rightControls[rightControls.length - 1] !== soNhaEl)) {
+            // Chỉ fallback nếu control cuối cùng không phải là thẻ chọn Tỉnh/Xã
+            fallbackDuong = rightControls[rightControls.length - 1];
+        }
 
         return {
-            tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew"], [id*="tinhId"]') || leftControls[0],
+            tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftControls[0],
             xaIdNew: xaIdNewEl || rightControls[0],
-            duong: duongEl || rightControls[rightControls.length - 1]
+            duong: duongEl || fallbackDuong,
+            soNha: soNhaEl // Vẫn track soNhaEl để ngăn fallbackDuong trỏ lầm vào nó
         };
     } catch (e) {
         return null;

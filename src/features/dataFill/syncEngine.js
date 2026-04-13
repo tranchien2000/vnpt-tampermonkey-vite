@@ -4,7 +4,7 @@
  *       Đã tối ưu: Debounce 250ms, Focus Guard, DOM Cache.
  */
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC } from '../../core/constants.js';
-import { setPageField, findPageInput, getInputByLabel, syncSetValue } from '../../utils/domHelper.js';
+import { setPageField, findPageInput, getInputByLabel, syncSetValue, setPageFieldsSequential } from '../../utils/domHelper.js';
 import { showToast } from '../../ui/toast.js';
 import { DEFAULT_DATA as _DEFAULT_DATA, DEFAULT_SYNC_DATA } from '../../core/defaults.js';
 import { Storage } from '../../utils/storage.js';
@@ -40,6 +40,11 @@ export async function doFillData() {
 
         // Hỗ trợ gán nhiều field bằng dấu phẩy
         const targets = k.split(',').map(s => s.trim()).filter(s => s);
+        const label = (dataItem && typeof dataItem === 'object') ? dataItem.label : null;
+        if (label && !targets.includes(label)) {
+            targets.push(label);
+        }
+
         await setPageFieldsSequential(targets, val);
     }
     showToast('✅ Auto fill complete');

@@ -62,6 +62,22 @@ function mkSecHeader(title, sectionKey, toggleCallback) {
     return hdr;
 }
 
+function updateSyncDirIcon(btn, dir) {
+    if (dir === 'both') {
+        btn.textContent = '↔';
+        btn.title = 'Đồng bộ 2 chiều (bảng ↔ form)';
+        btn.setAttribute('data-dir', 'both');
+    } else if (dir === 'down') {
+        btn.textContent = '⬇';
+        btn.title = 'Chỉ đồng bộ xuống: Bảng ➔ Form';
+        btn.setAttribute('data-dir', 'down');
+    } else if (dir === 'up') {
+        btn.textContent = '⬆';
+        btn.title = 'Chỉ đồng bộ lên: Form ➔ Bảng';
+        btn.setAttribute('data-dir', 'up');
+    }
+}
+
 export function initCalcWidget() {
     const widget = document.createElement('div');
     widget.id = 'vnpt-calc-widget';
@@ -130,10 +146,10 @@ export function initCalcWidget() {
         <div class="cw-map-dropdown-container">
             <button id="wg-calc-map-btn" class="cw-map-btn-inline" title="Cấu hình Mapping">⚙️</button>
             <div id="wg-calc-map-wrap" class="cw-map-wrap-popup" style="display:none;">
-                <div class="cw-row"><span class="cw-map-label">Trước thuế</span><input id="cw-map-before" name="cw-map-before" data-clink="before" class="cw-map-input" placeholder="Ví dụ: tong_tien"></div>
-                <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input id="cw-map-tax" name="cw-map-tax" data-clink="tax" class="cw-map-input" placeholder="Ví dụ: thue_gtgt"></div>
-                <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input id="cw-map-after" name="cw-map-after" data-clink="after" class="cw-map-input" placeholder="Ví dụ: tong_cong"></div>
-                <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input id="cw-map-text" name="cw-map-text" data-clink="text" class="cw-map-input" placeholder="Ví dụ: doc_tien"></div>
+                <div class="cw-row"><span class="cw-map-label">Trước thuế</span><input id="cw-map-before" name="cw-map-before" data-clink="before" class="cw-map-input" placeholder="Ví dụ: tong_tien"><button class="btn-sync-dir-calc" data-clink="before" data-dir="both" title="Đồng bộ 2 chiều (bảng ↔ form)">↔</button></div>
+                <div class="cw-row"><span class="cw-map-label">Tiền thuế</span><input id="cw-map-tax" name="cw-map-tax" data-clink="tax" class="cw-map-input" placeholder="Ví dụ: thue_gtgt"><button class="btn-sync-dir-calc" data-clink="tax" data-dir="both" title="Đồng bộ 2 chiều (bảng ↔ form)">↔</button></div>
+                <div class="cw-row"><span class="cw-map-label">Sau thuế</span><input id="cw-map-after" name="cw-map-after" data-clink="after" class="cw-map-input" placeholder="Ví dụ: tong_cong"><button class="btn-sync-dir-calc" data-clink="after" data-dir="both" title="Đồng bộ 2 chiều (bảng ↔ form)">↔</button></div>
+                <div class="cw-row"><span class="cw-map-label">Bằng chữ</span><input id="cw-map-text" name="cw-map-text" data-clink="text" class="cw-map-input" placeholder="Ví dụ: doc_tien"><button class="btn-sync-dir-calc" data-clink="text" data-dir="both" title="Đồng bộ 2 chiều (bảng ↔ form)">↔</button></div>
             </div>
         </div>
     </div>
@@ -215,11 +231,34 @@ export function initCalcWidget() {
 
     widget.querySelectorAll('input[data-clink]').forEach(inp => {
         const key = inp.dataset.clink;
-        inp.value = (calcMaps[key] || []).join(', ');
-        inp.addEventListener('input', () => {
-            calcMaps[key] = inp.value.split(',').map(s => s.trim()).filter(s => s);
+        const btnSync = widget.querySelector(`.btn-sync-dir-calc[data-clink="${key}"]`);
+        
+        const mapInfo = calcMaps[key] || [];
+        const isLegacy = Array.isArray(mapInfo);
+        const currentSync = isLegacy ? mapInfo : (mapInfo.sync || []);
+        const currentDir = isLegacy ? 'both' : (mapInfo.syncDir || 'both');
+
+        inp.value = currentSync.join(', ');
+        if (btnSync) {
+            updateSyncDirIcon(btnSync, currentDir);
+            btnSync.onclick = () => {
+                let dir = btnSync.getAttribute('data-dir');
+                if (dir === 'both') dir = 'down';
+                else if (dir === 'down') dir = 'up';
+                else dir = 'both';
+                updateSyncDirIcon(btnSync, dir);
+                saveMap();
+            };
+        }
+
+        const saveMap = () => {
+            const syncs = inp.value.split(',').map(s => s.trim()).filter(Boolean);
+            const dir = btnSync ? btnSync.getAttribute('data-dir') : 'both';
+            calcMaps[key] = { sync: syncs, syncDir: dir };
             Storage.set(SK_CALC_MAP, calcMaps);
-        });
+        };
+
+        inp.addEventListener('input', saveMap);
     });
 
     taxRateEl.value = TAX_RATE * 100;
@@ -240,10 +279,23 @@ export function initCalcWidget() {
             buildFullDOMMap();
         }
 
-        (calcMaps.before || []).forEach(n => setPageField(n, formatNum(before)));
-        (calcMaps.tax || []).forEach(n => setPageField(n, formatNum(tax)));
-        (calcMaps.after || []).forEach(n => setPageField(n, formatNum(after)));
-        (calcMaps.text || []).forEach(n => setPageField(n, txt));
+        const canSync = (k) => {
+            const m = calcMaps[k];
+            if (!m) return false;
+            const dir = Array.isArray(m) ? 'both' : (m.syncDir || 'both');
+            return dir === 'both' || dir === 'down';
+        };
+
+        const getTargets = (k) => {
+            const m = calcMaps[k];
+            if (!m) return [];
+            return Array.isArray(m) ? m : (m.sync || []);
+        };
+
+        if (canSync('before')) getTargets('before').forEach(n => setPageField(n, formatNum(before)));
+        if (canSync('tax')) getTargets('tax').forEach(n => setPageField(n, formatNum(tax)));
+        if (canSync('after')) getTargets('after').forEach(n => setPageField(n, formatNum(after)));
+        if (canSync('text')) getTargets('text').forEach(n => setPageField(n, txt));
     }
 
     function fromBefore() {

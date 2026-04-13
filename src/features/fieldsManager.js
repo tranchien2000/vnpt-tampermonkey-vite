@@ -525,6 +525,13 @@ export function saveFieldsToLocal() {
     });
     // Sử dụng setDebounced để tránh ghi đĩa liên tục khi gõ phím
     Storage.setDebounced(key, data, 1000);
+
+    // Nếu là chế độ mặc định, đồng bộ sang cả key của AutoFill Engine
+    if (AppState.isDefaultMode) {
+        import('../core/constants.js').then(({ SK_DATA_DEF }) => {
+            Storage.setDebounced(SK_DATA_DEF, data, 1000);
+        });
+    }
 }
 
 /**
@@ -837,6 +844,10 @@ export async function syncAllFields(targetKeys = null) {
 
     // Sử dụng vòng lặp tuần tự để hỗ trợ các trường phụ thuộc (Ajax)
     for (const row of rows) {
+        const btnSync = row.querySelector('.btn-sync-dir');
+        const currentDir = btnSync ? btnSync.getAttribute('data-dir') : 'both';
+        if (currentDir === 'up') continue; // Bỏ qua nếu là Up (Form -> Table)
+
         const rawKeyInput = row.querySelector('.f-key').value.trim();
         const primaryKey = rawKeyInput.split(',')[0].trim();
 
@@ -844,7 +855,13 @@ export async function syncAllFields(targetKeys = null) {
         if (targetKeys && !targetKeys.includes(primaryKey)) continue;
 
         const val = row.querySelector('.f-val').value;
+        const label = row.querySelector('.f-label').value.trim();
         const targets = rawKeyInput.split(',').map(x => x.trim()).filter(Boolean);
+
+        // Bổ trợ: Nếu là dữ liệu mặc định hoặc ID đơn lẻ, thêm nhãn vào danh sách tìm kiếm
+        if (label && !targets.includes(label)) {
+            targets.push(label);
+        }
 
         await setPageFieldsSequential(targets, val);
         if (targets.length > 0) count++;
@@ -885,7 +902,7 @@ function updateUIForDefaultMode(isDefault) {
         } else {
             Object.keys(overrides).forEach(key => {
                 const item = overrides[key];
-                addOrUpdateFieldRow(key, item.value, item.label, item.sync || '');
+                addOrUpdateFieldRow(key, item.value, item.label, item.sync || '', item.syncDir || 'both');
             });
         }
 
@@ -917,21 +934,25 @@ function renderCalcMappingInBanner() {
             <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
                 <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Trước thuế</span>
                 <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
                 <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
             </div>
             <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
                 <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Tiền thuế</span>
                 <input data-clink="tax" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: thue_gtgt">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
                 <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
             </div>
             <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
                 <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Sau thuế</span>
                 <input data-clink="after" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_cong">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
                 <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
             </div>
             <div class="vnpt-field-row" style="background: none; border: none; padding: 0; gap: 8px;">
                 <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Bằng chữ</span>
                 <input data-clink="text" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: doc_tien">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
                 <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
             </div>
         </div>
@@ -950,17 +971,39 @@ function renderCalcMappingInBanner() {
     const calcMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
     section.querySelectorAll('.vnpt-field-row').forEach(row => {
         const inp = row.querySelector('input[data-clink]');
+        const btnSyncDir = row.querySelector('.btn-sync-dir');
         const linkBtn = row.querySelector('.btn-field-link');
         const k = inp.dataset.clink;
 
-        inp.value = Array.isArray(calcMaps[k]) ? calcMaps[k].join(', ') : (calcMaps[k] || '');
+        const mapInfo = calcMaps[k] || [];
+        const isLegacy = Array.isArray(mapInfo);
+        const currentSync = isLegacy ? mapInfo : (mapInfo.sync || []);
+        const currentDir = isLegacy ? 'both' : (mapInfo.syncDir || 'both');
 
-        inp.onchange = () => {
+        inp.value = currentSync.join(', ');
+        if (btnSyncDir) {
+            updateSyncDirIcon(btnSyncDir, currentDir);
+            btnSyncDir.onclick = (e) => {
+                e.preventDefault();
+                let dir = btnSyncDir.getAttribute('data-dir');
+                if (dir === 'both') dir = 'down';
+                else if (dir === 'down') dir = 'up';
+                else dir = 'both';
+                updateSyncDirIcon(btnSyncDir, dir);
+                saveMap();
+            };
+        }
+
+        const saveMap = () => {
             const currentMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
-            currentMaps[k] = inp.value.split(',').map(s => s.trim()).filter(s => s);
+            const syncs = inp.value.split(',').map(s => s.trim()).filter(Boolean);
+            const dir = btnSyncDir ? btnSyncDir.getAttribute('data-dir') : 'both';
+            currentMaps[k] = { sync: syncs, syncDir: dir };
             Storage.set(SK_CALC_MAP, currentMaps);
             showToast("✅ Đã cập nhật Mapping Calc hệ thống");
         };
+
+        inp.onchange = saveMap;
 
         linkBtn.onclick = (e) => {
             e.stopPropagation();
