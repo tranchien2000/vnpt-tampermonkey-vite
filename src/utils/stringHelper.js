@@ -152,14 +152,14 @@ export function parseAddressComponents(address) {
     province = parts[n - 1] || '';
     district = n > 1 ? parts[n - 2] : '';
     ward = n > 2 ? parts[n - 3] : '';
-    
+
     // Tìm Phường/Xã & Quận/Huyện bằng Regex chặt chẽ (có ranh giới từ hoặc dấu chấm)
     const wardRegex = /^(Xã|Phường|Thị trấn|TT|P|X)(?:\.|\s|$)/i;
     const districtRegex = /^(Quận|Huyện|Thị xã|Thành phố|TP|Q|H)(?:\.|\s|$)/i;
 
     let foundWard = parts.slice(0, -1).find(p => wardRegex.test(p));
     let foundDistrict = parts.slice(0, -1).find(p => districtRegex.test(p));
-    
+
     if (foundWard) ward = foundWard;
     if (foundDistrict) district = foundDistrict;
 
@@ -202,10 +202,10 @@ export function cleanProvinceName(name) {
 export function getStreetPart(address) {
     if (!address || !address.includes(',')) return address;
     const parts = address.split(',').map(p => p.trim()).filter(Boolean);
-    
+
     // Tìm index của phần Xã/Phường
     const wardIndex = parts.findIndex(p => /Xã|Phường|Thị trấn|TT\.|P\.|X\./i.test(p));
-    
+
     if (wardIndex > 0) {
         // Nếu tìm thấy Xã/Phường, phần đường sẽ là từ đầu đến trước Xã
         return parts.slice(0, wardIndex).join(', ');
@@ -216,7 +216,7 @@ export function getStreetPart(address) {
         // Nếu chỉ có 2-3 phần mà không nhận diện được, lấy phần đầu tiên
         return parts[0];
     }
-    
+
     return address;
 }
 
@@ -228,7 +228,7 @@ export function getStreetPart(address) {
  */
 export function splitHouseNumberAndStreet(streetCombo) {
     if (!streetCombo) return { houseNumber: '', streetName: '' };
-    
+
     // Nếu có dấu phẩy đầu tiên, lấy phần trước là số nhà, phần sau là đường
     const commaIndex = streetCombo.indexOf(',');
     if (commaIndex > 0) {
@@ -237,7 +237,7 @@ export function splitHouseNumberAndStreet(streetCombo) {
             streetName: streetCombo.substring(commaIndex + 1).trim()
         };
     }
-    
+
     // Phân tách nếu chuỗi bắt đầu bằng Từ khóa báo số nhà
     // Ví dụ: Số 12A, Tòa nhà B, Ngõ 3, Thôn 4, Lô 5...
     const match = streetCombo.match(/^(?:số|sn|nhà|lô|tổ|thôn|xóm|ngõ|ngách|hẻm|kđt|khu|ấp|bản|tòa|phòng|tầng|căn hộ|chung cư)\s*[0-9a-zA-Z\-\.\/]+\s/i);

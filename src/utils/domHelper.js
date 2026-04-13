@@ -445,8 +445,8 @@ export async function setPageFieldsSequential(names, value) {
     if (isAddressRow && isFullAddressValue) {
         // Tự động thêm các field địa chỉ phổ biến nếu chưa có trong list nhưng có trên trang
         const autoTargets = [
-            'tinhIdNew', 'diaChiTruSoTinhIdNew', 
-            'xaIdNew', 'diaChiTruSoXaIdNew', 
+            'tinhIdNew', 'diaChiTruSoTinhIdNew',
+            'xaIdNew', 'diaChiTruSoXaIdNew',
             'duong', 'diaChiTruSoDuong'
         ];
         autoTargets.forEach(t => {
@@ -492,15 +492,15 @@ export async function setPageFieldsSequential(names, value) {
                 if (rank > 1 && rank <= 2) {
                     const actualSelect = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('select') || currentEl) : currentEl;
                     if (actualSelect.tagName === 'SELECT' || actualSelect.tagName === 'NG-SELECT2') {
-                         const clickTarget = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('.select2-selection, .select2-choice') || currentEl) : currentEl;
-                         clickTarget.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                         clickTarget.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-                         clickTarget.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                         
-                         console.debug(`[Sync Sequential] Đợi Options cho rank ${rank} (${task.name})...`);
-                         await waitForOptions(actualSelect, 4000);
-                         
-                         clickTarget.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape', code: 'Escape' }));
+                        const clickTarget = currentEl.tagName === 'NG-SELECT2' ? (currentEl.querySelector('.select2-selection, .select2-choice') || currentEl) : currentEl;
+                        clickTarget.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                        clickTarget.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+                        clickTarget.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+                        console.debug(`[Sync Sequential] Đợi Options cho rank ${rank} (${task.name})...`);
+                        await waitForOptions(actualSelect, 4000);
+
+                        clickTarget.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape', code: 'Escape' }));
                     }
                 }
 
@@ -557,7 +557,7 @@ export function getVNPTAddressGroup() {
             tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftControls[0],
             xaIdNew: xaIdNewEl || rightControls[0],
             duong: duongEl || fallbackDuong,
-            soNha: soNhaEl // Vẫn track soNhaEl để ngăn fallbackDuong trỏ lầm vào nó
+            //soNha: soNhaEl // Vẫn track soNhaEl để ngăn fallbackDuong trỏ lầm vào nó
         };
     } catch (e) {
         return null;
