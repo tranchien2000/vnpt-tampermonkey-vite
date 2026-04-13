@@ -39,6 +39,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Phát hành bản cập nhật v1.6.13 (Tối ưu logic tách địa chỉ đường).
 - [x] Phát hành bản cập nhật v1.6.14 (Tối ưu Mapping Fields và Cleanup logic).
 - [x] Phát hành bản cập nhật v1.6.15 (Realtime Sync bộ tính thuế Calc on-input).
+- [x] Nâng cấp visual cho nút Hướng đồng bộ (.btn-sync-dir): Sử dụng icon SVG premium, màu sắc theo trạng thái và hiệu ứng animation mượt mà.
 
 
 
@@ -62,6 +63,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-13 (UI - Compact Util Menu)**: Tái cấu trúc Menu Công cụ (⚙️) thành dạng icon-compact để tiết kiệm diện tích, gộp các hành động ít dùng và tối ưu hóa layout AI OCR.
 - **2026-04-13 (Cleanup - Selector Inspector Removal)**: Loại bỏ hoàn toàn tính năng Selector Inspector (nút 🔍) để tối ưu hóa mã nguồn và giảm tải các thành phần giao diện không cần thiết theo yêu cầu của USER.
 - **2026-04-13 (Release v1.6.9)**: Đóng gói và phát hành các cải tiến về hiệu suất UI và logic điền địa chỉ thông minh.
+- **2026-04-13 (UI - Premium Sync Direction Buttons)**: Thay thế icon text (`↔`, `⬇`, `⬆`) bằng SVG stroke-thick 3.5. Bổ sung hiệu ứng hover scale 1.25, xoay 180 độ khi click và phân loại màu theme rõ rệt: Blue (Both), Green (Down), Orange (Up). Đồng bộ hóa visual này cho cả main widget và Calc widget (.btn-sync-dir-calc).
 
 
 

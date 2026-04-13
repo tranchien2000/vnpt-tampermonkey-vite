@@ -7,10 +7,11 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 ## 🚀 1. Core AI Mindset (Tư duy AI)
 
 - **Planning First**: Khi nhận yêu cầu mới, **BẮT BUỘC** phải lập kế hoạch chi tiết dưới dạng artifact (tạo file `implementation_plan.md`). **KHÔNG** viết kế hoạch trực tiếp vào tin nhắn trả lời. Chờ người dùng gõ "ok", "trien khai" hoặc "y" mới được tiến hành code.
+- **Concise Response**: Phản hồi ở mức tối giản (Ultra-Minimalist). Tuyệt đối **KHÔNG** lời chào (Xin chào, Chào bạn...), **KHÔNG** từ ngữ khách sáo (Dạ, Vâng, Tôi hiểu, Rất sẵn lòng/vui lòng...). Đi thẳng vào kết quả, giải pháp hoặc câu hỏi cần USER quyết định. Sử dụng danh sách (bullet points) thay cho đoạn văn dài. Chỉ giải thích logic nếu thực sự phức tạp hoặc được yêu cầu.
 - **Memory Optimization**: Sử dụng `.notebooklm/brain_context.md` làm bộ nhớ lõi. Luôn cập nhật `PROJECT_MEMORY.md` sau mỗi task lớn qua workflow `/update-memory`.
 - **Language Mandate**: Toàn bộ phản hồi, tài liệu, commit message và **code comments** phải dùng **Tiếng Việt**.
-- **Graphify Mandate**: Trước khi trả lời về kiến trúc hoặc cấu trúc codebase, PHẢI đọc `graphify-out/GRAPH_REPORT.md`. Luôn chạy lệnh rebuild graph: `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` sau khi sửa code.
-- **Concise Response**: Phản hồi ngắn gọn, tập trung vào logic, không chào hỏi rườm rà.
+- **GKG Mandate**: Chỉ bắt buộc chạy lệnh cập nhật đồ thị (`gkg server stop; gkg index; gkg server start`) khi có thay đổi lớn về kiến trúc, cấu trúc thư mục hoặc logic đa file quan trọng. Đối với các thay đổi nhỏ (UI, fix typo, logic đơn lẻ), không bắt buộc chạy để tiết kiệm thời gian.
+- **Token Efficiency**: Hạn chế sử dụng lệnh `view_file` lặp lại trên các file đã được đọc và phân tích trong cùng một phiên làm việc (session). Hãy tận dụng trí nhớ ngắn hạn và kết quả từ các bước trước đó hoặc dùng GKG để tra cứu nhanh thông tin thay vì load lại toàn bộ nội dung file, giúp tiết kiệm context, giảm thời gian phản hồi và tối ưu token.
 
 ---
 
@@ -25,7 +26,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 
 ## 📐 3. Technical Standards (Tiêu chuẩn Kỹ thuật)
 
-- **Error Handling**: 
+- **Error Handling**:
   - Mọi hàm `async` và thao tác DOM/API phải bọc trong `try-catch`.
   - Sử dụng `logger.js` từ `src/utils/logger.js`.
 - **JSDoc Style**: Mọi hàm export mới phải có JSDoc mô tả tham số và giá trị trả về.
@@ -47,6 +48,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 ---
 
 ## 🔗 Tài liệu liên quan
+
 - [ARCHITECTURE.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/VNPT_PROJECT_BRAIN.md)
 - [PROJECT_MEMORY.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.notebooklm/brain_context.md#L98)
 - [Workflow Index](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.agents/workflows/_index.md)

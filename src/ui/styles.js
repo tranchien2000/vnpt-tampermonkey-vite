@@ -175,14 +175,25 @@ export function injectStyles() {
             transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
         }
         
-        .btn-sync-dir {
-            cursor: pointer; padding: 0; font-size: 14px; color: #bdc1c6; user-select: none;
-            flex: 0 0 18px; text-align: center; border: none; background: transparent; transition: color 0.2s;
+        .btn-sync-dir, .btn-sync-dir-calc {
+            cursor: pointer; padding: 0; user-select: none;
+            flex: 0 0 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+            border: none; background: transparent; color: #bdc1c6;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0.8;
         }
-        .btn-sync-dir:hover { color: #1a73e8; }
-        .btn-sync-dir[data-dir="both"] { color: #1a73e8; font-weight: bold; }
-        .btn-sync-dir[data-dir="up"] { color: #ea4335; font-weight: bold; }
-        .btn-sync-dir[data-dir="down"] { color: #34a853; font-weight: bold; }
+        .btn-sync-dir:hover, .btn-sync-dir-calc:hover { 
+            transform: scale(1.25); opacity: 1;
+            background: rgba(0,0,0,0.03); border-radius: 4px;
+        }
+        .btn-sync-dir:active, .btn-sync-dir-calc:active { transform: scale(0.9); }
+        
+        .btn-sync-dir[data-dir="both"], .btn-sync-dir-calc[data-dir="both"] { color: var(--vnpt-primary); }
+        .btn-sync-dir[data-dir="up"], .btn-sync-dir-calc[data-dir="up"] { color: #f57c00; }
+        .btn-sync-dir[data-dir="down"], .btn-sync-dir-calc[data-dir="down"] { color: var(--vnpt-success); }
+        
+        .btn-sync-dir svg, .btn-sync-dir-calc svg { transition: transform 0.3s ease; }
+        .btn-sync-dir:active svg, .btn-sync-dir-calc:active svg { transform: rotate(180deg); }
 
         .vnpt-field-row input { 
             flex: 1; padding: 4px 8px; border: 1px solid #1f5bd2ff; border-radius: 6px; 
