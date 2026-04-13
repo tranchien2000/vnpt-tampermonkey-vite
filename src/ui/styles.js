@@ -269,10 +269,10 @@ export function injectStyles() {
 
         @keyframes spin-small { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .vnpt-control-group { margin-bottom: 5px; }
-        .vnpt-control-group label { display: block; font-weight: 700; font-size: 12px; color: #3c4043; margin-bottom: 2px; }
+        .vnpt-control-group { margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .vnpt-control-group label { display: block; font-weight: 700; font-size: 12px; color: #3c4043; margin-bottom: 0; white-space: nowrap; }
         .vnpt-control-group input[type="text"] { 
-            width: 100%; box-sizing: border-box; padding: 8px 12px; 
+            flex: 1; min-width: 0; box-sizing: border-box; padding: 8px 12px; 
             border: 1px solid #0055ffff; border-radius: 8px; font-size: 12px;
             background: #fff; transition: all 0.2s;
         }
@@ -308,19 +308,6 @@ export function injectStyles() {
         
         .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
         .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
-
-        .btn-inspect { background: #fff8e1; color: #f57f17; border: 1px solid rgba(245, 127, 23, 0.1); }
-        .btn-inspect:hover { background: #f57f17; color: #fff; border-color: transparent; }
-        .btn-inspect.active { 
-            background: #f57f17; color: #fff; 
-            box-shadow: 0 4px 12px rgba(245, 127, 23, 0.4);
-            animation: pulse-orange 1.5s infinite;
-        }
-        @keyframes pulse-orange {
-            0% { box-shadow: 0 0 0 0 rgba(245, 127, 23, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(245, 127, 23, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(245, 127, 23, 0); }
-        }
 
         .btn-restore { background: #e8f0fe; color: var(--vnpt-primary); border: 1px solid rgba(26, 115, 232, 0.1); }
         .vnpt-btn-restore:hover { background: var(--vnpt-primary); color: #fff; border-color: transparent; }
@@ -381,13 +368,6 @@ export function injectStyles() {
         .btn-delete-action:hover { background: var(--vnpt-danger); color: #fff; border-color: var(--vnpt-danger); }
         
         .backup-history-empty { padding: 30px 20px; text-align: center; font-size: 11px; color: #9aa0a6; font-style: italic; line-height: 1.6; }
-        
-        .btn-export { 
-            background: var(--vnpt-primary-grad); 
-            color: white; padding: 0 20px; font-weight: 800; 
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        } 
-        .btn-export:hover { box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4); }
 
         /* Utility Menu UI */
         .vnpt-util-dropdown { position: relative; }
@@ -397,7 +377,7 @@ export function injectStyles() {
             backdrop-filter: blur(15px);
             border: 1px solid var(--vnpt-border); border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15); z-index: 100000;
-            display: none; flex-direction: column; min-width: 500px;
+            display: none; flex-direction: column; min-width: 400px;
             padding: 4px 0; animation: menuFadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
             transform-origin: top right;
         }
@@ -407,30 +387,83 @@ export function injectStyles() {
         }
         .vnpt-util-menu.show { display: flex; }
         
-        .util-item {
-            background: none; border: none; padding: 4px 12px; width: 100%;
-            text-align: left; font-size: 12px; cursor: pointer;
+        .util-item, .util-item-compact {
+            background: none; border: none; padding: 4px 12px;
+            text-align: left; font-size: 11.5px; cursor: pointer;
             color: #3c4043; font-weight: 600; transition: all 0.2s;
             display: flex; align-items: center; gap: 6px;
             border-left: 3px solid transparent;
         }
-        .util-item:hover { 
+        .util-item:hover, .util-item-compact:hover { 
             background: rgba(26, 115, 232, 0.05); color: var(--vnpt-primary); 
             border-left-color: var(--vnpt-primary);
-            padding-left: 18px;
         }
         
-        .util-item.danger { color: var(--vnpt-danger); }
-        .util-item.danger:hover { 
-            background: #fff5f5; color: var(--vnpt-danger); 
-            border-left-color: var(--vnpt-danger);
+        .util-item-compact {
+            padding: 4px 6px; border-radius: 6px; font-size: 10.5px;
+            background: #f8f9fa; border: 1px solid #e0e0e0; border-left: none;
+            justify-content: center; flex: 1;
+        }
+        .util-item-compact.danger { color: var(--vnpt-danger); }
+        .util-item-compact.danger:hover { background: #fff5f5; border-color: var(--vnpt-danger); }
+
+        .util-action-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px 12px;
         }
         
         .util-separator { height: 1px; background: rgba(0,0,0,0.05); margin: 4px 0; }
         .util-submenu-title { 
-            padding: 4px 12px 2px 12px; font-size: 9.5px; font-weight: 800; 
+            padding: 4px 12px 2px 12px; font-size: 9px; font-weight: 800; 
             color: #1a73e8; text-transform: uppercase; letter-spacing: 0.8px; 
             background: rgba(26, 115, 232, 0.04); margin-bottom: 1px;
+        }
+
+        /* 2-Column Grid for Top Config */
+        .util-config-grid {
+            display: grid; grid-template-columns: 1fr 1fr; padding: 0;
+        }
+        .util-column { display: flex; flex-direction: column; overflow: hidden; }
+        .util-column.vertical-separator { border-left: 1px solid var(--vnpt-border); }
+
+        .util-row-compact { display: flex; align-items: center; padding: 2px 12px; gap: 8px; }
+        .util-label-mini { font-size: 10px; font-weight: 800; color: #5f6368; text-transform: uppercase; }
+        
+        .size-options-compact { display: flex; gap: 4px; flex: 1; }
+        .size-options-compact button {
+            flex: 1; padding: 3px 0; border: 1px solid #e0e0e0; border-radius: 6px;
+            background: #fff; font-size: 10px; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: #5f6368;
+        }
+        .size-options-compact button:hover { 
+            background: var(--vnpt-primary); border-color: var(--vnpt-primary); color: #fff; 
+        }
+
+        /* Mapping Rows in Utility Menu */
+        .cw-row-map-compact {
+            display: flex; align-items: center; padding: 2px 12px; gap: 6px;
+        }
+        .cw-row-map-compact span { font-size: 12px; flex: 0 0 20px; text-align: center; }
+        .cw-map-input {
+            flex: 1; padding: 4px 8px; border: 1px solid #dadce0; border-radius: 6px;
+            font-size: 10.5px; background: #fff; transition: all 0.2s;
+        }
+        .cw-map-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px var(--vnpt-primary-light); outline: none; }
+        
+        .util-btn-test-mini {
+            background: var(--vnpt-primary-light); color: var(--vnpt-primary);
+            border: 1px solid var(--vnpt-primary); border-radius: 6px;
+            width: 28px; height: 26px; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0;
+        }
+        .util-btn-test-mini:hover { background: var(--vnpt-primary); color: #fff; }
+        
+        .vnpt-hotkey-list { 
+            display: flex; flex-direction: column; padding: 3px 8px; gap: 3px;
+            max-height: 120px; overflow-y: auto;
+        }
+        .vnpt-hotkey-list::-webkit-scrollbar { width: 3px; }
+        .vnpt-hotkey-list::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
+ba(26, 115, 232, 0.04); margin-bottom: 1px;
         }
 
         /* 2-Column Grid for Top Config */
@@ -529,56 +562,7 @@ export function injectStyles() {
            ═══════════════════════════════════════════ */
         #vnpt-template-section { border-top: 1px solid var(--vnpt-border); margin-top: 4px; padding-top: 4px; }
         
-        .vnpt-tabs { display: flex; gap: 4px; margin: 4px 0 8px 0; border-bottom: 1px solid var(--vnpt-border); padding-bottom: 4px; }
-        .vnpt-tab-btn { 
-            background: none; border: none; padding: 4px 12px; font-size: 10px; font-weight: 800; 
-            color: #5f6368; cursor: pointer; border-radius: 8px; transition: all 0.2s; 
-            text-transform: uppercase; letter-spacing: 0.3px;
-        }
-        .vnpt-tab-btn:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); }
-        .vnpt-tab-btn.active { background: var(--vnpt-primary); color: white; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2); }
-        
-        /* Text Template Section */
-        #vnpt-txt-section {
-            border-top: 1px solid var(--vnpt-border);
-            margin-top: 4px; padding-top: 4px;
-        }
-        .vnpt-txt-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 2px; margin-top: 2px;
-        }
-        .vnpt-txt-header span {
-            font-size: 11px; font-weight: 800; color: #1a73e8;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        #vnpt-txt-toggle {
-            background: none; border: none; cursor: pointer;
-            font-size: 10px; color: #5f6368; padding: 2px 6px;
-            border-radius: 4px; transition: all 0.2s;
-        }
-        #vnpt-txt-toggle:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); }
-        #vnpt-txt-template {
-            width: 100%; box-sizing: border-box;
-            padding: 8px 10px; border: 1px solid #0055ffff; border-radius: 8px;
-            font-size: 11.5px; font-family: 'Courier New', Courier, monospace;
-            resize: vertical; min-height: 72px; max-height: 200px;
-            background: rgba(255,255,255,0.8); color: #3c4043;
-            transition: all 0.2s; line-height: 1.6;
-        }
-        #vnpt-txt-template:focus {
-            border-color: var(--vnpt-primary);
-            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-            outline: none;
-        }
-        #vnpt-txt-template::placeholder { color: #aaa; font-style: italic; }
-
-        .bottom-export-row { 
-            display: flex; gap: 4px; align-items: center; 
-            border-top: 1px solid var(--vnpt-border); 
-            margin: 4px -4px -4px -4px; padding: 4px;
-            background: rgba(248, 249, 250, 0.5);
-            border-radius: 0 0 var(--vnpt-radius) var(--vnpt-radius);
-        }
+        /* Tên file (Control Group ở bottom-row) */
         .bottom-export-row .vnpt-control-group { margin-bottom: 0; flex: 1; min-width: 0; }
         #vnpt-local-file-group { flex: 0 0 auto !important; }
         .bottom-export-row .vnpt-control-group input[type="text"] { height: 32px; padding: 6px 10px; }
@@ -599,14 +583,13 @@ export function injectStyles() {
         }
         .btn-upload-local:active { transform: scale(0.95); }
 
-        /* Nút Xuất TXT */
-        .btn-export-txt {
-            background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
-            color: white; padding: 0 14px; font-weight: 800;
-            height: 32px; flex: 0 0 auto; border-radius: 8px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        /* Nút Xuất TXT trong AI Scanner */
+        #vnpt-btn-export-txt {
+            color: #00695c; border-color: rgba(0, 105, 92, 0.3);
         }
-        .btn-export-txt:hover { box-shadow: 0 6px 20px rgba(0, 137, 123, 0.4); }
+        #vnpt-btn-export-txt:hover {
+            background: #00695c; color: white; border-color: transparent;
+        }
 
 
         .text-hint { font-size: 11px; color: #70757a; font-style: italic; text-align: center; margin-bottom: 4px; }
@@ -816,24 +799,6 @@ export function injectStyles() {
         .btn-local-process:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-ai-process { background: var(--vnpt-primary-grad) !important; box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2) !important; font-weight: 800; flex: 1.3;}
 
-        /* ═══════════════════════════════════════════
-           SECTION 9: SELECTOR INSPECTOR
-           ═══════════════════════════════════════════ */
-        .vnpt-inspecting-mode { cursor: crosshair !important; }
-        .vnpt-inspecting-mode * { cursor: crosshair !important; }
-        
-        .vnpt-inspect-highlight {
-            outline: 3px dashed #f57f17 !important;
-            outline-offset: 2px !important;
-            position: relative;
-            z-index: 9999998 !important;
-            animation: borderPulse 1s infinite alternate;
-        }
-
-        @keyframes borderPulse {
-            from { outline-color: #f57f17; outline-offset: 2px; }
-            to { outline-color: #ffb300; outline-offset: 4px; }
-        }
 
         /* ═══════════════════════════════════════════
            SECTION 10: FIELD LINKER

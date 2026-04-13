@@ -109,29 +109,7 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         mainWrap = document.createElement('div');
         mainWrap.className = 'vnpt-template-manager-inner';
 
-        // ── Tabs ──
-        const tabContainer = document.createElement('div');
-        tabContainer.className = 'vnpt-tabs';
 
-        const btnLocal = document.createElement('button');
-        btnLocal.className = `vnpt-tab-btn ${currentTab === 'local' ? 'active' : ''}`;
-        btnLocal.textContent = 'Cá nhân';
-        btnLocal.onclick = () => {
-            container.dataset.activeTab = 'local';
-            renderTemplateManager(container, onSelectTemplate, currentActiveName);
-        };
-
-        const btnCloud = document.createElement('button');
-        btnCloud.className = `vnpt-tab-btn ${currentTab === 'cloud' ? 'active' : ''}`;
-        btnCloud.textContent = 'Thư viện mẫu';
-        btnCloud.onclick = () => {
-            container.dataset.activeTab = 'cloud';
-            renderTemplateManager(container, onSelectTemplate, currentActiveName);
-        };
-
-        tabContainer.appendChild(btnLocal);
-        tabContainer.appendChild(btnCloud);
-        mainWrap.appendChild(tabContainer);
 
         // ── Header (Title & Buttons) ──
         const headerRow = document.createElement('div');
@@ -165,9 +143,9 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         cloudListWrapper = mainWrap.querySelector('.vnpt-cloud-list-container');
         btnWrap = mainWrap.querySelector('.vnpt-btn-wrap');
 
-        const tabs = mainWrap.querySelectorAll('.vnpt-tab-btn');
-        tabs[0].className = `vnpt-tab-btn ${currentTab === 'local' ? 'active' : ''}`;
-        tabs[1].className = `vnpt-tab-btn ${currentTab === 'cloud' ? 'active' : ''}`;
+        localListWrapper = mainWrap.querySelector('.vnpt-local-list-container');
+        cloudListWrapper = mainWrap.querySelector('.vnpt-cloud-list-container');
+        btnWrap = mainWrap.querySelector('.vnpt-btn-wrap');
     }
 
     const titleEl = mainWrap.querySelector('.vnpt-title-main');

@@ -11,8 +11,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Cải thiện hệ thống "Trí nhớ dự án" (Đã khôi phục và đồng bộ).
 - [x] Kiểm tra tính nhất quán của hệ thống Rules/Workflow với người dùng.
 - [x] Triển khai tính năng Phân loại dữ liệu Local (Raw Scan).
-- [x] Xây dựng công cụ Selector Inspector (Bắt selector bằng click).
-- [x] Nâng cấp Selector Inspector: Batch Capture mode, Top Banner, Esc support và Smart Labeling.
+- [x] ~~Xây dựng công cụ Selector Inspector (Bắt selector bằng click)~~ (Đã xóa để tối ưu code).
+- [x] ~~Nâng cấp Selector Inspector: Batch Capture mode, Top Banner, Esc support và Smart Labeling~~ (Đã xóa).
 - [x] Tích hợp API tra cứu MST doanh nghiệp (Xinvoice).
 - [x] Tự động hóa trường Nơi cấp ĐKDN theo Tỉnh (`SKDT {Tỉnh}`).
 - [x] Sửa lỗi VNPT Calculator tự động nhảy về số 0 khi xóa trắng ô nhập liệu.
@@ -38,6 +38,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Sửa lỗi tách địa chỉ: Viết lại logic `parseAddressComponents` ưu tiên tìm Tỉnh/Huyện/Xã bằng Regex từ dưới lên, tránh lỗi cắt nhầm chuỗi đường/số nhà.
 - [x] Phát hành bản cập nhật v1.6.13 (Tối ưu logic tách địa chỉ đường).
 - [x] Phát hành bản cập nhật v1.6.14 (Tối ưu Mapping Fields và Cleanup logic).
+- [x] Phát hành bản cập nhật v1.6.15 (Realtime Sync bộ tính thuế Calc on-input).
 
 
 
@@ -57,6 +58,9 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-12 (Sync Direction Control)**: Thay thế chức năng drag-drop (kéo thả sắp xếp field) bằng nút điều chỉnh hướng sync (`↔`, `⬇`, `⬆`). Bổ sung `isFromWebForm` flag vào `addOrUpdateFieldRow` để kiểm soát dữ liệu sync từ Web Form lên Widget không bị ghi đè thuộc tính hướng, đảm bảo lưu trạng thái hướng độc lập cho người dùng.
 - **2026-04-13 (Address Sync Optimization)**: Tái cấu trúc `setPageFieldsSequential` để nhóm các trường theo Rank (Tỉnh=1, Huyện/Xã=2). Các trường cùng Rank sẽ được điền đồng thời (không đợi trễ giữa các trường cùng cấp), giúp xử lý nhanh các form có nhiều bộ địa chỉ (đại diện + trụ sở) và giảm thời gian chờ AJAX.
 - **2026-04-13 (Drag Performance Optimization)**: Sử dụng `requestAnimationFrame` để xử lý mượt mà việc kéo thả Widget (60fps). Loại bỏ việc ghi Storage liên tục trong sự kiện `mousemove`, chỉ thực hiện lưu tọa độ cuối cùng khi `mouseup`, giúp loại bỏ hoàn toàn hiện tượng "jank" khi kéo.
+- **2026-04-13 (UI - Compact Cloud Sync)**: Loại bỏ phần quản lý Workspace/Cơ quan thủ công khỏi giao diện để tinh gọn menu, chuyển sang sử dụng workspace mặc định hoặc cấu hình ngầm.
+- **2026-04-13 (UI - Compact Util Menu)**: Tái cấu trúc Menu Công cụ (⚙️) thành dạng icon-compact để tiết kiệm diện tích, gộp các hành động ít dùng và tối ưu hóa layout AI OCR.
+- **2026-04-13 (Cleanup - Selector Inspector Removal)**: Loại bỏ hoàn toàn tính năng Selector Inspector (nút 🔍) để tối ưu hóa mã nguồn và giảm tải các thành phần giao diện không cần thiết theo yêu cầu của USER.
 - **2026-04-13 (Release v1.6.9)**: Đóng gói và phát hành các cải tiến về hiệu suất UI và logic điền địa chỉ thông minh.
 
 
