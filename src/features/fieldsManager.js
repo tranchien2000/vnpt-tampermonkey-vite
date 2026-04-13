@@ -855,6 +855,10 @@ export async function syncAllFields(targetKeys = null) {
         if (targetKeys && !targetKeys.includes(primaryKey)) continue;
 
         const val = row.querySelector('.f-val').value;
+
+        // Bỏ qua giá trị rỗng khi đồng bộ hàng loạt để tránh ghi đè làm mất Default Data vừa điền
+        if (val === '') continue;
+
         const label = row.querySelector('.f-label').value.trim();
         const targets = rawKeyInput.split(',').map(x => x.trim()).filter(Boolean);
 
