@@ -7,18 +7,17 @@
  * @seeAlso core/defaults.js (data mặc định), core/state.js (AppState)
  */
 export const DEFAULT_LABELS = {
-    'tenDaiDienn, tenNguoiNhanCTS': 'Tên Đại Diện',
+    'tenDaiDienn, tenNguoiNhanCTS, ten': 'Tên Đại Diện',
     'chucVu': 'Chức Vụ',
     'ngaySinhCustomer': 'Ngày Sinh KH',
     'diaChi': 'Địa chỉ (Full)',
-    'duong': 'Số nhà, tên đường',
-    'cmnd': 'CMND/CCCD',
+    'cmnd, cccd': 'CMND/CCCD',
     'ngayCapCustomer': 'Ngày Cấp CMND',
     'noiCap': 'Nơi Cấp',
     'sdt': 'SĐT',
-    'emailDaiDien, emailNhanCTS': 'Email Nhận TK',
+    'emailDaiDien, emailNhanCTS, email': 'Email Nhận TK',
     'soDkdn': 'Mã số thuế | GPKD',
-    'tenToChuc': 'Tên Tổ Chức',
+    'tenToChuc, tencty': 'Tên Tổ Chức',
     'ngayCapSoDkdnCustomer': 'Ngày Cấp ĐKKD',
     'noiCapSoDkdn, coQuanCapId, noiCapIdNew': 'Nơi cấp ĐKDN/QĐTL/GPTL',
     'goiDV': 'Gói Dịch Vụ',
@@ -30,7 +29,8 @@ export const DEFAULT_LABELS = {
     'ngayTiepNhan, ngayThangNamKy': 'Ngày tiếp nhận / Ngày tháng năm ký',
     'soLuongGoi': 'Số Lượng Gói',
     'noiKy': 'Nơi ký',
-    'xaIdNew': 'Quận/Huyện - Xã/Phường',
+    'duong': 'Số nhà, tên đường',
+    'xaIdNew, diaChiTruSoXaIdNew': 'Quận/Huyện - Xã/Phường',
     'tinhIdNew, tinhId, diaChiTruSoTinhIdNew': 'Tỉnh/Thành phố',
 };
 

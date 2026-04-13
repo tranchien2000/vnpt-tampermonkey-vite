@@ -31,11 +31,12 @@ fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 console.log(`✅ Bumped version to: ${newVersion}`);
 
 // 2. Build code
-run('npm run build');
+const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+run(`${npmCmd} run build`);
 
 // 3. Commit message (Lấy từ tham số hoặc mặc định)
 const userMsg = process.argv[2] || "Cập nhật tính năng mới";
-const commitMsg = `release: v${newVersion} - ${userMsg}`;
+const commitMsg = `v${newVersion} - ${userMsg}`;
 
 // 4. Git actions
 run('git add .');

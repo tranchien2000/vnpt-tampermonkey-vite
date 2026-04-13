@@ -34,6 +34,9 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Điều chỉnh hướng sync value (3 chiều: Tự do ↔, Ghi đè form ⬇, Hút từ form ⬆) thay thế biểu tượng = (drag-handle) bằng nút điều hướng.
 - [x] Tối ưu hóa tốc độ điền địa chỉ: Nhóm các trường cùng cấp (Tỉnh/TP) để điền đồng thời, giảm thiểu trễ AJAX lặp lại (Group-by-Rank).
 - [x] Tối ưu hóa mượt mà Drag & Drop: Sử dụng requestAnimationFrame để render 60fps và gom nhóm logic lưu tọa độ một lần duy nhất khi thả chuột (mouseup).
+- [x] Tối ưu logic bóc tách địa chỉ (giữ nguyên phần đường/số nhà, phân tích Tỉnh/Xã/Huyện ngược từ dưới lên).
+- [x] Sửa lỗi tách địa chỉ: Viết lại logic `parseAddressComponents` ưu tiên tìm Tỉnh/Huyện/Xã bằng Regex từ dưới lên, tránh lỗi cắt nhầm chuỗi đường/số nhà.
+- [x] Phát hành bản cập nhật v1.6.13 (Tối ưu logic tách địa chỉ đường).
 
 
 
