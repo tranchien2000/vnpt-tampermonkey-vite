@@ -1,5 +1,5 @@
 {
-  "version": "1.6.10",
+  "version": "1.6.11",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.10 - Sửa lỗi điền nhầm Số nhà và tối ưu DOM selectors Case-insensitive"
+  "message": "release: v1.6.11 - Fix loi ghi de Default Data khi Dien web hang loat"
 }
