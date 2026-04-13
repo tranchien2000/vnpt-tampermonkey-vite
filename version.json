@@ -1,5 +1,5 @@
 {
-  "version": "1.6.13",
+  "version": "1.6.14",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.13 - Fix: Tối ưu logic tách Tỉnh/Xã/Huyện đảm bảo không bị mất hoặc tách sai phần tên Đường"
+  "message": "v1.6.14 - Tối ưu Mapping Fields (Label Map) và Cleanup logic khởi tạo"
 }
