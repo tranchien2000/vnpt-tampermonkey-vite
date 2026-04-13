@@ -1,5 +1,5 @@
 {
-  "version": "1.6.12",
+  "version": "1.6.13",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.12 - Sửa lỗi Mapping Calc không sync và thêm Real-time Sync"
+  "message": "release: v1.6.13 - Fix: Tối ưu logic tách Tỉnh/Xã/Huyện đảm bảo không bị mất hoặc tách sai phần tên Đường"
 }
