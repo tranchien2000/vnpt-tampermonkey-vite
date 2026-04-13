@@ -1,5 +1,5 @@
 {
-  "version": "1.6.15",
+  "version": "1.6.16",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
+  "message": "v1.6.16 - Nâng cấp giao diện nút Sync Direction sang SVG, tối ưu GKG và Concise Rules"
 }
