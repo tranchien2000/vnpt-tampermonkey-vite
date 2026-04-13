@@ -219,3 +219,44 @@ export function getStreetPart(address) {
     
     return address;
 }
+
+/**
+ * Tách một chuỗi kết hợp (Số nhà, Đường) thành hai phần riêng biệt.
+ * Phục vụ cho các form có id="soNha" và id="duong" tách rời.
+ * @param {string} streetCombo 
+ * @returns {{houseNumber: string, streetName: string}}
+ */
+export function splitHouseNumberAndStreet(streetCombo) {
+    if (!streetCombo) return { houseNumber: '', streetName: '' };
+    
+    // Nếu có dấu phẩy đầu tiên, lấy phần trước là số nhà, phần sau là đường
+    const commaIndex = streetCombo.indexOf(',');
+    if (commaIndex > 0) {
+        return {
+            houseNumber: streetCombo.substring(0, commaIndex).trim(),
+            streetName: streetCombo.substring(commaIndex + 1).trim()
+        };
+    }
+    
+    // Phân tách nếu chuỗi bắt đầu bằng Từ khóa báo số nhà
+    // Ví dụ: Số 12A, Tòa nhà B, Ngõ 3, Thôn 4, Lô 5...
+    const match = streetCombo.match(/^(?:số|sn|nhà|lô|tổ|thôn|xóm|ngõ|ngách|hẻm|kđt|khu|ấp|bản|tòa|phòng|tầng|căn hộ|chung cư)\s*[0-9a-zA-Z\-\.\/]+\s/i);
+    if (match) {
+        return {
+            houseNumber: match[0].trim(),
+            streetName: streetCombo.substring(match[0].length).trim()
+        };
+    }
+
+    // Nếu chỉ có một cụm bắt đầu bằng số (VD: "12A Lý Thường Kiệt")
+    const matchNumber = streetCombo.match(/^[\d]+[a-zA-Z\-\/]*\s/);
+    if (matchNumber) {
+        return {
+            houseNumber: matchNumber[0].trim(),
+            streetName: streetCombo.substring(matchNumber[0].length).trim()
+        };
+    }
+
+    // Default: không có số nhà rõ ràng, đưa tất cả vào đường
+    return { houseNumber: '', streetName: streetCombo };
+}
