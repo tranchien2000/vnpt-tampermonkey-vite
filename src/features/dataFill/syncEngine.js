@@ -10,6 +10,9 @@ import { DEFAULT_DATA as _DEFAULT_DATA, DEFAULT_SYNC_DATA } from '../../core/def
 import { Storage } from '../../utils/storage.js';
 import { debounce } from '../../utils/common.js';
 
+// Trạng thái khóa để ngăn chặn việc lắng nghe sự kiện khi đang auto-fill hàng loạt
+let isAutoFilling = false;
+
 function loadFreshenedDefaultData() {
     let cached = Storage.get(SK_DATA_DEF);
     let fresh = JSON.parse(JSON.stringify(_DEFAULT_DATA));
@@ -26,45 +29,59 @@ function loadFreshenedDefaultData() {
 }
 
 export async function doFillData() {
-    const defaultData = loadFreshenedDefaultData();
-    const customData = Storage.get(SK_DATA_CUS) ?? {};
-    const merged = { ...defaultData, ...customData };
+    if (isAutoFilling) return;
+    isAutoFilling = true;
 
-    // Fill fields B (Merged)
-    const keys = Object.keys(merged);
-    for (const k of keys) {
-        const dataItem = merged[k];
-        const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'))
-            ? dataItem.value
-            : dataItem;
+    try {
+        const defaultData = loadFreshenedDefaultData();
+        const customData = Storage.get(SK_DATA_CUS) ?? {};
+        const merged = { ...defaultData, ...customData };
 
-        // Hỗ trợ gán nhiều field bằng dấu phẩy
-        const targets = k.split(',').map(s => s.trim()).filter(s => s);
-        const label = (dataItem && typeof dataItem === 'object') ? dataItem.label : null;
-        if (label && !targets.includes(label)) {
-            targets.push(label);
+        // Fill fields B (Merged)
+        const keys = Object.keys(merged);
+        for (const k of keys) {
+            const dataItem = merged[k];
+            const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'))
+                ? dataItem.value
+                : dataItem;
+
+            const targets = k.split(',').map(s => s.trim()).filter(s => s);
+            const label = (dataItem && typeof dataItem === 'object') ? dataItem.label : null;
+            if (label && !targets.includes(label)) {
+                targets.push(label);
+            }
+
+            await setPageFieldsSequential(targets, val);
         }
-
-        await setPageFieldsSequential(targets, val);
+        showToast('✅ Auto fill complete');
+    } finally {
+        // Luôn mở khóa kể cả khi có lỗi xảy ra
+        setTimeout(() => { isAutoFilling = false; }, 500);
     }
-    showToast('✅ Auto fill complete');
 }
 
 export function doSyncData() {
-    let userSyncMap = Storage.get(SK_DATA_SYNC) ?? {};
-    // Gộp mapping mặc định với mapping của người dùng
-    const syncMap = { ...DEFAULT_SYNC_DATA, ...userSyncMap };
+    if (isAutoFilling) return;
+    isAutoFilling = true;
 
-    const keys = Object.keys(syncMap);
-    if (keys.length === 0) { showToast('⚠️ No sync mapping', '#ffc107'); return; }
-    keys.forEach(src => {
-        let srcEl = findPageInput(src) || getInputByLabel(src);
-        if (srcEl && srcEl.value !== undefined && srcEl.value !== '') {
-            let targets = syncMap[src].split(',').map(s => s.trim()).filter(s => s);
-            targets.forEach(t => setPageField(t, srcEl.value));
-        }
-    });
-    showToast('✅ Sync form complete', '#d39e00');
+    try {
+        let userSyncMap = Storage.get(SK_DATA_SYNC) ?? {};
+        const syncMap = { ...DEFAULT_SYNC_DATA, ...userSyncMap };
+
+        const keys = Object.keys(syncMap);
+        if (keys.length === 0) { showToast('⚠️ No sync mapping', '#ffc107'); return; }
+        
+        keys.forEach(src => {
+            let srcEl = findPageInput(src) || getInputByLabel(src);
+            if (srcEl && srcEl.value !== undefined && srcEl.value !== '') {
+                let targets = syncMap[src].split(',').map(s => s.trim()).filter(s => s);
+                targets.forEach(t => setPageField(t, srcEl.value));
+            }
+        });
+        showToast('✅ Sync form complete', '#d39e00');
+    } finally {
+        setTimeout(() => { isAutoFilling = false; }, 500);
+    }
 }
 
 // ─── Event Listener Logic ───
@@ -125,6 +142,9 @@ const debouncedSync = debounce((target, val) => {
 
 export function initSyncEngine() {
     const handleEvents = (e) => {
+        // Nếu trang web đang trong quá trình Auto-fill tự động, bỏ qua các sự kiện input/change
+        if (isAutoFilling) return;
+
         const target = e.target.closest('input, textarea, select, ng-select2');
         if (!target) return;
 

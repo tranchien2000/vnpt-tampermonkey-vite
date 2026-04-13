@@ -1,5 +1,5 @@
 # VNPT PROJECT BRAIN CONTEXT (OPTIMIZED)
-*Ngày cập nhật: 12:16:03 13/4/2026*
+*Ngày cập nhật: 23:21:24 13/4/2026*
 
 ## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)
 
@@ -18,8 +18,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Cải thiện hệ thống "Trí nhớ dự án" (Đã khôi phục và đồng bộ).
 - [x] Kiểm tra tính nhất quán của hệ thống Rules/Workflow với người dùng.
 - [x] Triển khai tính năng Phân loại dữ liệu Local (Raw Scan).
-- [x] Xây dựng công cụ Selector Inspector (Bắt selector bằng click).
-- [x] Nâng cấp Selector Inspector: Batch Capture mode, Top Banner, Esc support và Smart Labeling.
+- [x] ~~Xây dựng công cụ Selector Inspector (Bắt selector bằng click)~~ (Đã xóa để tối ưu code).
+- [x] ~~Nâng cấp Selector Inspector: Batch Capture mode, Top Banner, Esc support và Smart Labeling~~ (Đã xóa).
 - [x] Tích hợp API tra cứu MST doanh nghiệp (Xinvoice).
 - [x] Tự động hóa trường Nơi cấp ĐKDN theo Tỉnh (`SKDT {Tỉnh}`).
 - [x] Sửa lỗi VNPT Calculator tự động nhảy về số 0 khi xóa trắng ô nhập liệu.
@@ -44,6 +44,9 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Tối ưu logic bóc tách địa chỉ (giữ nguyên phần đường/số nhà, phân tích Tỉnh/Xã/Huyện ngược từ dưới lên).
 - [x] Sửa lỗi tách địa chỉ: Viết lại logic `parseAddressComponents` ưu tiên tìm Tỉnh/Huyện/Xã bằng Regex từ dưới lên, tránh lỗi cắt nhầm chuỗi đường/số nhà.
 - [x] Phát hành bản cập nhật v1.6.13 (Tối ưu logic tách địa chỉ đường).
+- [x] Phát hành bản cập nhật v1.6.14 (Tối ưu Mapping Fields và Cleanup logic).
+- [x] Phát hành bản cập nhật v1.6.15 (Realtime Sync bộ tính thuế Calc on-input).
+- [x] Nâng cấp visual cho nút Hướng đồng bộ (.btn-sync-dir): Sử dụng icon SVG premium, màu sắc theo trạng thái và hiệu ứng animation mượt mà.
 
 
 
@@ -63,7 +66,11 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-12 (Sync Direction Control)**: Thay thế chức năng drag-drop (kéo thả sắp xếp field) bằng nút điều chỉnh hướng sync (`↔`, `⬇`, `⬆`). Bổ sung `isFromWebForm` flag vào `addOrUpdateFieldRow` để kiểm soát dữ liệu sync từ Web Form lên Widget không bị ghi đè thuộc tính hướng, đảm bảo lưu trạng thái hướng độc lập cho người dùng.
 - **2026-04-13 (Address Sync Optimization)**: Tái cấu trúc `setPageFieldsSequential` để nhóm các trường theo Rank (Tỉnh=1, Huyện/Xã=2). Các trường cùng Rank sẽ được điền đồng thời (không đợi trễ giữa các trường cùng cấp), giúp xử lý nhanh các form có nhiều bộ địa chỉ (đại diện + trụ sở) và giảm thời gian chờ AJAX.
 - **2026-04-13 (Drag Performance Optimization)**: Sử dụng `requestAnimationFrame` để xử lý mượt mà việc kéo thả Widget (60fps). Loại bỏ việc ghi Storage liên tục trong sự kiện `mousemove`, chỉ thực hiện lưu tọa độ cuối cùng khi `mouseup`, giúp loại bỏ hoàn toàn hiện tượng "jank" khi kéo.
+- **2026-04-13 (UI - Compact Cloud Sync)**: Loại bỏ phần quản lý Workspace/Cơ quan thủ công khỏi giao diện để tinh gọn menu, chuyển sang sử dụng workspace mặc định hoặc cấu hình ngầm.
+- **2026-04-13 (UI - Compact Util Menu)**: Tái cấu trúc Menu Công cụ (⚙️) thành dạng icon-compact để tiết kiệm diện tích, gộp các hành động ít dùng và tối ưu hóa layout AI OCR.
+- **2026-04-13 (Cleanup - Selector Inspector Removal)**: Loại bỏ hoàn toàn tính năng Selector Inspector (nút 🔍) để tối ưu hóa mã nguồn và giảm tải các thành phần giao diện không cần thiết theo yêu cầu của USER.
 - **2026-04-13 (Release v1.6.9)**: Đóng gói và phát hành các cải tiến về hiệu suất UI và logic điền địa chỉ thông minh.
+- **2026-04-13 (UI - Premium Sync Direction Buttons)**: Thay thế icon text (`↔`, `⬇`, `⬆`) bằng SVG stroke-thick 3.5. Bổ sung hiệu ứng hover scale 1.25, xoay 180 độ khi click và phân loại màu theme rõ rệt: Blue (Both), Green (Down), Orange (Up). Đồng bộ hóa visual này cho cả main widget và Calc widget (.btn-sync-dir-calc).
 
 
 
@@ -220,7 +227,6 @@ tampermonkey-vite/
 | fieldsManager.js | /**<br>* @file fieldsManager.js<br>* @desc Quản lý bảng fields (danh sách key-value-label-sync) trong VNPT Export Widget.<br>*       Đã tối ưu: Sử dụng Storage utility, Reactive State (AppState.on), DOM Cache.<br>*/ |
 | hotkeys.js | /**<br>* @file hotkeys.js<br>* @desc Quản lý phím tắt động cho toàn bộ ứng dụng.<br>*       Hỗ trợ cấu hình phím tắt, lưu trữ và ghi nhận phím mới từ UI.<br>*/ |
 | profileManager.js | /**<br>* @file profileManager.js<br>* @desc Quản lý các cấu hình mặc định (Side B) cho từng chi nhánh VNPT khác nhau.<br>*/ |
-| selectorInspector.js | /**<br>* @file selectorInspector.js<br>* @desc Công cụ "Soi" trường dữ liệu (Selector Inspector).<br>*       Giúp người dùng bắt ID/Name/FormControlName bằng cách di chuột và click trực tiếp trên web.<br>*/ |
 | templateManager.js | /**<br>* @file templateManager.js<br>* @desc Quản lý danh sách template DOCX (lưu URL hoặc file local qua IndexedDB).<br>*       Bao gồm: load/save danh sách, fetch từ URL (Google Drive), lưu file local vào<br>*       IndexedDB (idbSave/idbLoad), render UI danh sách, chọn/xoá/đổi tên template.<br>* @exports loadTemplates         — đọc danh sách template từ localStorage<br>* @exports fetchTemplateFromUrl  — tải ArrayBuffer từ URL qua GM_xmlhttpRequest<br>* @exports saveLocalTemplate     — lưu file local vào IDB + cập nhật danh sách<br>* @exports renderTemplateManager — render/refresh UI danh sách template vào container<br>* @seeAlso api/storage/idb.js (IndexedDB), widget.js (host container), docExport.js (consumer)<br>*/ |
 | webScanner.js | /**<br>* @file webScanner.js<br>* @desc Quét các trường (fields) trên trang web và đồng bộ vào bảng fields của widget.<br>*       Bao gồm: nút "Quét" lấy values từ DOM theo DEFAULT_LABELS keys,<br>*       và listener input/change để tự động cập nhật khi user gõ trực tiếp trên web.<br>* @exports initWebScanner  — gán click/input/change listeners cho nút Quét<br>* @seeAlso core/constants.js (DEFAULT_LABELS), fieldsManager.js (addOrUpdateFieldRow)<br>*/ |
 

@@ -305,18 +305,21 @@ function refreshRowValidation(row) {
 
 
 function updateSyncDirIcon(btn, dir) {
+    const icons = {
+        both: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 8 4 4-4 4"></path><path d="M2 12h20"></path><path d="m6 16-4-4 4-4"></path></svg>`,
+        down: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>`,
+        up: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>`
+    };
+
+    btn.innerHTML = icons[dir] || icons.both;
+    btn.setAttribute('data-dir', dir);
+
     if (dir === 'both') {
-        btn.textContent = '↔';
-        btn.title = 'Đồng bộ 2 chiều (bảng ↔ form)';
-        btn.setAttribute('data-dir', 'both');
+        btn.title = 'Đồng bộ 2 chiều (Mọi thay đổi đều được cập nhật giữa Bảng và Trang web)';
     } else if (dir === 'down') {
-        btn.textContent = '⬇';
-        btn.title = 'Chỉ đồng bộ xuống: Bảng ➔ Form';
-        btn.setAttribute('data-dir', 'down');
+        btn.title = 'Chỉ đồng bộ XUỐNG: Bảng dữ liệu ➔ Form Trang web';
     } else if (dir === 'up') {
-        btn.textContent = '⬆';
-        btn.title = 'Chỉ đồng bộ lên: Form ➔ Bảng';
-        btn.setAttribute('data-dir', 'up');
+        btn.title = 'Chỉ đồng bộ LÊN: Form Trang web ➔ Bảng dữ liệu';
     }
 }
 
