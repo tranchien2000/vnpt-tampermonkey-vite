@@ -46,7 +46,7 @@ async function init() {
   window.__vnptInited = true;
 
   logger.info('Initializing VNPT Userscript...');
-  
+
   // Khởi chạy Smart Merge/Dev Sync cho Local Storage trước khi chốt Data
   initStorageMerge();
 
@@ -63,63 +63,63 @@ async function init() {
     setupAutoFillForm();
     initPdfScan();
     initRawScan();
-    
+
     initSyncEngine();    // Khởi tạo engine đồng bộ gõ phím ngầm
     initHotkeys();       // Khởi tạo phím tắt
-    
+
     // ─── Post-Update Notification ───
     const lastRunVersion = Storage.get('vnpt_last_run_version');
     if (lastRunVersion && lastRunVersion !== APP_VERSION) {
-        showToast(`🚀 Hợp đồng VNPT đã cập nhật lên v${APP_VERSION}!`, "#1a73e8");
+      showToast(`🚀 Hợp đồng VNPT đã cập nhật lên v${APP_VERSION}!`, "#1a73e8");
     }
     Storage.set('vnpt_last_run_version', APP_VERSION);
 
     // ─── Pre-Update Prompt (F5 Check) ───
     setTimeout(async () => {
-        // Kiểm tra xem trong phiên làm việc này (session) đã nhắc chưa
-        if (sessionStorage.getItem('vnpt_update_skipped')) return;
+      // Kiểm tra xem trong phiên làm việc này (session) đã nhắc chưa
+      if (sessionStorage.getItem('vnpt_update_skipped')) return;
 
-        if (RemoteConfig.hasUpdate()) {
-            const confirmed = confirm(`[VNPT PRO] Đã có phiên bản mới v${RemoteConfig.info.latestVersion}.\n\nLời nhắn: ${RemoteConfig.info.message || 'Không có mô tả.'}\n\nBạn có muốn cập nhật ngay không?`);
-            if (confirmed) {
-                if (RemoteConfig.info.updateUrl) {
-                    window.open(RemoteConfig.info.updateUrl, '_blank');
-                } else {
-                    showToast("Vui lòng click vào badge NEW để cập nhật!", "#ea4335");
-                }
-            } else {
-                // Nếu user bấm Cancel, không nhắc lại trong session này để tránh phiền
-                sessionStorage.setItem('vnpt_update_skipped', 'true');
-            }
+      if (RemoteConfig.hasUpdate()) {
+        const confirmed = confirm(`[VNPT PRO] Đã có phiên bản mới v${RemoteConfig.info.latestVersion}.\n\nLời nhắn: ${RemoteConfig.info.message || 'Không có mô tả.'}\n\nBạn có muốn cập nhật ngay không?`);
+        if (confirmed) {
+          if (RemoteConfig.info.updateUrl) {
+            window.open(RemoteConfig.info.updateUrl, '_blank');
+          } else {
+            showToast("Vui lòng click vào badge NEW để cập nhật!", "#ea4335");
+          }
+        } else {
+          // Nếu user bấm Cancel, không nhắc lại trong session này để tránh phiền
+          sessionStorage.setItem('vnpt_update_skipped', 'true');
         }
+      }
     }, 2000); // Đợi 2s để RemoteConfig hoàn thành fetch ngầm
 
     // ─── DOM Cache Management ───
     // Xóa cache khi DOM thay đổi lớn (SPA navigation hoặc load form mới)
     // Tăng debounce lên 1500ms để tránh việc xóa cache quá liên tục khi trang web đang render
     const debouncedClearCache = debounce(() => {
-        clearDOMCache();
-        refreshLabelsCache(); // Cập nhật luôn cả danh sách label
-        logger.debug('DOM Cache & Labels refreshed due to mutations');
+      clearDOMCache();
+      refreshLabelsCache(); // Cập nhật luôn cả danh sách label
+      logger.debug('DOM Cache & Labels refreshed due to mutations');
     }, 1500);
 
     cacheObserver = new MutationObserver((mutations) => {
-        // Chỉ trigger nếu có thêm/bớt Node lớn (không phải text change)
-        const hasSignificantChange = mutations.some(m => {
-            if (m.addedNodes.length > 0 || m.removedNodes.length > 0) {
-                // Kiểm tra xem có phải là thẻ script/style không (bỏ qua)
-                const nodes = [...m.addedNodes, ...m.removedNodes];
-                return nodes.some(n => n.nodeType === 1 && !['SCRIPT', 'STYLE', 'LINK'].includes(n.tagName));
-            }
-            return false;
-        });
-
-        if (hasSignificantChange) {
-            debouncedClearCache();
+      // Chỉ trigger nếu có thêm/bớt Node lớn (không phải text change)
+      const hasSignificantChange = mutations.some(m => {
+        if (m.addedNodes.length > 0 || m.removedNodes.length > 0) {
+          // Kiểm tra xem có phải là thẻ script/style không (bỏ qua)
+          const nodes = [...m.addedNodes, ...m.removedNodes];
+          return nodes.some(n => n.nodeType === 1 && !['SCRIPT', 'STYLE', 'LINK'].includes(n.tagName));
         }
+        return false;
+      });
+
+      if (hasSignificantChange) {
+        debouncedClearCache();
+      }
     });
     cacheObserver.observe(document.body, { childList: true, subtree: true });
-    
+
     logger.info('Userscript initialized successfully.');
   } catch (error) {
     logger.error('Error during userscript initialization:', error);
@@ -132,7 +132,7 @@ async function init() {
  */
 function cleanup() {
   logger.info('Cleaning up VNPT Userscript for reload...');
-  
+
   // 1. Dừng Observer
   if (cacheObserver) {
     cacheObserver.disconnect();
@@ -144,7 +144,7 @@ function cleanup() {
   if (widget) widget.remove();
 
   // 3. Xóa Calc Widget (nếu có riêng, nhưng hiện tại nó nằm trong widget chính)
-  const calcWidget = document.getElementById('vnpt-calc-widget'); 
+  const calcWidget = document.getElementById('vnpt-calc-widget');
   if (calcWidget) calcWidget.remove();
 
   // 4. Xóa Style
@@ -153,7 +153,7 @@ function cleanup() {
 
   // 5. Reset flag
   window.__vnptInited = false;
-  
+
   logger.info('Cleanup completed.');
 }
 
