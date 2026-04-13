@@ -37,6 +37,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Tối ưu logic bóc tách địa chỉ (giữ nguyên phần đường/số nhà, phân tích Tỉnh/Xã/Huyện ngược từ dưới lên).
 - [x] Sửa lỗi tách địa chỉ: Viết lại logic `parseAddressComponents` ưu tiên tìm Tỉnh/Huyện/Xã bằng Regex từ dưới lên, tránh lỗi cắt nhầm chuỗi đường/số nhà.
 - [x] Phát hành bản cập nhật v1.6.13 (Tối ưu logic tách địa chỉ đường).
+- [x] Phát hành bản cập nhật v1.6.14 (Tối ưu Mapping Fields và Cleanup logic).
 
 
 
