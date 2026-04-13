@@ -9,8 +9,7 @@
 // src/features/docExport.js
 import { AppState } from '../core/state.js';
 import { storage } from '../api/storage/index.js';
-import { DEFAULT_LABELS, REQUIRED_KEYS, SK_TXT_TEMPLATE } from '../core/constants.js';
-import { Storage } from '../utils/storage.js';
+import { DEFAULT_LABELS, REQUIRED_KEYS } from '../core/constants.js';
 
 function renderDocx(arrayBuffer, dataToFill, exportFileName) {
     try {
@@ -194,21 +193,12 @@ export function initDocExport() {
         alert('Vui lòng chọn Template: nhấn "✔ Dùng" từ danh sách hoặc chọn file local bên dưới.');
     });
 
-    // ── Nút Xuất TXT ──────────────────────────────────────────────────────────
+    // Nút Xuất TXT đã được chuyển lên khu vực UI raw-scan-actions
     const btnExportTxt = document.getElementById('vnpt-btn-export-txt');
-    const txtTemplateArea = document.getElementById('vnpt-txt-template');
-
-    // Khôi phục nội dung đã lưu
-    if (txtTemplateArea) {
-        const saved = Storage.get(SK_TXT_TEMPLATE);
-        if (saved) txtTemplateArea.value = saved;
-        txtTemplateArea.addEventListener('input', () => {
-            Storage.setDebounced(SK_TXT_TEMPLATE, txtTemplateArea.value, 800);
-        });
-    }
-
+    
     if (btnExportTxt) {
         btnExportTxt.addEventListener('click', () => {
+            const txtTemplateArea = document.getElementById('vnpt-raw-scan-input');
             const template = txtTemplateArea ? txtTemplateArea.value : '';
             if (!template.trim()) {
                 alert('Bạn chưa nhập nội dung Text Template!\n\nSử dụng @key làm placeholder, ví dụ: Tôi là @tenDaiDienn');

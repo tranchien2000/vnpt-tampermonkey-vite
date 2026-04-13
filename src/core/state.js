@@ -28,10 +28,7 @@ const internalState = {
     templateName: null,
 
     // Drag status
-    hasDragged: false,
-
-    // Inspector status
-    isInspecting: false
+    hasDragged: false
 };
 
 const listeners = new Map();

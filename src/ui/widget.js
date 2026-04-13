@@ -9,19 +9,15 @@
 import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
 import { initFieldsManager, loadSavedData } from '../features/fieldsManager.js';
-import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS, SK_CALC_MAP } from '../core/constants.js';
-import { DEFAULT_CALC_MAP } from '../core/defaults.js';
+import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS, SK_CALC_MAP, SK_HOTKEYS, APP_VERSION } from '../core/constants.js';
+import { DEFAULT_CALC_MAP, DEFAULT_HOTKEYS } from '../core/defaults.js';
 import { exportConfig } from '../features/configManager.js';
 import { Storage } from '../utils/storage.js';
 import { exportFullBackup, importFullBackup, getInternalBackups, restoreInternalBackup } from '../utils/backupHelper.js';
 import { startRecording, getHotkeyString } from '../features/hotkeys.js';
-import { SK_HOTKEYS } from '../core/constants.js';
-import { DEFAULT_HOTKEYS } from '../core/defaults.js';
 import { showToast } from './toast.js';
 import { testGeminiConnection } from '../api/gemini.js';
-import { toggleInspector } from '../features/selectorInspector.js';
 import { initCloudSyncUI } from './components/CloudSyncUI.js';
-import { APP_VERSION } from '../core/constants.js';
 import { RemoteConfig } from '../api/remoteConfig.js';
 
 
@@ -62,36 +58,33 @@ export function initWidget() {
                         <div id="vnpt-backup-history" class="vnpt-backup-history"></div>
                     </div>
                     
-                    <button class="vnpt-btn-icon btn-inspect" id="vnpt-btn-inspect" title="Bật chế độ 'Soi' để bắt selector trường web">🔍</button>
-
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
                             <div class="util-config-grid">
                                 <div class="util-column">
-                                    <div class="util-submenu-title">Cấu hình hệ thống</div>
-                                    <button class="util-item" id="vnpt-btn-default">Dữ liệu mặc định VNPT</button>
-                                    <button class="util-item danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">Dọn dẹp & Reset hệ thống</button>
-
-                                    <div class="util-separator"></div>
-                                    <div class="util-submenu-title">Dữ liệu hệ thống</div>
-                                    <div class="util-action-row">
-                                        <button class="util-item-small" id="vnpt-btn-import-json">Nhập JSON</button>
-                                        <button class="util-item-small" id="vnpt-btn-export-json">Xuất JSON</button>
+                                    <div class="util-submenu-title">Hệ thống & Sao lưu</div>
+                                    <div class="util-action-grid">
+                                        <button class="util-item-compact" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
+                                        <button class="util-item-compact danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">🧹 Reset</button>
+                                        <button class="util-item-compact" id="vnpt-btn-import-json" title="Nhập dữ liệu từ file JSON">📥 Nhập</button>
+                                        <button class="util-item-compact" id="vnpt-btn-export-json" title="Xuất toàn bộ dữ liệu ra file JSON">📤 Xuất</button>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>
 
                                     <div class="util-separator"></div>
-                                    <div class="util-submenu-title">Kích thước bảng:</div>
-                                    <div class="size-options">
-                                        <button data-size="S">S</button>
-                                        <button data-size="M">M</button>
-                                        <button data-size="L">L</button>
-                                        <button data-size="Full">Full</button>
+                                    <div class="util-row-compact">
+                                        <span class="util-label-mini">Cỡ:</span>
+                                        <div class="size-options-compact">
+                                            <button data-size="S">S</button>
+                                            <button data-size="M">M</button>
+                                            <button data-size="L">L</button>
+                                            <button data-size="Full">Full</button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="util-column vertical-separator">
-                                    <div class="util-submenu-title">Cấu hình phím tắt</div>
+                                    <div class="util-submenu-title">Phím tắt</div>
                                     <div id="vnpt-hotkey-list" class="vnpt-hotkey-list">
                                         <!-- Replaced by renderHotkeys -->
                                     </div>
@@ -102,30 +95,20 @@ export function initWidget() {
                             <div id="vnpt-cloud-sync-container"></div>
 
                             <div class="util-separator"></div>
-                            <div class="util-submenu-title">Cấu hình AI OCR (Gemini)</div>
-                            <div class="cw-row-map">
-                                <span>API Key</span>
-                                <input id="vnpt-gemini-key" type="text" placeholder="AIzaSy..." title="Lấy mã Key từ Google AI Studio" class="cw-map-input sensitive-mask" autocomplete="new-password">
+                            <div class="util-submenu-title">AI OCR (Gemini)</div>
+                            <div class="cw-row-map-compact">
+                                <span title="API Key">🔑</span>
+                                <input id="vnpt-gemini-key" type="text" placeholder="API Key..." class="cw-map-input sensitive-mask" autocomplete="new-password">
+                                <button class="util-btn-test-mini" id="vnpt-btn-test-gemini" title="Kiểm tra kết nối">⚡</button>
                             </div>
-                            <div class="cw-row-map">
-                                <span>Mô hình</span>
+                            <div class="cw-row-map-compact">
+                                <span title="Mô hình">🤖</span>
                                 <select id="vnpt-gemini-model" class="cw-map-input">
-                                    <optgroup label="Thế hệ 2.5 & 3.5 (Ổn định)">
-                                        <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Cân bằng / Khuyên dùng)</option>
-                                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (Tốc độ cao / Tiết kiệm)</option>
-                                        <option value="gemini-flash-lite-latest">Gemini Flash-Lite lastest</option>
-                                        </optgroup>
-                                        <optgroup label="Tối ưu Token & Tốc độ (Real-time)">
-                                        <option value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash-Lite Preview</option>
-
-                                    </optgroup>
+                                    <option value="gemini-2.5-flash" selected>2.5 Flash</option>
+                                    <option value="gemini-2.5-flash-lite">2.5 Lite</option>
+                                    <option value="gemini-3.1-flash-lite-preview">3.1 Lite</option>
                                 </select>
                             </div>
-                            <div class="cw-row-map" style="margin-top: 4px; justify-content: flex-end;">
-                                <button class="util-item-small" id="vnpt-btn-test-gemini" style="width: auto; padding: 4px 12px; background: var(--vnpt-primary-light); color: var(--vnpt-primary); border-color: var(--vnpt-primary);">⚡ Kiểm tra kết nối</button>
-                            </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -138,7 +121,7 @@ export function initWidget() {
                 <!-- AI Scanner Section (Hidden by default) -->
                 <div id="vnpt-ai-scanner-section" class="vnpt-ai-scanner-section" style="display: none;">
                     <div class="ai-scanner-header" style="margin-bottom: -2px;">
-                        <span class="ai-title">Sử lý tệp & Nhập văn bản:</span>
+                        <span class="ai-title">Xử lý tệp & Nhập văn bản:</span>
                     </div>
                     
                     <div class="ai-scan-row">
@@ -150,7 +133,7 @@ export function initWidget() {
                             <div class="ai-queue-list" id="vnpt-ai-queue-list"></div>
                         </div>
 
-                        <textarea id="vnpt-raw-scan-input" placeholder="Nội dung file sau khi quét sẽ xuất hiện ở đây để bạn kiểm tra, HOẶC bạn có thể dán trực tiếp Text vào đây để phân loại..."></textarea>
+                        <textarea id="vnpt-raw-scan-input" placeholder="Nhập rác để quét tự động, HOẶC dùng @key để Copy thành Text Template..."></textarea>
                     </div>
                     
                     <div class="raw-scan-actions">
@@ -158,6 +141,7 @@ export function initWidget() {
                         <button class="vnpt-btn-icon" id="vnpt-btn-clear-queue" title="Xóa hàng đợi & nội dung">🗑️</button>
                         <button class="vnpt-btn-icon" id="vnpt-btn-scan-mail" title="Trích xuất nội dụng Mail (Gmail/Outlook)">📧</button>
                         <button class="vnpt-btn-icon" id="vnpt-btn-scan-screen" title="Quét toàn bộ văn bản màn hình">🖥️</button>
+                        <button class="vnpt-btn-icon" id="vnpt-btn-export-txt" title="Copy chuỗi thành Text Template">📋</button>
                         <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex">QR Text</button>
                         <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process">QUÉT AI</button>
                     </div>
@@ -165,33 +149,12 @@ export function initWidget() {
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
-                    <div class="vnpt-fields-header">
-                        <span class="h-chk"></span>
-                        <span class="h-label">Tên Nhãn</span>
-                        <span class="h-key">Biến / ID Web</span>
-                        <span class="h-drag"></span>
-                        <span class="h-val">Giá trị</span>
-                    </div>
                     <div id="vnpt-fields-list">
                         <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                     </div>
                 </div>
 
-                <!-- Text Template Section -->
-                <div id="vnpt-txt-section">
-                    <div id="vnpt-txt-body" style="display:none;">
-                        <textarea
-                            id="vnpt-txt-template"
-                            name="vnpt-txt-template"
-                            placeholder="Nhập nội dung, dùng @key làm placeholder&#10;Ví dụ: Tôi là @tenDaiDienn chào bạn"
-                            rows="4"
-                        ></textarea>
-                    </div>
-                    <div class="vnpt-txt-header">
-                        <span>📝 Text Template</span>
-                        <button id="vnpt-txt-toggle" title="Ẩn/Hiện">▶</button>
-                    </div>
-                </div>
+
 
                 <!-- Template Manager -->
                 <div id="vnpt-template-section">
@@ -203,13 +166,13 @@ export function initWidget() {
                 <div class="bottom-export-row">
                     <div class="vnpt-control-group" id="vnpt-local-file-group">
                         <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
-                        <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
                     </div>
                     <div class="vnpt-control-group">
+                        <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
                         <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
+                        <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
                     </div>
-                    <button class="vnpt-btn-action btn-export-txt" id="vnpt-btn-export-txt" title="Sao chép nội dung dựa trên Text Template">📋 COPY</button>
-                    <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
+
                 </div>
             </div>
         </div>
@@ -347,17 +310,7 @@ export function initWidget() {
 
     document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup();
 
-    // Toggle collapse Text Template section
-    const txtToggleBtn = document.getElementById('vnpt-txt-toggle');
-    const txtBody = document.getElementById('vnpt-txt-body');
-    if (txtToggleBtn && txtBody) {
-        txtToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isCollapsed = txtBody.style.display === 'none';
-            txtBody.style.display = isCollapsed ? '' : 'none';
-            txtToggleBtn.textContent = isCollapsed ? '▲' : '▶';
-        });
-    }
+
 
     const btnImport = document.getElementById('vnpt-btn-import-json');
     const fileImport = document.getElementById('vnpt-file-import-json');
@@ -516,16 +469,6 @@ export function initWidget() {
         });
     });
 
-    // --- Selector Inspector Logic ---
-    const btnInspect = document.getElementById('vnpt-btn-inspect');
-    if (btnInspect) {
-        btnInspect.onclick = () => toggleInspector();
-
-        // Cập nhật trạng thái nút bấm khi state thay đổi
-        AppState.on('isInspecting', (val) => {
-            btnInspect.classList.toggle('active', val);
-        });
-    }
 
     // --- Cloud Sync UI ---
     const cloudContainer = document.getElementById('vnpt-cloud-sync-container');

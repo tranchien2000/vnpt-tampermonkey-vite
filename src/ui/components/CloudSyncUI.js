@@ -14,14 +14,6 @@ export function initCloudSyncUI(container) {
           <span style="font-weight: 700; color: var(--vnpt-success);">● ${user.email}</span>
           <button class="util-item-small danger" id="vnpt-btn-cloud-logout" style="width: auto; padding: 2px 8px;">Đăng xuất</button>
         </div>
-        
-        <div class="workspace-area" style="padding: 4px 8px; border-top: 1px solid var(--vnpt-border); margin-top: 4px;">
-          <div style="font-size: 9px; font-weight: 800; color: #1a73e8; margin-bottom: 2px; text-transform: uppercase;">Workspace / Cơ quan</div>
-          <div style="display: flex; gap: 4px;">
-            <input type="text" id="vnpt-workspace-id" placeholder="Mã Workspace (VD: HaNoi_CA)" class="cw-map-input" style="height: 24px; font-size: 10px;">
-            <button class="util-item-small" id="vnpt-btn-save-workspace" style="width: auto; padding: 0 8px; height: 24px;">Lưu</button>
-          </div>
-        </div>
 
         <div class="util-separator"></div>
         <div class="util-submenu-title">Đồng bộ cá nhân</div>
@@ -35,28 +27,6 @@ export function initCloudSyncUI(container) {
         </div>
       `;
       
-      // Load current workspace
-      FirebaseService.getUserSettings().then(settings => {
-        if (settings && settings.workspace) {
-          document.getElementById('vnpt-workspace-id').value = settings.workspace;
-        }
-      });
-
-      document.getElementById('vnpt-btn-save-workspace').onclick = async () => {
-        const id = document.getElementById('vnpt-workspace-id').value.trim();
-        try {
-          await FirebaseService.updateUserSettings({ workspace: id || 'global' });
-          showToast("✅ Đã cập nhật Workspace: " + (id || 'global'));
-          // Refresh templates if open
-          const tmplContainer = document.getElementById('vnpt-template-manager');
-          if (tmplContainer && tmplContainer.dataset.activeTab === 'cloud') {
-              const { renderTemplateManager } = await import('../../features/templateManager.js');
-              renderTemplateManager(tmplContainer, AppState.onSelectTemplate, AppState.templateName);
-          }
-        } catch (err) {
-          showToast("❌ Lỗi: " + err.message, "#ea4335");
-        }
-      };
       
       document.getElementById('vnpt-btn-cloud-logout').onclick = async () => {
         await FirebaseService.logout();
@@ -76,7 +46,7 @@ export function initCloudSyncUI(container) {
 
           // 2. Đẩy Cấu hình (Mapping, Hotkeys, Text Template, Data mặc định...)
           const { 
-              SK_CALC_MAP, SK_HOTKEYS, SK_TXT_TEMPLATE, 
+              SK_CALC_MAP, SK_HOTKEYS, 
               LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
               SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS 
           } = await import('../../core/constants.js');
@@ -87,7 +57,6 @@ export function initCloudSyncUI(container) {
           const globalConfig = {
               calcMap: Storage.get(SK_CALC_MAP) ?? DEFAULT_CALC_MAP,
               hotkeys: Storage.get(SK_HOTKEYS),
-              textTemplate: Storage.get(SK_TXT_TEMPLATE),
               fields: Storage.get(LOCAL_KEY_FIELDS),
               taxRate: Storage.get(SK_TAX),
               templates: Storage.get(SK_TEMPLATES),
@@ -121,7 +90,7 @@ export function initCloudSyncUI(container) {
              // 2. Áp dụng Cấu hình (Nếu có)
              if (cloudConfig) {
                  const { 
-                     SK_CALC_MAP, SK_HOTKEYS, SK_TXT_TEMPLATE, 
+                     SK_CALC_MAP, SK_HOTKEYS, 
                      LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
                      SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS 
                  } = await import('../../core/constants.js');
@@ -131,7 +100,6 @@ export function initCloudSyncUI(container) {
                  // Lưu config vào Storage (dùng DEFAULT nếu cloud không có)
                  Storage.set(SK_CALC_MAP, cloudConfig.calcMap ?? DEFAULT_CALC_MAP);
                  if (cloudConfig.hotkeys) Storage.set(SK_HOTKEYS, cloudConfig.hotkeys);
-                 if (cloudConfig.textTemplate) Storage.set(SK_TXT_TEMPLATE, cloudConfig.textTemplate);
                  if (cloudConfig.fields) Storage.set(LOCAL_KEY_FIELDS, cloudConfig.fields);
                  if (cloudConfig.taxRate !== undefined) Storage.set(SK_TAX, cloudConfig.taxRate);
                  if (cloudConfig.templates) Storage.set(SK_TEMPLATES, cloudConfig.templates);
