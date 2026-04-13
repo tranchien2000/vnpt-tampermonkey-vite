@@ -1,5 +1,5 @@
 {
   "version": "1.6.15",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.15 - Tự động đồng bộ tiền thuế (calc) theo thời gian thực (realtime) khi gõ"
+  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
 }
