@@ -148,6 +148,14 @@ export function initWidget() {
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
+                    <div class="vnpt-fields-header">
+                        <span class="h-chk"></span>
+                        <span class="h-label">Tên</span>
+                        <div class="fields-col-splitter" id="vnpt-col-splitter" title="Kéo để thay đổi tỉ lệ cột Tên / Giá trị"></div>
+                        <span class="h-key">Key</span>
+                        <span class="h-drag"></span>
+                        <span class="h-val">Giá trị</span>
+                    </div>
                     <div id="vnpt-fields-list">
                         <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                     </div>
@@ -184,6 +192,7 @@ export function initWidget() {
     AppState.header = document.getElementById('vnpt-panel-header');
     AppState.bannerArea = document.getElementById('vnpt-banner-area');
     AppState.fieldsContainer = document.getElementById('vnpt-fields-list');
+    AppState.fieldsWrapper = document.getElementById('vnpt-fields-container');
 
     // Khôi phục kích thước bảng
     try {

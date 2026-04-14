@@ -1,6 +1,7 @@
 export const fieldsStyles = `
     /* SECTION 3: FIELDS CONTAINER & FIELD ROWS */
     #vnpt-fields-container { 
+        --label-flex: 0.2;
         flex: 1; overflow: hidden; background: rgba(255, 255, 255, 0.3); 
         border: 1px solid var(--vnpt-border); border-radius: 12px; 
         margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
@@ -22,11 +23,30 @@ export const fieldsStyles = `
     }
     .vnpt-fields-header span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .vnpt-fields-header .h-chk { flex: 0 0 24px; text-align: center; }
-    .vnpt-fields-header .h-label { flex: 0.2; padding-left: 5px; }
+    .vnpt-fields-header .h-label { flex: var(--label-flex); padding-left: 5px; }
     .vnpt-fields-header .h-key { flex: 0.45; display: none; padding-left: 5px; }
     .show-ids .vnpt-fields-header .h-key { display: block; }
     .vnpt-fields-header .h-drag { flex: 0 0 18px; }
     .vnpt-fields-header .h-val { flex: 1; padding-left: 50px; }
+
+    /* Column splitter */
+    .fields-col-splitter {
+        flex: 0 0 6px; cursor: col-resize;
+        display: flex; align-items: center; justify-content: center;
+        background: transparent; border-radius: 3px;
+        opacity: 0; transition: opacity 0.2s, background 0.2s;
+        position: relative; z-index: 2;
+    }
+    .fields-col-splitter::after {
+        content: ''; display: block;
+        width: 2px; height: 60%; min-height: 10px;
+        background: var(--vnpt-border); border-radius: 2px;
+        transition: background 0.2s;
+    }
+    #vnpt-fields-container:hover .fields-col-splitter { opacity: 1; }
+    .fields-col-splitter:hover::after,
+    .fields-col-splitter.dragging::after { background: var(--vnpt-primary); }
+    .fields-col-splitter.dragging { opacity: 1; cursor: col-resize; }
 
     .vnpt-field-row { 
         display: flex; gap: 4px; margin-bottom: 2px; align-items: center; 
@@ -66,7 +86,7 @@ export const fieldsStyles = `
     .vnpt-field-row input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
     
     .vnpt-field-row input.row-chk { flex: 0 0 24px; width: 16px; height: 16px; cursor: pointer; accent-color: var(--vnpt-primary); }
-    .vnpt-field-row input.f-label { flex: 0.2; color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.03); }
+    .vnpt-field-row input.f-label { flex: var(--label-flex); color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.03); }
     .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.03); }
     .show-ids .vnpt-field-row input.f-key { display: block; }
 
