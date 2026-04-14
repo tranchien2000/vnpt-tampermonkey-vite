@@ -398,7 +398,7 @@
     {
       "label": "fieldsManager.js",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fieldsManager.js",
+      "source_file": "src\\features\\fieldsManager.js",
       "source_location": "L1",
       "id": "fieldsmanager",
       "community": 63
@@ -878,7 +878,7 @@
     {
       "label": "startFieldLinker()",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\linker.js",
+      "source_file": "src\\features\\fields\\linker.js",
       "source_location": "L12",
       "id": "linker_startfieldlinker",
       "community": 44
@@ -886,7 +886,7 @@
     {
       "label": "mode.js",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\mode.js",
+      "source_file": "src\\features\\fields\\mode.js",
       "source_location": "L1",
       "id": "mode",
       "community": 28
@@ -894,7 +894,7 @@
     {
       "label": "updateUIForDefaultMode()",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\mode.js",
+      "source_file": "src\\features\\fields\\mode.js",
       "source_location": "L12",
       "id": "mode_updateuifordefaultmode",
       "community": 28
@@ -902,7 +902,7 @@
     {
       "label": "renderCalcMappingInBanner()",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\mode.js",
+      "source_file": "src\\features\\fields\\mode.js",
       "source_location": "L57",
       "id": "mode_rendercalcmappinginbanner",
       "community": 28
@@ -1038,7 +1038,7 @@
     {
       "label": "validation.js",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\validation.js",
+      "source_file": "src\\features\\fields\\validation.js",
       "source_location": "L1",
       "id": "validation",
       "community": 29
@@ -1046,7 +1046,7 @@
     {
       "label": "validateField()",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\validation.js",
+      "source_file": "src\\features\\fields\\validation.js",
       "source_location": "L6",
       "id": "validation_validatefield",
       "community": 29
@@ -1054,7 +1054,7 @@
     {
       "label": "refreshRowValidation()",
       "file_type": "code",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\validation.js",
+      "source_file": "src\\features\\fields\\validation.js",
       "source_location": "L33",
       "id": "validation_refreshrowvalidation",
       "community": 29
@@ -3320,7 +3320,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\linker.js",
+      "source_file": "src\\features\\fields\\linker.js",
       "source_location": "L12",
       "weight": 1.0,
       "_src": "linker",
@@ -3332,7 +3332,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\mode.js",
+      "source_file": "src\\features\\fields\\mode.js",
       "source_location": "L12",
       "weight": 1.0,
       "_src": "mode",
@@ -3344,7 +3344,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\mode.js",
+      "source_file": "src\\features\\fields\\mode.js",
       "source_location": "L57",
       "weight": 1.0,
       "_src": "mode",
@@ -3356,7 +3356,7 @@
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\mode.js",
+      "source_file": "src\\features\\fields\\mode.js",
       "source_location": "L47",
       "weight": 1.0,
       "_src": "mode_updateuifordefaultmode",
@@ -3548,7 +3548,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\validation.js",
+      "source_file": "src\\features\\fields\\validation.js",
       "source_location": "L6",
       "weight": 1.0,
       "_src": "validation",
@@ -3560,7 +3560,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\validation.js",
+      "source_file": "src\\features\\fields\\validation.js",
       "source_location": "L33",
       "weight": 1.0,
       "_src": "validation",
@@ -3572,7 +3572,7 @@
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\fields\\validation.js",
+      "source_file": "src\\features\\fields\\validation.js",
       "source_location": "L53",
       "weight": 1.0,
       "_src": "validation_refreshrowvalidation",
