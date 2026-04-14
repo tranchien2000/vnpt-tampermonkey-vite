@@ -1,5 +1,5 @@
 {
-  "version": "1.6.19",
+  "version": "1.6.20",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.19 - Tối ưu độ rộng nhãn và tăng tính ổn định bản build (không nén mã)"
+  "message": "v1.6.20 - Triển khai Address Learning và Tối ưu Build"
 }
