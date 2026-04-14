@@ -1,5 +1,5 @@
 {
-  "version": "1.6.23",
+  "version": "1.6.24",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.23 - Refactor: Modularize UI styles and Fix index.js interpolation"
+  "message": "release: v1.6.24 - Modularize FieldsManager + fix template/layout bugs"
 }
