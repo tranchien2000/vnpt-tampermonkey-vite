@@ -1,5 +1,5 @@
 # Project Identity & Memory
-*Cập nhật: 23:08:55 14/4/2026*
+*Cập nhật: 23:40:16 14/4/2026*
 
 ## PROJECT_MEMORY.md
 
@@ -53,6 +53,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Điều chỉnh thu hẹp độ rộng cột Nhãn (Label) trong danh sách trường (0.35 -> 0.2) để tối ưu không gian cho ô nhập liệu.
 - [x] Phát hành bản cập nhật v1.6.17 (Tối ưu layout Fields List).
 - [x] Cấu hình ổn định bản Build: Tắt minification và bật keepNames để tránh lỗi logic mangling trong production.
+- [x] Triển khai logic "Học máy" (Address Learning) cho trường Đường (Street): Tự động ghi nhớ và áp dụng các chỉnh sửa của người dùng.
 
 
 
@@ -83,6 +84,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-14 (Smart Address Parsing)**: Nâng cấp hàm `parseAddressComponents` sử dụng thuật toán Reverse Scan. Tối ưu theo yêu cầu người dùng: lấy phần đứng trước dấu phẩy thứ 2 từ phải sang để xác định phần Đường (Street), đảm bảo loại bỏ chính xác các cấp hành chính ở cuối.
 - **2026-04-14 (UI - Fields List Label Width)**: Điều chỉnh flex value của `.f-label` và `.h-label` từ `0.35` xuống `0.2`. Thay đổi này giúp thu hẹp cột nhãn, dành nhiều diện tích hiển thị hơn cho các ô nhập liệu giá trị, đặc biệt hữu ích trên các màn hình nhỏ hoặc khi có nhiều trường dữ liệu dài.
 - **2026-04-14 (Build Optimization - No Minify)**: Quyết định tắt hoàn toàn `minify` trong `vite.config.js` và bật `keepNames: true`. Lý do: Một số logic của Userscript (như Field Linker hoặc Dynamic Sync) phụ thuộc vào tên hàm và cấu trúc code nguyên bản; việc nén mã của esbuild gây ra sự không ổn định giữa môi trường Dev và Production.
+- **2026-04-14 (Address Learning Logic)**: Triển khai tính năng "Học máy" cho trường Đường (Street). Script sẽ lưu trữ cặp `Địa chỉ gốc` -> `Đường đã sửa` vào `SK_ADDRESS_LEARNING`. Khi gặp lại địa chỉ gốc này, script sẽ ưu tiên dùng giá trị đã học thay vì regex mặc định, giúp giảm thiểu việc chỉnh sửa lặp lại cho các địa chỉ phức tạp.
 
 
 
@@ -95,6 +97,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **Browser Password Heuristics**: Browsers như Chrome tự động hiện popup "Save password?" khi thấy `type="password"`. Giải pháp là dùng `type="text"` + `-webkit-text-security: disc` và `autocomplete="new-password"`.
 - **SyncDir Override Issue**: Khởi tạo Field Data (khi load lại từ Web Scanner) có thể vô tình đè mất `syncDir` người dùng đã chọn. Đã thay tham số mặc định của `syncDir` về Null để tự động bỏ qua ghi đè cập nhật hướng khi có cờ `isFromWebForm`.
 - **Build vs Dev Discrepancy**: Bản build nén (minify) có thể làm hỏng các logic phụ thuộc vào `function.name` hoặc timing của `@run-at`. Giải pháp là tắt `minify` và kiểm soát chặt chẽ `init` timing trong `main.js`.
+- **Address Learning Context**: Việc "học" địa chỉ phụ thuộc vào việc truyền `sourceContext` (địa chỉ đầy đủ) qua `addOrUpdateFieldRow`. Nếu context này bị mất (ví dụ do quét từng phần rời rạc), logic học sẽ không được kích hoạt. Luôn ưu tiên quét Full Address hoặc cung cấp info.address từ MST lookup.
 
 ## 4. Trạng thái các tính năng (Status Map)
 

@@ -32,6 +32,7 @@ export const DEFAULT_DATA = {
     diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 ", syncDir: "both" },
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     emailB: { label: "Email B", value: "", syncDir: "both" },
+    dvtGoi: { label: "Đơn vị gói", value: "Gói", syncDir: "both" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh", syncDir: "both" }
 };
 
@@ -47,10 +48,10 @@ export const DEFAULT_SYNC_DATA = {
  * DEFAULT_CALC_MAP: Mapping kết quả từ bộ tính toán (Calc Widget) ra các trường trên trang web.
  */
 export const DEFAULT_CALC_MAP = {
-    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong"],
-    before: ["donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue"],
-    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT"],
-    text: ["soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu"]
+    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong", "thanhTienGoi"],
+    before: ["donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue", "congGoi"],
+    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT", "thueGTGTgoi"],
+    text: ["soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu", "ghiChuGiaTriHopDongBangChu"]
 };
 
 /**

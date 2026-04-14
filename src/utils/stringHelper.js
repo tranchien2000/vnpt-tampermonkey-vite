@@ -226,13 +226,21 @@ export function cleanProvinceName(name) {
     return name.replace(/^(Tỉnh|Thành phố|Thành Phố|TP\.|TP|T\.|Quận|Huyện|Q\.|H\.|Xã|Phường|P\.|Thị xã|Thị trấn)\s+/i, '').trim();
 }
 
+import { AddressLearning } from './addressLearning.js';
+
 /**
  * Trích xuất phần địa chỉ nhà / đường từ một chuỗi địa chỉ đầy đủ.
  * @param {string} address 
  * @returns {string}
  */
 export function getStreetPart(address) {
-    if (!address || !address.includes(',')) return address;
+    if (!address) return '';
+
+    // Ưu tiên 1: Kiểm tra xem đã "học" được gì từ địa chỉ này chưa
+    const learned = AddressLearning.getLearnedStreet(address);
+    if (learned) return learned;
+
+    if (!address.includes(',')) return address;
     const parts = address.split(',').map(p => p.trim()).filter(Boolean);
 
     // Tìm index của phần Xã/Phường

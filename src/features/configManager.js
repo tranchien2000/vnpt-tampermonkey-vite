@@ -9,7 +9,7 @@
 import { 
     LOCAL_KEY_FIELDS, LOCAL_KEY_POS, LOCAL_KEY_SIZE, 
     SK_TEMPLATES, SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC,
-    SK_CALC_MAP, SK_TAX 
+    SK_CALC_MAP, SK_TAX, SK_ADDRESS_LEARNING 
 } from '../core/constants.js';
 import { showToast } from '../ui/toast.js';
 import { loadSavedData } from './fieldsManager.js';
@@ -27,6 +27,7 @@ export function exportConfig() {
         templates: Storage.get(SK_TEMPLATES) || [],
         position: Storage.get(LOCAL_KEY_POS) || null,
         size: Storage.get(LOCAL_KEY_SIZE) || null,
+        addressLearning: Storage.get(SK_ADDRESS_LEARNING) || {},
         calc: {
             default: Storage.get(SK_DATA_DEF) || null,
             custom: Storage.get(SK_DATA_CUS) || null,
@@ -72,6 +73,7 @@ export function importConfig() {
             if (config.templates) Storage.set(SK_TEMPLATES, config.templates);
             if (config.position) Storage.set(LOCAL_KEY_POS, config.position);
             if (config.size) Storage.set(LOCAL_KEY_SIZE, config.size);
+            if (config.addressLearning) Storage.set(SK_ADDRESS_LEARNING, config.addressLearning);
             
             if (config.calc) {
                 if (config.calc.default) Storage.set(SK_DATA_DEF, config.calc.default);

@@ -1,5 +1,5 @@
 # Source Code Logic Map
-*Cập nhật: 23:08:55 14/4/2026*
+*Cập nhật: 23:40:16 14/4/2026*
 
 ## Thư mục: src/core
 
@@ -39,6 +39,7 @@
 
 | File | Mô tả |
 | :--- | :--- |
+| addressLearning.js | /**<br>* @file addressLearning.js<br>* @desc Tiện ích quản lý việc "học" bóc tách địa chỉ từ dữ liệu thực tế.<br>*/ |
 | backupHelper.js | /**<br>* @file backupHelper.js<br>* @desc Hỗ trợ xuất/nhập toàn bộ cấu hình dự án ra file JSON.<br>*/ |
 | common.js | /**<br>* @file common.js<br>* @desc Các hàm tiện ích dùng chung (debounce, v.v.)<br>*/<br>/**<br>* Hàm chống rung (debounce)<br>* @param {Function} func<br>* @param {number} wait<br>* @returns {Function}<br>*/ |
 | crypto.js | /**<br>* @file crypto.js<br>* @desc Cung cấp các hàm mã hóa/giải mã đơn giản để bảo vệ API Keys khi lưu trên Cloud.<br>*       Sử dụng kết hợp ID máy (nếu có thể) hoặc một salt cố định.<br>*/<br>// Một key đơn giản để obfuscate dữ liệu (có thể cải tiến bằng cách lấy fingerprint trình duyệt) |
