@@ -1,5 +1,5 @@
 # Project Rules
-*Cập nhật: 23:40:16 14/4/2026*
+*Cập nhật: 23:41:29 14/4/2026*
 
 ## Rules from .cursorrules
 

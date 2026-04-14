@@ -1,5 +1,5 @@
 # Project Identity & Memory
-*Cập nhật: 23:40:16 14/4/2026*
+*Cập nhật: 23:41:29 14/4/2026*
 
 ## PROJECT_MEMORY.md
 
@@ -54,8 +54,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Phát hành bản cập nhật v1.6.17 (Tối ưu layout Fields List).
 - [x] Cấu hình ổn định bản Build: Tắt minification và bật keepNames để tránh lỗi logic mangling trong production.
 - [x] Triển khai logic "Học máy" (Address Learning) cho trường Đường (Street): Tự động ghi nhớ và áp dụng các chỉnh sửa của người dùng.
-
-
+- [x] Phát hành bản cập nhật v1.6.20 (Triển khai Address Learning và Tối ưu Build).
 
 
 ## 2. Nhật ký Quyết định (Decision Log)

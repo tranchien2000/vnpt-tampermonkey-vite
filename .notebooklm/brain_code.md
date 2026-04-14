@@ -1,5 +1,5 @@
 # Source Code Logic Map
-*Cập nhật: 23:40:16 14/4/2026*
+*Cập nhật: 23:41:29 14/4/2026*
 
 ## Thư mục: src/core
 
