@@ -1,5 +1,5 @@
 # Project Identity & Memory
-*Cập nhật: 07:13:40 14/4/2026*
+*Cập nhật: 12:21:34 14/4/2026*
 
 ## PROJECT_MEMORY.md
 
@@ -105,16 +105,16 @@ _Ghi chú: AI phải cập nhật bộ não bằng cách chạy lệnh `node scr
 
 ## README.md
 
-# VNPT Word Automation — Tampermonkey Userscript (Vite)
+# VNPT Automation Tool — Tampermonkey Userscript (Vite)
 
-> **Phiên bản:** 1.5 &nbsp;|&nbsp; **Build Tool:** Vite 5 &nbsp;|&nbsp; **Môi trường:** Tampermonkey / hopdong.vnpt.vn
+> **Phiên bản:** 1.6.17 &nbsp;|&nbsp; **Build Tool:** Vite 5 &nbsp;|&nbsp; **Môi trường:** Tampermonkey / hopdong.vnpt.vn
 
-Userscript tự động hóa toàn bộ luồng nhập liệu hợp đồng VNPT:
-- **Quét dữ liệu** từ portal web → điền tự động vào bảng biến
-- **Xuất file DOCX** theo template có sẵn (URL Google Drive hoặc file local)
-- **Copy text nhanh** bằng template văn bản tuỳ chỉnh (`@key` placeholder)
-- **Tính thuế & phí dịch vụ** với bộ Calc Widget tích hợp
-- **Đồng bộ hai chiều** giữa widget và các form trên trang web
+Userscript tối ưu hóa và tự động hóa toàn bộ luồng quy trình nghiệp vụ trên hệ thống VNPT:
+- **AI Multi-source Scanner**: Bóc tách dữ liệu thông minh từ PDF, Ảnh, Gmail, Outlook và Screen Capture thông qua Gemini AI.
+- **Real-time 2-way Sync**: Động bộ dữ liệu hai chiều giữa Widget và Form web với quyền kiểm soát hướng (Sync Direction).
+- **Xuất file DOCX**: Render tài liệu theo template chuyên nghiệp hỗ trợ cả Cloud (Google Drive) và Local.
+- **Tính thuế & Phí**: Bộ công cụ Calc Widget thông minh, tự động điền kết quả vào các trường tương ứng trên trang.
+- **Quản lý Lịch sử & Cloud Sync**: Lưu trữ an toàn 10 phiên làm việc gần nhất và đồng bộ dữ liệu qua Firebase.
 
 ---
 
@@ -133,67 +133,58 @@ Userscript tự động hóa toàn bộ luồng nhập liệu hợp đồng VNPT
 
 ## 🏗️ Tổng quan kiến trúc
 
-Dự án áp dụng **kiến trúc phân lớp** (Layered Architecture) loại bỏ hoàn toàn circular dependency. Các lớp giao tiếp một chiều từ trên xuống dưới, và sử dụng **Event Bus** để các module giao tiếp ngang hàng mà không cần `import` trực tiếp lẫn nhau.
+Dự án áp dụng **kiến trúc phân lớp** (Layered Architecture) kết hợp với **Service Pattern** để tích hợp các dịch vụ bên ngoài (AI, Cloud). Hệ thống sử dụng **Event Bus** và **Storage Abstraction** để đảm bảo tính module và khả năng mở rộng.
 
 ```mermaid
 graph TD
+  subgraph Cloud ["📡 Cloud & AI Services"]
+    gemini["Gemini AI OCR"]
+    firebase["Firebase Cloud Sync"]
+    mst["MST Lookup Service"]
+  end
+
   subgraph Core ["🧱 Core (Nền tảng)"]
     constants["constants.js\n(Labels, Keys)"]
     state["state.js\n(AppState Singleton)"]
-    defaults["defaults.js\n(Data mặc định Bên B)"]
-    scannerFallbacks["scannerFallbacks.js\n(Fallback khi quét)"]
+    defaults["defaults.js\n(Dữ liệu mặc định)"]
+    scannerFallbacks["scannerFallbacks.js"]
   end
 
-  subgraph Utils ["🔧 Utils (Tiện ích)"]
-    domHelper["domHelper.js"]
-    numberHelper["numberHelper.js"]
-    dateHelper["dateHelper.js"]
-    stringHelper["stringHelper.js"]
-    backupHelper["backupHelper.js"]
-    migrationHelper["migrationHelper.js"]
-    storage["storage.js"]
-    logger["logger.js"]
+  subgraph Utils ["🔧 Utils"]
+    domHelper["domHelper.js (DOM Cache)"]
+    storage["storage.js (Debounced)"]
+    history["backupHelper.js (History)"]
+    normalization["stringHelper.js (Date/MST Norm)"]
   end
 
-  subgraph API ["📡 API (Storage)"]
-    idb["idb.js\n(IndexedDB)"]
-    localAdapter["localAdapter.js"]
+  subgraph UI ["🖼️ UI (Premium Glassmorphism)"]
+    styles["styles.js (Modular CSS)"]
+    widget["widget.js (Main Container)"]
+    components["CloudSyncUI.js / Toast.js"]
+    premium["Icon SVG & Animations"]
   end
 
-  subgraph UI ["🖼️ UI (Giao diện)"]
-    styles["styles.js\n(6 Section CSS)"]
-    widget["widget.js\n(HTML khung chính)"]
-    dragDrop["dragDrop.js"]
-    toast["toast.js"]
+  subgraph Features ["⚙️ Features"]
+    direction FeatureScan ["🔍 AI & Web Scanners"]
+    direction FeatureFill ["🔄 Real-time Sync Engine"]
+    direction FeatureDoc ["📄 Doc & Text Export"]
+
+    FeatureScan --- pdfScan["PDF/Image Scan"]
+    FeatureScan --- mailScan["Mail Scan"]
+    FeatureScan --- webScan["Web Scanner"]
+    
+    FeatureFill --- syncEngine["Sync Engine v2"]
+    FeatureFill --- calc["Calc Widget"]
+    
+    FeatureDoc --- docExport["DOCX Export"]
+    FeatureDoc --- templateManager["Template Manager"]
   end
 
-  subgraph Features ["⚙️ Features (Tính năng)"]
-    fieldsManager["fieldsManager.js\n(Bảng biến trung tâm)"]
-    webScanner["webScanner.js\n(Quét dữ liệu web)"]
-    docExport["docExport.js\n(Xuất DOCX + Copy TXT)"]
-    templateManager["templateManager.js\n(Quản lý mẫu .docx)"]
-    autoFillForm["autoFillForm.js\n(MutationObserver)"]
-    hotkeys["hotkeys.js\n(Phím tắt)"]
-    configManager["configManager.js"]
-
-    subgraph calc ["📊 Calc Widget"]
-      calcLogic["calcLogic.js"]
-      calcUI["calcUI.js"]
-      calcHistory["calcHistory.js"]
-    end
-
-    subgraph dataFill ["🔄 DataFill"]
-      syncEngine["syncEngine.js"]
-      dataFillUI["dataFillUI.js"]
-    end
-  end
-
+  Cloud --> Features
   Core --> UI
   Core --> Utils
-  Core --> API
   UI --> Features
   Utils --> Features
-  API --> Features
 ```
 
 ---
@@ -205,6 +196,15 @@ tampermonkey-vite/
 │
 ├── 📄 package.json          # Dependencies & npm scripts
 ├── 📄 vite.config.js        # Cấu hình build Vite + Tampermonkey Header banner
+├── 📄 dev.user.js           # Script DEV: Hot Reload từ localhost (cài riêng vào TM)
+├── 📄 .gitignore
+│
+└── src/
+    ├── main.js              # Entry Point: Khởi động toàn bộ hệ thống
+    │
+    ├── api/                 # Các dịch vụ bên ngoài & Storage
+    │   ├── firebaseConfig.js # Cấu hình Firebase
+    │   ├── firebaseService.js # Đồng bộ dữ liệu đám mây
 
 ... (lược bỏ) ...
 
