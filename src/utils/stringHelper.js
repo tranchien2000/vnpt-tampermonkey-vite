@@ -115,23 +115,54 @@ export function formatPhoneNumber(phone) {
 
 /**
  * Chuẩn hóa ngày tháng (Về dạng DD/MM/YYYY).
+ * Hỗ trợ: YYYY-MM-DD, DD-MM-YYYY, DD/MM/YYYY, DDMMYYYY, D/M/YYYY
  * @param {string} dateStr 
  * @returns {string}
  */
 export function normalizeDate(dateStr) {
     if (!dateStr) return '';
-    // Thử parse các định dạng phổ biến: YYYY-MM-DD, DD-MM-YYYY, DD/MM/YYYY
-    const parts = dateStr.split(/[-/]/);
+    
+    // Loại bỏ khoảng trắng thừa
+    let s = dateStr.trim();
+    if (!s) return '';
+
+    // 1. Nếu là chuỗi số 8 chữ số (DDMMYYYY)
+    if (/^\d{8}$/.test(s)) {
+        return `${s.substring(0, 2)}/${s.substring(2, 4)}/${s.substring(4)}`;
+    }
+
+    // 2. Nếu là chuỗi số 6 chữ số (DDMMYY) - Tạm thời không hỗ trợ vì dễ nhầm lẫn
+    
+    // 3. Thử parse các định dạng có dấu phân cách: YYYY-MM-DD, DD-MM-YYYY, DD/MM/YYYY, D.M.Y
+    const parts = s.split(/[-/.\s]/).filter(p => !!p);
+    
     if (parts.length === 3) {
         let d, m, y;
+        // Kiểm tra xem phần nào là Năm (4 chữ số)
         if (parts[0].length === 4) { // YYYY-MM-DD
             [y, m, d] = parts;
-        } else { // DD-MM-YYYY
+        } else if (parts[2].length === 4) { // DD-MM-YYYY
             [d, m, y] = parts;
+        } else if (parts[2].length === 2) { // DD-MM-YY
+            [d, m, y] = parts;
+            y = (parseInt(y) < 50 ? '20' : '19') + y.padStart(2, '0');
+        } else {
+            return s; // Không rõ định dạng
         }
+        
         return `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`;
     }
-    return dateStr;
+
+    // 4. Nếu là ISO String (2023-10-27T...)
+    if (s.includes('T') && !isNaN(Date.parse(s))) {
+        const date = new Date(s);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    return s;
 }
 /**
  * Bóc tách địa chỉ Việt Nam thành các phần: Tỉnh, Quận/Huyện, Phường/Xã.

@@ -1,5 +1,5 @@
 # VNPT PROJECT BRAIN CONTEXT (OPTIMIZED)
-*Ngày cập nhật: 23:21:24 13/4/2026*
+*Ngày cập nhật: 23:34:12 13/4/2026*
 
 ## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)
 
@@ -46,6 +46,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Phát hành bản cập nhật v1.6.13 (Tối ưu logic tách địa chỉ đường).
 - [x] Phát hành bản cập nhật v1.6.14 (Tối ưu Mapping Fields và Cleanup logic).
 - [x] Phát hành bản cập nhật v1.6.15 (Realtime Sync bộ tính thuế Calc on-input).
+- [x] Phát hành bản cập nhật v1.6.16 (Nâng cấp visual Sync Direction, tối ưu GKG & Token Efficiency).
 - [x] Nâng cấp visual cho nút Hướng đồng bộ (.btn-sync-dir): Sử dụng icon SVG premium, màu sắc theo trạng thái và hiệu ứng animation mượt mà.
 
 
