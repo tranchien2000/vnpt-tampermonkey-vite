@@ -568,6 +568,20 @@ ba(26, 115, 232, 0.04); margin-bottom: 1px;
 
         body.vnpt-resizing-global * { user-select: none !important; cursor: inherit !important; }
 
+        /* Pinned state */
+        #vnpt-export-panel.vnpt-pinned:not(:hover) {
+            min-height: unset !important;
+            height: auto !important;
+            padding-bottom: 0 !important;
+            width: 460px;
+        }
+        #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-panel-body {
+            display: none !important;
+        }
+        #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-inline-calc {
+            display: block !important;
+        }
+
         /* ═══════════════════════════════════════════
            SECTION 5: TEMPLATE MANAGER
            ═══════════════════════════════════════════ */

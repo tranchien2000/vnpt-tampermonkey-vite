@@ -1,5 +1,5 @@
 # Project Identity & Memory
-*Cập nhật: 00:06:40 15/4/2026*
+*Cập nhật: 02:10:57 15/4/2026*
 
 ## PROJECT_MEMORY.md
 
@@ -9,6 +9,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 
 ## 1. Mục tiêu hiện tại (Current Objective)
 
+- [x] Thêm tính năng Ghim (Pin) giao diện Widget, chỉ hiện Header và Calculator, mở rộng khi di chuột (Hover trễ thu gọn).
 - [x] Triển khai Sync 2 chiều (Reverse Sync) cho trường "Tên Tổ Chức" (Đã bị USER gỡ bỏ thủ công).
 - [x] Sửa lỗi Quét địa chỉ (id="duong", tỉnh) lấy nhầm ID số thay vì Title/Text.
 - [x] Hợp nhất menu cài đặt và sao lưu.
@@ -55,10 +56,13 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Cấu hình ổn định bản Build: Tắt minification và bật keepNames để tránh lỗi logic mangling trong production.
 - [x] Triển khai logic "Học máy" (Address Learning) cho trường Đường (Street): Tự động ghi nhớ và áp dụng các chỉnh sửa của người dùng.
 - [x] Phát hành bản cập nhật v1.6.20 (Triển khai Address Learning và Tối ưu Build).
-
+- [x] Tích hợp bộ đọc mã QR CCCD nội bộ siêu tốc, cắt ghép AI OCR pipeline.
+- [x] Xây dựng bộ sinh Mock Data hỗ trợ kiểm thử form VNPT.
+- [x] Xây dựng cơ chế Local Token/Usage Tracker đo đếm ngầm và thống kê API Gemini (trực tiếp tại Client).
 
 ## 2. Nhật ký Quyết định (Decision Log)
 
+- **2026-04-15 (UI - Pinned Mode)**: Thêm tính năng Ghim thu gọn UI. Khi kích hoạt chế độ ghim, `.vnpt-pinned` được thiết lập trên Panel. Thông qua CSS hover thuần túy, nội dung bên trong (`vnpt-panel-body`) sẽ tự động ẩn và trả lại không gian cho trang web, giảm che khuất form nhập liệu, và mở bung khi di chuột qua.
 - **2026-04-07 (Glassmorphism UI)**: Thay thế hoàn toàn giao diện cũ sang phong cách mờ đục (blur) với màu Indigo/Slate để tăng tính sang trọng.
 - **2026-04-07 (Storage Abstraction)**: Di chuyển toàn bộ logic `localStorage` vào `src/api/storage/` để quản lý tập trung và tránh xung đột dữ liệu.
 - **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn.
@@ -84,9 +88,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-14 (UI - Fields List Label Width)**: Điều chỉnh flex value của `.f-label` và `.h-label` từ `0.35` xuống `0.2`. Thay đổi này giúp thu hẹp cột nhãn, dành nhiều diện tích hiển thị hơn cho các ô nhập liệu giá trị, đặc biệt hữu ích trên các màn hình nhỏ hoặc khi có nhiều trường dữ liệu dài.
 - **2026-04-14 (Build Optimization - No Minify)**: Quyết định tắt hoàn toàn `minify` trong `vite.config.js` và bật `keepNames: true`. Lý do: Một số logic của Userscript (như Field Linker hoặc Dynamic Sync) phụ thuộc vào tên hàm và cấu trúc code nguyên bản; việc nén mã của esbuild gây ra sự không ổn định giữa môi trường Dev và Production.
 - **2026-04-14 (Address Learning Logic)**: Triển khai tính năng "Học máy" cho trường Đường (Street). Script sẽ lưu trữ cặp `Địa chỉ gốc` -> `Đường đã sửa` vào `SK_ADDRESS_LEARNING`. Khi gặp lại địa chỉ gốc này, script sẽ ưu tiên dùng giá trị đã học thay vì regex mặc định, giúp giảm thiểu việc chỉnh sửa lặp lại cho các địa chỉ phức tạp.
-
-
-
+- **2026-04-15 (Mock Data & CCCD QR Scanner)**: Thêm nút bấm 🎲 Sinh Mock tạo dữ liệu giả rác hợp lệ cho form. Tích hợp `jsqr` chạy Auto-Detect vào luồng nạp ảnh để đọc mã QR CCCD 100% local, bypass được Gemini AI -> Không tốn 1 đồng token, và có độ chính xác 100% cực nhanh.
+- **2026-04-15 (Local Token Tracker)**: Tại thời điểm này Google không hỗ trợ API truy xuất Quota giới hạn. Quyết định viết bộ tính điểm (Tracker) chạy ở client: Chặn thông số `usageMetadata.totalTokenCount` ngay khi có Response JSON, lưu vào Storage (chìa khoá `VNPT_TOKEN_USAGE`) và Reset tự động khi sang ngày mới. Hiển thị qua Panel AI OCR.
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
 

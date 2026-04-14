@@ -15,6 +15,8 @@ import { extractFieldsFromText, extractFieldsLocally } from '../rawScan/rawScan.
 import { MAIL_BRIDGE_KEY } from '../mailScan/mailScanner.js';
 import { scrapeScreenText } from '../screenScan/screenScanner.js';
 import { downloadAsBase64 } from '../../utils/fileHelper.js';
+import { extractQRCodeFromImage, parseCCCD_QR } from '../../utils/qrHelper.js';
+import { parseAddressComponents } from '../../utils/stringHelper.js';
 
 let fileQueue = [];
 
@@ -58,6 +60,44 @@ function clearQueue(queueList, placeholder, rawInput) {
     fileQueue = [];
     rawInput.value = '';
     renderQueue(queueList, placeholder);
+}
+
+function applyQRDataToFields(parsed, sourceName) {
+    showToast(`🎉 Tìm thấy QR CCCD: Đang tự động điền...`, "#1e8e3e");
+    
+    if (parsed.cccd) {
+        addOrUpdateFieldRow('cccd', parsed.cccd);
+        addOrUpdateFieldRow('cmnd', parsed.cccd);
+        addOrUpdateFieldRow('cccdCustomer', parsed.cccd);
+        addOrUpdateFieldRow('cmndCustomer', parsed.cccd);
+    }
+    if (parsed.name) {
+        addOrUpdateFieldRow('tenCustomer', parsed.name);
+        addOrUpdateFieldRow('nguoiDaiDien', parsed.name);
+    }
+    if (parsed.dob) {
+        addOrUpdateFieldRow('ngaySinhCustomer', parsed.dob); 
+    }
+    if (parsed.gender) {
+        addOrUpdateFieldRow('gioiTinhCustomer', parsed.gender);
+    }
+    if (parsed.address) {
+        addOrUpdateFieldRow('diachiCustomer', parsed.address);
+        addOrUpdateFieldRow('thuongTruCustomer', parsed.address);
+        
+        const addrParts = parseAddressComponents(parsed.address);
+        if (addrParts.province) addOrUpdateFieldRow('tinhIdNew', addrParts.province);
+        if (addrParts.district || addrParts.ward) addOrUpdateFieldRow('xaIdNew', addrParts.ward || addrParts.district);
+        if (addrParts.street) addOrUpdateFieldRow('duong', addrParts.street);
+    }
+    if (parsed.issue_date) {
+        addOrUpdateFieldRow('ngayCapCustomer', parsed.issue_date);
+        addOrUpdateFieldRow('ngayCapSoDkdnCustomer', parsed.issue_date);
+        addOrUpdateFieldRow('ngayCap', parsed.issue_date);
+        addOrUpdateFieldRow('noiCapCustomer', 'Cục cảnh sát QLHC về TTXH');
+        addOrUpdateFieldRow('noiCap', 'Cục cảnh sát quản lý hành chính về trật tự xã hội');
+    }
+    saveFieldsToLocal();
 }
 
 export function initPdfScan() {
@@ -236,6 +276,14 @@ export function initPdfScan() {
         queueContainer.classList.remove('drag-over');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             for(let file of e.dataTransfer.files) {
+                const qrText = await extractQRCodeFromImage(file);
+                if (qrText) {
+                    const parsed = parseCCCD_QR(qrText);
+                    if (parsed) {
+                        applyQRDataToFields(parsed, file.name);
+                        continue;
+                    }
+                }
                 const b64 = await fileToBase64(file);
                 fileQueue.push({ file, ...b64 });
             }
@@ -246,6 +294,14 @@ export function initPdfScan() {
     inputPdf.addEventListener('change', async (e) => {
         if (!e.target.files) return;
         for(let file of e.target.files) {
+            const qrText = await extractQRCodeFromImage(file);
+            if (qrText) {
+                const parsed = parseCCCD_QR(qrText);
+                if (parsed) {
+                    applyQRDataToFields(parsed, file.name);
+                    continue;
+                }
+            }
             const b64 = await fileToBase64(file);
             fileQueue.push({ file, ...b64 });
         }
@@ -264,6 +320,14 @@ export function initPdfScan() {
                 hasFile = true;
                 const file = item.getAsFile();
                 if (file) {
+                    const qrText = await extractQRCodeFromImage(file);
+                    if (qrText) {
+                        const parsed = parseCCCD_QR(qrText);
+                        if (parsed) {
+                            applyQRDataToFields(parsed, "Clipboard Image");
+                            continue;
+                        }
+                    }
                     const b64 = await fileToBase64(file);
                     fileQueue.push({ file, ...b64 });
                     renderQueue(queueList, placeholder);

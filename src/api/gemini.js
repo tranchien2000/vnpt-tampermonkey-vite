@@ -3,6 +3,7 @@
  * @desc Utility để kết nối với Google Gemini API.
  *       Hỗ trợ cả text-only và multimodal (image/pdf).
  */
+import { TokenTracker } from '../utils/tokenTracker.js';
 
 /**
  * Gọi API Gemini để xử lý nội dung.
@@ -90,6 +91,9 @@ export async function callGemini({ apiKey, model, systemInstruction, userText, f
                         try {
                             const resObj = JSON.parse(response.responseText);
                             const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if (resObj?.usageMetadata?.totalTokenCount) {
+                                TokenTracker.addUsage(resObj.usageMetadata.totalTokenCount);
+                            }
                             handleResponse(textResponse);
                         } catch (e) {
                             reject("Lỗi Parse kết quả từ Gemini API.");
@@ -112,6 +116,9 @@ export async function callGemini({ apiKey, model, systemInstruction, userText, f
                 .then(resObj => {
                     if (resObj.error) return reject(resObj.error.message);
                     const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (resObj?.usageMetadata?.totalTokenCount) {
+                        TokenTracker.addUsage(resObj.usageMetadata.totalTokenCount);
+                    }
                     handleResponse(textResponse);
                 })
                 .catch(e => reject(e.message));
