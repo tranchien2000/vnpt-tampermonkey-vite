@@ -1,0 +1,5198 @@
+{
+  "nodes": [
+    {
+      "id": "dev_user",
+      "label": "dev.user.js",
+      "file_type": "code",
+      "source_file": "dev.user.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "dev_user_loadscript",
+      "label": "loadScript()",
+      "file_type": "code",
+      "source_file": "dev.user.js",
+      "source_location": "L33"
+    },
+    {
+      "id": "fix_auth",
+      "label": "fix_auth.ps1",
+      "file_type": "code",
+      "source_file": "fix_auth.ps1",
+      "source_location": "L1"
+    },
+    {
+      "id": "vite_config",
+      "label": "vite.config.js",
+      "file_type": "code",
+      "source_file": "vite.config.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "vite_config_generatebundle",
+      "label": "generateBundle()",
+      "file_type": "code",
+      "source_file": "vite.config.js",
+      "source_location": "L49"
+    },
+    {
+      "id": "test_classifier",
+      "label": "test_classifier.js",
+      "file_type": "code",
+      "source_file": "scratch\\test_classifier.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "main",
+      "label": "main.js",
+      "file_type": "code",
+      "source_file": "src\\main.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "main_init",
+      "label": "init()",
+      "file_type": "code",
+      "source_file": "src\\main.js",
+      "source_location": "L43"
+    },
+    {
+      "id": "main_cleanup",
+      "label": "cleanup()",
+      "file_type": "code",
+      "source_file": "src\\main.js",
+      "source_location": "L133"
+    },
+    {
+      "id": "firebaseconfig",
+      "label": "firebaseConfig.js",
+      "file_type": "code",
+      "source_file": "src\\api\\firebaseConfig.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "firebaseservice",
+      "label": "firebaseService.js",
+      "file_type": "code",
+      "source_file": "src\\api\\firebaseService.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "gemini",
+      "label": "gemini.js",
+      "file_type": "code",
+      "source_file": "src\\api\\gemini.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "gemini_callgemini",
+      "label": "callGemini()",
+      "file_type": "code",
+      "source_file": "src\\api\\gemini.js",
+      "source_location": "L19"
+    },
+    {
+      "id": "gemini_testgeminiconnection",
+      "label": "testGeminiConnection()",
+      "file_type": "code",
+      "source_file": "src\\api\\gemini.js",
+      "source_location": "L125"
+    },
+    {
+      "id": "mstservice",
+      "label": "mstService.js",
+      "file_type": "code",
+      "source_file": "src\\api\\mstService.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "remoteconfig",
+      "label": "remoteConfig.js",
+      "file_type": "code",
+      "source_file": "src\\api\\remoteConfig.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "idb",
+      "label": "idb.js",
+      "file_type": "code",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "idb_getdb",
+      "label": "getDB()",
+      "file_type": "code",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L7"
+    },
+    {
+      "id": "idb_idbsave",
+      "label": "idbSave()",
+      "file_type": "code",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L25"
+    },
+    {
+      "id": "idb_idbload",
+      "label": "idbLoad()",
+      "file_type": "code",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L36"
+    },
+    {
+      "id": "idb_idbdelete",
+      "label": "idbDelete()",
+      "file_type": "code",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L47"
+    },
+    {
+      "id": "index",
+      "label": "index.js",
+      "file_type": "code",
+      "source_file": "src\\api\\storage\\index.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "localadapter",
+      "label": "localAdapter.js",
+      "file_type": "code",
+      "source_file": "src\\api\\storage\\localAdapter.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "constants",
+      "label": "constants.js",
+      "file_type": "code",
+      "source_file": "src\\core\\constants.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "defaults",
+      "label": "defaults.js",
+      "file_type": "code",
+      "source_file": "src\\core\\defaults.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "scannerfallbacks",
+      "label": "scannerFallbacks.js",
+      "file_type": "code",
+      "source_file": "src\\core\\scannerFallbacks.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "scannerfallbacks_getscannerfallback",
+      "label": "getScannerFallback()",
+      "file_type": "code",
+      "source_file": "src\\core\\scannerFallbacks.js",
+      "source_location": "L15"
+    },
+    {
+      "id": "state",
+      "label": "state.js",
+      "file_type": "code",
+      "source_file": "src\\core\\state.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "autofillform",
+      "label": "autoFillForm.js",
+      "file_type": "code",
+      "source_file": "src\\features\\autoFillForm.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "autofillform_setupautofillform",
+      "label": "setupAutoFillForm()",
+      "file_type": "code",
+      "source_file": "src\\features\\autoFillForm.js",
+      "source_location": "L26"
+    },
+    {
+      "id": "calcwidgetfeature",
+      "label": "calcWidgetFeature.js",
+      "file_type": "code",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "calcwidgetfeature_savehist",
+      "label": "saveHist()",
+      "file_type": "code",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L25"
+    },
+    {
+      "id": "calcwidgetfeature_renderhist",
+      "label": "renderHist()",
+      "file_type": "code",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L33"
+    },
+    {
+      "id": "calcwidgetfeature_clamp",
+      "label": "clamp()",
+      "file_type": "code",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L39"
+    },
+    {
+      "id": "calcwidgetfeature_mksecheader",
+      "label": "mkSecHeader()",
+      "file_type": "code",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L46"
+    },
+    {
+      "id": "calcwidgetfeature_updatesyncdiricon",
+      "label": "updateSyncDirIcon()",
+      "file_type": "code",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L65"
+    },
+    {
+      "id": "calcwidgetfeature_initcalcwidget",
+      "label": "initCalcWidget()",
+      "file_type": "code",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L84"
+    },
+    {
+      "id": "configmanager",
+      "label": "configManager.js",
+      "file_type": "code",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "configmanager_exportconfig",
+      "label": "exportConfig()",
+      "file_type": "code",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L22"
+    },
+    {
+      "id": "configmanager_importconfig",
+      "label": "importConfig()",
+      "file_type": "code",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L53"
+    },
+    {
+      "id": "datafillfeature",
+      "label": "dataFillFeature.js",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "datafillfeature_renderdatafilltabs",
+      "label": "renderDataFillTabs()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L29"
+    },
+    {
+      "id": "docexport",
+      "label": "docExport.js",
+      "file_type": "code",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "docexport_renderdocx",
+      "label": "renderDocx()",
+      "file_type": "code",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L14"
+    },
+    {
+      "id": "docexport_copytxttoclipboard",
+      "label": "copyTxtToClipboard()",
+      "file_type": "code",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L60"
+    },
+    {
+      "id": "docexport_initdocexport",
+      "label": "initDocExport()",
+      "file_type": "code",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L75"
+    },
+    {
+      "id": "fieldsmanager",
+      "label": "fieldsManager.js",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "fieldsmanager_startfieldlinker",
+      "label": "startFieldLinker()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L32"
+    },
+    {
+      "id": "fieldsmanager_validatefield",
+      "label": "validateField()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L257"
+    },
+    {
+      "id": "fieldsmanager_refreshrowvalidation",
+      "label": "refreshRowValidation()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L284"
+    },
+    {
+      "id": "fieldsmanager_updatesyncdiricon",
+      "label": "updateSyncDirIcon()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L308"
+    },
+    {
+      "id": "fieldsmanager_addorupdatefieldrow",
+      "label": "addOrUpdateFieldRow()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L327"
+    },
+    {
+      "id": "fieldsmanager_savefieldstolocal",
+      "label": "saveFieldsToLocal()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L523"
+    },
+    {
+      "id": "fieldsmanager_getbackupname",
+      "label": "getBackupName()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L552"
+    },
+    {
+      "id": "fieldsmanager_getexportfilename",
+      "label": "getExportFileName()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L568"
+    },
+    {
+      "id": "fieldsmanager_loadsaveddata",
+      "label": "loadSavedData()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L583"
+    },
+    {
+      "id": "fieldsmanager_initfieldsmanager",
+      "label": "initFieldsManager()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L637"
+    },
+    {
+      "id": "fieldsmanager_syncallfields",
+      "label": "syncAllFields()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L851"
+    },
+    {
+      "id": "fieldsmanager_updateuifordefaultmode",
+      "label": "updateUIForDefaultMode()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L891"
+    },
+    {
+      "id": "fieldsmanager_rendercalcmappinginbanner",
+      "label": "renderCalcMappingInBanner()",
+      "file_type": "code",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L939"
+    },
+    {
+      "id": "hotkeys",
+      "label": "hotkeys.js",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "hotkeys_inithotkeys",
+      "label": "initHotkeys()",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L18"
+    },
+    {
+      "id": "hotkeys_ismatch",
+      "label": "isMatch()",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L42"
+    },
+    {
+      "id": "hotkeys_executeaction",
+      "label": "executeAction()",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L59"
+    },
+    {
+      "id": "hotkeys_startrecording",
+      "label": "startRecording()",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L88"
+    },
+    {
+      "id": "hotkeys_handlerecording",
+      "label": "handleRecording()",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L98"
+    },
+    {
+      "id": "hotkeys_gethotkeystring",
+      "label": "getHotkeyString()",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L134"
+    },
+    {
+      "id": "hotkeys_clearhotkey",
+      "label": "clearHotkey()",
+      "file_type": "code",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L152"
+    },
+    {
+      "id": "profilemanager",
+      "label": "profileManager.js",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "profilemanager_initprofiles",
+      "label": "initProfiles()",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L12"
+    },
+    {
+      "id": "profilemanager_getprofiles",
+      "label": "getProfiles()",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L28"
+    },
+    {
+      "id": "profilemanager_getactiveprofileid",
+      "label": "getActiveProfileId()",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L35"
+    },
+    {
+      "id": "profilemanager_switchprofile",
+      "label": "switchProfile()",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L42"
+    },
+    {
+      "id": "profilemanager_createprofilefromcurrent",
+      "label": "createProfileFromCurrent()",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L59"
+    },
+    {
+      "id": "profilemanager_deleteprofile",
+      "label": "deleteProfile()",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L77"
+    },
+    {
+      "id": "profilemanager_importprofiles",
+      "label": "importProfiles()",
+      "file_type": "code",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L93"
+    },
+    {
+      "id": "templatemanager",
+      "label": "templateManager.js",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "templatemanager_loadtemplates",
+      "label": "loadTemplates()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L21"
+    },
+    {
+      "id": "templatemanager_savetemplates",
+      "label": "saveTemplates()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L32"
+    },
+    {
+      "id": "templatemanager_normalizeurl",
+      "label": "normalizeUrl()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L36"
+    },
+    {
+      "id": "templatemanager_fetchtemplatefromurl",
+      "label": "fetchTemplateFromUrl()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L42"
+    },
+    {
+      "id": "templatemanager_savelocaltemplate",
+      "label": "saveLocalTemplate()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L76"
+    },
+    {
+      "id": "templatemanager_rendertemplatemanager",
+      "label": "renderTemplateManager()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L100"
+    },
+    {
+      "id": "templatemanager_renderlocaltemplates",
+      "label": "renderLocalTemplates()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L167"
+    },
+    {
+      "id": "templatemanager_createtemplaterow",
+      "label": "createTemplateRow()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L183"
+    },
+    {
+      "id": "templatemanager_rendercloudtemplates",
+      "label": "renderCloudTemplates()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L273"
+    },
+    {
+      "id": "templatemanager_importcloudtemplate",
+      "label": "importCloudTemplate()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L306"
+    },
+    {
+      "id": "templatemanager_selecttemplate",
+      "label": "selectTemplate()",
+      "file_type": "code",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L325"
+    },
+    {
+      "id": "webscanner",
+      "label": "webScanner.js",
+      "file_type": "code",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "webscanner_getelvaluetext",
+      "label": "getElValueText()",
+      "file_type": "code",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L25"
+    },
+    {
+      "id": "webscanner_scanfulladdress",
+      "label": "scanFullAddress()",
+      "file_type": "code",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L47"
+    },
+    {
+      "id": "webscanner_getprovincename",
+      "label": "getProvinceName()",
+      "file_type": "code",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L107"
+    },
+    {
+      "id": "webscanner_initwebscanner",
+      "label": "initWebScanner()",
+      "file_type": "code",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L138"
+    },
+    {
+      "id": "calchistory",
+      "label": "calcHistory.js",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "calchistory_ld",
+      "label": "ld()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L8"
+    },
+    {
+      "id": "calchistory_sv",
+      "label": "sv()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L12"
+    },
+    {
+      "id": "calchistory_savehist",
+      "label": "saveHist()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L16"
+    },
+    {
+      "id": "calchistory_renderhist",
+      "label": "renderHist()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L24"
+    },
+    {
+      "id": "calclogic",
+      "label": "calcLogic.js",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcLogic.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "calclogic_calculatevalues",
+      "label": "calculateValues()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcLogic.js",
+      "source_location": "L8"
+    },
+    {
+      "id": "calclogic_synctopage",
+      "label": "syncToPage()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcLogic.js",
+      "source_location": "L50"
+    },
+    {
+      "id": "calcui",
+      "label": "calcUI.js",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "calcui_createcalcui",
+      "label": "createCalcUI()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L16"
+    },
+    {
+      "id": "index",
+      "label": "index.js",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\index.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "index_initcalcwidget",
+      "label": "initCalcWidget()",
+      "file_type": "code",
+      "source_file": "src\\features\\calc\\index.js",
+      "source_location": "L10"
+    },
+    {
+      "id": "datafillui",
+      "label": "dataFillUI.js",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "datafillui_ld",
+      "label": "ld()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L8"
+    },
+    {
+      "id": "datafillui_sv",
+      "label": "sv()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L9"
+    },
+    {
+      "id": "datafillui_renderdatafilltabs",
+      "label": "renderDataFillTabs()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L11"
+    },
+    {
+      "id": "index",
+      "label": "index.js",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\index.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "index_initdatafill",
+      "label": "initDataFill()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\index.js",
+      "source_location": "L9"
+    },
+    {
+      "id": "syncengine",
+      "label": "syncEngine.js",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "syncengine_loadfresheneddefaultdata",
+      "label": "loadFreshenedDefaultData()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L16"
+    },
+    {
+      "id": "syncengine_dofilldata",
+      "label": "doFillData()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L31"
+    },
+    {
+      "id": "syncengine_dosyncdata",
+      "label": "doSyncData()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L63"
+    },
+    {
+      "id": "syncengine_processsync",
+      "label": "processSync()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L91"
+    },
+    {
+      "id": "syncengine_initsyncengine",
+      "label": "initSyncEngine()",
+      "file_type": "code",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L143"
+    },
+    {
+      "id": "mailscanner",
+      "label": "mailScanner.js",
+      "file_type": "code",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "mailscanner_getmaildata",
+      "label": "getMailData()",
+      "file_type": "code",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L23"
+    },
+    {
+      "id": "mailscanner_injectmailbridge",
+      "label": "injectMailBridge()",
+      "file_type": "code",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L92"
+    },
+    {
+      "id": "mailscanner_waitforbody",
+      "label": "_waitForBody()",
+      "file_type": "code",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L102"
+    },
+    {
+      "id": "mailscanner_keepalive",
+      "label": "_keepAlive()",
+      "file_type": "code",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L114"
+    },
+    {
+      "id": "mailscanner_doinject",
+      "label": "_doInject()",
+      "file_type": "code",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L123"
+    },
+    {
+      "id": "mailscanner_showbridgetoast",
+      "label": "_showBridgeToast()",
+      "file_type": "code",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L196"
+    },
+    {
+      "id": "geminiocr",
+      "label": "geminiOcr.js",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "geminiocr_getsystemprompt",
+      "label": "getSystemPrompt()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L11"
+    },
+    {
+      "id": "geminiocr_extractwithgemini",
+      "label": "extractWithGemini()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L64"
+    },
+    {
+      "id": "geminiocr_filetobase64",
+      "label": "fileToBase64()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L85"
+    },
+    {
+      "id": "index",
+      "label": "index.js",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "index_renderqueue",
+      "label": "renderQueue()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L21"
+    },
+    {
+      "id": "index_clearqueue",
+      "label": "clearQueue()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L57"
+    },
+    {
+      "id": "index_initpdfscan",
+      "label": "initPdfScan()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L63"
+    },
+    {
+      "id": "pdfscanui",
+      "label": "pdfScanUI.js",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\pdfScanUI.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "pdfscanui_showpdfloading",
+      "label": "showPdfLoading()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\pdfScanUI.js",
+      "source_location": "L6"
+    },
+    {
+      "id": "pdfscanui_hidepdfloading",
+      "label": "hidePdfLoading()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\pdfScanUI.js",
+      "source_location": "L24"
+    },
+    {
+      "id": "pdfscanui_showpdfconfirmdialog",
+      "label": "showPdfConfirmDialog()",
+      "file_type": "code",
+      "source_file": "src\\features\\pdfScan\\pdfScanUI.js",
+      "source_location": "L36"
+    },
+    {
+      "id": "index",
+      "label": "index.js",
+      "file_type": "code",
+      "source_file": "src\\features\\rawScan\\index.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "index_initrawscan",
+      "label": "initRawScan()",
+      "file_type": "code",
+      "source_file": "src\\features\\rawScan\\index.js",
+      "source_location": "L2"
+    },
+    {
+      "id": "rawscan",
+      "label": "rawScan.js",
+      "file_type": "code",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "rawscan_getrawtextsystemprompt",
+      "label": "getRawTextSystemPrompt()",
+      "file_type": "code",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L12"
+    },
+    {
+      "id": "rawscan_extractfieldsfromtext",
+      "label": "extractFieldsFromText()",
+      "file_type": "code",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L53"
+    },
+    {
+      "id": "rawscan_extractfieldslocally",
+      "label": "extractFieldsLocally()",
+      "file_type": "code",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L67"
+    },
+    {
+      "id": "screenscanner",
+      "label": "screenScanner.js",
+      "file_type": "code",
+      "source_file": "src\\features\\screenScan\\screenScanner.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "screenscanner_scrapescreentext",
+      "label": "scrapeScreenText()",
+      "file_type": "code",
+      "source_file": "src\\features\\screenScan\\screenScanner.js",
+      "source_location": "L6"
+    },
+    {
+      "id": "dragdrop",
+      "label": "dragDrop.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "dragdrop_makedraggable",
+      "label": "makeDraggable()",
+      "file_type": "code",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L17"
+    },
+    {
+      "id": "dragdrop_initdragdrop",
+      "label": "initDragDrop()",
+      "file_type": "code",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L198"
+    },
+    {
+      "id": "styles",
+      "label": "styles.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\styles.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "styles_injectstyles",
+      "label": "injectStyles()",
+      "file_type": "code",
+      "source_file": "src\\ui\\styles.js",
+      "source_location": "L16"
+    },
+    {
+      "id": "toast",
+      "label": "toast.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\toast.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "toast_showtoast",
+      "label": "showToast()",
+      "file_type": "code",
+      "source_file": "src\\ui\\toast.js",
+      "source_location": "L15"
+    },
+    {
+      "id": "widget",
+      "label": "widget.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "widget_initwidget",
+      "label": "initWidget()",
+      "file_type": "code",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L24"
+    },
+    {
+      "id": "cloudsyncui",
+      "label": "CloudSyncUI.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "cloudsyncui_initcloudsyncui",
+      "label": "initCloudSyncUI()",
+      "file_type": "code",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L5"
+    },
+    {
+      "id": "cloudsyncui_showloginmodal",
+      "label": "showLoginModal()",
+      "file_type": "code",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L175"
+    },
+    {
+      "id": "fields",
+      "label": "fields.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\styles\\fields.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "panel",
+      "label": "panel.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\styles\\panel.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "theme",
+      "label": "theme.js",
+      "file_type": "code",
+      "source_file": "src\\ui\\styles\\theme.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "backuphelper",
+      "label": "backupHelper.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "backuphelper_flattendata",
+      "label": "flattenData()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L18"
+    },
+    {
+      "id": "backuphelper_exportfullbackup",
+      "label": "exportFullBackup()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L37"
+    },
+    {
+      "id": "backuphelper_importfullbackup",
+      "label": "importFullBackup()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L77"
+    },
+    {
+      "id": "backuphelper_createinternalbackup",
+      "label": "createInternalBackup()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L110"
+    },
+    {
+      "id": "backuphelper_generatebackupname",
+      "label": "generateBackupName()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L138"
+    },
+    {
+      "id": "backuphelper_getinternalbackups",
+      "label": "getInternalBackups()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L150"
+    },
+    {
+      "id": "backuphelper_restoreinternalbackup",
+      "label": "restoreInternalBackup()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L165"
+    },
+    {
+      "id": "backuphelper_deleteinternalbackup",
+      "label": "deleteInternalBackup()",
+      "file_type": "code",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L187"
+    },
+    {
+      "id": "common",
+      "label": "common.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\common.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "common_debounce",
+      "label": "debounce()",
+      "file_type": "code",
+      "source_file": "src\\utils\\common.js",
+      "source_location": "L12"
+    },
+    {
+      "id": "common_sleep",
+      "label": "sleep()",
+      "file_type": "code",
+      "source_file": "src\\utils\\common.js",
+      "source_location": "L28"
+    },
+    {
+      "id": "crypto",
+      "label": "crypto.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\crypto.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "crypto_encrypt",
+      "label": "encrypt()",
+      "file_type": "code",
+      "source_file": "src\\utils\\crypto.js",
+      "source_location": "L13"
+    },
+    {
+      "id": "crypto_decrypt",
+      "label": "decrypt()",
+      "file_type": "code",
+      "source_file": "src\\utils\\crypto.js",
+      "source_location": "L31"
+    },
+    {
+      "id": "datehelper",
+      "label": "dateHelper.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "datehelper_gettoday",
+      "label": "getToday()",
+      "file_type": "code",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L6"
+    },
+    {
+      "id": "datehelper_formatday",
+      "label": "formatDay()",
+      "file_type": "code",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L10"
+    },
+    {
+      "id": "datehelper_formatmonth",
+      "label": "formatMonth()",
+      "file_type": "code",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L14"
+    },
+    {
+      "id": "datehelper_formatyear",
+      "label": "formatYear()",
+      "file_type": "code",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L18"
+    },
+    {
+      "id": "datehelper_getvnptdatestrings",
+      "label": "getVNPTDateStrings()",
+      "file_type": "code",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L22"
+    },
+    {
+      "id": "domhelper",
+      "label": "domHelper.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "domhelper_cleardomcache",
+      "label": "clearDOMCache()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L19"
+    },
+    {
+      "id": "domhelper_invalidatedommap",
+      "label": "invalidateDOMMap()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L30"
+    },
+    {
+      "id": "domhelper_refreshlabelscache",
+      "label": "refreshLabelsCache()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L37"
+    },
+    {
+      "id": "domhelper_buildfulldommap",
+      "label": "buildFullDOMMap()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L51"
+    },
+    {
+      "id": "domhelper_triggercustom",
+      "label": "triggerCustom()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L113"
+    },
+    {
+      "id": "domhelper_syncsetvalue",
+      "label": "syncSetValue()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L149"
+    },
+    {
+      "id": "domhelper_waitforoptions",
+      "label": "waitForOptions()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L243"
+    },
+    {
+      "id": "domhelper_findpageinput",
+      "label": "findPageInput()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L271"
+    },
+    {
+      "id": "domhelper_getinputbylabel",
+      "label": "getInputByLabel()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L344"
+    },
+    {
+      "id": "domhelper_setpagefield",
+      "label": "setPageField()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L348"
+    },
+    {
+      "id": "domhelper_getfieldrank",
+      "label": "getFieldRank()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L360"
+    },
+    {
+      "id": "domhelper_waitforelement",
+      "label": "waitForElement()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L384"
+    },
+    {
+      "id": "domhelper_setpagefieldssequential",
+      "label": "setPageFieldsSequential()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L401"
+    },
+    {
+      "id": "domhelper_getvnptaddressgroup",
+      "label": "getVNPTAddressGroup()",
+      "file_type": "code",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L493"
+    },
+    {
+      "id": "filehelper",
+      "label": "fileHelper.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\fileHelper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "filehelper_downloadasbase64",
+      "label": "downloadAsBase64()",
+      "file_type": "code",
+      "source_file": "src\\utils\\fileHelper.js",
+      "source_location": "L12"
+    },
+    {
+      "id": "filehelper_arraybuffertobase64",
+      "label": "arrayBufferToBase64()",
+      "file_type": "code",
+      "source_file": "src\\utils\\fileHelper.js",
+      "source_location": "L46"
+    },
+    {
+      "id": "localclassifier",
+      "label": "localClassifier.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\localClassifier.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "localclassifier_findfirstmatch",
+      "label": "findFirstMatch()",
+      "file_type": "code",
+      "source_file": "src\\utils\\localClassifier.js",
+      "source_location": "L27"
+    },
+    {
+      "id": "localclassifier_classifytextlocally",
+      "label": "classifyTextLocally()",
+      "file_type": "code",
+      "source_file": "src\\utils\\localClassifier.js",
+      "source_location": "L40"
+    },
+    {
+      "id": "logger",
+      "label": "logger.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\logger.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "migrationhelper",
+      "label": "migrationHelper.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\migrationHelper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "migrationhelper_initstoragemerge",
+      "label": "initStorageMerge()",
+      "file_type": "code",
+      "source_file": "src\\utils\\migrationHelper.js",
+      "source_location": "L11"
+    },
+    {
+      "id": "numberhelper",
+      "label": "numberHelper.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "numberhelper_formatnum",
+      "label": "formatNum()",
+      "file_type": "code",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L3"
+    },
+    {
+      "id": "numberhelper_parsenum",
+      "label": "parseNum()",
+      "file_type": "code",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L7"
+    },
+    {
+      "id": "numberhelper_capfirst",
+      "label": "capFirst()",
+      "file_type": "code",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L11"
+    },
+    {
+      "id": "numberhelper_read3",
+      "label": "read3()",
+      "file_type": "code",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L17"
+    },
+    {
+      "id": "numberhelper_numtovn",
+      "label": "numToVN()",
+      "file_type": "code",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L39"
+    },
+    {
+      "id": "storage",
+      "label": "storage.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\storage.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "stringhelper",
+      "label": "stringHelper.js",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "stringhelper_getlevenshteindistance",
+      "label": "getLevenshteinDistance()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L12"
+    },
+    {
+      "id": "stringhelper_getsimilarity",
+      "label": "getSimilarity()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L49"
+    },
+    {
+      "id": "stringhelper_findbestmatch",
+      "label": "findBestMatch()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L70"
+    },
+    {
+      "id": "stringhelper_capitalizename",
+      "label": "capitalizeName()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L93"
+    },
+    {
+      "id": "stringhelper_formatphonenumber",
+      "label": "formatPhoneNumber()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L105"
+    },
+    {
+      "id": "stringhelper_normalizedate",
+      "label": "normalizeDate()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L122"
+    },
+    {
+      "id": "stringhelper_parseaddresscomponents",
+      "label": "parseAddressComponents()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L172"
+    },
+    {
+      "id": "stringhelper_cleanprovincename",
+      "label": "cleanProvinceName()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L222"
+    },
+    {
+      "id": "stringhelper_getstreetpart",
+      "label": "getStreetPart()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L233"
+    },
+    {
+      "id": "stringhelper_splithousenumberandstreet",
+      "label": "splitHouseNumberAndStreet()",
+      "file_type": "code",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L260"
+    }
+  ],
+  "edges": [
+    {
+      "source": "dev_user",
+      "target": "dev_user_loadscript",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "dev.user.js",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "vite_config",
+      "target": "vite",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "vite.config.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "vite_config",
+      "target": "package_json",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "vite.config.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "vite_config",
+      "target": "vite_config_generatebundle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "vite.config.js",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "test_classifier",
+      "target": "localclassifier_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "scratch\\test_classifier.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "logger_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "styles_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "widget_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "dragdrop_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "fieldsmanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "webscanner_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "docexport_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "autofillform_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "index_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "index_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "syncengine_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "index_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "common_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "hotkeys_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "migrationhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "remoteconfig_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "mailscanner_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "main_init",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "main_cleanup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\main.js",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "firebaseconfig",
+      "target": "app",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\firebaseConfig.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "firebaseconfig",
+      "target": "auth",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\firebaseConfig.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "firebaseconfig",
+      "target": "firestore",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\firebaseConfig.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "firebaseservice",
+      "target": "firebaseconfig_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\firebaseService.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "firebaseservice",
+      "target": "crypto_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\firebaseService.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "firebaseservice",
+      "target": "auth",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\firebaseService.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "firebaseservice",
+      "target": "firestore",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\firebaseService.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "gemini",
+      "target": "gemini_callgemini",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\gemini.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "gemini",
+      "target": "gemini_testgeminiconnection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\gemini.js",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "remoteconfig",
+      "target": "firebaseservice_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\remoteConfig.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "remoteconfig",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\remoteConfig.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "remoteconfig",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\remoteConfig.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "idb",
+      "target": "idb_getdb",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "idb",
+      "target": "idb_idbsave",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "idb",
+      "target": "idb_idbload",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "idb",
+      "target": "idb_idbdelete",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "idb_idbsave",
+      "target": "idb_getdb",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "idb_idbload",
+      "target": "idb_getdb",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "idb_idbdelete",
+      "target": "idb_getdb",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\idb.js",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "localadapter_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\api\\storage\\index.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "constants",
+      "target": "package_json",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\core\\constants.js",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "defaults",
+      "target": "datehelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\core\\defaults.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "scannerfallbacks",
+      "target": "datehelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\core\\scannerFallbacks.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scannerfallbacks",
+      "target": "scannerfallbacks_getscannerfallback",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\core\\scannerFallbacks.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "autofillform",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\autoFillForm.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "autofillform",
+      "target": "scannerfallbacks_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\autoFillForm.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "autofillform",
+      "target": "autofillform_setupautofillform",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\autoFillForm.js",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "dragdrop_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "numberhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "datafillfeature_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "calcwidgetfeature_savehist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "calcwidgetfeature_renderhist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "calcwidgetfeature_clamp",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "calcwidgetfeature_mksecheader",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "calcwidgetfeature_updatesyncdiricon",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature",
+      "target": "calcwidgetfeature_initcalcwidget",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "calcwidgetfeature_initcalcwidget",
+      "target": "calcwidgetfeature_renderhist",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calcWidgetFeature.js",
+      "source_location": "L268",
+      "weight": 1.0
+    },
+    {
+      "source": "configmanager",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "configmanager",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "configmanager",
+      "target": "fieldsmanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "configmanager",
+      "target": "templatemanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "configmanager",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "configmanager",
+      "target": "configmanager_exportconfig",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "configmanager",
+      "target": "configmanager_importconfig",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\configManager.js",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillfeature",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillfeature",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillfeature",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillfeature",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillfeature",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillfeature",
+      "target": "syncengine_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillfeature",
+      "target": "datafillfeature_renderdatafilltabs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFillFeature.js",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "docexport",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "docexport",
+      "target": "index_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "docexport",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "docexport",
+      "target": "docexport_renderdocx",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "docexport",
+      "target": "docexport_copytxttoclipboard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "docexport",
+      "target": "docexport_initdocexport",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "docexport_initdocexport",
+      "target": "docexport_renderdocx",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\docExport.js",
+      "source_location": "L180",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "logger_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "syncengine_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "mstservice_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "backuphelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "stringhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "common_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_startfieldlinker",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_validatefield",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L257",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_refreshrowvalidation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L284",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_updatesyncdiricon",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L308",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_addorupdatefieldrow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L327",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_savefieldstolocal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L523",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_getbackupname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L552",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_getexportfilename",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L568",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_loadsaveddata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L583",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_initfieldsmanager",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L637",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_syncallfields",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L851",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_updateuifordefaultmode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L891",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager",
+      "target": "fieldsmanager_rendercalcmappinginbanner",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L939",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager_refreshrowvalidation",
+      "target": "fieldsmanager_validatefield",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L304",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager_addorupdatefieldrow",
+      "target": "fieldsmanager_updatesyncdiricon",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L358",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager_addorupdatefieldrow",
+      "target": "fieldsmanager_refreshrowvalidation",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L362",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager_addorupdatefieldrow",
+      "target": "fieldsmanager_savefieldstolocal",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L420",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager_updateuifordefaultmode",
+      "target": "fieldsmanager_rendercalcmappinginbanner",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L926",
+      "weight": 1.0
+    },
+    {
+      "source": "fieldsmanager_updateuifordefaultmode",
+      "target": "fieldsmanager_loadsaveddata",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\fieldsManager.js",
+      "source_location": "L932",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "hotkeys_inithotkeys",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "hotkeys_ismatch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "hotkeys_executeaction",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "hotkeys_startrecording",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "hotkeys_handlerecording",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "hotkeys_gethotkeystring",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys",
+      "target": "hotkeys_clearhotkey",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "hotkeys_handlerecording",
+      "target": "hotkeys_gethotkeystring",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\hotkeys.js",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "profilemanager_initprofiles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "profilemanager_getprofiles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "profilemanager_getactiveprofileid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "profilemanager_switchprofile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "profilemanager_createprofilefromcurrent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "profilemanager_deleteprofile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager",
+      "target": "profilemanager_importprofiles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager_switchprofile",
+      "target": "profilemanager_getprofiles",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager_createprofilefromcurrent",
+      "target": "profilemanager_getprofiles",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager_deleteprofile",
+      "target": "profilemanager_getprofiles",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager_deleteprofile",
+      "target": "profilemanager_getactiveprofileid",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager_deleteprofile",
+      "target": "profilemanager_switchprofile",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager_importprofiles",
+      "target": "profilemanager_getactiveprofileid",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "profilemanager_importprofiles",
+      "target": "profilemanager_switchprofile",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\profileManager.js",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "idb_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "firebaseservice_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_loadtemplates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_savetemplates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_normalizeurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_fetchtemplatefromurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_savelocaltemplate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_rendertemplatemanager",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_renderlocaltemplates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_createtemplaterow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_rendercloudtemplates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L273",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_importcloudtemplate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L306",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager",
+      "target": "templatemanager_selecttemplate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L325",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_loadtemplates",
+      "target": "templatemanager_savetemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_savelocaltemplate",
+      "target": "templatemanager_loadtemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_savelocaltemplate",
+      "target": "templatemanager_savetemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_savelocaltemplate",
+      "target": "templatemanager_rendertemplatemanager",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_rendertemplatemanager",
+      "target": "templatemanager_renderlocaltemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_rendertemplatemanager",
+      "target": "templatemanager_rendercloudtemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L160",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_renderlocaltemplates",
+      "target": "templatemanager_loadtemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_importcloudtemplate",
+      "target": "templatemanager_loadtemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L307",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_importcloudtemplate",
+      "target": "templatemanager_savetemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L321",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_selecttemplate",
+      "target": "templatemanager_loadtemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L326",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_selecttemplate",
+      "target": "templatemanager_savetemplates",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L328",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_selecttemplate",
+      "target": "templatemanager_rendertemplatemanager",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L349",
+      "weight": 1.0
+    },
+    {
+      "source": "templatemanager_selecttemplate",
+      "target": "templatemanager_fetchtemplatefromurl",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\templateManager.js",
+      "source_location": "L357",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "fieldsmanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "scannerfallbacks_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "remoteconfig_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "stringhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "backuphelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "common_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "webscanner_getelvaluetext",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "webscanner_scanfulladdress",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "webscanner_getprovincename",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner",
+      "target": "webscanner_initwebscanner",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "webscanner_getprovincename",
+      "target": "webscanner_getelvaluetext",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\webScanner.js",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory",
+      "target": "calchistory_ld",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory",
+      "target": "calchistory_sv",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory",
+      "target": "calchistory_savehist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory",
+      "target": "calchistory_renderhist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory_savehist",
+      "target": "calchistory_ld",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory_savehist",
+      "target": "calchistory_sv",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "calchistory_renderhist",
+      "target": "calchistory_ld",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcHistory.js",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "calclogic",
+      "target": "numberhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcLogic.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "calclogic",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcLogic.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "calclogic",
+      "target": "calclogic_calculatevalues",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcLogic.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "calclogic",
+      "target": "calclogic_synctopage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcLogic.js",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "calchistory_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "calclogic_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "numberhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "index_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "dragdrop_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "common_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "calcui",
+      "target": "calcui_createcalcui",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\calcUI.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "calcui_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\index.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\index.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\index.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "calchistory_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\index.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "index_initcalcwidget",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\calc\\index.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "index_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "syncengine_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "backuphelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "datafillui_ld",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "datafillui_sv",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui",
+      "target": "datafillui_renderdatafilltabs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "datafillui_renderdatafilltabs",
+      "target": "datafillui_ld",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\dataFillUI.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "syncengine_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\index.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "index_initdatafill",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\index.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "domhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "common_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "syncengine_loadfresheneddefaultdata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "syncengine_dofilldata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "syncengine_dosyncdata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "syncengine_processsync",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine",
+      "target": "syncengine_initsyncengine",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "syncengine_dofilldata",
+      "target": "syncengine_loadfresheneddefaultdata",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dataFill\\syncEngine.js",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "mailscanner",
+      "target": "mailscanner_getmaildata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "mailscanner",
+      "target": "mailscanner_injectmailbridge",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "mailscanner",
+      "target": "mailscanner_waitforbody",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "mailscanner",
+      "target": "mailscanner_keepalive",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "mailscanner",
+      "target": "mailscanner_doinject",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "mailscanner",
+      "target": "mailscanner_showbridgetoast",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "mailscanner_injectmailbridge",
+      "target": "mailscanner_waitforbody",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\mailScan\\mailScanner.js",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "geminiocr",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "geminiocr",
+      "target": "geminiocr_getsystemprompt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "geminiocr",
+      "target": "gemini_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "geminiocr",
+      "target": "geminiocr_extractwithgemini",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "geminiocr",
+      "target": "geminiocr_filetobase64",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "geminiocr_extractwithgemini",
+      "target": "geminiocr_getsystemprompt",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\geminiOcr.js",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "geminiocr_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "pdfscanui_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "fieldsmanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "backuphelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "rawscan_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "mailscanner_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "screenscanner_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "filehelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "index_renderqueue",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "index_clearqueue",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "index_initpdfscan",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "index_clearqueue",
+      "target": "index_renderqueue",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "pdfscanui",
+      "target": "pdfscanui_showpdfloading",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\pdfScanUI.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "pdfscanui",
+      "target": "pdfscanui_hidepdfloading",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\pdfScanUI.js",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "pdfscanui",
+      "target": "pdfscanui_showpdfconfirmdialog",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\pdfScan\\pdfScanUI.js",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "index",
+      "target": "index_initrawscan",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\index.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "rawscan",
+      "target": "gemini_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "rawscan",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "rawscan",
+      "target": "localclassifier_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "rawscan",
+      "target": "rawscan_getrawtextsystemprompt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "rawscan",
+      "target": "rawscan_extractfieldsfromtext",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "rawscan",
+      "target": "rawscan_extractfieldslocally",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "rawscan_extractfieldsfromtext",
+      "target": "rawscan_getrawtextsystemprompt",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\rawScan\\rawScan.js",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "screenscanner",
+      "target": "screenscanner_scrapescreentext",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\screenScan\\screenScanner.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "dragdrop",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "dragdrop",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "dragdrop",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "dragdrop",
+      "target": "dragdrop_makedraggable",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "dragdrop",
+      "target": "dragdrop_initdragdrop",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L198",
+      "weight": 1.0
+    },
+    {
+      "source": "dragdrop_initdragdrop",
+      "target": "dragdrop_makedraggable",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\dragDrop.js",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "styles",
+      "target": "styles_injectstyles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\styles.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "toast",
+      "target": "toast_showtoast",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\toast.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "templatemanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "fieldsmanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "configmanager_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "backuphelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "hotkeys_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "gemini_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "cloudsyncui_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "remoteconfig_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "widget",
+      "target": "widget_initwidget",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\widget.js",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "cloudsyncui",
+      "target": "firebaseservice_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "cloudsyncui",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "cloudsyncui",
+      "target": "state_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "cloudsyncui",
+      "target": "cloudsyncui_initcloudsyncui",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "cloudsyncui",
+      "target": "cloudsyncui_showloginmodal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\ui\\components\\CloudSyncUI.js",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "toast_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_flattendata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_exportfullbackup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_importfullbackup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_createinternalbackup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_generatebackupname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_getinternalbackups",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_restoreinternalbackup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L165",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper",
+      "target": "backuphelper_deleteinternalbackup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L187",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper_exportfullbackup",
+      "target": "backuphelper_flattendata",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper_restoreinternalbackup",
+      "target": "backuphelper_getinternalbackups",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "backuphelper_deleteinternalbackup",
+      "target": "backuphelper_getinternalbackups",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\backupHelper.js",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "common",
+      "target": "common_debounce",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\common.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "common",
+      "target": "common_sleep",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\common.js",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "crypto",
+      "target": "crypto_encrypt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\crypto.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "crypto",
+      "target": "crypto_decrypt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\crypto.js",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper",
+      "target": "datehelper_gettoday",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper",
+      "target": "datehelper_formatday",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper",
+      "target": "datehelper_formatmonth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper",
+      "target": "datehelper_formatyear",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper",
+      "target": "datehelper_getvnptdatestrings",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper_getvnptdatestrings",
+      "target": "datehelper_formatday",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper_getvnptdatestrings",
+      "target": "datehelper_formatmonth",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "datehelper_getvnptdatestrings",
+      "target": "datehelper_formatyear",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\dateHelper.js",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "stringhelper_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "common_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_cleardomcache",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_invalidatedommap",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_refreshlabelscache",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_buildfulldommap",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_triggercustom",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_syncsetvalue",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_waitforoptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L243",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_findpageinput",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L271",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_getinputbylabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L344",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_setpagefield",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_getfieldrank",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L360",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_waitforelement",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L384",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_setpagefieldssequential",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L401",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper",
+      "target": "domhelper_getvnptaddressgroup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L493",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_buildfulldommap",
+      "target": "domhelper_cleardomcache",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_buildfulldommap",
+      "target": "domhelper_refreshlabelscache",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_syncsetvalue",
+      "target": "domhelper_getvnptaddressgroup",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_syncsetvalue",
+      "target": "domhelper_triggercustom",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L215",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_findpageinput",
+      "target": "domhelper_buildfulldommap",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L276",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_findpageinput",
+      "target": "domhelper_getvnptaddressgroup",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L301",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_getinputbylabel",
+      "target": "domhelper_findpageinput",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L345",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_setpagefield",
+      "target": "domhelper_findpageinput",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L349",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_setpagefield",
+      "target": "domhelper_syncsetvalue",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L351",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_waitforelement",
+      "target": "domhelper_buildfulldommap",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L388",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_waitforelement",
+      "target": "domhelper_findpageinput",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L389",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_setpagefieldssequential",
+      "target": "domhelper_findpageinput",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L446",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_setpagefieldssequential",
+      "target": "domhelper_waitforelement",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L451",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_setpagefieldssequential",
+      "target": "domhelper_waitforoptions",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L466",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_setpagefieldssequential",
+      "target": "domhelper_syncsetvalue",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L473",
+      "weight": 1.0
+    },
+    {
+      "source": "domhelper_setpagefieldssequential",
+      "target": "domhelper_buildfulldommap",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\domHelper.js",
+      "source_location": "L488",
+      "weight": 1.0
+    },
+    {
+      "source": "filehelper",
+      "target": "filehelper_downloadasbase64",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\fileHelper.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "filehelper",
+      "target": "filehelper_arraybuffertobase64",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\fileHelper.js",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "localclassifier",
+      "target": "localclassifier_findfirstmatch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\localClassifier.js",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "localclassifier",
+      "target": "localclassifier_classifytextlocally",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\localClassifier.js",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "localclassifier_classifytextlocally",
+      "target": "localclassifier_findfirstmatch",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\localClassifier.js",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "migrationhelper",
+      "target": "storage_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\migrationHelper.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "migrationhelper",
+      "target": "constants_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\migrationHelper.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "migrationhelper",
+      "target": "defaults_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\migrationHelper.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "migrationhelper",
+      "target": "logger_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\migrationHelper.js",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "migrationhelper",
+      "target": "migrationhelper_initstoragemerge",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\migrationHelper.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "numberhelper",
+      "target": "numberhelper_formatnum",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "numberhelper",
+      "target": "numberhelper_parsenum",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "numberhelper",
+      "target": "numberhelper_capfirst",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "numberhelper",
+      "target": "numberhelper_read3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "numberhelper",
+      "target": "numberhelper_numtovn",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "numberhelper_numtovn",
+      "target": "numberhelper_read3",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\numberHelper.js",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_getlevenshteindistance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_getsimilarity",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_findbestmatch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_capitalizename",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_formatphonenumber",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_normalizedate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_parseaddresscomponents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L172",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_cleanprovincename",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_getstreetpart",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L233",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper",
+      "target": "stringhelper_splithousenumberandstreet",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L260",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper_getsimilarity",
+      "target": "stringhelper_getlevenshteindistance",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper_findbestmatch",
+      "target": "stringhelper_getsimilarity",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "stringhelper_parseaddresscomponents",
+      "target": "stringhelper_cleanprovincename",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\utils\\stringHelper.js",
+      "source_location": "L210",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

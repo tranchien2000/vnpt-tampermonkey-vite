@@ -1,7 +1,8 @@
-## GitLab Knowledge Graph (GKG)
+## graphify
 
-This project uses GitLab Knowledge Graph for code intelligence.
+This project has a graphify knowledge graph at graphify-out/.
 
 Rules:
-- Use GKG to understand cross-file dependencies and core abstractions.
-- Sau khi có thay đổi lớn về kiến trúc hoặc file (major changes), hãy chạy `gkg server stop; gkg index; gkg server start` để cập nhật đồ thị.
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current

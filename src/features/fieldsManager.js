@@ -17,7 +17,7 @@ import { doFillData } from './dataFill/syncEngine.js';
 import { Storage } from '../utils/storage.js';
 import { mstService } from '../api/mstService.js';
 import { createInternalBackup, restoreInternalBackup, getInternalBackups, exportFullBackup, deleteInternalBackup } from '../utils/backupHelper.js';
-import { parseAddressComponents } from '../utils/stringHelper.js';
+import { parseAddressComponents, normalizeDate } from '../utils/stringHelper.js';
 import { debounce } from '../utils/common.js';
 
 // ─── Field Linker State ───
@@ -261,6 +261,7 @@ function validateField(key, value, inputEl) {
     if (key === 'soDkdn') regex = VALIDATION_REGEX.MST;
     else if (key === 'sdt') regex = VALIDATION_REGEX.PHONE;
     else if (key === 'emailDaiDien') regex = VALIDATION_REGEX.EMAIL;
+    else if (key === 'cmnd' || key === 'cccd') regex = VALIDATION_REGEX.ID_CARD;
 
     if (regex && value.trim() !== "") {
         isValid = regex.test(value.trim());
@@ -431,6 +432,14 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             debouncedSyncRow();
         });
         fVal.addEventListener('change', function () {
+            // Tự động chuẩn hóa nếu là trường ngày tháng (có chứa chữ 'ngay' trong key)
+            if (primaryKey.toLowerCase().includes('ngay')) {
+                const normalized = normalizeDate(this.value);
+                if (normalized !== this.value) {
+                    this.value = normalized;
+                    saveFieldsToLocal();
+                }
+            }
             syncThisRow();
         });
 
