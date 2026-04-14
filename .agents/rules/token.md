@@ -5,19 +5,10 @@ last_updated: "2026-04-06"
 
 # Quy tắc Tối ưu Token (token.md)
 
-## 1. Chiến lược Grep‑First
-- Trước khi mở một file lớn, luôn **grep** để xác định vị trí phần cần.
-- Cú pháp mẫu:
-```json
-{
-  "Query": "/* Section: <Tên> */",
-  "SearchPath": "src/ui/styles.js",
-  "CaseInsensitive": false,
-  "IsRegex": false,
-  "MatchPerLine": true
-}
-```
-- Kết quả trả về sẽ có `StartLine` và `EndLine`; dùng chúng để `view_file` chỉ đoạn cần.
+## 1. Chiến lược Graphify‑First
+- Trước khi thực hiện bất kỳ lệnh tìm kiếm hay đọc file nào, luôn đọc `graphify-out/GRAPH_REPORT.md` (hoặc `graphify-out/wiki/index.md` nếu có) để nắm bắt cấu trúc God Nodes và Communities.
+- **Hạn chế Grep**: Chỉ sử dụng `grep` để tìm các từ khóa cụ thể (như Label UI, Placeholder, hoặc ID động) sau khi đã xác định được module mục tiêu thông qua Graphify.
+- Tránh grep mù quáng trên toàn bộ thư mục `src/` nếu chưa biết logic thuộc community nào.
 
 ## 2. Đọc Giới hạn Ngữ cảnh
 - Khi cần xem một hàm hoặc khối logic, chỉ yêu cầu **StartLine** và **EndLine**.

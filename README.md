@@ -1,13 +1,13 @@
-# VNPT Word Automation — Tampermonkey Userscript (Vite)
+# VNPT Automation Tool — Tampermonkey Userscript (Vite)
 
-> **Phiên bản:** 1.5 &nbsp;|&nbsp; **Build Tool:** Vite 5 &nbsp;|&nbsp; **Môi trường:** Tampermonkey / hopdong.vnpt.vn
+> **Phiên bản:** 1.6.17 &nbsp;|&nbsp; **Build Tool:** Vite 5 &nbsp;|&nbsp; **Môi trường:** Tampermonkey / hopdong.vnpt.vn
 
-Userscript tự động hóa toàn bộ luồng nhập liệu hợp đồng VNPT:
-- **Quét dữ liệu** từ portal web → điền tự động vào bảng biến
-- **Xuất file DOCX** theo template có sẵn (URL Google Drive hoặc file local)
-- **Copy text nhanh** bằng template văn bản tuỳ chỉnh (`@key` placeholder)
-- **Tính thuế & phí dịch vụ** với bộ Calc Widget tích hợp
-- **Đồng bộ hai chiều** giữa widget và các form trên trang web
+Userscript tối ưu hóa và tự động hóa toàn bộ luồng quy trình nghiệp vụ trên hệ thống VNPT:
+- **AI Multi-source Scanner**: Bóc tách dữ liệu thông minh từ PDF, Ảnh, Gmail, Outlook và Screen Capture thông qua Gemini AI.
+- **Real-time 2-way Sync**: Động bộ dữ liệu hai chiều giữa Widget và Form web với quyền kiểm soát hướng (Sync Direction).
+- **Xuất file DOCX**: Render tài liệu theo template chuyên nghiệp hỗ trợ cả Cloud (Google Drive) và Local.
+- **Tính thuế & Phí**: Bộ công cụ Calc Widget thông minh, tự động điền kết quả vào các trường tương ứng trên trang.
+- **Quản lý Lịch sử & Cloud Sync**: Lưu trữ an toàn 10 phiên làm việc gần nhất và đồng bộ dữ liệu qua Firebase.
 
 ---
 
@@ -26,67 +26,58 @@ Userscript tự động hóa toàn bộ luồng nhập liệu hợp đồng VNPT
 
 ## 🏗️ Tổng quan kiến trúc
 
-Dự án áp dụng **kiến trúc phân lớp** (Layered Architecture) loại bỏ hoàn toàn circular dependency. Các lớp giao tiếp một chiều từ trên xuống dưới, và sử dụng **Event Bus** để các module giao tiếp ngang hàng mà không cần `import` trực tiếp lẫn nhau.
+Dự án áp dụng **kiến trúc phân lớp** (Layered Architecture) kết hợp với **Service Pattern** để tích hợp các dịch vụ bên ngoài (AI, Cloud). Hệ thống sử dụng **Event Bus** và **Storage Abstraction** để đảm bảo tính module và khả năng mở rộng.
 
 ```mermaid
 graph TD
+  subgraph Cloud ["📡 Cloud & AI Services"]
+    gemini["Gemini AI OCR"]
+    firebase["Firebase Cloud Sync"]
+    mst["MST Lookup Service"]
+  end
+
   subgraph Core ["🧱 Core (Nền tảng)"]
     constants["constants.js\n(Labels, Keys)"]
     state["state.js\n(AppState Singleton)"]
-    defaults["defaults.js\n(Data mặc định Bên B)"]
-    scannerFallbacks["scannerFallbacks.js\n(Fallback khi quét)"]
+    defaults["defaults.js\n(Dữ liệu mặc định)"]
+    scannerFallbacks["scannerFallbacks.js"]
   end
 
-  subgraph Utils ["🔧 Utils (Tiện ích)"]
-    domHelper["domHelper.js"]
-    numberHelper["numberHelper.js"]
-    dateHelper["dateHelper.js"]
-    stringHelper["stringHelper.js"]
-    backupHelper["backupHelper.js"]
-    migrationHelper["migrationHelper.js"]
-    storage["storage.js"]
-    logger["logger.js"]
+  subgraph Utils ["🔧 Utils"]
+    domHelper["domHelper.js (DOM Cache)"]
+    storage["storage.js (Debounced)"]
+    history["backupHelper.js (History)"]
+    normalization["stringHelper.js (Date/MST Norm)"]
   end
 
-  subgraph API ["📡 API (Storage)"]
-    idb["idb.js\n(IndexedDB)"]
-    localAdapter["localAdapter.js"]
+  subgraph UI ["🖼️ UI (Premium Glassmorphism)"]
+    styles["styles.js (Modular CSS)"]
+    widget["widget.js (Main Container)"]
+    components["CloudSyncUI.js / Toast.js"]
+    premium["Icon SVG & Animations"]
   end
 
-  subgraph UI ["🖼️ UI (Giao diện)"]
-    styles["styles.js\n(6 Section CSS)"]
-    widget["widget.js\n(HTML khung chính)"]
-    dragDrop["dragDrop.js"]
-    toast["toast.js"]
+  subgraph Features ["⚙️ Features"]
+    direction FeatureScan ["🔍 AI & Web Scanners"]
+    direction FeatureFill ["🔄 Real-time Sync Engine"]
+    direction FeatureDoc ["📄 Doc & Text Export"]
+
+    FeatureScan --- pdfScan["PDF/Image Scan"]
+    FeatureScan --- mailScan["Mail Scan"]
+    FeatureScan --- webScan["Web Scanner"]
+    
+    FeatureFill --- syncEngine["Sync Engine v2"]
+    FeatureFill --- calc["Calc Widget"]
+    
+    FeatureDoc --- docExport["DOCX Export"]
+    FeatureDoc --- templateManager["Template Manager"]
   end
 
-  subgraph Features ["⚙️ Features (Tính năng)"]
-    fieldsManager["fieldsManager.js\n(Bảng biến trung tâm)"]
-    webScanner["webScanner.js\n(Quét dữ liệu web)"]
-    docExport["docExport.js\n(Xuất DOCX + Copy TXT)"]
-    templateManager["templateManager.js\n(Quản lý mẫu .docx)"]
-    autoFillForm["autoFillForm.js\n(MutationObserver)"]
-    hotkeys["hotkeys.js\n(Phím tắt)"]
-    configManager["configManager.js"]
-
-    subgraph calc ["📊 Calc Widget"]
-      calcLogic["calcLogic.js"]
-      calcUI["calcUI.js"]
-      calcHistory["calcHistory.js"]
-    end
-
-    subgraph dataFill ["🔄 DataFill"]
-      syncEngine["syncEngine.js"]
-      dataFillUI["dataFillUI.js"]
-    end
-  end
-
+  Cloud --> Features
   Core --> UI
   Core --> Utils
-  Core --> API
   UI --> Features
   Utils --> Features
-  API --> Features
 ```
 
 ---
@@ -104,55 +95,39 @@ tampermonkey-vite/
 └── src/
     ├── main.js              # Entry Point: Khởi động toàn bộ hệ thống
     │
-    ├── core/                # Nền tảng — không import từ lớp nào khác
-    │   ├── constants.js     # DEFAULT_LABELS, localStorage Keys, REQUIRED_KEYS
-    │   ├── state.js         # Singleton AppState (DOM refs, drag state...)
-    │   ├── defaults.js      # Dữ liệu mặc định Bên B + DEFAULT_SYNC_DATA + DEFAULT_CALC_MAP
-    │   └── scannerFallbacks.js  # Logic fallback cho webScanner
+    ├── api/                 # Các dịch vụ bên ngoài & Storage
+    │   ├── firebaseConfig.js # Cấu hình Firebase
+    │   ├── firebaseService.js # Đồng bộ dữ liệu đám mây
+    │   ├── gemini.js        # Giao tiếp với Gemini AI API
+    │   ├── mstService.js    # Tra cứu Mã số thuế doanh nghiệp (Xinvoice)
+    │   ├── remoteConfig.js  # Cấu hình từ xa cho App
+    │   └── storage/         # Adapter lưu trữ đa nguồn (IndexedDB, LocalStorage)
     │
-    ├── utils/               # Hàm tiện ích thuần (không có side-effect UI)
-    │   ├── common.js        # debounce, throttle...
-    │   ├── dateHelper.js    # getVNPTDateStrings() → {ngay, thang, nam}
-    │   ├── domHelper.js     # setInputValue, setPageField, clearDOMCache
-    │   ├── numberHelper.js  # Số → chữ tiếng Việt, formatMoney
-    │   ├── stringHelper.js  # Xử lý chuỗi (trim, normalize...)
-    │   ├── backupHelper.js  # Export/Import JSON trạng thái
-    │   ├── migrationHelper.js   # Smart Merge LocalStorage khi deploy version mới
-    │   ├── storage.js       # Wrapper localStorage với debounce & ký tự đặc biệt
-    │   └── logger.js        # console.log có prefix & level
+    ├── core/                # Nền tảng (Constants, State, Defaults)
+    │   ├── constants.js     # Labels, Keys, Configuration
+    │   ├── state.js         # Singleton AppState
+    │   └── defaults.js      # Dữ liệu mặc định & Mapping
     │
-    ├── api/
-    │   └── storage/         # Adapter lưu trữ đa nguồn
-    │       ├── index.js     # Factory: export { storage }
-    │       ├── idb.js       # IndexedDB adapter (lưu file DOCX binary)
-    │       └── localAdapter.js  # LocalStorage adapter
+    ├── features/            # Logic tính năng (Modularized)
+    │   ├── pdfScan/         # AI Scanner (PDF, Image) - Gemini OCR
+    │   ├── mailScan/        # Quét nội dung Gmail, Outlook
+    │   ├── screenScan/      # Chụp màn hình & OCR trực tiếp
+    │   ├── rawScan/         # Phân loại dữ liệu thô (Regex-based)
+    │   ├── calc/            # Calc Widget (Tính thuế VAT)
+    │   ├── dataFill/        # Real-time Sync Engine v2
+    │   ├── webScanner.js    # Quét DOM trang web host
+    │   ├── fieldsManager.js # Quản trị bảng biến trung tâm
+    │   ├── docExport.js     # Xuất DOCX & Copy TXT
+    │   └── templateManager.js # Quản lý mẫu DOCX (Google Drive Integration)
     │
-    ├── ui/                  # Lớp giao diện
-    │   ├── styles.js        # Toàn bộ CSS (6 Section Comments)
-    │   ├── widget.js        # Khởi tạo HTML widget chính (Export Panel)
-    │   ├── dragDrop.js      # Kéo thả 2 widget bằng mousedown/mousemove
-    │   └── toast.js         # Thông báo góc màn hình
+    ├── ui/                  # Lớp giao diện (Premium Design)
+    │   ├── components/      # UI Components (CloudSync, Toasts)
+    │   ├── styles/          # Modular CSS (Theme, Panel, Fields)
+    │   ├── styles.js        # Main Stylist (Legacy/Unified CSS)
+    │   ├── widget.js        # Main Interaction Widget
+    │   └── dragDrop.js      # Smooth High-performance Dragging (60fps)
     │
-    └── features/            # Logic tính năng (bulk of codebase)
-        ├── main.js          # (Xem src/main.js — entry point)
-        ├── fieldsManager.js # CRUD bảng field-rows, drag-sort, lưu localStorage
-        ├── webScanner.js    # Quét DOM trang → fire EventBus 'ADD_FIELD'
-        ├── docExport.js     # Xuất DOCX (docxtemplater) & Copy TXT clipboard
-        ├── templateManager.js   # Quản lý mẫu DOCX: URL fetch ↔ IndexedDB
-        ├── autoFillForm.js  # MutationObserver: điền form ngay khi xuất hiện
-        ├── hotkeys.js       # Phím tắt toàn cục
-        ├── configManager.js # Quản lý cấu hình người dùng
-        │
-        ├── calc/            # Calc Widget (tính thuế)
-        │   ├── index.js     # initCalcWidget() — điểm khởi động
-        │   ├── calcLogic.js # Tính thuế VAT, format số, số → chữ
-        │   ├── calcUI.js    # DOM + Event Listeners cho Calc Widget
-        │   └── calcHistory.js   # Lịch sử tính toán (before/after)
-        │
-        └── dataFill/        # DataFill Widget (đồng bộ dữ liệu)
-            ├── index.js     # Re-export
-            ├── dataFillUI.js    # Giao diện 3 tab: Default / Custom / Sync
-            └── syncEngine.js    # Lắng nghe input toàn trang & điền ngược
+    └── utils/               # Tiện ích bổ trợ (Date, String, DOM, History)
 ```
 
 ---
@@ -165,19 +140,17 @@ Khởi tạo toàn bộ hệ thống theo thứ tự:
 
 | Bước | Hàm | Mô tả |
 |------|-----|-------|
-| 1 | `initStorageMerge()` | Smart Merge LocalStorage trước khi dùng data |
-| 2 | `injectStyles()` | Chèn CSS qua `GM_addStyle` |
-| 3 | `initWidget()` | Dựng DOM widget chính vào trang |
-| 4 | `initCalcWidget()` | Dựng Calc Widget |
-| 5 | `initDragDrop()` | Cho phép kéo thả 2 widget |
-| 6 | `initFieldsManager()` | Khởi tạo bảng quản lý biến |
-| 7 | `loadSavedData()` | Tải dữ liệu cũ từ localStorage |
-| 8 | `initWebScanner()` | Gắn nút quét và sự kiện thay đổi |
-| 9 | `initDocExport()` | Gắn nút xuất DOCX & Copy TXT |
-| 10 | `setupAutoFillForm()` | MutationObserver theo dõi form mới |
-| 11 | `initSyncEngine()` | Engine đồng bộ ngầm |
-| 12 | `initHotkeys()` | Đăng ký phím tắt |
-| 13 | `MutationObserver` | Quản lý DOM Cache (xóa cache khi DOM thay đổi) |
+| 1 | `initStorageMerge()` | Smart Merge LocalStorage & Di chuyển dữ liệu cũ |
+| 2 | `injectStyles()` | Chèn CSS Premium (Modular / Unified) |
+| 3 | `initWidget()` | Khởi tạo Widget chính (Glassmorphism UI) |
+| 4 | `initCalcWidget()` | Khởi tạo công cụ tính thuế & đồng bộ Calc |
+| 5 | `initDragDrop()` | Gắn kết nối kéo thả mượt mà (60fps) |
+| 6 | `initFieldsManager()` | Khởi động bảng quản trị biến & Mapping |
+| 7 | `initWebScanner()` | Gắn nút quét DOM & bóc tách dữ liệu |
+| 8 | `initAiScanner()` | (Mới) Kích hoạt Gemini AI Scanner (PDF/Image) |
+| 9 | `initSyncEngine()` | Kích hoạt Real-time 2-way Sync Engine v2 |
+| 10 | `initRemoteConfig()` | Đồng bộ cấu hình từ Firebase Remote Config |
+| 11 | `initHotkeys()` | Đăng ký phím tắt điều khiển nhanh |
 
 > Script hỗ trợ **Hot Reload** qua `window.__vnptCleanup` và `window.__vnptInit`.
 
@@ -227,80 +200,25 @@ Cấu hình dữ liệu mặc định:
 
 ### 3. `src/features/` — Lớp tính năng
 
-#### `fieldsManager.js` (14 KB)
+#### `fieldsManager.js`
+Bảng quản lý biến trung tâm. CRUD các field rows, đồng bộ dữ liệu với localStorage và hỗ trợ kéo thả sắp xếp.
 
-Bảng quản lý biến trung tâm. CRUD các field rows, drag-sort, lưu/tải localStorage.
+#### `pdfScan/` & `geminiOcr.js` (AI Scanner)
+Tích hợp Google Gemini AI để bóc tách dữ liệu từ file PDF, Ảnh chụp, hoặc nội dung Mail/Screen. Tự động ánh xạ thông tin bóc tách được vào bảng biến.
 
-| Hàm chính | Mô tả |
-|-----------|-------|
-| `initFieldsManager()` | Khởi tạo bảng, gắn event listeners |
-| `loadSavedData()` | Tải data từ `LOCAL_KEY_FIELDS` |
-| `addFieldRow(key, value)` | Thêm hàng mới vào bảng |
-| `getFieldsData()` | Trả về `{ [key]: value }` từ toàn bộ rows |
+#### `syncEngine.js` (Real-time Sync v2)
+Lắng nghe sự kiện `input` toàn trang để đồng bộ dữ liệu tức thì:
+- **Hướng đồng bộ**: Tùy chỉnh (Đồng bộ cả hai, Chỉ Widget -> Form, hoặc Chỉ Form -> Widget).
+- **Group-by-Rank**: Nhóm địa chỉ (Tỉnh, Huyện, Xã) để điền tuần tự, đảm bảo dữ liệu AJAX không bị ghi đè.
 
-#### `webScanner.js` (4.8 KB)
+#### `calc/` — Calc Widget
+Bộ công cụ tính toán thuế VAT và phí dịch vụ. Tự động chuyển đổi số thành chữ tiếng Việt và điền kết quả vào form hệ thống.
 
-Quét DOM trang web theo `DEFAULT_LABELS`, điền kết quả vào bảng field rows.
+#### `backupHelper.js` (Hệ thống Lịch sử)
+Tự động sao lưu 10 bản ghi gần nhất vào LocalStorage. Hỗ trợ khôi phục nhanh qua menu ⏪ để đảm bảo an toàn dữ liệu.
 
-**Cơ chế:** Tìm element theo `id` khớp với key trong `DEFAULT_LABELS` → lấy `value` hoặc `innerText`. Nếu không tìm thấy → dự phòng qua `scannerFallbacks.js`.
-
-#### `docExport.js` (10 KB)
-
-Hai chức năng xuất dữ liệu:
-
-| Chức năng | Hàm | Mô tả |
-|-----------|-----|-------|
-| Xuất DOCX | `renderDocx(buffer, data, filename)` | Dùng `docxtemplater` + `PizZip` để render template |
-| Copy TXT | `copyTxtToClipboard(template, data)` | Thay `@key` → value, copy vào Clipboard API |
-
-**Ưu tiên template DOCX:**
-1. `AppState.templateBuffer` (đã fetch từ URL)
-2. File local (từ `<input type="file">`)
-
-**Auto-filename:** Tự động tạo tên file từ `tenToChuc` + tên template, rút gọn các từ thừa (Công ty, TNHH, Cổ phần...).
-
-#### `templateManager.js` (11 KB)
-
-Quản lý danh sách template DOCX:
-
-| Chức năng | Mô tả |
-|-----------|-------|
-| Lưu URL template | Fetch binary → lưu vào IndexedDB |
-| Quản lý danh sách | CRUD template với `SK_TEMPLATES` key |
-| Kích hoạt template | Gán `AppState.templateBuffer` để xuất |
-
-#### `autoFillForm.js` (2.4 KB)
-
-Dùng `MutationObserver` theo dõi DOM trang web. Khi phát hiện form mới load (SPA navigation), tự động điền các trường cố định không cần người dùng làm gì.
-
-#### `hotkeys.js` (1.6 KB)
-
-Đăng ký phím tắt toàn cục. Tham khảo file để biết các tổ hợp phím hiện có.
-
----
-
-### 4. `src/features/calc/` — Calc Widget
-
-| File | Mô tả |
-|------|-------|
-| `calcLogic.js` | Tính `truocThue`, `thue`, `sauThue` từ giá nhập; format số; chuyển số → chữ tiếng Việt |
-| `calcUI.js` | DOM widget tính thuế, input listeners, hiển thị kết quả và sync ngược |
-| `calcHistory.js` | Lưu/hiển thị lịch sử 2 giá trị `before` / `after` |
-| `index.js` | `initCalcWidget()` — entry point |
-
-**Luồng:** Nhập số → `calcLogic` tính → `calcUI` hiển thị → `DEFAULT_CALC_MAP` đồng bộ vào các field ID trên trang.
-
----
-
-### 5. `src/features/dataFill/` — DataFill Widget (3 Tab)
-
-| Tab | Nguồn dữ liệu | Mô tả |
-|-----|---------------|-------|
-| **Default** | `defaults.js → DEFAULT_DATA` | Thông tin Bên B cố định |
-| **Custom** | `SK_DATA_CUS` (localStorage) | Dữ liệu tuỳ chỉnh người dùng nhập |
-| **Sync** | `SK_DATA_SYNC` (localStorage) | Cấu hình đồng bộ liên trường |
-
-**SyncEngine** (`syncEngine.js`): Lắng nghe event `input` toàn trang → khi field thay đổi → tìm trong mapping → tự động cập nhật các field liên quan.
+#### `docExport.js` & `templateManager.js`
+Xuất dữ liệu ra file `.docx` dựa trên template. Hỗ trợ lưu trữ template trong IndexedDB để tái sử dụng nhanh chóng.
 
 ---
 
@@ -389,7 +307,7 @@ Output: `dist/myscript.user.js` — file duy nhất dạng IIFE, kèm đầy đ�
 ```js
 // ==UserScript==
 // @name         VNPT Word Automation (Vite)
-// @version      1.5
+// @version      1.6.17
 // @match        *://hopdong.vnpt.vn/*
 // @require      docxtemplater@3.37.11
 // @require      pizzip@3.1.4
@@ -526,45 +444,31 @@ Dự án này được tối ưu cho các Agentic AI (Antigravity, Claude...).
 
 | Slash command | Khi nào dùng |
 |---------------|-------------|
-| `/add-feature` | Tạo module tính năng mới |
-| `/add-field` | Thêm trường dữ liệu vào hệ thống |
-| `/add-helper` | Thêm hàm tiện ích mới vào `utils/` |
-| `/add-template` | Thêm mẫu DOCX mới từ URL |
-| `/api-request` | Gọi API ngoài an toàn với `GM_xmlhttpRequest` |
-| `/debug-ui` | Sửa lỗi hiển thị CSS/HTML |
-| `/dev-all` | Lệnh chạy môi trường dev |
-| `/export-json` | Bảo trì tính năng Backup/Restore JSON |
-| `/sync-logic` | Cấu hình đồng bộ widget → trang web |
-| `/test-sync` | Debug CSS selectors trên trang đích |
-| `/update-ui` | Cập nhật cấu trúc CSS widget |
-| `/bug-report` | Tối ưu quy trình xử lý bug |
-| `/polish-ui` | Tinh chỉnh giao diện |
-| `/reset-all` | Reset data test |
+| `/start` | Khởi tạo bối cảnh phiên làm việc mới |
+| `/add-feature` | Tạo module tính năng mới từ A-Z |
+| `/add-field` | Thêm trường dữ liệu (field) mới vào hệ thống |
+| `/add-template` | Thêm mẫu Template DOCX từ URL ngoài |
+| `/api-request` | Gọi API Cross-origin an toàn (Tampermonkey) |
+| `/debug-ui` | Sửa lỗi hiển thị UI nội tuyến trên web host |
+| `/release` | Quy trình tự động hóa phát hành bản cập nhật |
+| `/bug-report` | Quy trình báo cáo và xử lý lỗi tối ưu |
+| `/upnote` | Tổng hợp tri thức dự án lên NotebookLM |
+| `/reset-all` | Xóa trắng dữ liệu môi trường test |
 
 ---
 
-## 🔑 Kỹ thuật nổi bật
+### Gemini AI OCR Integration
+Sử dụng `gemini-1.5-flash` để phân tích cấu trúc văn bản từ ảnh chụp hoặc file PDF, tự động ánh xạ thông tin vào bảng biến với độ trễ cực thấp.
 
-### Hot Reload không cần refresh
+### Group-by-Rank Address Sync
+Thuật toán điền địa chỉ thông minh: chia các trường địa chỉ thành các cấp độ ưu tiên (Rank). Hệ thống đợi AJAX của Tỉnh/Thành phố load xong mới điền Quận/Huyện, giúp loại bỏ hoàn toàn lỗi mất dữ liệu khi điền form SPA phức tạp.
 
-`dev.user.js` polling localhost mỗi 5 giây, phát hiện nội dung thay đổi → gọi `cleanup()` dọn dẹp DOM cũ → `eval()` code mới → `init()` lại. Không cần F5.
+### Smooth 60fps Drag-n-Drop
+Sử dụng `requestAnimationFrame` và cơ chế `Lazy Storage Write` để đảm bảo trải nghiệm di chuyển Widget mượt mà, không giật lag ngay cả trên các trang web nặng.
 
-### DOM Cache với MutationObserver
-
-`domHelper.js` cache kết quả `document.getElementById()`. `main.js` dùng `MutationObserver` theo dõi `document.body`, khi DOM thay đổi lớn (form mới load) → `clearDOMCache()` để tránh stale reference.
-
-### Smart Storage Migration
-
-`migrationHelper.js` so sánh schema hiện tại với data cũ trong localStorage, tự động merge thêm key mới mà không mất data người dùng đã nhập.
-
-### Multi-key Field System
-
-`DEFAULT_LABELS` dùng chuỗi multi-key làm key (ví dụ: `"ngayKy, ngayKy1"`). Khi điền vào trang web, split theo dấu phẩy → set cho nhiều element ID cùng lúc.
-
-### Template Priority Chain
-
-Thứ tự ưu tiên khi xuất DOCX: **URL buffer** (đã fetch, lưu RAM) > **IndexedDB** (file local đã lưu) > **File input** (chọn file tức thời). Người dùng không cần chọn lại template mỗi lần.
+### Storage Abstraction Layer
+Tách biệt logic lưu trữ (IndexedDB cho file lớn, LocalStorage cho cấu hình) giúp hệ thống hoạt động ổn định và dễ dàng mở rộng sang các nền tảng lưu trữ đám mây.
 
 ---
 
-*VNPT Word Automation — Tối ưu hóa quy trình nhập liệu hợp đồng nội bộ VNPT Hà Nội.*
+*VNPT Automation Tool — Giải pháp tự động hóa nghiệp vụ chuyên sâu cho hệ sinh thái VNPT.*

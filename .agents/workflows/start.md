@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+description: Sử dụng workflow này ngay khi bắt đầu một phiên làm việc mới để AI tự động nắm bắt bối cảnh.
 ---
 
 # /start
