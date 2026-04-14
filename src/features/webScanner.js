@@ -155,6 +155,8 @@ export function initWebScanner() {
         buildFullDOMMap();
 
         const labels = RemoteConfig.getLabels();
+        let fullAddressScanned = ''; // Lưu địa chỉ đầy đủ để làm ngữ cảnh cho "duong"
+
         Object.keys(labels).forEach(keyString => {
             const labelText = labels[keyString];
             const ids = keyString.split(',').map(s => s.trim());
@@ -164,7 +166,10 @@ export function initWebScanner() {
             let val = '';
             if (isAddressField) {
                 val = scanFullAddress(false); // Map đã được build ở dòng 135
-                if (val) foundCount++;
+                if (val) {
+                    foundCount++;
+                    fullAddressScanned = val;
+                }
             } else if (isNoiCapDkdn) {
                 // Tự động tính toán Nơi cấp ĐKDN từ Tỉnh
                 const province = getProvinceName();
@@ -193,7 +198,8 @@ export function initWebScanner() {
                 if (['sdt'].includes(primaryId)) val = formatPhoneNumber(val);
                 else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan'].includes(primaryId)) val = normalizeDate(val);
             }
-            addOrUpdateFieldRow(keyString, val, null, '', null, false); // Nút quét thì xem như lấy từ form lần đầu
+            const sourceContext = ids.includes('duong') ? fullAddressScanned : null;
+            addOrUpdateFieldRow(keyString, val, null, '', null, false, sourceContext); // Nút quét thì xem như lấy từ form lần đầu
         });
 
         saveFieldsToLocal();

@@ -18,6 +18,7 @@ import { Storage } from '../utils/storage.js';
 import { mstService } from '../api/mstService.js';
 import { createInternalBackup, restoreInternalBackup, getInternalBackups, exportFullBackup, deleteInternalBackup } from '../utils/backupHelper.js';
 import { parseAddressComponents, normalizeDate } from '../utils/stringHelper.js';
+import { AddressLearning } from '../utils/addressLearning.js';
 import { debounce } from '../utils/common.js';
 
 // ─── Field Linker State ───
@@ -324,7 +325,7 @@ function updateSyncDirIcon(btn, dir) {
     }
 }
 
-export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '', syncDir = null, isFromWebForm = false) {
+export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '', syncDir = null, isFromWebForm = false, sourceContext = null) {
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
     if (hint) hint.remove();
 
@@ -356,6 +357,11 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             }
             if (syncDir && btnSyncDir && btnSyncDir.getAttribute('data-dir') !== syncDir) {
                 updateSyncDirIcon(btnSyncDir, syncDir);
+            }
+
+            // Lưu context (địa chỉ mang tính ngữ cảnh) để hỗ trợ "học máy"
+            if (sourceContext && valueInput) {
+                valueInput.dataset.sourceAddress = sourceContext;
             }
 
             // QUAN TRỌNG: Re-validate sau khi cập nhật
@@ -401,6 +407,10 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         const fVal = row.querySelector('.f-val');
         const fKey = row.querySelector('.f-key');
 
+        if (sourceContext && fVal) {
+            fVal.dataset.sourceAddress = sourceContext;
+        }
+
         if (keyText === 'tenToChuc') fVal.style.textAlign = 'right';
 
         const syncThisRow = async () => {
@@ -440,6 +450,12 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
                     saveFieldsToLocal();
                 }
             }
+
+            // --- BỔ SUNG: Logic "Học máy" cho trường Đường ---
+            if (primaryKey === 'duong' && this.dataset.sourceAddress) {
+                AddressLearning.saveLearning(this.dataset.sourceAddress, this.value);
+            }
+
             syncThisRow();
         });
 
@@ -468,7 +484,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
                         const parsed = parseAddressComponents(info.address);
                         addOrUpdateFieldRow('tinhIdNew', parsed.province);
                         addOrUpdateFieldRow('xaIdNew', parsed.ward || parsed.district);
-                        addOrUpdateFieldRow('duong', parsed.street);
+                        addOrUpdateFieldRow('duong', parsed.street, null, '', null, false, info.address);
 
                         saveFieldsToLocal();
                         // Sync targeted fields to page: MST, Tên tổ chức, Địa chỉ, Tỉnh, Huyện, Xã, Đường

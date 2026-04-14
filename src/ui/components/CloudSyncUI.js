@@ -48,7 +48,8 @@ export function initCloudSyncUI(container) {
           const { 
               SK_CALC_MAP, SK_HOTKEYS, 
               LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-              SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS 
+              SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
+              SK_ADDRESS_LEARNING
           } = await import('../../core/constants.js');
           const { Storage } = await import('../../utils/storage.js');
           const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
@@ -61,7 +62,8 @@ export function initCloudSyncUI(container) {
               taxRate: Storage.get(SK_TAX),
               templates: Storage.get(SK_TEMPLATES),
               defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS),
-              dataDefault: Storage.get(SK_DATA_DEF)
+              dataDefault: Storage.get(SK_DATA_DEF),
+              addressLearning: Storage.get(SK_ADDRESS_LEARNING)
           };
           await FirebaseService.pushGlobalConfig(globalConfig);
 
@@ -92,7 +94,8 @@ export function initCloudSyncUI(container) {
                  const { 
                      SK_CALC_MAP, SK_HOTKEYS, 
                      LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-                     SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS 
+                     SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
+                     SK_ADDRESS_LEARNING
                  } = await import('../../core/constants.js');
                  const { Storage } = await import('../../utils/storage.js');
                  const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
@@ -105,6 +108,7 @@ export function initCloudSyncUI(container) {
                  if (cloudConfig.templates) Storage.set(SK_TEMPLATES, cloudConfig.templates);
                  if (cloudConfig.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, cloudConfig.defaultFields);
                  if (cloudConfig.dataDefault) Storage.set(SK_DATA_DEF, cloudConfig.dataDefault);
+                 if (cloudConfig.addressLearning) Storage.set(SK_ADDRESS_LEARNING, cloudConfig.addressLearning);
              }
 
              showToast("✅ Đã khôi phục toàn bộ cấu hình!");

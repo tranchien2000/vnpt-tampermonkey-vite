@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VNPT Word Automation
 // @namespace    http://tampermonkey.net/
-// @version      1.6.19
+// @version      1.6.20
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
@@ -1035,7 +1035,7 @@ ba(26, 115, 232, 0.04); margin-bottom: 1px;
       return true;
     }
   });
-  const version$3 = "1.6.19";
+  const version$3 = "1.6.20";
   const pkg = {
     version: version$3
   };
@@ -1090,6 +1090,7 @@ ba(26, 115, 232, 0.04); margin-bottom: 1px;
   const LOCAL_KEY_PROFILES = "vnpt_docx_profiles";
   const LOCAL_KEY_ACTIVE_PROFILE_ID = "vnpt_docx_active_profile_id";
   const SK_RAW_SCAN = "vnpt_raw_scan_text";
+  const SK_ADDRESS_LEARNING = "vnpt_address_learning";
   const VALIDATION_REGEX = {
     MST: /^\d{10}(-\d{3})?$/,
     // 10 số hoặc 10 số - 3 số
@@ -1113,6 +1114,7 @@ ba(26, 115, 232, 0.04); margin-bottom: 1px;
     LOCAL_KEY_PROFILES,
     LOCAL_KEY_SIZE,
     REQUIRED_KEYS,
+    SK_ADDRESS_LEARNING,
     SK_CALC_MAP,
     SK_COLLAPSE,
     SK_DATATAB,
@@ -24626,6 +24628,51 @@ This typically indicates that your device does not have a healthy Internet conne
       showToast(`❌ ${err.message}`, "#dc3545");
     });
   }
+  function normalizeForMatch(address) {
+    if (!address) return "";
+    return address.toString().toLowerCase().trim().replace(/\s+/g, " ").replace(/[.,\s]+$/, "");
+  }
+  const AddressLearning = {
+    /**
+     * Lưu kết quả học được từ người dùng
+     * @param {string} fullAddress - Địa chỉ gốc ban đầu
+     * @param {string} correctedStreet - Kết quả bóc tách phần đường mà người dùng đã sửa
+     */
+    saveLearning(fullAddress, correctedStreet) {
+      if (!fullAddress || !correctedStreet) return;
+      const normalizedFull = normalizeForMatch(fullAddress);
+      const normalizedStreet = correctedStreet.trim();
+      const data = Storage.get(SK_ADDRESS_LEARNING, {});
+      if (data[normalizedFull] === normalizedStreet) return;
+      data[normalizedFull] = normalizedStreet;
+      Storage.setDebounced(SK_ADDRESS_LEARNING, data, 1e3);
+      console.debug(`[AddressLearning] Learned: "${normalizedFull}" -> "${normalizedStreet}"`);
+    },
+    /**
+     * Lấy giá trị đã học được cho địa chỉ cụ thể
+     * @param {string} fullAddress 
+     * @returns {string|null}
+     */
+    getLearnedStreet(fullAddress) {
+      if (!fullAddress) return null;
+      const normalized = normalizeForMatch(fullAddress);
+      const data = Storage.get(SK_ADDRESS_LEARNING, {});
+      return data[normalized] || null;
+    },
+    /**
+     * Xóa dữ liệu học của một địa chỉ cụ thể (nếu cần)
+     * @param {string} fullAddress 
+     */
+    forgetLearning(fullAddress) {
+      if (!fullAddress) return;
+      const normalized = normalizeForMatch(fullAddress);
+      const data = Storage.get(SK_ADDRESS_LEARNING, {});
+      if (data[normalized]) {
+        delete data[normalized];
+        Storage.set(SK_ADDRESS_LEARNING, data);
+      }
+    }
+  };
   function getLevenshteinDistance(a, b2) {
     if (a.length === 0) return b2.length;
     if (b2.length === 0) return a.length;
@@ -25197,16 +25244,17 @@ This typically indicates that your device does not have a healthy Internet conne
     diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 ", syncDir: "both" },
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     emailB: { label: "Email B", value: "", syncDir: "both" },
+    dvtGoi: { label: "Đơn vị gói", value: "Gói", syncDir: "both" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh", syncDir: "both" }
   };
   const DEFAULT_SYNC_DATA = {
     "soHopDong": "soHopDong, inputContractGroupName"
   };
   const DEFAULT_CALC_MAP = {
-    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong"],
-    before: ["donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue"],
-    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT"],
-    text: ["soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu"]
+    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong", "thanhTienGoi"],
+    before: ["donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue", "congGoi"],
+    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT", "thueGTGTgoi"],
+    text: ["soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu", "ghiChuGiaTriHopDongBangChu"]
   };
   const DEFAULT_TAX_RATE = 0.08;
   const DEFAULT_HOTKEYS = {
@@ -25711,7 +25759,7 @@ This typically indicates that your device does not have a healthy Internet conne
       btn.title = "Chỉ đồng bộ LÊN: Form Trang web ➔ Bảng dữ liệu";
     }
   }
-  function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = "", syncDir = null, isFromWebForm = false) {
+  function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = "", syncDir = null, isFromWebForm = false, sourceContext = null) {
     const hint = AppState.fieldsContainer.querySelector(".text-hint");
     if (hint) hint.remove();
     const existingInputs = AppState.fieldsContainer.querySelectorAll(".f-key");
@@ -25738,6 +25786,9 @@ This typically indicates that your device does not have a healthy Internet conne
         }
         if (syncDir && btnSyncDir && btnSyncDir.getAttribute("data-dir") !== syncDir) {
           updateSyncDirIcon(btnSyncDir, syncDir);
+        }
+        if (sourceContext && valueInput) {
+          valueInput.dataset.sourceAddress = sourceContext;
         }
         refreshRowValidation(row);
         isDuplicate = true;
@@ -25774,6 +25825,9 @@ This typically indicates that your device does not have a healthy Internet conne
         `;
       const fVal = row.querySelector(".f-val");
       const fKey = row.querySelector(".f-key");
+      if (sourceContext && fVal) {
+        fVal.dataset.sourceAddress = sourceContext;
+      }
       if (keyText === "tenToChuc") fVal.style.textAlign = "right";
       const syncThisRow = async () => {
         const btnSync = row.querySelector(".btn-sync-dir");
@@ -25806,6 +25860,9 @@ This typically indicates that your device does not have a healthy Internet conne
             saveFieldsToLocal();
           }
         }
+        if (primaryKey === "duong" && this.dataset.sourceAddress) {
+          AddressLearning.saveLearning(this.dataset.sourceAddress, this.value);
+        }
         syncThisRow();
       });
       if (primaryKey === "soDkdn") {
@@ -25826,7 +25883,7 @@ This typically indicates that your device does not have a healthy Internet conne
               const parsed = parseAddressComponents$1(info.address);
               addOrUpdateFieldRow("tinhIdNew", parsed.province);
               addOrUpdateFieldRow("xaIdNew", parsed.ward || parsed.district);
-              addOrUpdateFieldRow("duong", parsed.street);
+              addOrUpdateFieldRow("duong", parsed.street, null, "", null, false, info.address);
               saveFieldsToLocal();
               setTimeout(() => syncAllFields(["soDkdn", "tenToChuc", "diaChi", "xaIdNew", "xaHuyen", "duong"]), 300);
               showToast(`✅ Đã tìm thấy: ${info.name}`, "#1a73e8");
@@ -26539,7 +26596,8 @@ ${b2.name}?`)) {
               SK_TEMPLATES: SK_TEMPLATES2,
               SK_TAX: SK_TAX2,
               SK_DATA_DEF: SK_DATA_DEF2,
-              LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS2
+              LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS2,
+              SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING2
             } = await Promise.resolve().then(() => constants);
             const { Storage: Storage2 } = await Promise.resolve().then(() => storage$1);
             const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await Promise.resolve().then(() => defaults);
@@ -26550,7 +26608,8 @@ ${b2.name}?`)) {
               taxRate: Storage2.get(SK_TAX2),
               templates: Storage2.get(SK_TEMPLATES2),
               defaultFields: Storage2.get(LOCAL_KEY_DEFAULT_FIELDS2),
-              dataDefault: Storage2.get(SK_DATA_DEF2)
+              dataDefault: Storage2.get(SK_DATA_DEF2),
+              addressLearning: Storage2.get(SK_ADDRESS_LEARNING2)
             };
             await FirebaseService.pushGlobalConfig(globalConfig);
             showToast("✅ Đã đồng bộ lên Cloud!");
@@ -26578,7 +26637,8 @@ ${b2.name}?`)) {
                   SK_TEMPLATES: SK_TEMPLATES2,
                   SK_TAX: SK_TAX2,
                   SK_DATA_DEF: SK_DATA_DEF2,
-                  LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS2
+                  LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS2,
+                  SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING2
                 } = await Promise.resolve().then(() => constants);
                 const { Storage: Storage2 } = await Promise.resolve().then(() => storage$1);
                 const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await Promise.resolve().then(() => defaults);
@@ -26589,6 +26649,7 @@ ${b2.name}?`)) {
                 if (cloudConfig.templates) Storage2.set(SK_TEMPLATES2, cloudConfig.templates);
                 if (cloudConfig.defaultFields) Storage2.set(LOCAL_KEY_DEFAULT_FIELDS2, cloudConfig.defaultFields);
                 if (cloudConfig.dataDefault) Storage2.set(SK_DATA_DEF2, cloudConfig.dataDefault);
+                if (cloudConfig.addressLearning) Storage2.set(SK_ADDRESS_LEARNING2, cloudConfig.addressLearning);
               }
               showToast("✅ Đã khôi phục toàn bộ cấu hình!");
               setTimeout(() => location.reload(), 1e3);
@@ -27486,6 +27547,7 @@ ${b2.name}?`)) {
       let foundCount = 0;
       buildFullDOMMap();
       const labels = RemoteConfig.getLabels();
+      let fullAddressScanned = "";
       Object.keys(labels).forEach((keyString) => {
         const labelText = labels[keyString];
         const ids = keyString.split(",").map((s) => s.trim());
@@ -27494,7 +27556,10 @@ ${b2.name}?`)) {
         let val = "";
         if (isAddressField) {
           val = scanFullAddress(false);
-          if (val) foundCount++;
+          if (val) {
+            foundCount++;
+            fullAddressScanned = val;
+          }
         } else if (isNoiCapDkdn) {
           const province = getProvinceName();
           if (province) {
@@ -27521,7 +27586,8 @@ ${b2.name}?`)) {
           if (["sdt"].includes(primaryId)) val = formatPhoneNumber(val);
           else if (["ngaySinhCustomer", "ngayCapCustomer", "ngayCapSoDkdnCustomer", "ngayKy", "ngayTiepNhan"].includes(primaryId)) val = normalizeDate(val);
         }
-        addOrUpdateFieldRow(keyString, val, null, "", null, false);
+        const sourceContext = ids.includes("duong") ? fullAddressScanned : null;
+        addOrUpdateFieldRow(keyString, val, null, "", null, false, sourceContext);
       });
       saveFieldsToLocal();
       if (foundCount > 0) {
