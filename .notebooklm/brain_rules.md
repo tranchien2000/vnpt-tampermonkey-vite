@@ -1,3 +1,8 @@
+# Project Rules
+*Cập nhật: 07:13:40 14/4/2026*
+
+## Rules from .cursorrules
+
 AI **PHẢI** tuân thủ bộ quy tắc trung tâm tại: [docs/RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md)
 
 ### 🚀 Quy tắc Ưu tiên (Quick Reference):
@@ -14,3 +19,5 @@ AI **PHẢI** tuân thủ bộ quy tắc trung tâm tại: [docs/RULES.md](file:
 6. **Slash Commands**: Dùng phím `/` để mở menu gợi ý và chọn các workflow từ `.agents/workflows/`.
 
 Xem chi tiết tại [RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md) để biết về tiêu chuẩn JSDoc, Error Handling, State Management và Design System.
+
+
