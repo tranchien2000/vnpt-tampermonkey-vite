@@ -218,13 +218,32 @@ export function syncSetValue(el, value) {
     } else {
         // --- Xử lý cho INPUT/TEXTAREA thông thường ---
         const addressGroup = getVNPTAddressGroup();
-        if (addressGroup && el === addressGroup.duong && typeof value === 'string' && value.includes(',')) {
+        const idLower = (el.id || el.name || el.getAttribute('formcontrolname') || '').toLowerCase();
+        const placeholderLower = (el.getAttribute('placeholder') || '').toLowerCase();
+        
+        // Mở rộng bộ lọc nhận diện trường Đường
+        const isDuongField = (addressGroup && el === addressGroup.duong) || 
+                             idLower.includes('duong') || 
+                             idLower.includes('diachichitiet') ||
+                             placeholderLower.includes('đường') ||
+                             placeholderLower.includes('số nhà');
+
+        if (isDuongField && typeof value === 'string' && value.includes(',')) {
+            const oldVal = value;
             value = parseAddressComponents(value).street;
+            console.log(`[Sync] Phát hiện trường 'duong' (${idLower}), bóc tách địa chỉ: "${oldVal}" -> "${value}"`);
+        } else if (isDuongField) {
+            console.log(`[Sync] Trường 'duong' (${idLower}) nhận giá trị gốc (không có dấu phẩy): "${value}"`);
+        } else {
+            console.debug(`[Sync] Trường thường (${idLower}) nhận giá trị: "${value}"`);
         }
 
         // Dispatch sự kiện gốc để trigger Angular/React bindings
         const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
         const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+        
+        console.debug(`[Sync] Ghi giá trị vào element {id: ${el.id}, name: ${el.name}}: "${value}"`);
+        
         if (setter) {
             setter.call(el, value);
         } else {
@@ -470,6 +489,10 @@ export async function setPageFieldsSequential(names, value) {
                     }
                 }
 
+                if (task.name.toLowerCase().includes('duong')) {
+                    console.log(`[Sync Sequential] Đang nhập trường 'duong' (${task.name}) với giá trị: "${value}"`);
+                }
+
                 const success = syncSetValue(currentEl, value);
                 if (success) groupAnySuccess = true;
                 console.debug(`[Sync Sequential] Điền ${task.name}: ${success ? 'OK' : 'FAIL'}`);
@@ -535,6 +558,12 @@ export function getVNPTAddressGroup() {
                 ? controlsInRight[controlsInRight.length - 2] 
                 : controlsInRight[controlsInRight.length - 1];
         }
+
+        console.debug(`[Positioning] Kết quả xác định bộ địa chỉ:`, {
+            tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftCol.querySelector('select, ng-select2'),
+            xaIdNew: xaIdNewEl || controlsInRight[0],
+            duong: duongEl || fallbackDuong
+        });
 
         return {
             tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftCol.querySelector('select, ng-select2'),

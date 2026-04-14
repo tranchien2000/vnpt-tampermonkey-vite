@@ -61,9 +61,14 @@ function scanFullAddress(forceRefresh = false) {
             let val = getElValueText(el);
             if (val && val !== '--- Chọn ---' && !val.includes('Chọn')) {
                 if (id === 'diaChi' || id === 'duong') {
+                    // Nếu lấy từ trường 'duong', bóc tách lấy phần street để tránh lặp lại các thành phần hành chính
+                    const strippedVal = (id === 'duong' && val.includes(',')) 
+                                        ? parseAddressComponents(val).street 
+                                        : val;
+                    
                     // Ưu tiên giữ lại nội dung dài nhất (chi tiết nhất)
-                    if (!addressObj.detail || val.length > addressObj.detail.length) {
-                        addressObj.detail = val;
+                    if (!addressObj.detail || strippedVal.length > addressObj.detail.length) {
+                        addressObj.detail = strippedVal;
                     }
                 }
                 else if (id.includes('tinh')) addressObj.province = val;

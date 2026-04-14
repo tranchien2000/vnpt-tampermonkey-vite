@@ -1,18 +1,18 @@
 # Project Architecture (Graphify Optimized)
-*Cập nhật: 12:21:34 14/4/2026*
+*Cập nhật: 23:08:55 14/4/2026*
 
 ## graphify-out/GRAPH_REPORT.md
 
-# Graph Report - .  (2026-04-13)
+# Graph Report - .  (2026-04-14)
 
 ## Corpus Check
-- 66 files · ~55,223 words
+- 62 files � ~56,885 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 225 nodes · 234 edges · 61 communities detected
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.75)
-- Token cost: 0 input · 0 output
+- 219 nodes � 231 edges � 58 communities detected
+- Extraction: 100% EXTRACTED � 0% INFERRED � 0% AMBIGUOUS
+- Token cost: 0 input � 0 output
 
 ## God Nodes (most connected - your core abstractions)
 1. `findPageInput()` - 7 edges
@@ -31,47 +31,47 @@
 
 ## Communities
 
-### Community 0 - "DOM Utilities"
+### Community 0 - "Community 0"
 Cohesion: 0.29
 Nodes (12): buildFullDOMMap(), clearDOMCache(), findPageInput(), getInputByLabel(), getVNPTAddressGroup(), refreshLabelsCache(), setPageField(), setPageFieldsSequential() (+4 more)
 
-### Community 1 - "Fields Management"
+### Community 1 - "Community 1"
 Cohesion: 0.21
 Nodes (8): addOrUpdateFieldRow(), loadSavedData(), refreshRowValidation(), renderCalcMappingInBanner(), saveFieldsToLocal(), updateSyncDirIcon(), updateUIForDefaultMode(), validateField()
 
-### Community 2 - "Template Management"
+### Community 2 - "Community 2"
 Cohesion: 0.36
 Nodes (9): fetchTemplateFromUrl(), importCloudTemplate(), loadTemplates(), renderCloudTemplates(), renderLocalTemplates(), renderTemplateManager(), saveLocalTemplate(), saveTemplates() (+1 more)
 
-### Community 3 - "String Processing"
+### Community 3 - "Community 3"
 Cohesion: 0.24
 Nodes (5): cleanProvinceName(), findBestMatch(), getLevenshteinDistance(), getSimilarity(), parseAddressComponents()
 
-### Community 4 - "Backup System"
+### Community 4 - "Community 4"
 Cohesion: 0.31
 Nodes (5): deleteInternalBackup(), exportFullBackup(), flattenData(), getInternalBackups(), restoreInternalBackup()
 
-### Community 5 - "Hotkey System"
+### Community 5 - "Community 5"
 Cohesion: 0.29
 Nodes (2): getHotkeyString(), handleRecording()
 
-### Community 6 - "Profile Management"
+### Community 6 - "Community 6"
 Cohesion: 0.5
 Nodes (6): createProfileFromCurrent(), deleteProfile(), getActiveProfileId(), getProfiles(), importProfiles(), switchProfile()
 
-### Community 7 - "Calculator Widget"
+### Community 7 - "Community 7"
 Cohesion: 0.33
 Nodes (2): initCalcWidget(), renderHist()
 
-### Community 8 - "Mail Scanner"
-Cohesion: 0.33
-Nodes (2): injectMailBridge(), _waitForBody()
-
-### Community 9 - "Application Entry"
+### Community 8 - "Community 8"
 Cohesion: 0.33
 Nodes (2): clearQueue(), renderQueue()
 
-### Community 10 - "Synchronization Engine"
+### Community 9 - "Community 9"
+Cohesion: 0.33
+Nodes (2): injectMailBridge(), _waitForBody()
+
+### Community 10 - "Community 10"
 Cohesion: 0.4
 Nodes (2): doFillData(), loadFreshenedDefaultData()
 
@@ -83,11 +83,11 @@ Nodes (4): formatDay(), formatMonth(), formatYear(), getVNPTDateStrings()
 Cohesion: 0.4
 Nodes (2): numToVN(), read3()
 
-### Community 13 - "IDB Storage"
+### Community 13 - "Community 13"
 Cohesion: 0.7
 Nodes (4): getDB(), idbDelete(), idbLoad(), idbSave()
 
-### Community 14 - "Web Scanner"
+### Community 14 - "Community 14"
 Cohesion: 0.5
 Nodes (2): getElValueText(), getProvinceName()
 
@@ -95,7 +95,7 @@ Nodes (2): getElValueText(), getProvinceName()
 Cohesion: 0.7
 Nodes (4): ld(), renderHist(), saveHist(), sv()
 
-### Community 16 - "DOCX Export"
+### Community 16 - "Community 16"
 Cohesion: 0.67
 Nodes (2): initDocExport(), renderDocx()
 
@@ -103,7 +103,7 @@ Nodes (2): initDocExport(), renderDocx()
 Cohesion: 0.67
 Nodes (2): ld(), renderDataFillTabs()
 
-### Community 18 - "Gemini OCR"
+### Community 18 - "Community 18"
 Cohesion: 0.67
 Nodes (2): extractWithGemini(), getSystemPrompt()
 
@@ -115,9 +115,9 @@ Nodes (0):
 Cohesion: 0.67
 Nodes (2): extractFieldsFromText(), getRawTextSystemPrompt()
 
-### Community 21 - "Core Concepts"
-Cohesion: 0.5
-Nodes (4): Group-by-Rank Address Sync, Cloud Sync (Firebase), Premium Glassmorphism UI, Real-time Sync Engine
+### Community 21 - "Community 21"
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 22 - "Community 22"
 Cohesion: 0.67
@@ -132,12 +132,12 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 25 - "Community 25"
-Cohesion: 0.67
-Nodes (0): 
-
-### Community 26 - "Community 26"
 Cohesion: 1.0
 Nodes (2): initDragDrop(), makeDraggable()
+
+### Community 26 - "Community 26"
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 27 - "Community 27"
 Cohesion: 0.67
@@ -152,12 +152,12 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 30 - "Community 30"
-Cohesion: 0.67
-Nodes (0): 
+Cohesion: 1.0
+Nodes (2): classifyTextLocally(), findFirstMatch()
 
 ### Community 31 - "Community 31"
 Cohesion: 1.0
-Nodes (2): classifyTextLocally(), findFirstMatch()
+Nodes (0): 
 
 ### Community 32 - "Community 32"
 Cohesion: 1.0
@@ -263,85 +263,64 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 58 - "Community 58"
-Cohesion: 1.0
-Nodes (1): DOCX Export Feature
-
-### Community 59 - "Community 59"
-Cohesion: 1.0
-Nodes (1): AI Multi-source Scanner
-
-### Community 60 - "Community 60"
-Cohesion: 1.0
-Nodes (1): Local History System
-
 ## Knowledge Gaps
-- **6 isolated node(s):** `Group-by-Rank Address Sync`, `Cloud Sync (Firebase)`, `Premium Glassmorphism UI`, `DOCX Export Feature`, `AI Multi-source Scanner` (+1 more)
-  These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 32`** (2 nodes): `dev.user.js`, `loadScript()`
+- **Thin community `Community 31`** (2 nodes): `dev.user.js`, `loadScript()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (2 nodes): `vite.config.js`, `generateBundle()`
+- **Thin community `Community 32`** (2 nodes): `vite.config.js`, `generateBundle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (2 nodes): `scannerFallbacks.js`, `getScannerFallback()`
+- **Thin community `Community 33`** (2 nodes): `scannerFallbacks.js`, `getScannerFallback()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (2 nodes): `autoFillForm.js`, `setupAutoFillForm()`
+- **Thin community `Community 34`** (2 nodes): `autoFillForm.js`, `setupAutoFillForm()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (2 nodes): `dataFillFeature.js`, `renderDataFillTabs()`
+- **Thin community `Community 35`** (2 nodes): `dataFillFeature.js`, `renderDataFillTabs()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (2 nodes): `calcUI.js`, `createCalcUI()`
+- **Thin community `Community 36`** (2 nodes): `calcUI.js`, `createCalcUI()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (2 nodes): `screenScanner.js`, `scrapeScreenText()`
+- **Thin community `Community 37`** (2 nodes): `screenScanner.js`, `scrapeScreenText()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (2 nodes): `styles.js`, `injectStyles()`
+- **Thin community `Community 38`** (2 nodes): `styles.js`, `injectStyles()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (2 nodes): `toast.js`, `showToast()`
+- **Thin community `Community 39`** (2 nodes): `toast.js`, `showToast()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (2 nodes): `widget.js`, `initWidget()`
+- **Thin community `Community 40`** (2 nodes): `widget.js`, `initWidget()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (2 nodes): `migrationHelper.js`, `initStorageMerge()`
+- **Thin community `Community 41`** (2 nodes): `migrationHelper.js`, `initStorageMerge()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (1 nodes): `fix_auth.ps1`
+- **Thin community `Community 42`** (1 nodes): `fix_auth.ps1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (1 nodes): `test_classifier.js`
+- **Thin community `Community 43`** (1 nodes): `test_classifier.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `firebaseConfig.js`
+- **Thin community `Community 44`** (1 nodes): `firebaseConfig.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `firebaseService.js`
+- **Thin community `Community 45`** (1 nodes): `firebaseService.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `mstService.js`
+- **Thin community `Community 46`** (1 nodes): `mstService.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (1 nodes): `remoteConfig.js`
+- **Thin community `Community 47`** (1 nodes): `remoteConfig.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `localAdapter.js`
+- **Thin community `Community 48`** (1 nodes): `localAdapter.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `constants.js`
+- **Thin community `Community 49`** (1 nodes): `constants.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (1 nodes): `defaults.js`
+- **Thin community `Community 50`** (1 nodes): `defaults.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (1 nodes): `state.js`
+- **Thin community `Community 51`** (1 nodes): `state.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (1 nodes): `fields.js`
+- **Thin community `Community 52`** (1 nodes): `fields.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `panel.js`
+- **Thin community `Community 53`** (1 nodes): `panel.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `theme.js`
+- **Thin community `Community 54`** (1 nodes): `theme.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `logger.js`
+- **Thin community `Community 55`** (1 nodes): `logger.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `storage.js`
+- **Thin community `Community 56`** (1 nodes): `storage.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `DOCX Export Feature`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `AI Multi-source Scanner`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `Local History System`
+- **Thin community `Community 57`** (1 nodes): `test_address.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
-_Questions this graph is uniquely positioned to answer:_
-
-- **What connects `Group-by-Rank Address Sync`, `Cloud Sync (Firebase)`, `Premium Glassmorphism UI` to the rest of the system?**
-  _6 weakly-connected nodes found - possible documentation gaps or missing edges._
+_Not enough signal to generate questions. This usually means the corpus has no AMBIGUOUS edges, no bridge nodes, no INFERRED relationships, and all communities are tightly cohesive. Add more files or run with --mode deep to extract richer edges._
 
 ---
 

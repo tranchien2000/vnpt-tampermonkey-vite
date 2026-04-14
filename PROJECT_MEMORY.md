@@ -44,6 +44,10 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Tích hợp chuẩn hóa ngày tháng thông minh (`normalizeDate`) hỗ trợ `DDMMYYYY` và tự động định dạng `dd/mm/yyyy` khi gõ hoặc quét.
 - [x] Bổ sung validation và formatting cho CMND/CCCD (9 hoặc 12 số).
 - [x] Tự động chuẩn hóa các trường "Ngày" (`ngaySinhCustomer`, `ngayCapCustomer`, `ngayCapSoDkdnCustomer`...) ngay khi thay đổi giá trị trong widget.
+- [x] Bổ sung console log chi tiết cho quy trình bóc tách và nhập liệu trường `duong` (Địa chỉ đường) để hỗ trợ gỡ lỗi.
+- [x] Điều chỉnh thu hẹp độ rộng cột Nhãn (Label) trong danh sách trường (0.35 -> 0.2) để tối ưu không gian cho ô nhập liệu.
+- [x] Phát hành bản cập nhật v1.6.17 (Tối ưu layout Fields List).
+- [x] Cấu hình ổn định bản Build: Tắt minification và bật keepNames để tránh lỗi logic mangling trong production.
 
 
 
@@ -71,6 +75,9 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-13 (UI - Premium Sync Direction Buttons)**: Thay thế icon text (`↔`, `⬇`, `⬆`) bằng SVG stroke-thick 3.5. Bổ sung hiệu ứng hover scale 1.25, xoay 180 độ khi click và phân loại màu theme rõ rệt: Blue (Both), Green (Down), Orange (Up). Đồng bộ hóa visual này cho cả main widget và Calc widget (.btn-sync-dir-calc).
 - **2026-04-13 (Smart Date Normalization)**: Nâng cấp hàm `normalizeDate` để hỗ trợ đa dạng định dạng (viết liền 8 số, ISO, dấu chấm, dấu gạch ngang...). Tự động kích hoạt chuẩn hóa cho các trường có key chứa chữ "ngay" khi user thay đổi giá trị (`change` event) trong widget, đảm bảo dữ liệu luôn ở dạng `dd/mm/yyyy`.
 - **2026-04-13 (ID Card Validation)**: Bổ sung regex kiểm tra CMND/CCCD (9 hoặc 12 chữ số) vào hệ thống validation để cảnh báo người dùng khi nhập sai định dạng.
+- **2026-04-14 (Smart Address Parsing)**: Nâng cấp hàm `parseAddressComponents` sử dụng thuật toán Reverse Scan. Tối ưu theo yêu cầu người dùng: lấy phần đứng trước dấu phẩy thứ 2 từ phải sang để xác định phần Đường (Street), đảm bảo loại bỏ chính xác các cấp hành chính ở cuối.
+- **2026-04-14 (UI - Fields List Label Width)**: Điều chỉnh flex value của `.f-label` và `.h-label` từ `0.35` xuống `0.2`. Thay đổi này giúp thu hẹp cột nhãn, dành nhiều diện tích hiển thị hơn cho các ô nhập liệu giá trị, đặc biệt hữu ích trên các màn hình nhỏ hoặc khi có nhiều trường dữ liệu dài.
+- **2026-04-14 (Build Optimization - No Minify)**: Quyết định tắt hoàn toàn `minify` trong `vite.config.js` và bật `keepNames: true`. Lý do: Một số logic của Userscript (như Field Linker hoặc Dynamic Sync) phụ thuộc vào tên hàm và cấu trúc code nguyên bản; việc nén mã của esbuild gây ra sự không ổn định giữa môi trường Dev và Production.
 
 
 
@@ -82,6 +89,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **Storage get/set Inconsistency**: Luôn stringify khi lưu và try-catch khi đọc để tránh crash khi parse dữ liệu không phải JSON.
 - **Browser Password Heuristics**: Browsers như Chrome tự động hiện popup "Save password?" khi thấy `type="password"`. Giải pháp là dùng `type="text"` + `-webkit-text-security: disc` và `autocomplete="new-password"`.
 - **SyncDir Override Issue**: Khởi tạo Field Data (khi load lại từ Web Scanner) có thể vô tình đè mất `syncDir` người dùng đã chọn. Đã thay tham số mặc định của `syncDir` về Null để tự động bỏ qua ghi đè cập nhật hướng khi có cờ `isFromWebForm`.
+- **Build vs Dev Discrepancy**: Bản build nén (minify) có thể làm hỏng các logic phụ thuộc vào `function.name` hoặc timing của `@run-at`. Giải pháp là tắt `minify` và kiểm soát chặt chẽ `init` timing trong `main.js`.
 
 ## 4. Trạng thái các tính năng (Status Map)
 
