@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **scannerFallbacks.js** (1 connections) — `src\core\scannerFallbacks.js`
-- **getScannerFallback()** (1 connections) — `src\core\scannerFallbacks.js`
+- **dev.user.js** (1 connections) — `dev.user.js`
+- **loadScript()** (1 connections) — `dev.user.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\core\scannerFallbacks.js`
+- `dev.user.js`
 
 ## Audit Trail
 

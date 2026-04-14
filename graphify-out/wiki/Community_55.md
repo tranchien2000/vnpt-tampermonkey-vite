@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **theme.js** (0 connections) — `src\ui\styles\theme.js`
+- **state.js** (0 connections) — `src\core\state.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\ui\styles\theme.js`
+- `src\core\state.js`
 
 ## Audit Trail
 

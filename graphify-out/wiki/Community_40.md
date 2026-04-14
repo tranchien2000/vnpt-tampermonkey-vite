@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **widget.js** (1 connections) — `src\ui\widget.js`
-- **initWidget()** (1 connections) — `src\ui\widget.js`
+- **styles.js** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles.js`
+- **injectStyles()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\ui\widget.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles.js`
 
 ## Audit Trail
 

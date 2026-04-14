@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **autoFillForm.js** (1 connections) — `src\features\autoFillForm.js`
-- **setupAutoFillForm()** (1 connections) — `src\features\autoFillForm.js`
+- **vite.config.js** (1 connections) — `vite.config.js`
+- **generateBundle()** (1 connections) — `vite.config.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\features\autoFillForm.js`
+- `vite.config.js`
 
 ## Audit Trail
 

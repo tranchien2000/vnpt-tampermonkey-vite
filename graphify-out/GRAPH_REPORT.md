@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-15)
 
 ## Corpus Check
-- 66 files · ~65,349 words
+- 71 files · ~64,425 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 230 nodes · 240 edges · 62 communities detected
+- 235 nodes · 241 edges · 66 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -43,20 +43,20 @@ Cohesion: 0.24
 Nodes (5): cleanProvinceName(), findBestMatch(), getLevenshteinDistance(), getSimilarity(), parseAddressComponents()
 
 ### Community 4 - "Community 4"
+Cohesion: 0.25
+Nodes (2): clearQueue(), renderQueue()
+
+### Community 5 - "Community 5"
 Cohesion: 0.31
 Nodes (5): deleteInternalBackup(), exportFullBackup(), flattenData(), getInternalBackups(), restoreInternalBackup()
 
-### Community 5 - "Community 5"
+### Community 6 - "Community 6"
 Cohesion: 0.29
 Nodes (2): getHotkeyString(), handleRecording()
 
-### Community 6 - "Community 6"
+### Community 7 - "Community 7"
 Cohesion: 0.5
 Nodes (6): createProfileFromCurrent(), deleteProfile(), getActiveProfileId(), getProfiles(), importProfiles(), switchProfile()
-
-### Community 7 - "Community 7"
-Cohesion: 0.29
-Nodes (2): clearQueue(), renderQueue()
 
 ### Community 8 - "Community 8"
 Cohesion: 0.33
@@ -274,6 +274,22 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
+### Community 62 - "Community 62"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 63 - "Community 63"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 64 - "Community 64"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 65 - "Community 65"
+Cohesion: 1.0
+Nodes (0): 
+
 ## Knowledge Gaps
 - **Thin community `Community 33`** (2 nodes): `dev.user.js`, `loadScript()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -321,17 +337,25 @@ Nodes (0):
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 55`** (1 nodes): `state.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `fields.js`
+- **Thin community `Community 56`** (1 nodes): `calculator.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `panel.js`
+- **Thin community `Community 57`** (1 nodes): `controls.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `theme.js`
+- **Thin community `Community 58`** (1 nodes): `fields.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `logger.js`
+- **Thin community `Community 59`** (1 nodes): `linker.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `storage.js`
+- **Thin community `Community 60`** (1 nodes): `panel.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (1 nodes): `test_address.js`
+- **Thin community `Community 61`** (1 nodes): `scanner.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 62`** (1 nodes): `theme.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 63`** (1 nodes): `logger.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 64`** (1 nodes): `storage.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 65`** (1 nodes): `test_address.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions

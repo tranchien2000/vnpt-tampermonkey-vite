@@ -1,10 +1,11 @@
 # Community 44
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **test_classifier.js** (0 connections) — `scratch\test_classifier.js`
+- **migrationHelper.js** (1 connections) — `src\utils\migrationHelper.js`
+- **initStorageMerge()** (1 connections) — `src\utils\migrationHelper.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `scratch\test_classifier.js`
+- `src\utils\migrationHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

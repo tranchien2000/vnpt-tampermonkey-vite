@@ -4,13 +4,13 @@
 
 ## Key Concepts
 
-- **index.js** (6 connections) — `src\features\rawScan\index.js`
-- **renderQueue()** (2 connections) — `src\features\pdfScan\index.js`
-- **clearQueue()** (2 connections) — `src\features\pdfScan\index.js`
-- **initCalcWidget()** (1 connections) — `src\features\calc\index.js`
-- **initDataFill()** (1 connections) — `src\features\dataFill\index.js`
-- **initPdfScan()** (1 connections) — `src\features\pdfScan\index.js`
-- **initRawScan()** (1 connections) — `src\features\rawScan\index.js`
+- **mailScanner.js** (6 connections) — `src\features\mailScan\mailScanner.js`
+- **injectMailBridge()** (2 connections) — `src\features\mailScan\mailScanner.js`
+- **_waitForBody()** (2 connections) — `src\features\mailScan\mailScanner.js`
+- **getMailData()** (1 connections) — `src\features\mailScan\mailScanner.js`
+- **_keepAlive()** (1 connections) — `src\features\mailScan\mailScanner.js`
+- **_doInject()** (1 connections) — `src\features\mailScan\mailScanner.js`
+- **_showBridgeToast()** (1 connections) — `src\features\mailScan\mailScanner.js`
 
 ## Relationships
 
@@ -18,10 +18,7 @@
 
 ## Source Files
 
-- `src\features\calc\index.js`
-- `src\features\dataFill\index.js`
-- `src\features\pdfScan\index.js`
-- `src\features\rawScan\index.js`
+- `src\features\mailScan\mailScanner.js`
 
 ## Audit Trail
 

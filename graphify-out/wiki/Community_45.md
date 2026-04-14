@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **firebaseConfig.js** (0 connections) — `src\api\firebaseConfig.js`
+- **fix_auth.ps1** (0 connections) — `fix_auth.ps1`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\api\firebaseConfig.js`
+- `fix_auth.ps1`
 
 ## Audit Trail
 

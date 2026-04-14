@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **dragDrop.js** (2 connections) — `src\ui\dragDrop.js`
-- **makeDraggable()** (2 connections) — `src\ui\dragDrop.js`
-- **initDragDrop()** (2 connections) — `src\ui\dragDrop.js`
+- **calcLogic.js** (2 connections) — `src\features\calc\calcLogic.js`
+- **calculateValues()** (1 connections) — `src\features\calc\calcLogic.js`
+- **syncToPage()** (1 connections) — `src\features\calc\calcLogic.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `src\ui\dragDrop.js`
+- `src\features\calc\calcLogic.js`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 4 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

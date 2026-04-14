@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **fileHelper.js** (2 connections) — `src\utils\fileHelper.js`
-- **downloadAsBase64()** (1 connections) — `src\utils\fileHelper.js`
-- **arrayBufferToBase64()** (1 connections) — `src\utils\fileHelper.js`
+- **crypto.js** (2 connections) — `src\utils\crypto.js`
+- **encrypt()** (1 connections) — `src\utils\crypto.js`
+- **decrypt()** (1 connections) — `src\utils\crypto.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `src\utils\fileHelper.js`
+- `src\utils\crypto.js`
 
 ## Audit Trail
 

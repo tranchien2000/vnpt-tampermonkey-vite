@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **addressLearning.js** (1 connections) — `src\utils\addressLearning.js`
-- **normalizeForMatch()** (1 connections) — `src\utils\addressLearning.js`
+- **toast.js** (1 connections) — `src\ui\toast.js`
+- **showToast()** (1 connections) — `src\ui\toast.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\utils\addressLearning.js`
+- `src\ui\toast.js`
 
 ## Audit Trail
 

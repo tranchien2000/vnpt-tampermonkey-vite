@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **constants.js** (0 connections) — `src\core\constants.js`
+- **mstService.js** (0 connections) — `src\api\mstService.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\core\constants.js`
+- `src\api\mstService.js`
 
 ## Audit Trail
 

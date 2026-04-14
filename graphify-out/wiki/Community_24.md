@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **calcLogic.js** (2 connections) — `src\features\calc\calcLogic.js`
-- **calculateValues()** (1 connections) — `src\features\calc\calcLogic.js`
-- **syncToPage()** (1 connections) — `src\features\calc\calcLogic.js`
+- **mockDataGenerator.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
+- **randomDigit()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
+- **generateVNPTMockData()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `src\features\calc\calcLogic.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
 
 ## Audit Trail
 
-- EXTRACTED: 4 (100%)
+- EXTRACTED: 6 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

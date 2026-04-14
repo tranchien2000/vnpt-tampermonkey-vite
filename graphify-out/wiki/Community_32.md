@@ -1,11 +1,12 @@
 # Community 32
 
-> 2 nodes
+> 3 nodes
 
 ## Key Concepts
 
-- **vite.config.js** (1 connections) — `vite.config.js`
-- **generateBundle()** (1 connections) — `vite.config.js`
+- **qrHelper.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
+- **extractQRCodeFromImage()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
+- **parseCCCD_QR()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
 
 ## Relationships
 
@@ -13,11 +14,11 @@
 
 ## Source Files
 
-- `vite.config.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 2 (100%)
+- EXTRACTED: 4 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

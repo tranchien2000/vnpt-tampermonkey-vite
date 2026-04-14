@@ -1,10 +1,11 @@
 # Community 43
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **fix_auth.ps1** (0 connections) — `fix_auth.ps1`
+- **addressLearning.js** (1 connections) — `src\utils\addressLearning.js`
+- **normalizeForMatch()** (1 connections) — `src\utils\addressLearning.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `fix_auth.ps1`
+- `src\utils\addressLearning.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

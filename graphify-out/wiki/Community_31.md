@@ -1,11 +1,12 @@
 # Community 31
 
-> 2 nodes
+> 3 nodes
 
 ## Key Concepts
 
-- **dev.user.js** (1 connections) — `dev.user.js`
-- **loadScript()** (1 connections) — `dev.user.js`
+- **localClassifier.js** (2 connections) — `src\utils\localClassifier.js`
+- **findFirstMatch()** (2 connections) — `src\utils\localClassifier.js`
+- **classifyTextLocally()** (2 connections) — `src\utils\localClassifier.js`
 
 ## Relationships
 
@@ -13,11 +14,11 @@
 
 ## Source Files
 
-- `dev.user.js`
+- `src\utils\localClassifier.js`
 
 ## Audit Trail
 
-- EXTRACTED: 2 (100%)
+- EXTRACTED: 6 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

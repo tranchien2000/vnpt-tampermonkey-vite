@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **styles.js** (1 connections) — `src\ui\styles.js`
-- **injectStyles()** (1 connections) — `src\ui\styles.js`
+- **calcUI.js** (1 connections) — `src\features\calc\calcUI.js`
+- **createCalcUI()** (1 connections) — `src\features\calc\calcUI.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\ui\styles.js`
+- `src\features\calc\calcUI.js`
 
 ## Audit Trail
 

@@ -182,10 +182,10 @@
     {
       "label": "index.js",
       "file_type": "code",
-      "source_file": "src\\features\\rawScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\index.js",
       "source_location": "L1",
       "id": "index",
-      "community": 7
+      "community": 4
     },
     {
       "label": "localAdapter.js",
@@ -505,7 +505,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L1",
       "id": "hotkeys",
-      "community": 5
+      "community": 6
     },
     {
       "label": "initHotkeys()",
@@ -513,7 +513,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L18",
       "id": "hotkeys_inithotkeys",
-      "community": 5
+      "community": 6
     },
     {
       "label": "isMatch()",
@@ -521,7 +521,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L42",
       "id": "hotkeys_ismatch",
-      "community": 5
+      "community": 6
     },
     {
       "label": "executeAction()",
@@ -529,7 +529,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L59",
       "id": "hotkeys_executeaction",
-      "community": 5
+      "community": 6
     },
     {
       "label": "startRecording()",
@@ -537,7 +537,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L88",
       "id": "hotkeys_startrecording",
-      "community": 5
+      "community": 6
     },
     {
       "label": "handleRecording()",
@@ -545,7 +545,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L98",
       "id": "hotkeys_handlerecording",
-      "community": 5
+      "community": 6
     },
     {
       "label": "getHotkeyString()",
@@ -553,7 +553,7 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L134",
       "id": "hotkeys_gethotkeystring",
-      "community": 5
+      "community": 6
     },
     {
       "label": "clearHotkey()",
@@ -561,12 +561,12 @@
       "source_file": "src\\features\\hotkeys.js",
       "source_location": "L152",
       "id": "hotkeys_clearhotkey",
-      "community": 5
+      "community": 6
     },
     {
       "label": "mockDataGenerator.js",
       "file_type": "code",
-      "source_file": "src\\features\\mockDataGenerator.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\mockDataGenerator.js",
       "source_location": "L1",
       "id": "mockdatagenerator",
       "community": 24
@@ -574,7 +574,7 @@
     {
       "label": "randomDigit()",
       "file_type": "code",
-      "source_file": "src\\features\\mockDataGenerator.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\mockDataGenerator.js",
       "source_location": "L4",
       "id": "mockdatagenerator_randomdigit",
       "community": 24
@@ -582,7 +582,7 @@
     {
       "label": "generateVNPTMockData()",
       "file_type": "code",
-      "source_file": "src\\features\\mockDataGenerator.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\mockDataGenerator.js",
       "source_location": "L10",
       "id": "mockdatagenerator_generatevnptmockdata",
       "community": 24
@@ -593,7 +593,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L1",
       "id": "profilemanager",
-      "community": 6
+      "community": 7
     },
     {
       "label": "initProfiles()",
@@ -601,7 +601,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L12",
       "id": "profilemanager_initprofiles",
-      "community": 6
+      "community": 7
     },
     {
       "label": "getProfiles()",
@@ -609,7 +609,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L28",
       "id": "profilemanager_getprofiles",
-      "community": 6
+      "community": 7
     },
     {
       "label": "getActiveProfileId()",
@@ -617,7 +617,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L35",
       "id": "profilemanager_getactiveprofileid",
-      "community": 6
+      "community": 7
     },
     {
       "label": "switchProfile()",
@@ -625,7 +625,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L42",
       "id": "profilemanager_switchprofile",
-      "community": 6
+      "community": 7
     },
     {
       "label": "createProfileFromCurrent()",
@@ -633,7 +633,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L59",
       "id": "profilemanager_createprofilefromcurrent",
-      "community": 6
+      "community": 7
     },
     {
       "label": "deleteProfile()",
@@ -641,7 +641,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L77",
       "id": "profilemanager_deleteprofile",
-      "community": 6
+      "community": 7
     },
     {
       "label": "importProfiles()",
@@ -649,7 +649,7 @@
       "source_file": "src\\features\\profileManager.js",
       "source_location": "L93",
       "id": "profilemanager_importprofiles",
-      "community": 6
+      "community": 7
     },
     {
       "label": "templateManager.js",
@@ -873,7 +873,7 @@
       "source_file": "src\\features\\calc\\index.js",
       "source_location": "L10",
       "id": "index_initcalcwidget",
-      "community": 7
+      "community": 4
     },
     {
       "label": "dataFillUI.js",
@@ -913,7 +913,7 @@
       "source_file": "src\\features\\dataFill\\index.js",
       "source_location": "L9",
       "id": "index_initdatafill",
-      "community": 7
+      "community": 4
     },
     {
       "label": "syncEngine.js",
@@ -1054,34 +1054,34 @@
     {
       "label": "renderQueue()",
       "file_type": "code",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L23",
       "id": "index_renderqueue",
-      "community": 7
+      "community": 4
     },
     {
       "label": "clearQueue()",
       "file_type": "code",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L59",
       "id": "index_clearqueue",
-      "community": 7
+      "community": 4
     },
     {
       "label": "applyQRDataToFields()",
       "file_type": "code",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L65",
       "id": "index_applyqrdatatofields",
-      "community": 7
+      "community": 4
     },
     {
       "label": "initPdfScan()",
       "file_type": "code",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L103",
       "id": "index_initpdfscan",
-      "community": 7
+      "community": 4
     },
     {
       "label": "pdfScanUI.js",
@@ -1121,7 +1121,7 @@
       "source_file": "src\\features\\rawScan\\index.js",
       "source_location": "L2",
       "id": "index_initrawscan",
-      "community": 7
+      "community": 4
     },
     {
       "label": "rawScan.js",
@@ -1198,7 +1198,7 @@
     {
       "label": "styles.js",
       "file_type": "code",
-      "source_file": "src\\ui\\styles.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles.js",
       "source_location": "L1",
       "id": "styles",
       "community": 40
@@ -1206,8 +1206,8 @@
     {
       "label": "injectStyles()",
       "file_type": "code",
-      "source_file": "src\\ui\\styles.js",
-      "source_location": "L16",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles.js",
+      "source_location": "L10",
       "id": "styles_injectstyles",
       "community": 40
     },
@@ -1268,28 +1268,68 @@
       "community": 27
     },
     {
+      "label": "calculator.js",
+      "file_type": "code",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\calculator.js",
+      "source_location": "L1",
+      "id": "calculator",
+      "community": 56
+    },
+    {
+      "label": "controls.js",
+      "file_type": "code",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\controls.js",
+      "source_location": "L1",
+      "id": "controls",
+      "community": 57
+    },
+    {
       "label": "fields.js",
       "file_type": "code",
-      "source_file": "src\\ui\\styles\\fields.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\fields.js",
       "source_location": "L1",
       "id": "fields",
-      "community": 56
+      "community": 58
+    },
+    {
+      "label": "injectStyles()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\index.js",
+      "source_location": "L19",
+      "id": "index_injectstyles",
+      "community": 4
+    },
+    {
+      "label": "linker.js",
+      "file_type": "code",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\linker.js",
+      "source_location": "L1",
+      "id": "linker",
+      "community": 59
     },
     {
       "label": "panel.js",
       "file_type": "code",
-      "source_file": "src\\ui\\styles\\panel.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\panel.js",
       "source_location": "L1",
       "id": "panel",
-      "community": 57
+      "community": 60
+    },
+    {
+      "label": "scanner.js",
+      "file_type": "code",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\scanner.js",
+      "source_location": "L1",
+      "id": "scanner",
+      "community": 61
     },
     {
       "label": "theme.js",
       "file_type": "code",
-      "source_file": "src\\ui\\styles\\theme.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\theme.js",
       "source_location": "L1",
       "id": "theme",
-      "community": 58
+      "community": 62
     },
     {
       "label": "addressLearning.js",
@@ -1313,7 +1353,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L1",
       "id": "backuphelper",
-      "community": 4
+      "community": 5
     },
     {
       "label": "flattenData()",
@@ -1321,7 +1361,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L18",
       "id": "backuphelper_flattendata",
-      "community": 4
+      "community": 5
     },
     {
       "label": "exportFullBackup()",
@@ -1329,7 +1369,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L37",
       "id": "backuphelper_exportfullbackup",
-      "community": 4
+      "community": 5
     },
     {
       "label": "importFullBackup()",
@@ -1337,7 +1377,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L77",
       "id": "backuphelper_importfullbackup",
-      "community": 4
+      "community": 5
     },
     {
       "label": "createInternalBackup()",
@@ -1345,7 +1385,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L110",
       "id": "backuphelper_createinternalbackup",
-      "community": 4
+      "community": 5
     },
     {
       "label": "generateBackupName()",
@@ -1353,7 +1393,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L138",
       "id": "backuphelper_generatebackupname",
-      "community": 4
+      "community": 5
     },
     {
       "label": "getInternalBackups()",
@@ -1361,7 +1401,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L150",
       "id": "backuphelper_getinternalbackups",
-      "community": 4
+      "community": 5
     },
     {
       "label": "restoreInternalBackup()",
@@ -1369,7 +1409,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L165",
       "id": "backuphelper_restoreinternalbackup",
-      "community": 4
+      "community": 5
     },
     {
       "label": "deleteInternalBackup()",
@@ -1377,7 +1417,7 @@
       "source_file": "src\\utils\\backupHelper.js",
       "source_location": "L187",
       "id": "backuphelper_deleteinternalbackup",
-      "community": 4
+      "community": 5
     },
     {
       "label": "common.js",
@@ -1649,7 +1689,7 @@
       "source_file": "src\\utils\\logger.js",
       "source_location": "L1",
       "id": "logger",
-      "community": 59
+      "community": 63
     },
     {
       "label": "migrationHelper.js",
@@ -1718,7 +1758,7 @@
     {
       "label": "qrHelper.js",
       "file_type": "code",
-      "source_file": "src\\utils\\qrHelper.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\utils\\qrHelper.js",
       "source_location": "L1",
       "id": "qrhelper",
       "community": 32
@@ -1726,7 +1766,7 @@
     {
       "label": "extractQRCodeFromImage()",
       "file_type": "code",
-      "source_file": "src\\utils\\qrHelper.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\utils\\qrHelper.js",
       "source_location": "L8",
       "id": "qrhelper_extractqrcodefromimage",
       "community": 32
@@ -1734,7 +1774,7 @@
     {
       "label": "parseCCCD_QR()",
       "file_type": "code",
-      "source_file": "src\\utils\\qrHelper.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\utils\\qrHelper.js",
       "source_location": "L42",
       "id": "qrhelper_parsecccd_qr",
       "community": 32
@@ -1745,7 +1785,7 @@
       "source_file": "src\\utils\\storage.js",
       "source_location": "L1",
       "id": "storage",
-      "community": 60
+      "community": 64
     },
     {
       "label": "stringHelper.js",
@@ -1841,7 +1881,7 @@
       "source_file": "src\\utils\\tests\\test_address.js",
       "source_location": "L1",
       "id": "test_address",
-      "community": 61
+      "community": 65
     }
   ],
   "links": [
@@ -2028,7 +2068,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L23",
       "weight": 1.0,
       "_src": "index",
@@ -2040,7 +2080,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L59",
       "weight": 1.0,
       "_src": "index",
@@ -2052,7 +2092,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L65",
       "weight": 1.0,
       "_src": "index",
@@ -2064,7 +2104,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L103",
       "weight": 1.0,
       "_src": "index",
@@ -2083,6 +2123,18 @@
       "_tgt": "index_initrawscan",
       "source": "index",
       "target": "index_initrawscan",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles\\index.js",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_src": "index",
+      "_tgt": "index_injectstyles",
+      "source": "index",
+      "target": "index_injectstyles",
       "confidence_score": 1.0
     },
     {
@@ -2628,7 +2680,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\mockDataGenerator.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\mockDataGenerator.js",
       "source_location": "L4",
       "weight": 1.0,
       "_src": "mockdatagenerator",
@@ -2640,7 +2692,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\mockDataGenerator.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\mockDataGenerator.js",
       "source_location": "L10",
       "weight": 1.0,
       "_src": "mockdatagenerator",
@@ -2652,7 +2704,7 @@
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\mockDataGenerator.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\mockDataGenerator.js",
       "source_location": "L34",
       "weight": 1.0,
       "_src": "mockdatagenerator_generatevnptmockdata",
@@ -3552,7 +3604,7 @@
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "src\\features\\pdfScan\\index.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\features\\pdfScan\\index.js",
       "source_location": "L62",
       "weight": 1.0,
       "_src": "index_clearqueue",
@@ -3696,8 +3748,8 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\ui\\styles.js",
-      "source_location": "L16",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\ui\\styles.js",
+      "source_location": "L10",
       "weight": 1.0,
       "_src": "styles",
       "_tgt": "styles_injectstyles",
@@ -4548,7 +4600,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\utils\\qrHelper.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\utils\\qrHelper.js",
       "source_location": "L8",
       "weight": 1.0,
       "_src": "qrhelper",
@@ -4560,7 +4612,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src\\utils\\qrHelper.js",
+      "source_file": "C:\\Users\\Chien\\vnpt-tampermonkey-vite\\src\\utils\\qrHelper.js",
       "source_location": "L42",
       "weight": 1.0,
       "_src": "qrhelper",

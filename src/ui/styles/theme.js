@@ -14,4 +14,8 @@ export const themeStyles = `
         --vnpt-radius: 16px;
         --vnpt-font: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
+
+    .sensitive-mask {
+        -webkit-text-security: disc !important;
+    }
 `;

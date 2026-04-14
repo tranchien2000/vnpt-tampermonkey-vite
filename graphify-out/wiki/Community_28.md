@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **crypto.js** (2 connections) — `src\utils\crypto.js`
-- **encrypt()** (1 connections) — `src\utils\crypto.js`
-- **decrypt()** (1 connections) — `src\utils\crypto.js`
+- **common.js** (2 connections) — `src\utils\common.js`
+- **debounce()** (1 connections) — `src\utils\common.js`
+- **sleep()** (1 connections) — `src\utils\common.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `src\utils\crypto.js`
+- `src\utils\common.js`
 
 ## Audit Trail
 

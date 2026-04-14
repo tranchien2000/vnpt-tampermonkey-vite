@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **common.js** (2 connections) — `src\utils\common.js`
-- **debounce()** (1 connections) — `src\utils\common.js`
-- **sleep()** (1 connections) — `src\utils\common.js`
+- **CloudSyncUI.js** (2 connections) — `src\ui\components\CloudSyncUI.js`
+- **initCloudSyncUI()** (1 connections) — `src\ui\components\CloudSyncUI.js`
+- **showLoginModal()** (1 connections) — `src\ui\components\CloudSyncUI.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `src\utils\common.js`
+- `src\ui\components\CloudSyncUI.js`
 
 ## Audit Trail
 

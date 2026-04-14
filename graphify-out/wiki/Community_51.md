@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **defaults.js** (0 connections) — `src\core\defaults.js`
+- **remoteConfig.js** (0 connections) — `src\api\remoteConfig.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\core\defaults.js`
+- `src\api\remoteConfig.js`
 
 ## Audit Trail
 
