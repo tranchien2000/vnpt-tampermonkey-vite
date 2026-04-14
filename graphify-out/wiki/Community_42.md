@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **widget.js** (1 connections) — `src\ui\widget.js`
-- **initWidget()** (1 connections) — `src\ui\widget.js`
+- **calcUI.js** (1 connections) — `src\features\calc\calcUI.js`
+- **createCalcUI()** (1 connections) — `src\features\calc\calcUI.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\ui\widget.js`
+- `src\features\calc\calcUI.js`
 
 ## Audit Trail
 

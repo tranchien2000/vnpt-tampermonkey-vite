@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **localClassifier.js** (2 connections) — `src\utils\localClassifier.js`
-- **findFirstMatch()** (2 connections) — `src\utils\localClassifier.js`
-- **classifyTextLocally()** (2 connections) — `src\utils\localClassifier.js`
+- **CloudSyncUI.js** (2 connections) — `src\ui\components\CloudSyncUI.js`
+- **initCloudSyncUI()** (1 connections) — `src\ui\components\CloudSyncUI.js`
+- **showLoginModal()** (1 connections) — `src\ui\components\CloudSyncUI.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `src\utils\localClassifier.js`
+- `src\ui\components\CloudSyncUI.js`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 4 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

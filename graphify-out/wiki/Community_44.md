@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **migrationHelper.js** (1 connections) — `src\utils\migrationHelper.js`
-- **initStorageMerge()** (1 connections) — `src\utils\migrationHelper.js`
+- **sync.js** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\sync.js`
+- **syncAllFields()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\sync.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\utils\migrationHelper.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\sync.js`
 
 ## Audit Trail
 

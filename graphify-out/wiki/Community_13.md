@@ -4,11 +4,11 @@
 
 ## Key Concepts
 
-- **idb.js** (4 connections) — `src\api\storage\idb.js`
-- **getDB()** (4 connections) — `src\api\storage\idb.js`
-- **idbSave()** (2 connections) — `src\api\storage\idb.js`
-- **idbLoad()** (2 connections) — `src\api\storage\idb.js`
-- **idbDelete()** (2 connections) — `src\api\storage\idb.js`
+- **webScanner.js** (4 connections) — `src\features\webScanner.js`
+- **getElValueText()** (2 connections) — `src\features\webScanner.js`
+- **getProvinceName()** (2 connections) — `src\features\webScanner.js`
+- **scanFullAddress()** (1 connections) — `src\features\webScanner.js`
+- **initWebScanner()** (1 connections) — `src\features\webScanner.js`
 
 ## Relationships
 
@@ -16,11 +16,11 @@
 
 ## Source Files
 
-- `src\api\storage\idb.js`
+- `src\features\webScanner.js`
 
 ## Audit Trail
 
-- EXTRACTED: 14 (100%)
+- EXTRACTED: 10 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

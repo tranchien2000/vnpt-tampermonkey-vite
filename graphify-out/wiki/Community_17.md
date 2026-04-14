@@ -4,10 +4,10 @@
 
 ## Key Concepts
 
-- **dataFillUI.js** (3 connections) — `src\features\dataFill\dataFillUI.js`
-- **ld()** (2 connections) — `src\features\dataFill\dataFillUI.js`
-- **renderDataFillTabs()** (2 connections) — `src\features\dataFill\dataFillUI.js`
-- **sv()** (1 connections) — `src\features\dataFill\dataFillUI.js`
+- **docExport.js** (3 connections) — `src\features\docExport.js`
+- **renderDocx()** (2 connections) — `src\features\docExport.js`
+- **initDocExport()** (2 connections) — `src\features\docExport.js`
+- **copyTxtToClipboard()** (1 connections) — `src\features\docExport.js`
 
 ## Relationships
 
@@ -15,7 +15,7 @@
 
 ## Source Files
 
-- `src\features\dataFill\dataFillUI.js`
+- `src\features\docExport.js`
 
 ## Audit Trail
 

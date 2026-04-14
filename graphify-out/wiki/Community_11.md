@@ -4,12 +4,12 @@
 
 ## Key Concepts
 
-- **dateHelper.js** (5 connections) — `src\utils\dateHelper.js`
-- **getVNPTDateStrings()** (4 connections) — `src\utils\dateHelper.js`
-- **formatDay()** (2 connections) — `src\utils\dateHelper.js`
-- **formatMonth()** (2 connections) — `src\utils\dateHelper.js`
-- **formatYear()** (2 connections) — `src\utils\dateHelper.js`
-- **getToday()** (1 connections) — `src\utils\dateHelper.js`
+- **numberHelper.js** (5 connections) — `src\utils\numberHelper.js`
+- **read3()** (2 connections) — `src\utils\numberHelper.js`
+- **numToVN()** (2 connections) — `src\utils\numberHelper.js`
+- **formatNum()** (1 connections) — `src\utils\numberHelper.js`
+- **parseNum()** (1 connections) — `src\utils\numberHelper.js`
+- **capFirst()** (1 connections) — `src\utils\numberHelper.js`
 
 ## Relationships
 
@@ -17,11 +17,11 @@
 
 ## Source Files
 
-- `src\utils\dateHelper.js`
+- `src\utils\numberHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 16 (100%)
+- EXTRACTED: 12 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

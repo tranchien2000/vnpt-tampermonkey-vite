@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **localAdapter.js** (0 connections) — `src\api\storage\localAdapter.js`
+- **test_classifier.js** (0 connections) — `scratch\test_classifier.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\api\storage\localAdapter.js`
+- `scratch\test_classifier.js`
 
 ## Audit Trail
 

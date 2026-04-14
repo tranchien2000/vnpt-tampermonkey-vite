@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **calculator.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\calculator.js`
+- **mstService.js** (0 connections) — `src\api\mstService.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\calculator.js`
+- `src\api\mstService.js`
 
 ## Audit Trail
 

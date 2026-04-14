@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **defaults.js** (0 connections) — `src\core\defaults.js`
+- **firebaseConfig.js** (0 connections) — `src\api\firebaseConfig.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\core\defaults.js`
+- `src\api\firebaseConfig.js`
 
 ## Audit Trail
 

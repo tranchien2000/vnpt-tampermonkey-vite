@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **scanner.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\scanner.js`
+- **state.js** (0 connections) — `src\core\state.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\scanner.js`
+- `src\core\state.js`
 
 ## Audit Trail
 

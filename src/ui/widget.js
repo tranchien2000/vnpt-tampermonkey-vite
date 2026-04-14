@@ -175,9 +175,7 @@ export function initWidget() {
 
 
                 <div class="bottom-export-row">
-                    <div class="vnpt-control-group" id="vnpt-local-file-group">
-                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
-                    </div>
+                    <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
                     <div class="vnpt-control-group">
                         <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
                         <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />

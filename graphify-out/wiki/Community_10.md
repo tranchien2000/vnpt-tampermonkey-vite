@@ -4,12 +4,12 @@
 
 ## Key Concepts
 
-- **syncEngine.js** (5 connections) — `src\features\dataFill\syncEngine.js`
-- **loadFreshenedDefaultData()** (2 connections) — `src\features\dataFill\syncEngine.js`
-- **doFillData()** (2 connections) — `src\features\dataFill\syncEngine.js`
-- **doSyncData()** (1 connections) — `src\features\dataFill\syncEngine.js`
-- **processSync()** (1 connections) — `src\features\dataFill\syncEngine.js`
-- **initSyncEngine()** (1 connections) — `src\features\dataFill\syncEngine.js`
+- **dateHelper.js** (5 connections) — `src\utils\dateHelper.js`
+- **getVNPTDateStrings()** (4 connections) — `src\utils\dateHelper.js`
+- **formatDay()** (2 connections) — `src\utils\dateHelper.js`
+- **formatMonth()** (2 connections) — `src\utils\dateHelper.js`
+- **formatYear()** (2 connections) — `src\utils\dateHelper.js`
+- **getToday()** (1 connections) — `src\utils\dateHelper.js`
 
 ## Relationships
 
@@ -17,11 +17,11 @@
 
 ## Source Files
 
-- `src\features\dataFill\syncEngine.js`
+- `src\utils\dateHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 12 (100%)
+- EXTRACTED: 16 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

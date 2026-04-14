@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **storage.js** (0 connections) — `src\utils\storage.js`
+- **controls.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\controls.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\utils\storage.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\controls.js`
 
 ## Audit Trail
 

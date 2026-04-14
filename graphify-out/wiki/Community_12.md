@@ -1,15 +1,14 @@
 # Community 12
 
-> 6 nodes
+> 5 nodes
 
 ## Key Concepts
 
-- **numberHelper.js** (5 connections) — `src\utils\numberHelper.js`
-- **read3()** (2 connections) — `src\utils\numberHelper.js`
-- **numToVN()** (2 connections) — `src\utils\numberHelper.js`
-- **formatNum()** (1 connections) — `src\utils\numberHelper.js`
-- **parseNum()** (1 connections) — `src\utils\numberHelper.js`
-- **capFirst()** (1 connections) — `src\utils\numberHelper.js`
+- **idb.js** (4 connections) — `src\api\storage\idb.js`
+- **getDB()** (4 connections) — `src\api\storage\idb.js`
+- **idbSave()** (2 connections) — `src\api\storage\idb.js`
+- **idbLoad()** (2 connections) — `src\api\storage\idb.js`
+- **idbDelete()** (2 connections) — `src\api\storage\idb.js`
 
 ## Relationships
 
@@ -17,11 +16,11 @@
 
 ## Source Files
 
-- `src\utils\numberHelper.js`
+- `src\api\storage\idb.js`
 
 ## Audit Trail
 
-- EXTRACTED: 12 (100%)
+- EXTRACTED: 14 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

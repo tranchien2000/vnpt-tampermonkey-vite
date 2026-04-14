@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **crypto.js** (2 connections) — `src\utils\crypto.js`
-- **encrypt()** (1 connections) — `src\utils\crypto.js`
-- **decrypt()** (1 connections) — `src\utils\crypto.js`
+- **validation.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\validation.js`
+- **validateField()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\validation.js`
+- **refreshRowValidation()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\validation.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `src\utils\crypto.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\validation.js`
 
 ## Audit Trail
 
-- EXTRACTED: 4 (100%)
+- EXTRACTED: 6 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -4,10 +4,10 @@
 
 ## Key Concepts
 
-- **rawScan.js** (3 connections) — `src\features\rawScan\rawScan.js`
-- **getRawTextSystemPrompt()** (2 connections) — `src\features\rawScan\rawScan.js`
-- **extractFieldsFromText()** (2 connections) — `src\features\rawScan\rawScan.js`
-- **extractFieldsLocally()** (1 connections) — `src\features\rawScan\rawScan.js`
+- **geminiOcr.js** (3 connections) — `src\features\pdfScan\geminiOcr.js`
+- **getSystemPrompt()** (2 connections) — `src\features\pdfScan\geminiOcr.js`
+- **extractWithGemini()** (2 connections) — `src\features\pdfScan\geminiOcr.js`
+- **fileToBase64()** (1 connections) — `src\features\pdfScan\geminiOcr.js`
 
 ## Relationships
 
@@ -15,7 +15,7 @@
 
 ## Source Files
 
-- `src\features\rawScan\rawScan.js`
+- `src\features\pdfScan\geminiOcr.js`
 
 ## Audit Trail
 

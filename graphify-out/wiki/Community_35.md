@@ -1,11 +1,12 @@
 # Community 35
 
-> 2 nodes
+> 3 nodes
 
 ## Key Concepts
 
-- **scannerFallbacks.js** (1 connections) — `src\core\scannerFallbacks.js`
-- **getScannerFallback()** (1 connections) — `src\core\scannerFallbacks.js`
+- **localClassifier.js** (2 connections) — `src\utils\localClassifier.js`
+- **findFirstMatch()** (2 connections) — `src\utils\localClassifier.js`
+- **classifyTextLocally()** (2 connections) — `src\utils\localClassifier.js`
 
 ## Relationships
 
@@ -13,11 +14,11 @@
 
 ## Source Files
 
-- `src\core\scannerFallbacks.js`
+- `src\utils\localClassifier.js`
 
 ## Audit Trail
 
-- EXTRACTED: 2 (100%)
+- EXTRACTED: 6 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

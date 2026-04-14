@@ -1,10 +1,11 @@
 # Community 48
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **firebaseConfig.js** (0 connections) — `src\api\firebaseConfig.js`
+- **widget.js** (1 connections) — `src\ui\widget.js`
+- **initWidget()** (1 connections) — `src\ui\widget.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `src\api\firebaseConfig.js`
+- `src\ui\widget.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

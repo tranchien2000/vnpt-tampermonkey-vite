@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **configManager.js** (2 connections) — `src\features\configManager.js`
-- **exportConfig()** (1 connections) — `src\features\configManager.js`
-- **importConfig()** (1 connections) — `src\features\configManager.js`
+- **main.js** (2 connections) — `src\main.js`
+- **init()** (1 connections) — `src\main.js`
+- **cleanup()** (1 connections) — `src\main.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `src\features\configManager.js`
+- `src\main.js`
 
 ## Audit Trail
 

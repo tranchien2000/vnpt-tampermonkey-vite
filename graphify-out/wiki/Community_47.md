@@ -1,10 +1,11 @@
 # Community 47
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **rebuild_wiki.py** (0 connections) — `scripts\rebuild_wiki.py`
+- **toast.js** (1 connections) — `src\ui\toast.js`
+- **showToast()** (1 connections) — `src\ui\toast.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `scripts\rebuild_wiki.py`
+- `src\ui\toast.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

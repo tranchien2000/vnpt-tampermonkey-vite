@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **theme.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\theme.js`
+- **fieldsManager.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fieldsManager.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\theme.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fieldsManager.js`
 
 ## Audit Trail
 

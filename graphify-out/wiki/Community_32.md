@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **qrHelper.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
-- **extractQRCodeFromImage()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
-- **parseCCCD_QR()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
+- **common.js** (2 connections) — `src\utils\common.js`
+- **debounce()** (1 connections) — `src\utils\common.js`
+- **sleep()** (1 connections) — `src\utils\common.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
+- `src\utils\common.js`
 
 ## Audit Trail
 

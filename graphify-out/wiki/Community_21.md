@@ -1,12 +1,13 @@
 # Community 21
 
-> 3 nodes
+> 4 nodes
 
 ## Key Concepts
 
-- **main.js** (2 connections) — `src\main.js`
-- **init()** (1 connections) — `src\main.js`
-- **cleanup()** (1 connections) — `src\main.js`
+- **pdfScanUI.js** (3 connections) — `src\features\pdfScan\pdfScanUI.js`
+- **showPdfLoading()** (1 connections) — `src\features\pdfScan\pdfScanUI.js`
+- **hidePdfLoading()** (1 connections) — `src\features\pdfScan\pdfScanUI.js`
+- **showPdfConfirmDialog()** (1 connections) — `src\features\pdfScan\pdfScanUI.js`
 
 ## Relationships
 
@@ -14,11 +15,11 @@
 
 ## Source Files
 
-- `src\main.js`
+- `src\features\pdfScan\pdfScanUI.js`
 
 ## Audit Trail
 
-- EXTRACTED: 4 (100%)
+- EXTRACTED: 6 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

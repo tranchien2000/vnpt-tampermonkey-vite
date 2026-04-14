@@ -4,11 +4,11 @@
 
 ## Key Concepts
 
-- **webScanner.js** (4 connections) — `src\features\webScanner.js`
-- **getElValueText()** (2 connections) — `src\features\webScanner.js`
-- **getProvinceName()** (2 connections) — `src\features\webScanner.js`
-- **scanFullAddress()** (1 connections) — `src\features\webScanner.js`
-- **initWebScanner()** (1 connections) — `src\features\webScanner.js`
+- **calcHistory.js** (4 connections) — `src\features\calc\calcHistory.js`
+- **ld()** (3 connections) — `src\features\calc\calcHistory.js`
+- **saveHist()** (3 connections) — `src\features\calc\calcHistory.js`
+- **sv()** (2 connections) — `src\features\calc\calcHistory.js`
+- **renderHist()** (2 connections) — `src\features\calc\calcHistory.js`
 
 ## Relationships
 
@@ -16,11 +16,11 @@
 
 ## Source Files
 
-- `src\features\webScanner.js`
+- `src\features\calc\calcHistory.js`
 
 ## Audit Trail
 
-- EXTRACTED: 10 (100%)
+- EXTRACTED: 14 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

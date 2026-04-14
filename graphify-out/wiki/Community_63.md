@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **logger.js** (0 connections) — `src\utils\logger.js`
+- **calculator.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\calculator.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\utils\logger.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\calculator.js`
 
 ## Audit Trail
 

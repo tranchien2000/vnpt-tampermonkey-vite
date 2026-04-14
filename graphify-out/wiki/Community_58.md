@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **fields.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\fields.js`
+- **localAdapter.js** (0 connections) — `src\api\storage\localAdapter.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\fields.js`
+- `src\api\storage\localAdapter.js`
 
 ## Audit Trail
 

@@ -1,10 +1,11 @@
 # Community 45
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **fix_auth.ps1** (0 connections) — `fix_auth.ps1`
+- **screenScanner.js** (1 connections) — `src\features\screenScan\screenScanner.js`
+- **scrapeScreenText()** (1 connections) — `src\features\screenScan\screenScanner.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `fix_auth.ps1`
+- `src\features\screenScan\screenScanner.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
