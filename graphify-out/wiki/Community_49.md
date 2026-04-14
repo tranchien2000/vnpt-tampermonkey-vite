@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **localAdapter.js** (0 connections) — `src\api\storage\localAdapter.js`
+- **firebaseService.js** (0 connections) — `src\api\firebaseService.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\api\storage\localAdapter.js`
+- `src\api\firebaseService.js`
 
 ## Audit Trail
 

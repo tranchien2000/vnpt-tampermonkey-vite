@@ -1,5 +1,7 @@
 export const panelStyles = `
-    /* SECTION 1: WIDGET CONTAINER & TOGGLE BTN */
+    /* ═══════════════════════════════════════════
+       SECTION 1: WIDGET CONTAINER & TOGGLE BTN
+       ═══════════════════════════════════════════ */
     #vnpt-docx-widget { position: fixed; top: 100px; right: 50px; z-index: 999999; font-family: var(--vnpt-font); }
 
     #vnpt-toggle-btn.btn-closed { 
@@ -20,7 +22,9 @@ export const panelStyles = `
     }
     #vnpt-toggle-btn.btn-opened:hover { transform: scale(1.1) rotate(-5deg); background: var(--vnpt-danger-hover); }
 
-    /* SECTION 2: EXPORT PANEL LAYOUT & HEADER */
+    /* ═══════════════════════════════════════════
+       SECTION 2: EXPORT PANEL LAYOUT & HEADER
+       ═══════════════════════════════════════════ */
     #vnpt-export-panel { 
         position: relative; 
         width: 460px; min-width: 360px; 
@@ -71,30 +75,25 @@ export const panelStyles = `
         text-transform: uppercase;
     }
 
-    /* SECTION 4: CONTROL BUTTONS */
-    .vnpt-btn-action { 
-        padding: 0 10px; height: 30px; 
-        display: flex; align-items: center; justify-content: center; 
-        font-weight: 700; font-size: 11px; cursor: pointer; 
-        border-radius: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-        white-space: nowrap; box-sizing: border-box; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        flex-shrink: 1; min-width: 0;
+    .vnpt-version {
+        font-size: 9px; font-weight: 700; color: #9aa0a6;
+        margin-left: 4px; vertical-align: bottom; opacity: 0.8;
     }
-    .vnpt-btn-action:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .vnpt-btn-action:active { transform: translateY(0) scale(0.96); }
 
-    .vnpt-btn-icon {
-        border: 1px solid #1f5bd2ff;
-        background: rgba(0,0,0,0.03); width: 30px; height: 30px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 15px; cursor: pointer; border-radius: 8px;
-        color: #5f6368; transition: all 0.2s;
+    .vnpt-update-badge {
+        font-size: 8px; font-weight: 900; background: var(--vnpt-danger);
+        color: white; padding: 1px 4px; border-radius: 4px;
+        margin-left: 4px; cursor: pointer; text-transform: uppercase;
+        animation: bounce 2s infinite; display: inline-block;
     }
-    .vnpt-btn-icon:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); transform: scale(1.05); }
-    .vnpt-btn-icon.active { background: var(--vnpt-primary); color: white; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
 
-    /* Resizers */
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+        40% {transform: translateY(-3px);}
+        60% {transform: translateY(-2px);}
+    }
+
+    /* 4 Corner Resizers */
     .vnpt-resizer {
         position: absolute; width: 16px; height: 16px; z-index: 10000;
     }
@@ -112,12 +111,11 @@ export const panelStyles = `
         min-height: unset !important;
         height: auto !important;
         padding-bottom: 0 !important;
-        width: 460px; /* Thêm width cố định để không bị giật khi hover (sẽ tự resize theo inline-style) */
+        width: 460px;
     }
     #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-panel-body {
         display: none !important;
     }
-    /* Chắc chắn inline calc đang hiện khi pinned */
     #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-inline-calc {
         display: block !important;
     }

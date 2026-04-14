@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **panel.js** (0 connections) — `src\ui\styles\panel.js`
+- **defaults.js** (0 connections) — `src\core\defaults.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\ui\styles\panel.js`
+- `src\core\defaults.js`
 
 ## Audit Trail
 

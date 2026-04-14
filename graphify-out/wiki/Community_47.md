@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **mstService.js** (0 connections) — `src\api\mstService.js`
+- **rebuild_wiki.py** (0 connections) — `scripts\rebuild_wiki.py`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\api\mstService.js`
+- `scripts\rebuild_wiki.py`
 
 ## Audit Trail
 

@@ -58,6 +58,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 ## 2. Nhật ký Quyết định (Decision Log)
 
 - **2026-04-15 (UI - Pinned Mode)**: Thêm tính năng Ghim thu gọn UI. Khi kích hoạt chế độ ghim, `.vnpt-pinned` được thiết lập trên Panel. Thông qua CSS hover thuần túy, nội dung bên trong (`vnpt-panel-body`) sẽ tự động ẩn và trả lại không gian cho trang web, giảm che khuất form nhập liệu, và mở bung khi di chuột qua.
+- **2026-04-15 (Style Refactoring)**: Tách file `styles.js` nguyên khối (~1000 dòng) thành 7 module nhỏ trong thư mục `src/ui/styles/`. Cố định cấu trúc CSS thành các phần: Theme, Panel, Fields, Controls, Calculator, Scanner, Linker. Sử dụng `index.js` làm đầu mối gộp (Aggregator) để duy trì khả năng tương thích ngược cho hàm `injectStyles`. Việc này giúp giảm Cognitive Load khi analyze UI code.
 - **2026-04-07 (Glassmorphism UI)**: Thay thế hoàn toàn giao diện cũ sang phong cách mờ đục (blur) với màu Indigo/Slate để tăng tính sang trọng.
 - **2026-04-07 (Storage Abstraction)**: Di chuyển toàn bộ logic `localStorage` vào `src/api/storage/` để quản lý tập trung và tránh xung đột dữ liệu.
 - **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn.

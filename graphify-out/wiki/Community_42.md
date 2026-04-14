@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **migrationHelper.js** (1 connections) — `src\utils\migrationHelper.js`
-- **initStorageMerge()** (1 connections) — `src\utils\migrationHelper.js`
+- **widget.js** (1 connections) — `src\ui\widget.js`
+- **initWidget()** (1 connections) — `src\ui\widget.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\utils\migrationHelper.js`
+- `src\ui\widget.js`
 
 ## Audit Trail
 

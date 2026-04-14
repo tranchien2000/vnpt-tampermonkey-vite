@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **state.js** (0 connections) — `src\core\state.js`
+- **localAdapter.js** (0 connections) — `src\api\storage\localAdapter.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\core\state.js`
+- `src\api\storage\localAdapter.js`
 
 ## Audit Trail
 

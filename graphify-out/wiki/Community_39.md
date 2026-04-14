@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **toast.js** (1 connections) — `src\ui\toast.js`
-- **showToast()** (1 connections) — `src\ui\toast.js`
+- **screenScanner.js** (1 connections) — `src\features\screenScan\screenScanner.js`
+- **scrapeScreenText()** (1 connections) — `src\features\screenScan\screenScanner.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\ui\toast.js`
+- `src\features\screenScan\screenScanner.js`
 
 ## Audit Trail
 

@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **fields.js** (0 connections) — `src\ui\styles\fields.js`
+- **constants.js** (0 connections) — `src\core\constants.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\ui\styles\fields.js`
+- `src\core\constants.js`
 
 ## Audit Trail
 

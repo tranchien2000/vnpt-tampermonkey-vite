@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **screenScanner.js** (1 connections) — `src\features\screenScan\screenScanner.js`
-- **scrapeScreenText()** (1 connections) — `src\features\screenScan\screenScanner.js`
+- **dataFillFeature.js** (1 connections) — `src\features\dataFillFeature.js`
+- **renderDataFillTabs()** (1 connections) — `src\features\dataFillFeature.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\features\screenScan\screenScanner.js`
+- `src\features\dataFillFeature.js`
 
 ## Audit Trail
 

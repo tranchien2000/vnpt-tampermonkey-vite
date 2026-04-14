@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **localClassifier.js** (2 connections) — `src\utils\localClassifier.js`
-- **findFirstMatch()** (2 connections) — `src\utils\localClassifier.js`
-- **classifyTextLocally()** (2 connections) — `src\utils\localClassifier.js`
+- **fileHelper.js** (2 connections) — `src\utils\fileHelper.js`
+- **downloadAsBase64()** (1 connections) — `src\utils\fileHelper.js`
+- **arrayBufferToBase64()** (1 connections) — `src\utils\fileHelper.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `src\utils\localClassifier.js`
+- `src\utils\fileHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 4 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

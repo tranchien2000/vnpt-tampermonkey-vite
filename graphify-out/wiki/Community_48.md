@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **remoteConfig.js** (0 connections) — `src\api\remoteConfig.js`
+- **firebaseConfig.js** (0 connections) — `src\api\firebaseConfig.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\api\remoteConfig.js`
+- `src\api\firebaseConfig.js`
 
 ## Audit Trail
 

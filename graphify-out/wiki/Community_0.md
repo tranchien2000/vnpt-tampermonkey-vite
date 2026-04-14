@@ -4,21 +4,21 @@
 
 ## Key Concepts
 
-- **domHelper.js** (14 connections) — `src\utils\domHelper.js`
-- **findPageInput()** (7 connections) — `src\utils\domHelper.js`
-- **buildFullDOMMap()** (6 connections) — `src\utils\domHelper.js`
-- **setPageFieldsSequential()** (6 connections) — `src\utils\domHelper.js`
-- **syncSetValue()** (5 connections) — `src\utils\domHelper.js`
-- **waitForElement()** (4 connections) — `src\utils\domHelper.js`
-- **setPageField()** (3 connections) — `src\utils\domHelper.js`
-- **getVNPTAddressGroup()** (3 connections) — `src\utils\domHelper.js`
-- **clearDOMCache()** (2 connections) — `src\utils\domHelper.js`
-- **refreshLabelsCache()** (2 connections) — `src\utils\domHelper.js`
-- **triggerCustom()** (2 connections) — `src\utils\domHelper.js`
-- **waitForOptions()** (2 connections) — `src\utils\domHelper.js`
-- **getInputByLabel()** (2 connections) — `src\utils\domHelper.js`
-- **invalidateDOMMap()** (1 connections) — `src\utils\domHelper.js`
-- **getFieldRank()** (1 connections) — `src\utils\domHelper.js`
+- **fieldsManager.js** (14 connections) — `src\features\fieldsManager.js`
+- **addOrUpdateFieldRow()** (4 connections) — `src\features\fieldsManager.js`
+- **refreshRowValidation()** (3 connections) — `src\features\fieldsManager.js`
+- **updateUIForDefaultMode()** (3 connections) — `src\features\fieldsManager.js`
+- **validateField()** (2 connections) — `src\features\fieldsManager.js`
+- **updateSyncDirIcon()** (2 connections) — `src\features\fieldsManager.js`
+- **saveFieldsToLocal()** (2 connections) — `src\features\fieldsManager.js`
+- **loadSavedData()** (2 connections) — `src\features\fieldsManager.js`
+- **initColSplitter()** (2 connections) — `src\features\fieldsManager.js`
+- **initFieldsManager()** (2 connections) — `src\features\fieldsManager.js`
+- **renderCalcMappingInBanner()** (2 connections) — `src\features\fieldsManager.js`
+- **startFieldLinker()** (1 connections) — `src\features\fieldsManager.js`
+- **getBackupName()** (1 connections) — `src\features\fieldsManager.js`
+- **getExportFileName()** (1 connections) — `src\features\fieldsManager.js`
+- **syncAllFields()** (1 connections) — `src\features\fieldsManager.js`
 
 ## Relationships
 
@@ -26,11 +26,11 @@
 
 ## Source Files
 
-- `src\utils\domHelper.js`
+- `src\features\fieldsManager.js`
 
 ## Audit Trail
 
-- EXTRACTED: 60 (100%)
+- EXTRACTED: 42 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

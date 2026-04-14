@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **dataFillFeature.js** (1 connections) — `src\features\dataFillFeature.js`
-- **renderDataFillTabs()** (1 connections) — `src\features\dataFillFeature.js`
+- **scannerFallbacks.js** (1 connections) — `src\core\scannerFallbacks.js`
+- **getScannerFallback()** (1 connections) — `src\core\scannerFallbacks.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\features\dataFillFeature.js`
+- `src\core\scannerFallbacks.js`
 
 ## Audit Trail
 

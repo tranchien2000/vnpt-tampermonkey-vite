@@ -1,16 +1,16 @@
 # Project Architecture (Graphify Optimized)
-*Cập nhật: 02:10:57 15/4/2026*
+*Cập nhật: 02:30:52 15/4/2026*
 
 ## graphify-out/GRAPH_REPORT.md
 
-# Graph Report - .  (2026-04-14)
+# Graph Report - C:\Users\Chien\vnpt-tampermonkey-vite  (2026-04-15)
 
 ## Corpus Check
-- 64 files � ~62,390 words
+- 71 files � ~63,825 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 222 nodes � 232 edges � 60 communities detected
+- 235 nodes � 241 edges � 66 communities detected
 - Extraction: 100% EXTRACTED � 0% INFERRED � 0% AMBIGUOUS
 - Token cost: 0 input � 0 output
 
@@ -32,12 +32,12 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.29
-Nodes (12): buildFullDOMMap(), clearDOMCache(), findPageInput(), getInputByLabel(), getVNPTAddressGroup(), refreshLabelsCache(), setPageField(), setPageFieldsSequential() (+4 more)
+Cohesion: 0.2
+Nodes (10): addOrUpdateFieldRow(), initColSplitter(), initFieldsManager(), loadSavedData(), refreshRowValidation(), renderCalcMappingInBanner(), saveFieldsToLocal(), updateSyncDirIcon() (+2 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.21
-Nodes (8): addOrUpdateFieldRow(), loadSavedData(), refreshRowValidation(), renderCalcMappingInBanner(), saveFieldsToLocal(), updateSyncDirIcon(), updateUIForDefaultMode(), validateField()
+Cohesion: 0.29
+Nodes (12): buildFullDOMMap(), clearDOMCache(), findPageInput(), getInputByLabel(), getVNPTAddressGroup(), refreshLabelsCache(), setPageField(), setPageFieldsSequential() (+4 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.36
@@ -48,28 +48,28 @@ Cohesion: 0.24
 Nodes (5): cleanProvinceName(), findBestMatch(), getLevenshteinDistance(), getSimilarity(), parseAddressComponents()
 
 ### Community 4 - "Community 4"
+Cohesion: 0.25
+Nodes (2): clearQueue(), renderQueue()
+
+### Community 5 - "Community 5"
 Cohesion: 0.31
 Nodes (5): deleteInternalBackup(), exportFullBackup(), flattenData(), getInternalBackups(), restoreInternalBackup()
 
-### Community 5 - "Community 5"
+### Community 6 - "Community 6"
 Cohesion: 0.29
 Nodes (2): getHotkeyString(), handleRecording()
 
-### Community 6 - "Community 6"
+### Community 7 - "Community 7"
 Cohesion: 0.5
 Nodes (6): createProfileFromCurrent(), deleteProfile(), getActiveProfileId(), getProfiles(), importProfiles(), switchProfile()
 
-### Community 7 - "Community 7"
+### Community 8 - "Community 8"
 Cohesion: 0.33
 Nodes (2): initCalcWidget(), renderHist()
 
-### Community 8 - "Community 8"
-Cohesion: 0.33
-Nodes (2): injectMailBridge(), _waitForBody()
-
 ### Community 9 - "Community 9"
 Cohesion: 0.33
-Nodes (2): clearQueue(), renderQueue()
+Nodes (2): injectMailBridge(), _waitForBody()
 
 ### Community 10 - "Community 10"
 Cohesion: 0.4
@@ -128,16 +128,16 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 24 - "Community 24"
-Cohesion: 0.67
-Nodes (0): 
+Cohesion: 1.0
+Nodes (2): generateVNPTMockData(), randomDigit()
 
 ### Community 25 - "Community 25"
-Cohesion: 1.0
-Nodes (2): initDragDrop(), makeDraggable()
-
-### Community 26 - "Community 26"
 Cohesion: 0.67
 Nodes (0): 
+
+### Community 26 - "Community 26"
+Cohesion: 1.0
+Nodes (2): initDragDrop(), makeDraggable()
 
 ### Community 27 - "Community 27"
 Cohesion: 0.67
@@ -152,15 +152,15 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 30 - "Community 30"
-Cohesion: 1.0
-Nodes (2): classifyTextLocally(), findFirstMatch()
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 31 - "Community 31"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): classifyTextLocally(), findFirstMatch()
 
 ### Community 32 - "Community 32"
-Cohesion: 1.0
+Cohesion: 0.67
 Nodes (0): 
 
 ### Community 33 - "Community 33"
@@ -271,64 +271,96 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
+### Community 60 - "Community 60"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 61 - "Community 61"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 62 - "Community 62"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 63 - "Community 63"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 64 - "Community 64"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 65 - "Community 65"
+Cohesion: 1.0
+Nodes (0): 
+
 ## Knowledge Gaps
-- **Thin community `Community 31`** (2 nodes): `dev.user.js`, `loadScript()`
+- **Thin community `Community 33`** (2 nodes): `dev.user.js`, `loadScript()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (2 nodes): `vite.config.js`, `generateBundle()`
+- **Thin community `Community 34`** (2 nodes): `vite.config.js`, `generateBundle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (2 nodes): `scannerFallbacks.js`, `getScannerFallback()`
+- **Thin community `Community 35`** (2 nodes): `scannerFallbacks.js`, `getScannerFallback()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (2 nodes): `autoFillForm.js`, `setupAutoFillForm()`
+- **Thin community `Community 36`** (2 nodes): `autoFillForm.js`, `setupAutoFillForm()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (2 nodes): `dataFillFeature.js`, `renderDataFillTabs()`
+- **Thin community `Community 37`** (2 nodes): `dataFillFeature.js`, `renderDataFillTabs()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (2 nodes): `calcUI.js`, `createCalcUI()`
+- **Thin community `Community 38`** (2 nodes): `calcUI.js`, `createCalcUI()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (2 nodes): `screenScanner.js`, `scrapeScreenText()`
+- **Thin community `Community 39`** (2 nodes): `screenScanner.js`, `scrapeScreenText()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (2 nodes): `styles.js`, `injectStyles()`
+- **Thin community `Community 40`** (2 nodes): `styles.js`, `injectStyles()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (2 nodes): `toast.js`, `showToast()`
+- **Thin community `Community 41`** (2 nodes): `toast.js`, `showToast()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (2 nodes): `widget.js`, `initWidget()`
+- **Thin community `Community 42`** (2 nodes): `widget.js`, `initWidget()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (2 nodes): `addressLearning.js`, `normalizeForMatch()`
+- **Thin community `Community 43`** (2 nodes): `addressLearning.js`, `normalizeForMatch()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (2 nodes): `migrationHelper.js`, `initStorageMerge()`
+- **Thin community `Community 44`** (2 nodes): `migrationHelper.js`, `initStorageMerge()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (1 nodes): `fix_auth.ps1`
+- **Thin community `Community 45`** (1 nodes): `fix_auth.ps1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (1 nodes): `test_classifier.js`
+- **Thin community `Community 46`** (1 nodes): `test_classifier.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `rebuild_wiki.py`
+- **Thin community `Community 47`** (1 nodes): `rebuild_wiki.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `firebaseConfig.js`
+- **Thin community `Community 48`** (1 nodes): `firebaseConfig.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `firebaseService.js`
+- **Thin community `Community 49`** (1 nodes): `firebaseService.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (1 nodes): `mstService.js`
+- **Thin community `Community 50`** (1 nodes): `mstService.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `remoteConfig.js`
+- **Thin community `Community 51`** (1 nodes): `remoteConfig.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `localAdapter.js`
+- **Thin community `Community 52`** (1 nodes): `localAdapter.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (1 nodes): `constants.js`
+- **Thin community `Community 53`** (1 nodes): `constants.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (1 nodes): `defaults.js`
+- **Thin community `Community 54`** (1 nodes): `defaults.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (1 nodes): `state.js`
+- **Thin community `Community 55`** (1 nodes): `state.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `fields.js`
+- **Thin community `Community 56`** (1 nodes): `calculator.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `panel.js`
+- **Thin community `Community 57`** (1 nodes): `controls.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `theme.js`
+- **Thin community `Community 58`** (1 nodes): `fields.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `logger.js`
+- **Thin community `Community 59`** (1 nodes): `linker.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `storage.js`
+- **Thin community `Community 60`** (1 nodes): `panel.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `test_address.js`
+- **Thin community `Community 61`** (1 nodes): `scanner.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 62`** (1 nodes): `theme.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 63`** (1 nodes): `logger.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 64`** (1 nodes): `storage.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 65`** (1 nodes): `test_address.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
