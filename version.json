@@ -1,5 +1,5 @@
 {
-  "version": "1.6.21",
+  "version": "1.6.22",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
+  "message": "v1.6.22 - Thêm tính năng ghim thu gọn giao diện Widget"
 }
