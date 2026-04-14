@@ -1,5 +1,5 @@
 {
   "version": "1.6.24",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "release: v1.6.24 - Modularize FieldsManager + fix template/layout bugs"
+  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
 }
