@@ -17,7 +17,7 @@ const MODULES = {
     },
     architecture: {
         file: 'brain_architecture.md',
-        docs: ['graphify-out/GRAPH_REPORT.md', 'ARCHITECTURE.md']
+        docs: ['graphify-out/GRAPH_REPORT.md', 'docs/ARCHITECTURE.md']
     },
     code_summary: {
         file: 'brain_code.md',
@@ -29,7 +29,7 @@ const MODULES = {
     },
     rules: {
         file: 'brain_rules.md',
-        files: ['.cursorrules']
+        files: ['docs/RULES.md', '.cursorrules']
     }
 };
 
