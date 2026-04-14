@@ -1,5 +1,5 @@
 {
-  "version": "1.6.16",
+  "version": "1.6.17",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.16 - Nâng cấp giao diện nút Sync Direction sang SVG, tối ưu GKG và Concise Rules"
+  "message": "v1.6.17 - Tích hợp Graphify Knowledge Graph làm bộ não chính"
 }
