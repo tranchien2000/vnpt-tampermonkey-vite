@@ -7,13 +7,31 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 
 ---
 
+## ⚡ 0. High-Efficiency Execution Rules (Tối ưu Hiệu suất Thực thi)
+
+> [!IMPORTANT]
+> **Mục tiêu:** Tối thiểu hóa việc sử dụng token, tối đa hóa tốc độ và tính nhất quán.
+> Output duy nhất ở cuối cuối cùng phải tập trung vào **Final code**.
+
+- **Kế hoạch & Phân tích (Plan First)**: Luôn phân tích toàn bộ yêu cầu và chốt một kế hoạch hoàn chỉnh trước khi bắt đầu chỉnh sửa code. Không phân tích lại từ đầu sau mỗi phần (no re-analyze after partial edits). Giới hạn quá trình suy luận (reasoning) trong một giai đoạn duy nhất.
+- **Thực thi chớp nhoáng (Execute Batch)**: Toàn bộ thay đổi phải được gộp thành một khối (batch) trong một thao tác duy nhất. Cấm tuyệt đối các chu kỳ think-edit xen kẽ ngắn lẻ tẻ (no iterative edits). Sửa nhiều file cùng một lúc (parallel operations) khi có thể.
+- **Tiêu chuẩn chỉnh sửa (Editing Standard)**: Ưu tiên can thiệp mỏng nhất có thể (minimal diffs). Hạn chế tối đa việc viết lại (rewrite) toàn bộ cấu trúc file nếu không cần thiết.
+- **Quy tắc phanh khẩn cấp (Stopping Condition)**:
+  - **Max iteration**: 2
+  - **Max file edit cycles**: 1
+  - **Dừng ngay lập tức** sau khi đã xả xong các chỉnh sửa theo kế hoạch. Tuyệt đối không tự động quay vòng (loop) hay tự thử lại (retry automatically). Nếu phát hiện vượt qua 2 chu kỳ → Ngưng tool ngay lập tức và in báo cáo.
+
+---
+
 ## 🚀 1. Core AI Mindset & Communication (Tư duy AI & Giao tiếp)
 
-- **Planning First**: Khi nhận yêu cầu mới, **BẮT BUỘC** phải lập kế hoạch chi tiết dưới dạng artifact (`implementation_plan.md`). **KHÔNG** viết kế hoạch trực tiếp vào trò chuyện. Chờ người dùng gõ "ok", "triển khai" thì mới tiến hành code.
-- **Concise Response & No Fluff**: Phản hồi ở mức tối giản (Ultra-Minimalist). Tuyệt đối KHÔNG lời chào rườm rà. Đi thẳng vào kết quả, giải pháp hoặc câu hỏi cần người dùng quyết định.
-- **Language Mandate**: Toàn bộ phản hồi, tài liệu, commit message và **code comments** phải dùng **Tiếng Việt**.
-- **Trace-First / Error-First**: Cần giải quyết lỗi dựa trên dòng Stack Trace rõ ràng (Line Number). **Không** Dump Code ra cửa sổ chat trừ phi người dùng dặn dò "show code".
-- **Micro-tasks (Chia để trị)**: Dùng `task.md` chia nhỏ chức năng thành checklist để triển khai.
+- **One-Shot Execution (Batching)**: Áp dụng mô hình `Plan (1 lần) -> Execute tập trung (1 lần) -> Done`. Gộp tất cả các thao tác sửa file vào cùng **một lượt gọi tool (parallel tool calls)**. Chống tuyệt đối vòng lặp vô tận kiểu "Thought -> Edit -> Thought -> Edit".
+- **Fast-Track Workflow**:
+  - Đới với _Yêu cầu nhỏ/Sửa UI/Bug_: Bỏ qua lập `implementation_plan.md`, KHÔNG tạo `task.md`, KHÔNG tạo `walkthrough.md`. Execute thẳng vào file và báo cáo bằng đúng 1 câu.
+  - Đối với _Chức năng lớn_: Lập `implementation_plan.md` -> Đợi "OK" -> Execute tất cả thay đổi trong 1 batch.
+- **Concise Response & No Fluff**: Phản hồi ở mức tối giản (Ultra-Minimalist). Trả lời báo cáo kết quả cực ngắn (1-2 câu). Tuyệt đối KHÔNG chào hỏi rườm rà, KHÔNG lặp lại phân tích tư duy.
+- **Language Mandate**: Toàn bộ phản hồi, tài liệu, và **code comments** phải dùng **Tiếng Việt**.
+- **Trace-First / Error-First**: Giải quyết lỗi dựa trên Line Number. Không Dump Code ra cửa sổ chat.
 
 ---
 
@@ -22,7 +40,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 - **Nhập khẩu (Imports)**: Dùng import cụ thể `import { foo } from 'module.js'`, tránh dùng `import *`.
 - **Hàm (Functions)**: Single-Responsibility, ưu tiên pure funtions, mỗi hàm khuyến cáo tối đa **30 dòng**.
 - **JSDoc**: Các export function lớn cần JSDoc (`/** @param ... */`).
-- **Quy tắc đặt tên**: 
+- **Quy tắc đặt tên**:
   - Biến/hàm: `camelCase`.
   - Hằng số: `UPPER_SNAKE`.
   - ID DOM: Prefix `vnpt-` (ví dụ: `vnpt-btn-submit`).

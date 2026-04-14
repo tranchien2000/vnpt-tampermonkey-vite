@@ -33,6 +33,8 @@ export const DEFAULT_DATA = {
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     emailB: { label: "Email B", value: "", syncDir: "both" },
     dvtGoi: { label: "Đơn vị gói", value: "Gói", syncDir: "both" },
+    soLuongGoi: { label: "Số Lượng Gói", value: "1", syncDir: "both" },
+    noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh", syncDir: "both" }
 };
 

@@ -106,4 +106,19 @@ export const panelStyles = `
     .vnpt-resizer:active { background: var(--vnpt-primary); transform: scale(1.2); }
 
     body.vnpt-resizing-global * { user-select: none !important; cursor: inherit !important; }
+
+    /* Pinned state */
+    #vnpt-export-panel.vnpt-pinned:not(:hover) {
+        min-height: unset !important;
+        height: auto !important;
+        padding-bottom: 0 !important;
+        width: 460px; /* Thêm width cố định để không bị giật khi hover (sẽ tự resize theo inline-style) */
+    }
+    #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-panel-body {
+        display: none !important;
+    }
+    /* Chắc chắn inline calc đang hiện khi pinned */
+    #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-inline-calc {
+        display: block !important;
+    }
 `;

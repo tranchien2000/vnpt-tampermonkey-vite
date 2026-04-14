@@ -9,7 +9,7 @@
 import { AppState } from '../core/state.js';
 import { renderTemplateManager, saveLocalTemplate } from '../features/templateManager.js';
 import { initFieldsManager, loadSavedData } from '../features/fieldsManager.js';
-import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS, SK_CALC_MAP, SK_HOTKEYS, APP_VERSION } from '../core/constants.js';
+import { LOCAL_KEY_SIZE, LOCAL_KEY_OPENED, LOCAL_KEY_POS, SK_CALC_MAP, SK_HOTKEYS, APP_VERSION, LOCAL_KEY_PINNED } from '../core/constants.js';
 import { DEFAULT_CALC_MAP, DEFAULT_HOTKEYS } from '../core/defaults.js';
 import { exportConfig } from '../features/configManager.js';
 import { Storage } from '../utils/storage.js';
@@ -19,13 +19,15 @@ import { showToast } from './toast.js';
 import { testGeminiConnection } from '../api/gemini.js';
 import { initCloudSyncUI } from './components/CloudSyncUI.js';
 import { RemoteConfig } from '../api/remoteConfig.js';
+import { generateVNPTMockData } from '../features/mockDataGenerator.js';
 
 
 export function initWidget() {
     const widget = document.getElementById('vnpt-docx-widget') || document.createElement('div');
     widget.id = 'vnpt-docx-widget'; // Widget bọc ngoài cùng
-    // Khôi phục trạng thái mở/đóng
+    // Khôi phục trạng thái mở/đóng và ghim
     const isOpened = Storage.get(LOCAL_KEY_OPENED) === true;
+    const isPinned = Storage.get(LOCAL_KEY_PINNED) === true;
 
     widget.innerHTML = `
         <button id="vnpt-toggle-btn" title="Mở/Đóng UI Hợp đồng" class="${isOpened ? 'btn-opened' : 'btn-closed'}">${isOpened ? '✖' : '📄'}</button>
@@ -39,6 +41,7 @@ export function initWidget() {
 
             <div id="vnpt-panel-header" title="Kẹp chuột vào đây để di chuyển">
                 <div class="header-left">
+                    <button class="vnpt-btn-icon" id="vnpt-btn-pin" title="Ghim thu gọn UI (Tự mở khi di chuột)" style="margin-right:4px; font-size:12px; width:24px; height:24px; border:none; background:transparent;">${isPinned ? '📌' : '📎'}</button>
                     <span id="vnpt-panel-title">VNPT PRO</span>
                     <span class="vnpt-version">v${APP_VERSION}</span>
                     <span id="vnpt-update-badge-container"></span>
@@ -143,6 +146,7 @@ export function initWidget() {
                         <button class="vnpt-btn-icon" id="vnpt-btn-export-txt" title="Copy chuỗi thành Text Template">📋</button>
                         <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex">QR Text</button>
                         <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process">QUÉT AI</button>
+                        <span id="vnpt-token-usage" title="Dung lượng AI đã dùng hôm nay (Reset lúc 0h)" style="font-size: 11px; color: #5f6368; font-weight: 500; margin-left: auto; display: flex; align-items: center; white-space: nowrap;">📊 0 req (0 tok)</span>
                     </div>
                 </div>
 
@@ -257,6 +261,26 @@ export function initWidget() {
         }
     });
 
+    // Pin/Unpin Logic
+    const pinBtn = document.getElementById('vnpt-btn-pin');
+    if (isPinned) AppState.panel.classList.add('vnpt-pinned');
+    
+    pinBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const currentlyPinned = AppState.panel.classList.contains('vnpt-pinned');
+        if (currentlyPinned) {
+            AppState.panel.classList.remove('vnpt-pinned');
+            Storage.set(LOCAL_KEY_PINNED, false);
+            pinBtn.innerHTML = '📎';
+            pinBtn.title = 'Ghim thu gọn UI (Tự mở khi di chuột)';
+        } else {
+            AppState.panel.classList.add('vnpt-pinned');
+            Storage.set(LOCAL_KEY_PINNED, true);
+            pinBtn.innerHTML = '📌';
+            pinBtn.title = 'Bỏ ghim UI';
+        }
+    });
+
     const moreBtn = document.getElementById('vnpt-btn-more');
     const utilMenu = document.getElementById('vnpt-util-menu');
     const SIZE_PRESETS = {
@@ -317,6 +341,14 @@ export function initWidget() {
     }
 
     document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup();
+
+    const btnMockData = document.getElementById('vnpt-btn-mock-data');
+    if (btnMockData) {
+        btnMockData.onclick = () => {
+            generateVNPTMockData();
+            showToast("🎲 Đã sinh dữ liệu ảo (Mock Data) thành công!", "#9c27b0");
+        };
+    }
 
 
 
@@ -512,4 +544,17 @@ export function initWidget() {
     // Kiểm tra ngay khi init và sau khi RemoteConfig refresh
     setTimeout(checkUpdateUI, 1000);
     // Lắng nghe RemoteConfig nếu có trigger (hiện tại RemoteConfig chưa có event emitter, nhưng setTimeout là đủ)
+
+    // --- Token Tracker UI ---
+    import('../utils/tokenTracker.js').then(({ TokenTracker }) => {
+        const usageEl = document.getElementById('vnpt-token-usage');
+        if (usageEl) {
+            const usage = TokenTracker.getUsage();
+            usageEl.textContent = `📊 ${usage.requests} req (${usage.tokens.toLocaleString()} tok)`;
+            
+            document.addEventListener('vnpt_usage_updated', (e) => {
+                usageEl.textContent = `📊 ${e.detail.requests} req (${e.detail.tokens.toLocaleString()} tok)`;
+            });
+        }
+    });
 }

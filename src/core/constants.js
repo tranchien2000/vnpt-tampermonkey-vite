@@ -8,12 +8,12 @@
  */
 export const DEFAULT_LABELS = {
     'tenDaiDienn, tenNguoiNhanCTS, ten': 'Tên Đại Diện',
-    'chucVu': 'Chức Vụ',
+    'chucVu ': 'Chức Vụ',
     'ngaySinhCustomer': 'Ngày Sinh KH',
-    'diaChi': 'Địa chỉ (Full)',
+    'diaChi ': 'Địa chỉ (Full)',
     'cmnd, cccd': 'CMND/CCCD',
     'ngayCapCustomer': 'Ngày Cấp CMND',
-    'noiCap': 'Nơi Cấp',
+    'noiCap, noiCapId': 'Nơi Cấp',
     'sdt': 'SĐT',
     'emailDaiDien, emailNhanCTS, email': 'Email Nhận TK',
     'soDkdn': 'Mã số thuế | GPKD',
@@ -27,8 +27,6 @@ export const DEFAULT_LABELS = {
     'thangKy, thangKy1': 'Tháng Ký',
     'namKy, namKy1': 'Năm ký',
     'ngayTiepNhan, ngayThangNamKy': 'Ngày tiếp nhận / Ngày tháng năm ký',
-    'soLuongGoi': 'Số Lượng Gói',
-    'noiKy': 'Nơi ký',
     'duong': 'Số nhà, tên đường',
     'xaIdNew, diaChiTruSoXaIdNew': 'Quận/Huyện - Xã/Phường',
     'tinhIdNew, tinhId, diaChiTruSoTinhIdNew': 'Tỉnh/Thành phố',
@@ -42,6 +40,7 @@ export const LOCAL_KEY_DEFAULT_FIELDS = 'vnpt_docx_default_fields';
 export const LOCAL_KEY_POS = 'vnpt_docx_position';
 export const LOCAL_KEY_SIZE = 'vnpt_docx_size';
 export const LOCAL_KEY_OPENED = 'vnpt_docx_opened';
+export const LOCAL_KEY_PINNED = 'vnpt_docx_pinned';
 export const LOCAL_KEY_AUTO_BACKUP = 'vnpt_docx_auto_backup';
 
 // VNPT Calc & AutoFill Widget Keys
