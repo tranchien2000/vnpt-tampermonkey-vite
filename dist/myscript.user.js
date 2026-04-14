@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VNPT Word Automation
 // @namespace    http://tampermonkey.net/
-// @version      1.6.24
+// @version      1.6.21
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
@@ -1060,9 +1060,9 @@
   const LOCAL_KEY_ACTIVE_PROFILE_ID = "vnpt_docx_active_profile_id";
   const SK_RAW_SCAN = "vnpt_raw_scan_text";
   const SK_ADDRESS_LEARNING = "vnpt_address_learning";
-  const SK_COL_RATIO = "vnpt_col_ratio";
-  const COL_RATIO_MIN = 0.08;
-  const COL_RATIO_MAX = 0.6;
+  const SK_COL_RATIO$1 = "vnpt_col_ratio";
+  const COL_RATIO_MIN$1 = 0.08;
+  const COL_RATIO_MAX$1 = 0.6;
   const VALIDATION_REGEX = {
     MST: /^\d{10}(-\d{3})?$/,
     // 10 số hoặc 10 số - 3 số
@@ -1076,8 +1076,8 @@
   const constants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     APP_VERSION,
-    COL_RATIO_MAX,
-    COL_RATIO_MIN,
+    COL_RATIO_MAX: COL_RATIO_MAX$1,
+    COL_RATIO_MIN: COL_RATIO_MIN$1,
     DEFAULT_LABELS,
     LOCAL_KEY_ACTIVE_PROFILE_ID,
     LOCAL_KEY_AUTO_BACKUP,
@@ -1092,7 +1092,7 @@
     SK_ADDRESS_LEARNING,
     SK_CALC_MAP,
     SK_COLLAPSE,
-    SK_COL_RATIO,
+    SK_COL_RATIO: SK_COL_RATIO$1,
     SK_DATATAB,
     SK_DATA_CUS,
     SK_DATA_DEF,
@@ -26151,7 +26151,7 @@ This typically indicates that your device does not have a healthy Internet conne
     const splitter = document.getElementById("vnpt-col-splitter");
     const container = document.getElementById("vnpt-fields-container");
     if (!splitter || !container) return;
-    const savedRatio = parseFloat(Storage.get(SK_COL_RATIO)) || 0.2;
+    const savedRatio = parseFloat(Storage.get(SK_COL_RATIO$1)) || 0.2;
     container.style.setProperty("--label-flex", savedRatio);
     splitter.addEventListener("mousedown", (e) => {
       e.preventDefault();
@@ -26166,7 +26166,7 @@ This typically indicates that your device does not have a healthy Internet conne
         const dx = moveEvt.clientX - startX;
         const totalWidth = containerRect.width;
         const deltaRatio = dx / totalWidth;
-        const newRatio = Math.min(COL_RATIO_MAX, Math.max(COL_RATIO_MIN, startRatio + deltaRatio));
+        const newRatio = Math.min(COL_RATIO_MAX$1, Math.max(COL_RATIO_MIN$1, startRatio + deltaRatio));
         container.style.setProperty("--label-flex", newRatio.toFixed(3));
       };
       const onMouseUp = () => {
@@ -26176,14 +26176,14 @@ This typically indicates that your device does not have a healthy Internet conne
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
         const finalRatio = container.style.getPropertyValue("--label-flex");
-        Storage.set(SK_COL_RATIO, parseFloat(finalRatio));
+        Storage.set(SK_COL_RATIO$1, parseFloat(finalRatio));
       };
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("mouseup", onMouseUp);
     });
     splitter.addEventListener("dblclick", () => {
       container.style.setProperty("--label-flex", "0.2");
-      Storage.set(SK_COL_RATIO, 0.2);
+      Storage.set(SK_COL_RATIO$1, 0.2);
       showToast("↔ Đã reset tỉ lệ cột về mặc định", "#5f6368");
     });
   }
