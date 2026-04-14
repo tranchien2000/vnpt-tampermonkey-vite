@@ -650,9 +650,77 @@ export function loadSavedData() {
     }
 }
 
+const SK_COL_RATIO = 'VNPT_COL_RATIO';
+const COL_RATIO_MIN = 0.08;
+const COL_RATIO_MAX = 0.6;
+
+/**
+ * Khởi tạo thanh kéo chia cột (Label / Value) trong Fields List.
+ * Kéo trái/phải để thay đổi tỉ lệ flex, lưu lại giữa các session.
+ */
+function initColSplitter() {
+    const splitter = document.getElementById('vnpt-col-splitter');
+    const container = document.getElementById('vnpt-fields-container');
+    if (!splitter || !container) return;
+
+    // Khôi phục tỉ lệ đã lưu
+    const savedRatio = parseFloat(Storage.get(SK_COL_RATIO)) || 0.2;
+    container.style.setProperty('--label-flex', savedRatio);
+
+    splitter.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        splitter.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+
+        const containerRect = container.getBoundingClientRect();
+        const startX = e.clientX;
+        const startRatio = parseFloat(container.style.getPropertyValue('--label-flex')) || 0.2;
+
+        const onMouseMove = (moveEvt) => {
+            const dx = moveEvt.clientX - startX;
+            const totalWidth = containerRect.width;
+            // Tính tỉ lệ mới dựa trên delta pixel so với tổng chiều rộng container
+            const deltaRatio = dx / totalWidth;
+            const newRatio = Math.min(COL_RATIO_MAX, Math.max(COL_RATIO_MIN, startRatio + deltaRatio));
+            container.style.setProperty('--label-flex', newRatio.toFixed(3));
+        };
+
+        const onMouseUp = () => {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+            splitter.classList.remove('dragging');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+
+            // Lưu tỉ lệ cuối
+            const finalRatio = container.style.getPropertyValue('--label-flex');
+            Storage.set(SK_COL_RATIO, parseFloat(finalRatio));
+        };
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+    });
+
+    // Double-click để reset về mặc định
+    splitter.addEventListener('dblclick', () => {
+        container.style.setProperty('--label-flex', '0.2');
+        Storage.set(SK_COL_RATIO, 0.2);
+        showToast('↔ Đã reset tỉ lệ cột về mặc định', '#5f6368');
+    });
+}
+
 export function initFieldsManager() {
-    // Nút Ẩn/Hiện Mã ID
-    document.getElementById('vnpt-btn-toggle-id').onclick = () => AppState.fieldsContainer.classList.toggle('show-ids');
+    // Nút Ẩn/Hiện Mã ID — áp dụng lên wrapper (#vnpt-fields-container) để CSS .show-ids hoạt động đúng
+    document.getElementById('vnpt-btn-toggle-id').onclick = () => {
+        const wrapper = document.getElementById('vnpt-fields-container');
+        if (wrapper) wrapper.classList.toggle('show-ids');
+    };
+
+    // --- Resizable Label/Value Column Splitter ---
+    initColSplitter();
 
 
     // Nút Clean Data / Reset hệ thống

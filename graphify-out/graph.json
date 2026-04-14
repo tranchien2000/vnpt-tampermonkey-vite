@@ -52,6 +52,14 @@
       "community": 44
     },
     {
+      "label": "rebuild_wiki.py",
+      "file_type": "code",
+      "source_file": "scripts\\rebuild_wiki.py",
+      "source_location": "L1",
+      "id": "rebuild_wiki",
+      "community": 45
+    },
+    {
       "label": "main.js",
       "file_type": "code",
       "source_file": "src\\main.js",
@@ -81,7 +89,7 @@
       "source_file": "src\\api\\firebaseConfig.js",
       "source_location": "L1",
       "id": "firebaseconfig",
-      "community": 45
+      "community": 46
     },
     {
       "label": "firebaseService.js",
@@ -89,7 +97,7 @@
       "source_file": "src\\api\\firebaseService.js",
       "source_location": "L1",
       "id": "firebaseservice",
-      "community": 46
+      "community": 47
     },
     {
       "label": "gemini.js",
@@ -121,7 +129,7 @@
       "source_file": "src\\api\\mstService.js",
       "source_location": "L1",
       "id": "mstservice",
-      "community": 47
+      "community": 48
     },
     {
       "label": "remoteConfig.js",
@@ -129,7 +137,7 @@
       "source_file": "src\\api\\remoteConfig.js",
       "source_location": "L1",
       "id": "remoteconfig",
-      "community": 48
+      "community": 49
     },
     {
       "label": "idb.js",
@@ -185,7 +193,7 @@
       "source_file": "src\\api\\storage\\localAdapter.js",
       "source_location": "L1",
       "id": "localadapter",
-      "community": 49
+      "community": 50
     },
     {
       "label": "constants.js",
@@ -193,7 +201,7 @@
       "source_file": "src\\core\\constants.js",
       "source_location": "L1",
       "id": "constants",
-      "community": 50
+      "community": 51
     },
     {
       "label": "defaults.js",
@@ -201,7 +209,7 @@
       "source_file": "src\\core\\defaults.js",
       "source_location": "L1",
       "id": "defaults",
-      "community": 51
+      "community": 52
     },
     {
       "label": "scannerFallbacks.js",
@@ -225,7 +233,7 @@
       "source_file": "src\\core\\state.js",
       "source_location": "L1",
       "id": "state",
-      "community": 52
+      "community": 53
     },
     {
       "label": "autoFillForm.js",
@@ -1225,7 +1233,7 @@
       "source_file": "src\\ui\\styles\\fields.js",
       "source_location": "L1",
       "id": "fields",
-      "community": 53
+      "community": 54
     },
     {
       "label": "panel.js",
@@ -1233,7 +1241,7 @@
       "source_file": "src\\ui\\styles\\panel.js",
       "source_location": "L1",
       "id": "panel",
-      "community": 54
+      "community": 55
     },
     {
       "label": "theme.js",
@@ -1241,7 +1249,7 @@
       "source_file": "src\\ui\\styles\\theme.js",
       "source_location": "L1",
       "id": "theme",
-      "community": 55
+      "community": 56
     },
     {
       "label": "addressLearning.js",
@@ -1601,7 +1609,7 @@
       "source_file": "src\\utils\\logger.js",
       "source_location": "L1",
       "id": "logger",
-      "community": 56
+      "community": 57
     },
     {
       "label": "migrationHelper.js",
@@ -1673,7 +1681,7 @@
       "source_file": "src\\utils\\storage.js",
       "source_location": "L1",
       "id": "storage",
-      "community": 57
+      "community": 58
     },
     {
       "label": "stringHelper.js",
@@ -1769,7 +1777,7 @@
       "source_file": "src\\utils\\tests\\test_address.js",
       "source_location": "L1",
       "id": "test_address",
-      "community": 58
+      "community": 59
     }
   ],
   "links": [
