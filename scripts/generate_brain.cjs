@@ -1,7 +1,6 @@
 /**
- * generate_brain.js
- * Script này tổng hợp tài liệu và thông tin cấu trúc dự án để phục vụ NotebookLM.
- * Nó tập trung vào Kiến trúc và Logic chính, không bao gồm mã nguồn chi tiết.
+ * generate_brain.cjs
+ * Script này tổng hợp tài liệu và cấu trúc dự án thành các module nhỏ để tối ưu hóa context cho AI và NotebookLM.
  */
 
 const fs = require('fs');
@@ -9,34 +8,36 @@ const path = require('path');
 
 const ROOT_DIR = path.join(__dirname, '..');
 const OUTPUT_DIR = path.join(ROOT_DIR, '.notebooklm');
-const OUTPUT_FILE = path.join(OUTPUT_DIR, 'brain_context.md');
 
-// Danh sách các file tài liệu ưu tiên
-const DOCS_TO_INCLUDE = [
-    'ARCHITECTURE.md',
-    'PROJECT_MEMORY.md',
-    'README.md',
-    'docs.md' // Nếu có trong quy tắc
-];
-
-// Các thư mục code cần quét tóm tắt
-const CODE_DIRS = [
-    'src/core',
-    'src/features',
-    'src/api',
-    'src/utils'
-];
-
-// Thư mục chứa Workflows
-const WORKFLOWS_DIR = '.agents/workflows';
+// Định nghĩa các module và file cần bao gồm
+const MODULES = {
+    identity: {
+        file: 'brain_identity.md',
+        docs: ['PROJECT_MEMORY.md', 'README.md']
+    },
+    architecture: {
+        file: 'brain_architecture.md',
+        docs: ['graphify-out/GRAPH_REPORT.md', 'ARCHITECTURE.md']
+    },
+    code_summary: {
+        file: 'brain_code.md',
+        dirs: ['src/core', 'src/features', 'src/api', 'src/utils']
+    },
+    workflows: {
+        file: 'brain_flows.md',
+        dir: '.agents/workflows'
+    },
+    rules: {
+        file: 'brain_rules.md',
+        files: ['.cursorrules']
+    }
+};
 
 function ensureDirectoryExistence(filePath) {
     const dirname = path.dirname(filePath);
-    if (fs.existsSync(dirname)) {
-        return true;
+    if (!fs.existsSync(dirname)) {
+        fs.mkdirSync(dirname, { recursive: true });
     }
-    ensureDirectoryExistence(dirname);
-    fs.mkdirSync(dirname);
 }
 
 function getFileSummary(relativeRef) {
@@ -50,7 +51,7 @@ function getFileSummary(relativeRef) {
     let inComment = false;
     let lineCount = 0;
 
-    for (let i = 0; i < Math.min(lines.length, 30); i++) {
+    for (let i = 0; i < Math.min(lines.length, 50); i++) {
         const line = lines[i].trim();
         if (line.startsWith('/**') || line.startsWith('/*')) {
             inComment = true;
@@ -65,82 +66,85 @@ function getFileSummary(relativeRef) {
             break;
         }
         lineCount++;
-        if (lineCount > 10) break; // Limit to 10 lines max per file
+        if (lineCount > 15) break; 
     }
 
     return summary.trim() || 'No description available.';
 }
 
 function generate() {
-    console.log('--- Đang tổng hợp dữ liệu rút gọn cho NotebookLM ---');
-    let output = `# VNPT PROJECT BRAIN CONTEXT (OPTIMIZED)\n`;
-    output += `*Ngày cập nhật: ${new Date().toLocaleString('vi-VN')}*\n\n`;
+    console.log('--- Đang khởi tạo Bộ não dự án (Multi-module) ---');
+    const timestamp = new Date().toLocaleString('vi-VN');
 
-    // 1. Thêm các file tài liệu chính (có giới hạn)
-    output += `## 1. TÀI LIỆU CỐT LÕI (CORE DOCUMENTS)\n\n`;
-    for (const doc of DOCS_TO_INCLUDE) {
-        const docPath = path.join(ROOT_DIR, doc);
-        if (fs.existsSync(docPath)) {
-            console.log(`Đang đọc: ${doc}`);
-            output += `### File: ${doc}\n\n`;
-
-            let docContent = fs.readFileSync(docPath, 'utf8');
-            if (doc === 'README.md') {
-                // Chỉ lấy 100 dòng đầu của README
-                const lines = docContent.split('\n');
-                docContent = lines.slice(0, 100).join('\n') + '\n\n... (phần còn lại đã được lược bỏ để tiết kiệm context) ...';
-            }
-            output += docContent + '\n\n---\n\n';
+    // 1. Module Identity (Dưới 50 dòng README)
+    let identityContent = `# Project Identity & Memory\n*Cập nhật: ${timestamp}*\n\n`;
+    for (const doc of MODULES.identity.docs) {
+        const p = path.join(ROOT_DIR, doc);
+        if (fs.existsSync(p)) {
+            console.log(`Đang đọc Identity: ${doc}`);
+            let content = fs.readFileSync(p, 'utf8');
+            if (doc === 'README.md') content = content.split('\n').slice(0, 100).join('\n') + '\n\n... (lược bỏ) ...';
+            identityContent += `## ${doc}\n\n${content}\n\n---\n\n`;
         }
     }
+    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.identity.file), identityContent);
 
-    // 2. Thêm tóm tắt cấu trúc code
-    output += `## 2. TÓM TẮT CẤU TRÚC MÃ NGUỒN (CODE LOGIC SUMMARIES)\n\n`;
+    // 2. Module Architecture (Graphify + Architecture Docs)
+    let archContent = `# Project Architecture (Graphify Optimized)\n*Cập nhật: ${timestamp}*\n\n`;
+    for (const doc of MODULES.architecture.docs) {
+        const p = path.join(ROOT_DIR, doc);
+        if (fs.existsSync(p)) {
+            console.log(`Đang đọc Arch: ${doc}`);
+            archContent += `## ${doc}\n\n${fs.readFileSync(p, 'utf8')}\n\n---\n\n`;
+        }
+    }
+    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.architecture.file), archContent);
 
-    for (const dir of CODE_DIRS) {
+    // 3. Module Code Summary
+    let codeContent = `# Source Code Logic Map\n*Cập nhật: ${timestamp}*\n\n`;
+    for (const dir of MODULES.code_summary.dirs) {
         const fullDirPath = path.join(ROOT_DIR, dir);
         if (fs.existsSync(fullDirPath)) {
-            output += `### Thư mục: ${dir}\n\n`;
+            codeContent += `## Thư mục: ${dir}\n\n| File | Mô tả |\n| :--- | :--- |\n`;
             const files = fs.readdirSync(fullDirPath);
-
-            output += `| File | Mô tả |\n| :--- | :--- |\n`;
             for (const file of files) {
                 const relativeFile = path.join(dir, file);
                 const fullFilePath = path.join(ROOT_DIR, relativeFile);
-
                 if (fs.statSync(fullFilePath).isFile() && (file.endsWith('.js') || file.endsWith('.ts'))) {
-                    const summary = getFileSummary(relativeFile).replace(/\n/g, '<br>');
-                    output += `| ${file} | ${summary} |\n`;
+                    const summary = (getFileSummary(relativeFile) || '').replace(/\n/g, '<br>');
+                    codeContent += `| ${file} | ${summary} |\n`;
                 }
             }
-            output += '\n';
+            codeContent += '\n';
         }
     }
+    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.code_summary.file), codeContent);
 
-    // 3. Thêm Workflows (Chỉ lấy Description)
-    output += `## 3. DANH MỤC QUY TRÌNH (WORKFLOWS MAP)\n\n`;
-    const workflowsPath = path.join(ROOT_DIR, WORKFLOWS_DIR);
-    if (fs.existsSync(workflowsPath)) {
-        const wfFiles = fs.readdirSync(workflowsPath).filter(f => f.endsWith('.md'));
+    // 4. Module Workflows
+    let wfContent = `# Workflow Catalog\n*Cập nhật: ${timestamp}*\n\n`;
+    const wfDirPath = path.join(ROOT_DIR, MODULES.workflows.dir);
+    if (fs.existsSync(wfDirPath)) {
+        const wfFiles = fs.readdirSync(wfDirPath).filter(f => f.endsWith('.md'));
         for (const wf of wfFiles) {
-            const content = fs.readFileSync(path.join(workflowsPath, wf), 'utf8');
+            const content = fs.readFileSync(path.join(wfDirPath, wf), 'utf8');
             const descMatch = content.match(/description:\s*(.*)/);
-            const description = descMatch ? descMatch[1] : 'Không có mô tả.';
-            output += `- **/${wf.replace('.md', '')}**: ${description}\n`;
+            wfContent += `- **/${wf.replace('.md', '')}**: ${descMatch ? descMatch[1] : 'Không có mô tả.'}\n`;
         }
-        output += `\n> *Lưu ý: Để xem chi tiết workflow, hãy dùng lệnh view_file trực tiếp vào file trong thư mục .agents/workflows/*\n\n`;
     }
+    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.workflows.file), wfContent);
 
-    // 4. Quy tắc dự án (Cursorrules/Settings)
-    const cursorRulesPath = path.join(ROOT_DIR, '.cursorrules');
-    if (fs.existsSync(cursorRulesPath)) {
-        output += `## 4. QUY TẮC DỰ ÁN (.cursorrules)\n\n`;
-        output += fs.readFileSync(cursorRulesPath, 'utf8') + '\n\n';
+    // 5. Module Rules
+    let rulesContent = `# Project Rules\n*Cập nhật: ${timestamp}*\n\n`;
+    for (const file of MODULES.rules.files) {
+        const p = path.join(ROOT_DIR, file);
+        if (fs.existsSync(p)) {
+            rulesContent += `## Rules from ${file}\n\n${fs.readFileSync(p, 'utf8')}\n\n`;
+        }
     }
+    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.rules.file), rulesContent);
 
-    ensureDirectoryExistence(OUTPUT_FILE);
-    fs.writeFileSync(OUTPUT_FILE, output);
-    console.log(`==> Đã tạo xong: ${OUTPUT_FILE}`);
+    console.log(`==> Đã tạo xong 5 module não bộ tại: ${OUTPUT_DIR}`);
 }
 
+ensureDirectoryExistence(path.join(OUTPUT_DIR, 'dummy.txt'));
 generate();

@@ -93,4 +93,4 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 
 ---
 
-_Ghi chú: AI phải cập nhật file này sau mỗi task lớn bằng workflow `/update-memory`._
+_Ghi chú: AI phải cập nhật bộ não bằng cách chạy lệnh `node scripts/generate_brain.cjs` sau mỗi thay đổi cấu trúc lớn. Quy tắc này đảm bảo các file `brain_*.md` trong thư mục `.notebooklm/` luôn phản ánh trạng thái mới nhất của dự án._
