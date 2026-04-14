@@ -22,7 +22,7 @@ export const fieldsStyles = `
     }
     .vnpt-fields-header span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .vnpt-fields-header .h-chk { flex: 0 0 24px; text-align: center; }
-    .vnpt-fields-header .h-label { flex: 0.35; padding-left: 5px; }
+    .vnpt-fields-header .h-label { flex: 0.2; padding-left: 5px; }
     .vnpt-fields-header .h-key { flex: 0.45; display: none; padding-left: 5px; }
     .show-ids .vnpt-fields-header .h-key { display: block; }
     .vnpt-fields-header .h-drag { flex: 0 0 18px; }
@@ -66,7 +66,7 @@ export const fieldsStyles = `
     .vnpt-field-row input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
     
     .vnpt-field-row input.row-chk { flex: 0 0 24px; width: 16px; height: 16px; cursor: pointer; accent-color: var(--vnpt-primary); }
-    .vnpt-field-row input.f-label { flex: 0.35; color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.03); }
+    .vnpt-field-row input.f-label { flex: 0.2; color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.03); }
     .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.03); }
     .show-ids .vnpt-field-row input.f-key { display: block; }
 

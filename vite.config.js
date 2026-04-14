@@ -41,7 +41,11 @@ export default defineConfig({
       formats: ['iife'],
       fileName: () => 'myscript.user.js'
     },
-    minify: process.env.VITE_DEV === 'true' ? false : 'esbuild',
+    minify: false, // Tắt nén hoàn toàn để tránh lỗi logic mangling trong Userscript
+    esbuild: {
+      keepNames: true, // Giữ nguyên tên function/class
+      target: 'es2022'
+    },
   },
   plugins: [
     {

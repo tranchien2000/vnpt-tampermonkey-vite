@@ -174,35 +174,36 @@ export function parseAddressComponents(address) {
 
     const parts = address.split(',').map(p => p.trim()).filter(Boolean);
     const n = parts.length;
-
+    
     let province = '', district = '', ward = '', street = '';
 
     if (n === 0) return { province, district, ward, street };
 
-    // Mặc định bóc từ dưới lên (chuẩn của định dạng địa chỉ VN)
+    // Quy tắc cực kỳ đơn giản: đếm ngược từ phải sang
+    // 1. Tỉnh: phần cuối cùng
     province = parts[n - 1] || '';
-    district = n > 1 ? parts[n - 2] : '';
-    ward = n > 2 ? parts[n - 3] : '';
+    
+    // 2. Huyện/Xã: phần thứ 2 từ phải sang
+    if (n >= 2) {
+        district = parts[n - 2];
+        ward = parts[n - 2];
+    }
 
-    // Tìm Phường/Xã & Quận/Huyện bằng Regex chặt chẽ (có ranh giới từ hoặc dấu chấm)
-    const wardRegex = /^(Xã|Phường|Thị trấn|TT|P|X)(?:\.|\s|$)/i;
-    const districtRegex = /^(Quận|Huyện|Thị xã|Thành phố|TP|Q|H)(?:\.|\s|$)/i;
+    // 3. Đường (Street): Mọi thứ đứng trước dấu phẩy thứ 2 từ phải sang
+    // CHỈ THỰC HIỆN nếu chuỗi có dấu hiệu của địa chỉ đầy đủ (có Tỉnh/TP/Quận/Huyện/Xã/Phường ở cuối)
+    const adminRegex = /(Tỉnh|Thành phố|Thành Phố|TP|T\.|Hà Nội|Hồ Chí Minh|Đà Nẵng|Cần Thơ|Hải Phòng|Quận|Huyện|Q\.|H\.|Phường|Xã|P\.|X\.)$/i;
+    const isFullAddress = adminRegex.test(province);
 
-    let foundWard = parts.slice(0, -1).find(p => wardRegex.test(p));
-    let foundDistrict = parts.slice(0, -1).find(p => districtRegex.test(p));
-
-    if (foundWard) ward = foundWard;
-    if (foundDistrict) district = foundDistrict;
-
-    // Tìm phần cấu thành đường
-    const wardIndex = parts.indexOf(ward);
-    if (wardIndex > 0) {
-        street = parts.slice(0, wardIndex).join(', ');
-    } else if (n >= 4 && !foundWard) {
-        street = parts.slice(0, n - 3).join(', ');
-    } else if (n > 1) {
-        street = parts[0];
+    if (isFullAddress) {
+        if (n >= 3) {
+            street = parts.slice(0, n - 2).join(', ');
+        } else if (n === 2) {
+            street = parts[0];
+        } else {
+            street = address;
+        }
     } else {
+        // Nếu không phải địa chỉ đầy đủ (đã bóc tách rồi), giữ nguyên để tránh lặp
         street = address;
     }
 
