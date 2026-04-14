@@ -1,5 +1,5 @@
 {
   "version": "1.6.18",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.18 - Tối ưu Address, Date, Validator và UI hiệu năng cao"
+  "message": "feat: initialize VNPT Word Automation userscript with UI widget and field management system"
 }
