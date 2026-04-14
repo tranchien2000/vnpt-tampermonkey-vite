@@ -1,5 +1,5 @@
 {
   "version": "1.6.20",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.20 - Triển khai Address Learning và Tối ưu Build"
+  "message": "docs: cap nhat PROJECT_MEMORY.md và NotebookLM brain cho v1.6.20"
 }
