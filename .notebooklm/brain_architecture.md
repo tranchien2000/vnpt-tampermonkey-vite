@@ -1,16 +1,16 @@
 # Project Architecture (Graphify Optimized)
-*Cập nhật: 23:41:29 14/4/2026*
+*Cập nhật: 00:06:40 15/4/2026*
 
 ## graphify-out/GRAPH_REPORT.md
 
 # Graph Report - .  (2026-04-14)
 
 ## Corpus Check
-- 63 files � ~57,600 words
+- 64 files � ~62,390 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 221 nodes � 232 edges � 59 communities detected
+- 222 nodes � 232 edges � 60 communities detected
 - Extraction: 100% EXTRACTED � 0% INFERRED � 0% AMBIGUOUS
 - Token cost: 0 input � 0 output
 
@@ -267,6 +267,10 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
+### Community 59 - "Community 59"
+Cohesion: 1.0
+Nodes (0): 
+
 ## Knowledge Gaps
 - **Thin community `Community 31`** (2 nodes): `dev.user.js`, `loadScript()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -296,37 +300,65 @@ Nodes (0):
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 44`** (1 nodes): `test_classifier.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `firebaseConfig.js`
+- **Thin community `Community 45`** (1 nodes): `rebuild_wiki.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `firebaseService.js`
+- **Thin community `Community 46`** (1 nodes): `firebaseConfig.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `mstService.js`
+- **Thin community `Community 47`** (1 nodes): `firebaseService.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (1 nodes): `remoteConfig.js`
+- **Thin community `Community 48`** (1 nodes): `mstService.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `localAdapter.js`
+- **Thin community `Community 49`** (1 nodes): `remoteConfig.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `constants.js`
+- **Thin community `Community 50`** (1 nodes): `localAdapter.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (1 nodes): `defaults.js`
+- **Thin community `Community 51`** (1 nodes): `constants.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (1 nodes): `state.js`
+- **Thin community `Community 52`** (1 nodes): `defaults.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (1 nodes): `fields.js`
+- **Thin community `Community 53`** (1 nodes): `state.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `panel.js`
+- **Thin community `Community 54`** (1 nodes): `fields.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `theme.js`
+- **Thin community `Community 55`** (1 nodes): `panel.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `logger.js`
+- **Thin community `Community 56`** (1 nodes): `theme.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `storage.js`
+- **Thin community `Community 57`** (1 nodes): `logger.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `test_address.js`
+- **Thin community `Community 58`** (1 nodes): `storage.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 59`** (1 nodes): `test_address.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Not enough signal to generate questions. This usually means the corpus has no AMBIGUOUS edges, no bridge nodes, no INFERRED relationships, and all communities are tightly cohesive. Add more files or run with --mode deep to extract richer edges._
+
+---
+
+## docs/ARCHITECTURE.md
+
+# Архіtecture Dự án VNPT
+
+Cấu trúc luồng dữ liệu chính của dự án VNPT Tampermonkey Script:
+
+```mermaid
+graph TD;
+  Core[Core (constants, state, defaults)] --> UI[UI (widget, styles)];
+  UI --> Features[Features];
+  Features --> Utils[Utils];
+  Features -->|điền dữ liệu| DataFill[dataFill];
+  Features -->|tạo file| DocExport[docExport];
+```
+
+## Các Module Chính
+- **Core**: Xử lý trạng thái và hằng số toàn cục.
+- **UI**: Thành phần Widget dạng Shadow DOM.
+- **Features**: Các logic xử lý tự động điền form, và trích xuất PDF/DOC.
+- **API/Storage**: Tính toán proxy và bộ lưu trữ Local/GM_getValue.
+
+*(Tài liệu này sẽ được tự động đồng bộ bởi công cụ Graphify trong tương lai, nhưng cấu trúc gốc là Single Source of Truth cho các AI).*
+
 
 ---
 
