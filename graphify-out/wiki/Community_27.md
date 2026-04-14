@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **CloudSyncUI.js** (2 connections) — `src\ui\components\CloudSyncUI.js`
-- **initCloudSyncUI()** (1 connections) — `src\ui\components\CloudSyncUI.js`
-- **showLoginModal()** (1 connections) — `src\ui\components\CloudSyncUI.js`
+- **calcLogic.js** (2 connections) — `src\features\calc\calcLogic.js`
+- **calculateValues()** (1 connections) — `src\features\calc\calcLogic.js`
+- **syncToPage()** (1 connections) — `src\features\calc\calcLogic.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `src\ui\components\CloudSyncUI.js`
+- `src\features\calc\calcLogic.js`
 
 ## Audit Trail
 

@@ -1,17 +1,16 @@
 # Community 7
 
-> 8 nodes
+> 7 nodes
 
 ## Key Concepts
 
-- **profileManager.js** (7 connections) — `src\features\profileManager.js`
-- **getProfiles()** (4 connections) — `src\features\profileManager.js`
-- **switchProfile()** (4 connections) — `src\features\profileManager.js`
-- **deleteProfile()** (4 connections) — `src\features\profileManager.js`
-- **getActiveProfileId()** (3 connections) — `src\features\profileManager.js`
-- **importProfiles()** (3 connections) — `src\features\profileManager.js`
-- **createProfileFromCurrent()** (2 connections) — `src\features\profileManager.js`
-- **initProfiles()** (1 connections) — `src\features\profileManager.js`
+- **calcWidgetFeature.js** (6 connections) — `src\features\calcWidgetFeature.js`
+- **renderHist()** (2 connections) — `src\features\calcWidgetFeature.js`
+- **initCalcWidget()** (2 connections) — `src\features\calcWidgetFeature.js`
+- **saveHist()** (1 connections) — `src\features\calcWidgetFeature.js`
+- **clamp()** (1 connections) — `src\features\calcWidgetFeature.js`
+- **mkSecHeader()** (1 connections) — `src\features\calcWidgetFeature.js`
+- **updateSyncDirIcon()** (1 connections) — `src\features\calcWidgetFeature.js`
 
 ## Relationships
 
@@ -19,11 +18,11 @@
 
 ## Source Files
 
-- `src\features\profileManager.js`
+- `src\features\calcWidgetFeature.js`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
+- EXTRACTED: 14 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

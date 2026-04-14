@@ -1,12 +1,12 @@
 # Project Architecture (Graphify Optimized)
-*Cập nhật: 02:30:52 15/4/2026*
+*Cập nhật: 02:37:42 15/4/2026*
 
 ## graphify-out/GRAPH_REPORT.md
 
 # Graph Report - C:\Users\Chien\vnpt-tampermonkey-vite  (2026-04-15)
 
 ## Corpus Check
-- 71 files � ~63,825 words
+- 71 files � ~64,439 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

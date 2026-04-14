@@ -4,13 +4,13 @@
 
 ## Key Concepts
 
-- **calcWidgetFeature.js** (6 connections) — `src\features\calcWidgetFeature.js`
-- **renderHist()** (2 connections) — `src\features\calcWidgetFeature.js`
-- **initCalcWidget()** (2 connections) — `src\features\calcWidgetFeature.js`
-- **saveHist()** (1 connections) — `src\features\calcWidgetFeature.js`
-- **clamp()** (1 connections) — `src\features\calcWidgetFeature.js`
-- **mkSecHeader()** (1 connections) — `src\features\calcWidgetFeature.js`
-- **updateSyncDirIcon()** (1 connections) — `src\features\calcWidgetFeature.js`
+- **mailScanner.js** (6 connections) — `src\features\mailScan\mailScanner.js`
+- **injectMailBridge()** (2 connections) — `src\features\mailScan\mailScanner.js`
+- **_waitForBody()** (2 connections) — `src\features\mailScan\mailScanner.js`
+- **getMailData()** (1 connections) — `src\features\mailScan\mailScanner.js`
+- **_keepAlive()** (1 connections) — `src\features\mailScan\mailScanner.js`
+- **_doInject()** (1 connections) — `src\features\mailScan\mailScanner.js`
+- **_showBridgeToast()** (1 connections) — `src\features\mailScan\mailScanner.js`
 
 ## Relationships
 
@@ -18,7 +18,7 @@
 
 ## Source Files
 
-- `src\features\calcWidgetFeature.js`
+- `src\features\mailScan\mailScanner.js`
 
 ## Audit Trail
 

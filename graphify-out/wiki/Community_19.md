@@ -4,10 +4,10 @@
 
 ## Key Concepts
 
-- **pdfScanUI.js** (3 connections) — `src\features\pdfScan\pdfScanUI.js`
-- **showPdfLoading()** (1 connections) — `src\features\pdfScan\pdfScanUI.js`
-- **hidePdfLoading()** (1 connections) — `src\features\pdfScan\pdfScanUI.js`
-- **showPdfConfirmDialog()** (1 connections) — `src\features\pdfScan\pdfScanUI.js`
+- **ui.js** (3 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\ui.js`
+- **initColSplitter()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\ui.js`
+- **initFieldsManager()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\ui.js`
+- **renderBackupHistory()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\ui.js`
 
 ## Relationships
 
@@ -15,11 +15,11 @@
 
 ## Source Files
 
-- `src\features\pdfScan\pdfScanUI.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\ui.js`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 8 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

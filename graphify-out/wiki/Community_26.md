@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **dragDrop.js** (2 connections) — `src\ui\dragDrop.js`
-- **makeDraggable()** (2 connections) — `src\ui\dragDrop.js`
-- **initDragDrop()** (2 connections) — `src\ui\dragDrop.js`
+- **mockDataGenerator.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
+- **randomDigit()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
+- **generateVNPTMockData()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `src\ui\dragDrop.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
 
 ## Audit Trail
 

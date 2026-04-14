@@ -1,18 +1,17 @@
 # Community 5
 
-> 9 nodes
+> 8 nodes
 
 ## Key Concepts
 
-- **backupHelper.js** (8 connections) — `src\utils\backupHelper.js`
-- **getInternalBackups()** (3 connections) — `src\utils\backupHelper.js`
-- **flattenData()** (2 connections) — `src\utils\backupHelper.js`
-- **exportFullBackup()** (2 connections) — `src\utils\backupHelper.js`
-- **restoreInternalBackup()** (2 connections) — `src\utils\backupHelper.js`
-- **deleteInternalBackup()** (2 connections) — `src\utils\backupHelper.js`
-- **importFullBackup()** (1 connections) — `src\utils\backupHelper.js`
-- **createInternalBackup()** (1 connections) — `src\utils\backupHelper.js`
-- **generateBackupName()** (1 connections) — `src\utils\backupHelper.js`
+- **hotkeys.js** (7 connections) — `src\features\hotkeys.js`
+- **handleRecording()** (2 connections) — `src\features\hotkeys.js`
+- **getHotkeyString()** (2 connections) — `src\features\hotkeys.js`
+- **initHotkeys()** (1 connections) — `src\features\hotkeys.js`
+- **isMatch()** (1 connections) — `src\features\hotkeys.js`
+- **executeAction()** (1 connections) — `src\features\hotkeys.js`
+- **startRecording()** (1 connections) — `src\features\hotkeys.js`
+- **clearHotkey()** (1 connections) — `src\features\hotkeys.js`
 
 ## Relationships
 
@@ -20,11 +19,11 @@
 
 ## Source Files
 
-- `src\utils\backupHelper.js`
+- `src\features\hotkeys.js`
 
 ## Audit Trail
 
-- EXTRACTED: 22 (100%)
+- EXTRACTED: 16 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

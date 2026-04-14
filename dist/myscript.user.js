@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VNPT Word Automation
 // @namespace    http://tampermonkey.net/
-// @version      1.6.23
+// @version      1.6.24
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
@@ -1005,7 +1005,7 @@
       return true;
     }
   });
-  const version$3 = "1.6.23";
+  const version$3 = "1.6.24";
   const pkg = {
     version: version$3
   };
@@ -1060,6 +1060,9 @@
   const LOCAL_KEY_ACTIVE_PROFILE_ID = "vnpt_docx_active_profile_id";
   const SK_RAW_SCAN = "vnpt_raw_scan_text";
   const SK_ADDRESS_LEARNING = "vnpt_address_learning";
+  const SK_COL_RATIO = "vnpt_col_ratio";
+  const COL_RATIO_MIN = 0.08;
+  const COL_RATIO_MAX = 0.6;
   const VALIDATION_REGEX = {
     MST: /^\d{10}(-\d{3})?$/,
     // 10 số hoặc 10 số - 3 số
@@ -1073,6 +1076,8 @@
   const constants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     APP_VERSION,
+    COL_RATIO_MAX,
+    COL_RATIO_MIN,
     DEFAULT_LABELS,
     LOCAL_KEY_ACTIVE_PROFILE_ID,
     LOCAL_KEY_AUTO_BACKUP,
@@ -1087,6 +1092,7 @@
     SK_ADDRESS_LEARNING,
     SK_CALC_MAP,
     SK_COLLAPSE,
+    SK_COL_RATIO,
     SK_DATATAB,
     SK_DATA_CUS,
     SK_DATA_DEF,
@@ -1177,8 +1183,8 @@
     const db2 = await getDB();
     return new Promise((resolve, reject) => {
       const tx = db2.transaction(STORE_NAME$1, "readwrite");
-      const store = tx.objectStore(STORE_NAME$1);
-      const req = store.put(arrayBuffer, key);
+      const store2 = tx.objectStore(STORE_NAME$1);
+      const req = store2.put(arrayBuffer, key);
       req.onsuccess = () => resolve();
       req.onerror = () => reject(req.error);
     });
@@ -1187,8 +1193,8 @@
     const db2 = await getDB();
     return new Promise((resolve, reject) => {
       const tx = db2.transaction(STORE_NAME$1, "readonly");
-      const store = tx.objectStore(STORE_NAME$1);
-      const req = store.get(key);
+      const store2 = tx.objectStore(STORE_NAME$1);
+      const req = store2.get(key);
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     });
@@ -1197,8 +1203,8 @@
     const db2 = await getDB();
     return new Promise((resolve, reject) => {
       const tx = db2.transaction(STORE_NAME$1, "readwrite");
-      const store = tx.objectStore(STORE_NAME$1);
-      const req = store.delete(key);
+      const store2 = tx.objectStore(STORE_NAME$1);
+      const req = store2.delete(key);
       req.onsuccess = () => resolve();
       req.onerror = () => reject(req.error);
     });
@@ -24598,6 +24604,196 @@ This typically indicates that your device does not have a healthy Internet conne
       showToast(`❌ ${err.message}`, "#dc3545");
     });
   }
+  let _linkerCleanup = null;
+  function startFieldLinker(row, fKey) {
+    if (_linkerCleanup) _linkerCleanup();
+    const widget = AppState.widget;
+    const linkBtn = row.querySelector(".btn-field-link");
+    const existingEls = [];
+    let lastHoverEl = null;
+    const findElBySelector = (sel) => {
+      if (!sel) return null;
+      return document.getElementById(sel) || document.querySelector(`[formcontrolname="${CSS.escape(sel)}"]`) || document.querySelector(`[name="${CSS.escape(sel)}"]`) || document.querySelector(`[placeholder="${CSS.escape(sel)}"]`);
+    };
+    const showExistingLinks = () => {
+      const parts = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
+      parts.forEach((sel) => {
+        const el = findElBySelector(sel);
+        if (el && !widget.contains(el) && !existingEls.includes(el)) {
+          el.classList.add("vnpt-link-existing");
+          existingEls.push(el);
+        }
+      });
+    };
+    const clearExistingHighlights = () => {
+      existingEls.forEach((el) => {
+        el.classList.remove("vnpt-link-existing");
+        el.classList.remove("vnpt-unlink-hover");
+      });
+      existingEls.length = 0;
+    };
+    const getSyncCount = () => {
+      const parts = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
+      return Math.max(0, parts.length - 1);
+    };
+    const banner = document.createElement("div");
+    banner.className = "vnpt-linking-banner";
+    banner.style.pointerEvents = "auto";
+    const updateBanner = () => {
+      const n = getSyncCount();
+      const badge = n > 0 ? `<span class="vnpt-link-count-badge">${n} link</span>` : "";
+      banner.innerHTML = `
+            🔗 <b>Liên kết đa điểm</b> ${badge}
+            &nbsp;·&nbsp; <span style="font-size:10px;opacity:0.85;">🔵 Click = link &nbsp; 🔴 Click lại = bỏ link</span>
+            &nbsp;·&nbsp; <button class="vnpt-link-done-btn">✅ Xong</button>
+            &nbsp; <kbd>Esc</kbd>
+        `;
+      banner.querySelector(".vnpt-link-done-btn").onclick = (e) => {
+        e.stopPropagation();
+        cleanup2(true);
+      };
+    };
+    linkBtn.classList.add("active");
+    document.body.classList.add("vnpt-linking-mode");
+    widget.style.opacity = "0.15";
+    widget.style.pointerEvents = "none";
+    widget.style.transition = "opacity 0.3s";
+    updateBanner();
+    document.body.appendChild(banner);
+    showExistingLinks();
+    const getBestSelector = (el) => {
+      const strongKey = el.id || el.getAttribute("formcontrolname") || el.name || el.getAttribute("placeholder");
+      if (strongKey) return strongKey;
+      const isLabel = el.tagName === "LABEL" || el.classList.contains("label") || el.classList.contains("form-label");
+      if (isLabel && el.innerText.trim()) return el.innerText.trim();
+      let p = el.parentElement;
+      let depth = 0;
+      while (p && depth < 3) {
+        const lbl = p.querySelector("label, .label, .label-text, span.title, .form-label");
+        if (lbl && lbl.innerText.trim()) return lbl.innerText.trim();
+        if (p.id && !p.id.startsWith("ng-")) return p.id;
+        p = p.parentElement;
+        depth++;
+      }
+      const cls = el.className && typeof el.className === "string" ? el.className.trim().split(/\s+/)[0] : "";
+      return el.tagName.toLowerCase() + (cls ? "." + cls : "");
+    };
+    const LINKABLE_TAGS = /* @__PURE__ */ new Set(["INPUT", "TEXTAREA", "SELECT", "SPAN", "DIV", "P", "LABEL", "BUTTON", "TD", "TH", "SECTION"]);
+    const onMouseOver = (e) => {
+      const el = e.target;
+      if (widget.contains(el) || banner.contains(el)) return;
+      if (!LINKABLE_TAGS.has(el.tagName)) return;
+      if (lastHoverEl && lastHoverEl !== el) {
+        lastHoverEl.classList.remove("vnpt-link-highlight");
+        lastHoverEl.classList.remove("vnpt-unlink-hover");
+      }
+      if (el.classList.contains("vnpt-link-existing")) {
+        el.classList.add("vnpt-unlink-hover");
+      } else {
+        el.classList.add("vnpt-link-highlight");
+      }
+      lastHoverEl = el;
+    };
+    const onClick = (e) => {
+      const el = e.target;
+      if (widget.contains(el) || banner.contains(el)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const selector = getBestSelector(el);
+      const currentParts = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
+      if (currentParts.includes(selector)) {
+        const newParts = currentParts.filter((p) => p !== selector);
+        fKey.value = newParts.join(", ");
+        el.classList.remove("vnpt-link-existing");
+        el.classList.remove("vnpt-unlink-hover");
+        el.classList.add("vnpt-link-highlight");
+        const idx = existingEls.indexOf(el);
+        if (idx !== -1) existingEls.splice(idx, 1);
+        fKey.dispatchEvent(new Event("input", { bubbles: true }));
+        updateBanner();
+        showToast(`🔓 Đã bỏ "${selector}"`, "#ea4335");
+      } else {
+        fKey.value = [...currentParts, selector].join(", ");
+        el.classList.remove("vnpt-link-highlight");
+        el.classList.add("vnpt-link-existing");
+        if (!existingEls.includes(el)) existingEls.push(el);
+        if (lastHoverEl === el) lastHoverEl = null;
+        fKey.dispatchEvent(new Event("input", { bubbles: true }));
+        updateBanner();
+        showToast(`+🔗 "${selector}" — Click lại để bỏ | ✅ Xong`, "#198754");
+      }
+    };
+    const onKeydown = (e) => {
+      if (e.key === "Escape") {
+        showToast("❌ Đã kết thúc liên kết", "#ffc107");
+        cleanup2(true);
+      }
+    };
+    const cleanup2 = (doSync = true) => {
+      if (lastHoverEl) {
+        lastHoverEl.classList.remove("vnpt-link-highlight");
+        lastHoverEl.classList.remove("vnpt-unlink-hover");
+      }
+      clearExistingHighlights();
+      linkBtn.classList.remove("active");
+      document.body.classList.remove("vnpt-linking-mode");
+      widget.style.opacity = "";
+      widget.style.pointerEvents = "";
+      if (banner.parentNode) banner.parentNode.removeChild(banner);
+      if (doSync) {
+        fKey.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      document.removeEventListener("mouseover", onMouseOver, true);
+      document.removeEventListener("click", onClick, true);
+      document.removeEventListener("keydown", onKeydown, true);
+      _linkerCleanup = null;
+    };
+    document.addEventListener("mouseover", onMouseOver, true);
+    document.addEventListener("click", onClick, true);
+    document.addEventListener("keydown", onKeydown, true);
+    _linkerCleanup = cleanup2;
+    const initialCount = getSyncCount();
+    showToast(
+      initialCount > 0 ? `🔗 Đang có ${initialCount} link — Click thêm hoặc ✅ Xong` : "🔗 Click vào elements để liên kết. ✅ Xong hoặc Esc khi hoàn tất.",
+      "#f57f17"
+    );
+  }
+  function validateField(key, value, inputEl) {
+    let isValid = true;
+    let regex = null;
+    if (key === "soDkdn") regex = VALIDATION_REGEX.MST;
+    else if (key === "sdt") regex = VALIDATION_REGEX.PHONE;
+    else if (key === "emailDaiDien") regex = VALIDATION_REGEX.EMAIL;
+    else if (key === "cmnd" || key === "cccd") regex = VALIDATION_REGEX.ID_CARD;
+    if (regex && value.trim() !== "") {
+      isValid = regex.test(value.trim());
+    }
+    if (!isValid) {
+      inputEl.classList.add("field-error");
+      inputEl.classList.add("vnpt-shake");
+      setTimeout(() => inputEl.classList.remove("vnpt-shake"), 400);
+    } else {
+      inputEl.classList.remove("field-error");
+    }
+    return isValid;
+  }
+  function refreshRowValidation(row) {
+    const fKey = row.querySelector(".f-key");
+    const fVal = row.querySelector(".f-val");
+    if (!fKey || !fVal) return;
+    const primaryKey = fKey.value.split(",")[0].trim();
+    const value = fVal.value.trim();
+    if (REQUIRED_KEYS.includes(primaryKey)) {
+      if (!value) {
+        fVal.classList.add("field-required-empty");
+      } else {
+        fVal.classList.remove("field-required-empty");
+      }
+    } else {
+      fVal.classList.remove("field-required-empty");
+    }
+    validateField(primaryKey, fVal.value, fVal);
+  }
   function normalizeForMatch(address) {
     if (!address) return "";
     return address.toString().toLowerCase().trim().replace(/\s+/g, " ").replace(/[.,\s]+$/, "");
@@ -25174,6 +25370,309 @@ This typically indicates that your device does not have a healthy Internet conne
       return null;
     }
   }
+  const mstService = {
+    /**
+     * Tra cứu thông tin doanh nghiệp theo MST.
+     * @param {string} mst - Mã số thuế cần tra cứu.
+     * @returns {Promise<{name: string, address: string, representative: string, status: string}|null>}
+     */
+    async lookupMST(mst) {
+      if (!mst || mst.length < 10) return null;
+      const url = `https://api.vietqr.io/v2/business/${mst}`;
+      try {
+        const response = await fetch(url);
+        const result = await response.json();
+        if (result.code === "00" && result.data) {
+          const { name: name2, address, representative, status } = result.data;
+          return {
+            name: name2 || "",
+            address: address || "",
+            representative: representative || "",
+            status: status || ""
+          };
+        }
+        return null;
+      } catch (error) {
+        console.error("[MST Service] Error fetching MST:", error);
+        return null;
+      }
+    }
+  };
+  const saveFieldsToLocal$1 = () => Promise.resolve().then(() => store).then((m) => m.saveFieldsToLocal());
+  const syncAllFields$1 = (keys) => Promise.resolve().then(() => sync).then((m) => m.syncAllFields(keys));
+  function updateSyncDirIcon(btn, dir) {
+    const icons = {
+      both: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 8 4 4-4 4"></path><path d="M2 12h20"></path><path d="m6 16-4-4 4-4"></path></svg>`,
+      down: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>`,
+      up: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>`
+    };
+    btn.innerHTML = icons[dir] || icons.both;
+    btn.setAttribute("data-dir", dir);
+    if (dir === "both") {
+      btn.title = "Đồng bộ 2 chiều (Mọi thay đổi đều được cập nhật giữa Bảng và Trang web)";
+    } else if (dir === "down") {
+      btn.title = "Chỉ đồng bộ XUỐNG: Bảng dữ liệu ➔ Form Trang web";
+    } else if (dir === "up") {
+      btn.title = "Chỉ đồng bộ LÊN: Form Trang web ➔ Bảng dữ liệu";
+    }
+  }
+  function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = "", syncDir = null, isFromWebForm = false, sourceContext = null) {
+    const hint = AppState.fieldsContainer.querySelector(".text-hint");
+    if (hint) hint.remove();
+    const existingInputs = AppState.fieldsContainer.querySelectorAll(".f-key");
+    let isDuplicate = false;
+    const incomingPK = keyText.split(",")[0].trim();
+    for (let input of existingInputs) {
+      const currentPK = input.value.split(",")[0].trim();
+      if (currentPK === incomingPK) {
+        const row = input.closest(".vnpt-field-row");
+        const valueInput = row.querySelector(".f-val");
+        const labelInput = row.querySelector(".f-label");
+        const btnSyncDir = row.querySelector(".btn-sync-dir");
+        const currentDir = btnSyncDir ? btnSyncDir.getAttribute("data-dir") : "both";
+        if (valueText !== null && valueInput.value !== valueText && document.activeElement !== valueInput) {
+          if (!(isFromWebForm && currentDir === "down")) {
+            valueInput.value = valueText;
+          }
+        }
+        if (labelText !== null && labelText !== "" && labelInput.value !== labelText && document.activeElement !== labelInput) {
+          labelInput.value = labelText;
+        }
+        if (syncText !== "" && input.value !== keyText + ", " + syncText && document.activeElement !== input) {
+          input.value = keyText + ", " + syncText;
+        }
+        if (syncDir && btnSyncDir && btnSyncDir.getAttribute("data-dir") !== syncDir) {
+          updateSyncDirIcon(btnSyncDir, syncDir);
+        }
+        if (sourceContext && valueInput) {
+          valueInput.dataset.sourceAddress = sourceContext;
+        }
+        refreshRowValidation(row);
+        isDuplicate = true;
+        break;
+      }
+    }
+    if (!isDuplicate) {
+      if (labelText === null || labelText === "") {
+        labelText = DEFAULT_LABELS[keyText] || "";
+      }
+      const row = document.createElement("div");
+      row.className = "vnpt-field-row row-item";
+      row.setAttribute("draggable", "false");
+      let displayKey = keyText;
+      if (syncText) displayKey += ", " + syncText;
+      const primaryKey = incomingPK;
+      row.innerHTML = `
+            <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
+            <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
+            <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
+            <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="${syncDir || "both"}">↔</button>
+            <button class="btn-field-link" title="🔗 Click để liên kết với element trên trang (Esc để hủy)">🔗</button>
+            ${primaryKey === "soDkdn" ? `
+                <div class="mst-lookup-wrapper">
+                    <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" placeholder="Mã số thuế..." />
+                    <button class="btn-mst-lookup" title="Tra cứu Mã số thuế">
+                        <span class="icon">🔍</span>
+                        <div class="spinner"></div>
+                    </button>
+                </div>
+            ` : `
+                <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" />
+            `}
+        `;
+      const fVal = row.querySelector(".f-val");
+      const fKey = row.querySelector(".f-key");
+      if (sourceContext && fVal) {
+        fVal.dataset.sourceAddress = sourceContext;
+      }
+      if (keyText === "tenToChuc") fVal.style.textAlign = "right";
+      const syncThisRow = async () => {
+        const btnSync = row.querySelector(".btn-sync-dir");
+        const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
+        if (currentDir === "up") return;
+        const val = fVal.value;
+        const targets = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
+        await setPageFieldsSequential(targets, val);
+      };
+      const debouncedSyncRow = debounce(syncThisRow, 250);
+      fKey.addEventListener("input", function() {
+        saveFieldsToLocal$1();
+        const firstKey = this.value.split(",")[0].trim();
+        fVal.style.textAlign = firstKey === "tenToChuc" ? "right" : "";
+      });
+      fKey.addEventListener("change", function() {
+        syncThisRow();
+      });
+      row.querySelector(".f-label").addEventListener("input", () => saveFieldsToLocal$1());
+      fVal.addEventListener("input", function() {
+        saveFieldsToLocal$1();
+        refreshRowValidation(row);
+        debouncedSyncRow();
+      });
+      fVal.addEventListener("change", function() {
+        if (primaryKey.toLowerCase().includes("ngay")) {
+          const normalized = normalizeDate(this.value);
+          if (normalized !== this.value) {
+            this.value = normalized;
+            saveFieldsToLocal$1();
+          }
+        }
+        if (primaryKey === "duong" && this.dataset.sourceAddress) {
+          AddressLearning.saveLearning(this.dataset.sourceAddress, this.value);
+        }
+        syncThisRow();
+      });
+      if (primaryKey === "soDkdn") {
+        const btnLookup = row.querySelector(".btn-mst-lookup");
+        btnLookup.onclick = async () => {
+          const mst = fVal.value.trim();
+          if (!mst) {
+            showToast("⚠️ Vui lòng nhập mã số thuế", "#ffc107");
+            return;
+          }
+          btnLookup.classList.add("loading");
+          try {
+            const info = await mstService.lookupMST(mst);
+            if (info) {
+              fVal.value = mst;
+              addOrUpdateFieldRow("tenToChuc", info.name);
+              addOrUpdateFieldRow("diaChi", info.address);
+              const parsed = parseAddressComponents$1(info.address);
+              addOrUpdateFieldRow("tinhIdNew", parsed.province);
+              addOrUpdateFieldRow("xaIdNew", parsed.ward || parsed.district);
+              addOrUpdateFieldRow("duong", parsed.street, null, "", null, false, info.address);
+              saveFieldsToLocal$1();
+              setTimeout(() => syncAllFields$1(["soDkdn", "tenToChuc", "diaChi", "xaIdNew", "xaHuyen", "duong"]), 300);
+              showToast(`✅ Đã tìm thấy: ${info.name}`, "#1a73e8");
+            } else {
+              showToast("❌ Không tìm thấy thông tin MST này", "#ea4335");
+            }
+          } catch (err) {
+            showToast("❌ Lỗi khi tra cứu MST", "#ea4335");
+          } finally {
+            btnLookup.classList.remove("loading");
+          }
+        };
+      }
+      const initDir = syncDir || "both";
+      const btnSyncDir = row.querySelector(".btn-sync-dir");
+      if (btnSyncDir) {
+        updateSyncDirIcon(btnSyncDir, initDir);
+        btnSyncDir.addEventListener("click", (e) => {
+          e.preventDefault();
+          let currentDir = btnSyncDir.getAttribute("data-dir");
+          if (currentDir === "both") currentDir = "down";
+          else if (currentDir === "down") currentDir = "up";
+          else currentDir = "both";
+          updateSyncDirIcon(btnSyncDir, currentDir);
+          saveFieldsToLocal$1();
+        });
+      }
+      const linkBtn = row.querySelector(".btn-field-link");
+      if (linkBtn) {
+        linkBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          startFieldLinker(row, fKey);
+        });
+      }
+      AppState.fieldsContainer.appendChild(row);
+      AppState.fieldsContainer.scrollTop = AppState.fieldsContainer.scrollHeight;
+    }
+  }
+  function saveFieldsToLocal() {
+    const key = AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS;
+    const data = {};
+    const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
+    rows.forEach((row) => {
+      const rawKeyInput = row.querySelector(".f-key").value.trim();
+      const parts = rawKeyInput.split(",").map((s2) => s2.trim()).filter((s2) => s2);
+      const k = parts[0];
+      const s = parts.slice(1).join(", ");
+      const l = row.querySelector(".f-label").value.trim();
+      const v2 = row.querySelector(".f-val").value;
+      const syncDirEl = row.querySelector(".btn-sync-dir");
+      const syncDir = syncDirEl ? syncDirEl.getAttribute("data-dir") : "both";
+      if (k) data[k] = { label: l, value: v2, sync: s, syncDir };
+    });
+    Storage.setDebounced(key, data, 1e3);
+    if (AppState.isDefaultMode) {
+      Storage.setDebounced(SK_DATA_DEF, data, 1e3);
+    }
+  }
+  function getBackupName() {
+    var _a, _b, _c;
+    const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
+    const org = ((_a = data["tenToChuc"]) == null ? void 0 : _a.value) || "";
+    const name2 = ((_b = data["tenDaiDienn"]) == null ? void 0 : _b.value) || "";
+    const contract = ((_c = data["soHopDong"]) == null ? void 0 : _c.value) || "";
+    if (!org && !name2 && !contract) return `Bản sao lưu ${(/* @__PURE__ */ new Date()).toLocaleString()}`;
+    let label = org || name2;
+    if (contract) label += ` - ${contract}`;
+    return label;
+  }
+  function getExportFileName() {
+    var _a, _b;
+    const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
+    const contract = ((_a = data["soHopDong"]) == null ? void 0 : _a.value) || "";
+    const org = ((_b = data["tenToChuc"]) == null ? void 0 : _b.value) || "";
+    if (!contract && !org) return `Backup_VNPT_${(/* @__PURE__ */ new Date()).toLocaleDateString().replace(/\//g, "-")}`;
+    const parts = [];
+    if (contract) parts.push(contract);
+    if (org) parts.push(org);
+    return parts.join(" - ").replace(/[\\\\/:"*?<>|]/g, "_");
+  }
+  function loadSavedData() {
+    try {
+      AppState.fieldsContainer.innerHTML = "";
+      const savedFields = Storage.get(LOCAL_KEY_FIELDS) || {};
+      Object.keys(DEFAULT_LABELS).forEach((key) => {
+        const label = DEFAULT_LABELS[key];
+        const saved = savedFields[key];
+        if (saved && typeof saved === "object") {
+          addOrUpdateFieldRow(key, saved.value, saved.label || label, saved.sync || "", saved.syncDir || "both");
+        } else if (saved) {
+          addOrUpdateFieldRow(key, saved, label, "", "both");
+        } else {
+          addOrUpdateFieldRow(key, "", label, "", "both");
+        }
+      });
+      Object.keys(savedFields).forEach((key) => {
+        if (!(key in DEFAULT_LABELS)) {
+          const saved = savedFields[key];
+          if (typeof saved === "object") {
+            addOrUpdateFieldRow(key, saved.value, saved.label, saved.sync || "", saved.syncDir || "both");
+          } else {
+            addOrUpdateFieldRow(key, saved, "", "", "both");
+          }
+        }
+      });
+      if (Object.keys(DEFAULT_LABELS).length === 0 && Object.keys(savedFields).length === 0) {
+        AppState.fieldsContainer.innerHTML = '<div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>';
+      }
+    } catch (e) {
+      console.error("Error loading config:", e);
+      Object.keys(DEFAULT_LABELS).forEach((key) => addOrUpdateFieldRow(key, "", DEFAULT_LABELS[key]));
+    }
+    const pos = Storage.get(LOCAL_KEY_POS);
+    if (pos && AppState.widget) {
+      AppState.widget.style.bottom = "auto";
+      if (pos.right) {
+        AppState.widget.style.right = pos.right;
+        AppState.widget.style.left = "auto";
+      } else if (pos.left) {
+        AppState.widget.style.left = pos.left;
+        AppState.widget.style.right = "auto";
+      }
+      if (pos.top) AppState.widget.style.top = pos.top;
+    }
+  }
+  const store = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    getBackupName,
+    getExportFileName,
+    loadSavedData,
+    saveFieldsToLocal
+  }, Symbol.toStringTag, { value: "Module" }));
   function formatDay(d = /* @__PURE__ */ new Date()) {
     return String(d.getDate()).padStart(2, "0");
   }
@@ -25373,34 +25872,157 @@ This typically indicates that your device does not have a healthy Internet conne
     document.addEventListener("input", handleEvents);
     document.addEventListener("change", handleEvents);
   }
-  const mstService = {
-    /**
-     * Tra cứu thông tin doanh nghiệp theo MST.
-     * @param {string} mst - Mã số thuế cần tra cứu.
-     * @returns {Promise<{name: string, address: string, representative: string, status: string}|null>}
-     */
-    async lookupMST(mst) {
-      if (!mst || mst.length < 10) return null;
-      const url = `https://api.vietqr.io/v2/business/${mst}`;
-      try {
-        const response = await fetch(url);
-        const result = await response.json();
-        if (result.code === "00" && result.data) {
-          const { name: name2, address, representative, status } = result.data;
-          return {
-            name: name2 || "",
-            address: address || "",
-            representative: representative || "",
-            status: status || ""
-          };
-        }
-        return null;
-      } catch (error) {
-        console.error("[MST Service] Error fetching MST:", error);
-        return null;
+  async function syncAllFields(targetKeys = null) {
+    if (!targetKeys) doFillData();
+    let count = 0;
+    const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
+    for (const row of rows) {
+      const btnSync = row.querySelector(".btn-sync-dir");
+      const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
+      if (currentDir === "up") continue;
+      const rawKeyInput = row.querySelector(".f-key").value.trim();
+      const primaryKey = rawKeyInput.split(",")[0].trim();
+      if (targetKeys && !targetKeys.includes(primaryKey)) continue;
+      const val = row.querySelector(".f-val").value;
+      if (val === "") continue;
+      const label = row.querySelector(".f-label").value.trim();
+      const targets = rawKeyInput.split(",").map((x2) => x2.trim()).filter(Boolean);
+      if (label && !targets.includes(label)) {
+        targets.push(label);
       }
+      await setPageFieldsSequential(targets, val);
+      if (targets.length > 0) count++;
     }
-  };
+    if (!targetKeys) {
+      count > 0 ? showToast(`✅ Đã đồng bộ ${count} hàng dữ liệu`, "#198754") : showToast(`⚠️ Không có trường nào để đồng bộ`, "#ffc107");
+    }
+  }
+  const sync = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    syncAllFields
+  }, Symbol.toStringTag, { value: "Module" }));
+  function updateUIForDefaultMode(isDefault) {
+    const btn = document.getElementById("vnpt-btn-default");
+    if (!btn) return;
+    AppState.fieldsContainer.innerHTML = "";
+    AppState.bannerArea.innerHTML = "";
+    if (isDefault) {
+      btn.classList.add("active");
+      btn.innerHTML = "✅ Chế độ: Dữ liệu mặc định";
+      document.getElementById("vnpt-fields-container").classList.add("vnpt-mode-default");
+      showToast("📌 Chế độ Dữ liệu mặc định (Có thể sửa)", "#ea4335");
+      const banner = document.createElement("div");
+      banner.className = "vnpt-default-banner";
+      banner.innerHTML = `<span style="color: red;"> LƯU Ý: ĐÂY LÀ DỮ LIỆU MẶC ĐỊNH</span>`;
+      AppState.bannerArea.appendChild(banner);
+      const overrides = Storage.get(LOCAL_KEY_DEFAULT_FIELDS);
+      if (overrides === null) {
+        Object.keys(DEFAULT_DATA).forEach((key) => {
+          const item = DEFAULT_DATA[key];
+          const val = item && typeof item === "object" ? item.value : item;
+          const lbl = item && typeof item === "object" ? item.label : DEFAULT_LABELS[key] || "";
+          const s = item && typeof item === "object" && item.sync ? item.sync : "";
+          const dir = item && typeof item === "object" && item.syncDir ? item.syncDir : "down";
+          addOrUpdateFieldRow(key, val, lbl, s, dir);
+        });
+      } else {
+        Object.keys(overrides).forEach((key) => {
+          const item = overrides[key];
+          addOrUpdateFieldRow(key, item.value, item.label, item.sync || "", item.syncDir || "both");
+        });
+      }
+      renderCalcMappingInBanner();
+    } else {
+      btn.classList.remove("active");
+      btn.innerHTML = "🛠 Dữ liệu mặc định VNPT";
+      document.getElementById("vnpt-fields-container").classList.remove("vnpt-mode-default");
+      showToast("📋 Đã quay lại Dữ liệu cá nhân");
+      loadSavedData();
+    }
+  }
+  function renderCalcMappingInBanner() {
+    const section = document.createElement("div");
+    section.className = "vnpt-calc-mapping-default-section";
+    section.style.cssText = "border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 8px; margin: 8px 0; background: rgba(26, 115, 232, 0.05);";
+    section.innerHTML = `
+        <div class="vnpt-calc-mapping-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; padding: 2px 0;">
+            <div class="util-submenu-title" style="margin: 0; color: #1a73e8; font-weight: 800; font-size: 10px; text-transform: uppercase;">🛠️ LIÊN KẾT Ô (MAPPING CALC)</div>
+            <span class="toggle-icon" style="font-size: 10px; color: #1a73e8; transition: transform 0.2s;">▶</span>
+        </div>
+        <div class="vnpt-calc-mapping-body" style="display: none; margin-top: 8px; border-top: 1px dashed rgba(26, 115, 232, 0.2); padding-top: 8px;">
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Trước thuế</span>
+                <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Tiền thuế</span>
+                <input data-clink="tax" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: thue_gtgt">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Sau thuế</span>
+                <input data-clink="after" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_cong">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
+            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; gap: 8px;">
+                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Bằng chữ</span>
+                <input data-clink="text" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: doc_tien">
+                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
+                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
+            </div>
+        </div>
+    `;
+    const header = section.querySelector(".vnpt-calc-mapping-header");
+    const body = section.querySelector(".vnpt-calc-mapping-body");
+    const icon = section.querySelector(".toggle-icon");
+    header.onclick = () => {
+      const isHidden = body.style.display === "none";
+      body.style.display = isHidden ? "block" : "none";
+      icon.innerText = isHidden ? "▼" : "▶";
+    };
+    const calcMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
+    section.querySelectorAll(".vnpt-field-row").forEach((row) => {
+      const inp = row.querySelector("input[data-clink]");
+      const btnSyncDir = row.querySelector(".btn-sync-dir");
+      const linkBtn = row.querySelector(".btn-field-link");
+      const k = inp.dataset.clink;
+      const mapInfo = calcMaps[k] || [];
+      const isLegacy = Array.isArray(mapInfo);
+      const currentSync = isLegacy ? mapInfo : mapInfo.sync || [];
+      const currentDir = isLegacy ? "both" : mapInfo.syncDir || "both";
+      inp.value = currentSync.join(", ");
+      if (btnSyncDir) {
+        updateSyncDirIcon(btnSyncDir, currentDir);
+        btnSyncDir.onclick = (e) => {
+          e.preventDefault();
+          let dir = btnSyncDir.getAttribute("data-dir");
+          if (dir === "both") dir = "down";
+          else if (dir === "down") dir = "up";
+          else dir = "both";
+          updateSyncDirIcon(btnSyncDir, dir);
+          saveMap();
+        };
+      }
+      const saveMap = () => {
+        const currentMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
+        const syncs = inp.value.split(",").map((s) => s.trim()).filter(Boolean);
+        const dir = btnSyncDir ? btnSyncDir.getAttribute("data-dir") : "both";
+        currentMaps[k] = { sync: syncs, syncDir: dir };
+        Storage.set(SK_CALC_MAP, currentMaps);
+        showToast("✅ Đã cập nhật Mapping Calc hệ thống");
+      };
+      inp.onchange = saveMap;
+      linkBtn.onclick = (e) => {
+        e.stopPropagation();
+        startFieldLinker(row, inp);
+      };
+    });
+    AppState.bannerArea.appendChild(section);
+  }
   function flattenData(obj) {
     if (!obj) return obj;
     const result = {};
@@ -25525,456 +26147,6 @@ This typically indicates that your device does not have a healthy Internet conne
     }
     return false;
   }
-  let _linkerCleanup = null;
-  function startFieldLinker(row, fKey) {
-    if (_linkerCleanup) _linkerCleanup();
-    const widget = AppState.widget;
-    const linkBtn = row.querySelector(".btn-field-link");
-    const existingEls = [];
-    let lastHoverEl = null;
-    const findElBySelector = (sel) => {
-      if (!sel) return null;
-      return document.getElementById(sel) || document.querySelector(`[formcontrolname="${CSS.escape(sel)}"]`) || document.querySelector(`[name="${CSS.escape(sel)}"]`) || document.querySelector(`[placeholder="${CSS.escape(sel)}"]`);
-    };
-    const showExistingLinks = () => {
-      const parts = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
-      parts.forEach((sel) => {
-        const el = findElBySelector(sel);
-        if (el && !widget.contains(el) && !existingEls.includes(el)) {
-          el.classList.add("vnpt-link-existing");
-          existingEls.push(el);
-        }
-      });
-    };
-    const clearExistingHighlights = () => {
-      existingEls.forEach((el) => {
-        el.classList.remove("vnpt-link-existing");
-        el.classList.remove("vnpt-unlink-hover");
-      });
-      existingEls.length = 0;
-    };
-    const getSyncCount = () => {
-      const parts = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
-      return Math.max(0, parts.length - 1);
-    };
-    const banner = document.createElement("div");
-    banner.className = "vnpt-linking-banner";
-    banner.style.pointerEvents = "auto";
-    const updateBanner = () => {
-      const n = getSyncCount();
-      const badge = n > 0 ? `<span class="vnpt-link-count-badge">${n} link</span>` : "";
-      banner.innerHTML = `
-            🔗 <b>Liên kết đa điểm</b> ${badge}
-            &nbsp;·&nbsp; <span style="font-size:10px;opacity:0.85;">🔵 Click = link &nbsp; 🔴 Click lại = bỏ link</span>
-            &nbsp;·&nbsp; <button class="vnpt-link-done-btn">✅ Xong</button>
-            &nbsp; <kbd>Esc</kbd>
-        `;
-      banner.querySelector(".vnpt-link-done-btn").onclick = (e) => {
-        e.stopPropagation();
-        cleanup2(true);
-      };
-    };
-    linkBtn.classList.add("active");
-    document.body.classList.add("vnpt-linking-mode");
-    widget.style.opacity = "0.15";
-    widget.style.pointerEvents = "none";
-    widget.style.transition = "opacity 0.3s";
-    updateBanner();
-    document.body.appendChild(banner);
-    showExistingLinks();
-    const getBestSelector = (el) => {
-      const strongKey = el.id || el.getAttribute("formcontrolname") || el.name || el.getAttribute("placeholder");
-      if (strongKey) return strongKey;
-      const isLabel = el.tagName === "LABEL" || el.classList.contains("label") || el.classList.contains("form-label");
-      if (isLabel && el.innerText.trim()) return el.innerText.trim();
-      let p = el.parentElement;
-      let depth = 0;
-      while (p && depth < 3) {
-        const lbl = p.querySelector("label, .label, .label-text, span.title, .form-label");
-        if (lbl && lbl.innerText.trim()) return lbl.innerText.trim();
-        if (p.id && !p.id.startsWith("ng-")) return p.id;
-        p = p.parentElement;
-        depth++;
-      }
-      const cls = el.className && typeof el.className === "string" ? el.className.trim().split(/\s+/)[0] : "";
-      return el.tagName.toLowerCase() + (cls ? "." + cls : "");
-    };
-    const LINKABLE_TAGS = /* @__PURE__ */ new Set(["INPUT", "TEXTAREA", "SELECT", "SPAN", "DIV", "P", "LABEL", "BUTTON", "TD", "TH", "SECTION"]);
-    const onMouseOver = (e) => {
-      const el = e.target;
-      if (widget.contains(el) || banner.contains(el)) return;
-      if (!LINKABLE_TAGS.has(el.tagName)) return;
-      if (lastHoverEl && lastHoverEl !== el) {
-        lastHoverEl.classList.remove("vnpt-link-highlight");
-        lastHoverEl.classList.remove("vnpt-unlink-hover");
-      }
-      if (el.classList.contains("vnpt-link-existing")) {
-        el.classList.add("vnpt-unlink-hover");
-      } else {
-        el.classList.add("vnpt-link-highlight");
-      }
-      lastHoverEl = el;
-    };
-    const onClick = (e) => {
-      const el = e.target;
-      if (widget.contains(el) || banner.contains(el)) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const selector = getBestSelector(el);
-      const currentParts = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
-      if (currentParts.includes(selector)) {
-        const newParts = currentParts.filter((p) => p !== selector);
-        fKey.value = newParts.join(", ");
-        el.classList.remove("vnpt-link-existing");
-        el.classList.remove("vnpt-unlink-hover");
-        el.classList.add("vnpt-link-highlight");
-        const idx = existingEls.indexOf(el);
-        if (idx !== -1) existingEls.splice(idx, 1);
-        fKey.dispatchEvent(new Event("input", { bubbles: true }));
-        updateBanner();
-        showToast(`🔓 Đã bỏ "${selector}"`, "#ea4335");
-      } else {
-        fKey.value = [...currentParts, selector].join(", ");
-        el.classList.remove("vnpt-link-highlight");
-        el.classList.add("vnpt-link-existing");
-        if (!existingEls.includes(el)) existingEls.push(el);
-        if (lastHoverEl === el) lastHoverEl = null;
-        fKey.dispatchEvent(new Event("input", { bubbles: true }));
-        updateBanner();
-        showToast(`+🔗 "${selector}" — Click lại để bỏ | ✅ Xong`, "#198754");
-      }
-    };
-    const onKeydown = (e) => {
-      if (e.key === "Escape") {
-        showToast("❌ Đã kết thúc liên kết", "#ffc107");
-        cleanup2(true);
-      }
-    };
-    const cleanup2 = (doSync = true) => {
-      if (lastHoverEl) {
-        lastHoverEl.classList.remove("vnpt-link-highlight");
-        lastHoverEl.classList.remove("vnpt-unlink-hover");
-      }
-      clearExistingHighlights();
-      linkBtn.classList.remove("active");
-      document.body.classList.remove("vnpt-linking-mode");
-      widget.style.opacity = "";
-      widget.style.pointerEvents = "";
-      if (banner.parentNode) banner.parentNode.removeChild(banner);
-      if (doSync) {
-        fKey.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-      document.removeEventListener("mouseover", onMouseOver, true);
-      document.removeEventListener("click", onClick, true);
-      document.removeEventListener("keydown", onKeydown, true);
-      _linkerCleanup = null;
-    };
-    document.addEventListener("mouseover", onMouseOver, true);
-    document.addEventListener("click", onClick, true);
-    document.addEventListener("keydown", onKeydown, true);
-    _linkerCleanup = cleanup2;
-    const initialCount = getSyncCount();
-    showToast(
-      initialCount > 0 ? `🔗 Đang có ${initialCount} link — Click thêm hoặc ✅ Xong` : "🔗 Click vào elements để liên kết. ✅ Xong hoặc Esc khi hoàn tất.",
-      "#f57f17"
-    );
-  }
-  function validateField(key, value, inputEl) {
-    let isValid = true;
-    let regex = null;
-    if (key === "soDkdn") regex = VALIDATION_REGEX.MST;
-    else if (key === "sdt") regex = VALIDATION_REGEX.PHONE;
-    else if (key === "emailDaiDien") regex = VALIDATION_REGEX.EMAIL;
-    else if (key === "cmnd" || key === "cccd") regex = VALIDATION_REGEX.ID_CARD;
-    if (regex && value.trim() !== "") {
-      isValid = regex.test(value.trim());
-    }
-    if (!isValid) {
-      inputEl.classList.add("field-error");
-      inputEl.classList.add("vnpt-shake");
-      setTimeout(() => inputEl.classList.remove("vnpt-shake"), 400);
-    } else {
-      inputEl.classList.remove("field-error");
-    }
-    return isValid;
-  }
-  function refreshRowValidation(row) {
-    const fKey = row.querySelector(".f-key");
-    const fVal = row.querySelector(".f-val");
-    if (!fKey || !fVal) return;
-    const primaryKey = fKey.value.split(",")[0].trim();
-    const value = fVal.value.trim();
-    if (REQUIRED_KEYS.includes(primaryKey)) {
-      if (!value) {
-        fVal.classList.add("field-required-empty");
-      } else {
-        fVal.classList.remove("field-required-empty");
-      }
-    } else {
-      fVal.classList.remove("field-required-empty");
-    }
-    validateField(primaryKey, fVal.value, fVal);
-  }
-  function updateSyncDirIcon(btn, dir) {
-    const icons = {
-      both: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 8 4 4-4 4"></path><path d="M2 12h20"></path><path d="m6 16-4-4 4-4"></path></svg>`,
-      down: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>`,
-      up: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>`
-    };
-    btn.innerHTML = icons[dir] || icons.both;
-    btn.setAttribute("data-dir", dir);
-    if (dir === "both") {
-      btn.title = "Đồng bộ 2 chiều (Mọi thay đổi đều được cập nhật giữa Bảng và Trang web)";
-    } else if (dir === "down") {
-      btn.title = "Chỉ đồng bộ XUỐNG: Bảng dữ liệu ➔ Form Trang web";
-    } else if (dir === "up") {
-      btn.title = "Chỉ đồng bộ LÊN: Form Trang web ➔ Bảng dữ liệu";
-    }
-  }
-  function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = "", syncDir = null, isFromWebForm = false, sourceContext = null) {
-    const hint = AppState.fieldsContainer.querySelector(".text-hint");
-    if (hint) hint.remove();
-    const existingInputs = AppState.fieldsContainer.querySelectorAll(".f-key");
-    let isDuplicate = false;
-    const incomingPK = keyText.split(",")[0].trim();
-    for (let input of existingInputs) {
-      const currentPK = input.value.split(",")[0].trim();
-      if (currentPK === incomingPK) {
-        const row = input.closest(".vnpt-field-row");
-        const valueInput = row.querySelector(".f-val");
-        const labelInput = row.querySelector(".f-label");
-        const btnSyncDir = row.querySelector(".btn-sync-dir");
-        const currentDir = btnSyncDir ? btnSyncDir.getAttribute("data-dir") : "both";
-        if (valueText !== null && valueInput.value !== valueText && document.activeElement !== valueInput) {
-          if (!(isFromWebForm && currentDir === "down")) {
-            valueInput.value = valueText;
-          }
-        }
-        if (labelText !== null && labelText !== "" && labelInput.value !== labelText && document.activeElement !== labelInput) {
-          labelInput.value = labelText;
-        }
-        if (syncText !== "" && input.value !== keyText + ", " + syncText && document.activeElement !== input) {
-          input.value = keyText + ", " + syncText;
-        }
-        if (syncDir && btnSyncDir && btnSyncDir.getAttribute("data-dir") !== syncDir) {
-          updateSyncDirIcon(btnSyncDir, syncDir);
-        }
-        if (sourceContext && valueInput) {
-          valueInput.dataset.sourceAddress = sourceContext;
-        }
-        refreshRowValidation(row);
-        isDuplicate = true;
-        break;
-      }
-    }
-    if (!isDuplicate) {
-      if (labelText === null || labelText === "") {
-        labelText = DEFAULT_LABELS[keyText] || "";
-      }
-      const row = document.createElement("div");
-      row.className = "vnpt-field-row row-item";
-      row.setAttribute("draggable", "false");
-      let displayKey = keyText;
-      if (syncText) displayKey += ", " + syncText;
-      const primaryKey = incomingPK;
-      row.innerHTML = `
-            <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
-            <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
-            <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
-            <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="${syncDir || "both"}">↔</button>
-            <button class="btn-field-link" title="🔗 Click để liên kết với element trên trang (Esc để hủy)">🔗</button>
-            ${primaryKey === "soDkdn" ? `
-                <div class="mst-lookup-wrapper">
-                    <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" placeholder="Mã số thuế..." />
-                    <button class="btn-mst-lookup" title="Tra cứu Mã số thuế">
-                        <span class="icon">🔍</span>
-                        <div class="spinner"></div>
-                    </button>
-                </div>
-            ` : `
-                <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" />
-            `}
-        `;
-      const fVal = row.querySelector(".f-val");
-      const fKey = row.querySelector(".f-key");
-      if (sourceContext && fVal) {
-        fVal.dataset.sourceAddress = sourceContext;
-      }
-      if (keyText === "tenToChuc") fVal.style.textAlign = "right";
-      const syncThisRow = async () => {
-        const btnSync = row.querySelector(".btn-sync-dir");
-        const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
-        if (currentDir === "up") return;
-        const val = fVal.value;
-        const targets = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
-        await setPageFieldsSequential(targets, val);
-      };
-      const debouncedSyncRow = debounce(syncThisRow, 250);
-      fKey.addEventListener("input", function() {
-        saveFieldsToLocal();
-        const firstKey = this.value.split(",")[0].trim();
-        fVal.style.textAlign = firstKey === "tenToChuc" ? "right" : "";
-      });
-      fKey.addEventListener("change", function() {
-        syncThisRow();
-      });
-      row.querySelector(".f-label").addEventListener("input", saveFieldsToLocal);
-      fVal.addEventListener("input", function() {
-        saveFieldsToLocal();
-        refreshRowValidation(row);
-        debouncedSyncRow();
-      });
-      fVal.addEventListener("change", function() {
-        if (primaryKey.toLowerCase().includes("ngay")) {
-          const normalized = normalizeDate(this.value);
-          if (normalized !== this.value) {
-            this.value = normalized;
-            saveFieldsToLocal();
-          }
-        }
-        if (primaryKey === "duong" && this.dataset.sourceAddress) {
-          AddressLearning.saveLearning(this.dataset.sourceAddress, this.value);
-        }
-        syncThisRow();
-      });
-      if (primaryKey === "soDkdn") {
-        const btnLookup = row.querySelector(".btn-mst-lookup");
-        btnLookup.onclick = async () => {
-          const mst = fVal.value.trim();
-          if (!mst) {
-            showToast("⚠️ Vui lòng nhập mã số thuế", "#ffc107");
-            return;
-          }
-          btnLookup.classList.add("loading");
-          try {
-            const info = await mstService.lookupMST(mst);
-            if (info) {
-              fVal.value = mst;
-              addOrUpdateFieldRow("tenToChuc", info.name);
-              addOrUpdateFieldRow("diaChi", info.address);
-              const parsed = parseAddressComponents$1(info.address);
-              addOrUpdateFieldRow("tinhIdNew", parsed.province);
-              addOrUpdateFieldRow("xaIdNew", parsed.ward || parsed.district);
-              addOrUpdateFieldRow("duong", parsed.street, null, "", null, false, info.address);
-              saveFieldsToLocal();
-              setTimeout(() => syncAllFields(["soDkdn", "tenToChuc", "diaChi", "xaIdNew", "xaHuyen", "duong"]), 300);
-              showToast(`✅ Đã tìm thấy: ${info.name}`, "#1a73e8");
-            } else {
-              showToast("❌ Không tìm thấy thông tin MST này", "#ea4335");
-            }
-          } catch (err) {
-            showToast("❌ Lỗi khi tra cứu MST", "#ea4335");
-          } finally {
-            btnLookup.classList.remove("loading");
-          }
-        };
-      }
-      const initDir = syncDir || "both";
-      const btnSyncDir = row.querySelector(".btn-sync-dir");
-      if (btnSyncDir) {
-        updateSyncDirIcon(btnSyncDir, initDir);
-        btnSyncDir.addEventListener("click", (e) => {
-          e.preventDefault();
-          let currentDir = btnSyncDir.getAttribute("data-dir");
-          if (currentDir === "both") currentDir = "down";
-          else if (currentDir === "down") currentDir = "up";
-          else currentDir = "both";
-          updateSyncDirIcon(btnSyncDir, currentDir);
-          saveFieldsToLocal();
-        });
-      }
-      const linkBtn = row.querySelector(".btn-field-link");
-      if (linkBtn) {
-        linkBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          startFieldLinker(row, fKey);
-        });
-      }
-      AppState.fieldsContainer.appendChild(row);
-      AppState.fieldsContainer.scrollTop = AppState.fieldsContainer.scrollHeight;
-    }
-  }
-  function saveFieldsToLocal() {
-    const key = AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS;
-    const data = {};
-    const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
-    rows.forEach((row) => {
-      const rawKeyInput = row.querySelector(".f-key").value.trim();
-      const parts = rawKeyInput.split(",").map((s2) => s2.trim()).filter((s2) => s2);
-      const k = parts[0];
-      const s = parts.slice(1).join(", ");
-      const l = row.querySelector(".f-label").value.trim();
-      const v2 = row.querySelector(".f-val").value;
-      const syncDirEl = row.querySelector(".btn-sync-dir");
-      const syncDir = syncDirEl ? syncDirEl.getAttribute("data-dir") : "both";
-      if (k) data[k] = { label: l, value: v2, sync: s, syncDir };
-    });
-    Storage.setDebounced(key, data, 1e3);
-    if (AppState.isDefaultMode) {
-      Promise.resolve().then(() => constants).then(({ SK_DATA_DEF: SK_DATA_DEF2 }) => {
-        Storage.setDebounced(SK_DATA_DEF2, data, 1e3);
-      });
-    }
-  }
-  function getBackupName() {
-    var _a, _b, _c;
-    const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
-    const org = ((_a = data["tenToChuc"]) == null ? void 0 : _a.value) || "";
-    const name2 = ((_b = data["tenDaiDienn"]) == null ? void 0 : _b.value) || "";
-    const contract = ((_c = data["soHopDong"]) == null ? void 0 : _c.value) || "";
-    if (!org && !name2 && !contract) return `Bản sao lưu ${(/* @__PURE__ */ new Date()).toLocaleString()}`;
-    let label = org || name2;
-    if (contract) label += ` - ${contract}`;
-    return label;
-  }
-  function loadSavedData() {
-    try {
-      AppState.fieldsContainer.innerHTML = "";
-      const savedFields = Storage.get(LOCAL_KEY_FIELDS) || {};
-      Object.keys(DEFAULT_LABELS).forEach((key) => {
-        const label = DEFAULT_LABELS[key];
-        const saved = savedFields[key];
-        if (saved && typeof saved === "object") {
-          addOrUpdateFieldRow(key, saved.value, saved.label || label, saved.sync || "", saved.syncDir || "both");
-        } else if (saved) {
-          addOrUpdateFieldRow(key, saved, label, "", "both");
-        } else {
-          addOrUpdateFieldRow(key, "", label, "", "both");
-        }
-      });
-      Object.keys(savedFields).forEach((key) => {
-        if (!(key in DEFAULT_LABELS)) {
-          const saved = savedFields[key];
-          if (typeof saved === "object") {
-            addOrUpdateFieldRow(key, saved.value, saved.label, saved.sync || "", saved.syncDir || "both");
-          } else {
-            addOrUpdateFieldRow(key, saved, "", "", "both");
-          }
-        }
-      });
-      if (Object.keys(DEFAULT_LABELS).length === 0 && Object.keys(savedFields).length === 0) {
-        AppState.fieldsContainer.innerHTML = '<div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>';
-      }
-    } catch (e) {
-      console.error("Error loading config:", e);
-      Object.keys(DEFAULT_LABELS).forEach((key) => addOrUpdateFieldRow(key, "", DEFAULT_LABELS[key]));
-    }
-    const pos = Storage.get(LOCAL_KEY_POS);
-    if (pos && AppState.widget) {
-      AppState.widget.style.bottom = "auto";
-      if (pos.right) {
-        AppState.widget.style.right = pos.right;
-        AppState.widget.style.left = "auto";
-      } else if (pos.left) {
-        AppState.widget.style.left = pos.left;
-        AppState.widget.style.right = "auto";
-      }
-      if (pos.top) AppState.widget.style.top = pos.top;
-    }
-  }
-  const SK_COL_RATIO = "VNPT_COL_RATIO";
-  const COL_RATIO_MIN = 0.08;
-  const COL_RATIO_MAX = 0.6;
   function initColSplitter() {
     const splitter = document.getElementById("vnpt-col-splitter");
     const container = document.getElementById("vnpt-fields-container");
@@ -26013,6 +26185,50 @@ This typically indicates that your device does not have a healthy Internet conne
       container.style.setProperty("--label-flex", "0.2");
       Storage.set(SK_COL_RATIO, 0.2);
       showToast("↔ Đã reset tỉ lệ cột về mặc định", "#5f6368");
+    });
+  }
+  function renderBackupHistory(container) {
+    const backups = getInternalBackups();
+    container.innerHTML = `<div class="backup-history-header">📋 Local History (Max 10)</div>`;
+    if (backups.length === 0) {
+      container.innerHTML += '<div class="backup-history-empty">Chưa có lịch sử. Dữ liệu sẽ tự lưu khi bạn Quét hoặc Dọn dẹp!</div>';
+      return;
+    }
+    backups.forEach((b2) => {
+      const item = document.createElement("div");
+      item.className = "backup-history-item";
+      const timeStr = new Date(b2.id * 1).toLocaleString([], { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" });
+      item.innerHTML = `
+            <div class="backup-info">
+                <div class="backup-history-name" title="${b2.name}">${b2.name}</div>
+                <div class="backup-history-time">${timeStr}</div>
+            </div>
+            <div class="backup-actions">
+                <button class="btn-restore-action" title="Khôi phục">⏪</button>
+                <button class="btn-delete-action" title="Xóa bản này">🗑️</button>
+            </div>
+        `;
+      item.querySelector(".btn-restore-action").onclick = (e) => {
+        e.stopPropagation();
+        if (confirm(`Khôi phục dữ liệu từ bản: 
+${b2.name}?`)) {
+          if (restoreInternalBackup(b2.id)) {
+            container.classList.remove("show");
+            if (AppState.isDefaultMode) AppState.isDefaultMode = false;
+            else loadSavedData();
+          }
+        }
+      };
+      item.querySelector(".btn-delete-action").onclick = (e) => {
+        e.stopPropagation();
+        if (confirm(`Xoá vĩnh viễn bản sao lưu:
+${b2.name}?`)) {
+          deleteInternalBackup(b2.id);
+          renderBackupHistory(container);
+          showToast("🗑️ Đã xoá bản sao lưu", "#ff5252");
+        }
+      };
+      container.appendChild(item);
     });
   }
   function initFieldsManager() {
@@ -26080,52 +26296,6 @@ This typically indicates that your device does not have a healthy Internet conne
           backupHistory.classList.remove("show");
         }
       });
-    } else {
-      logger$1.error("❌ Fix UI: Could not find Restore button (#vnpt-btn-restore-last) or History container (#vnpt-backup-history).");
-    }
-    function renderBackupHistory(container) {
-      const backups = getInternalBackups();
-      container.innerHTML = `<div class="backup-history-header">📋 Local History (Max 10)</div>`;
-      if (backups.length === 0) {
-        container.innerHTML += '<div class="backup-history-empty">Chưa có lịch sử. Dữ liệu sẽ tự lưu khi bạn Quét hoặc Dọn dẹp!</div>';
-        return;
-      }
-      backups.forEach((b2) => {
-        const item = document.createElement("div");
-        item.className = "backup-history-item";
-        const timeStr = new Date(b2.id * 1).toLocaleString([], { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" });
-        item.innerHTML = `
-                <div class="backup-info">
-                    <div class="backup-history-name" title="${b2.name}">${b2.name}</div>
-                    <div class="backup-history-time">${timeStr}</div>
-                </div>
-                <div class="backup-actions">
-                    <button class="btn-restore-action" title="Khôi phục">⏪</button>
-                    <button class="btn-delete-action" title="Xóa bản này">🗑️</button>
-                </div>
-            `;
-        item.querySelector(".btn-restore-action").onclick = (e) => {
-          e.stopPropagation();
-          if (confirm(`Khôi phục dữ liệu từ bản: 
-${b2.name}?`)) {
-            if (restoreInternalBackup(b2.id)) {
-              container.classList.remove("show");
-              if (AppState.isDefaultMode) AppState.isDefaultMode = false;
-              else loadSavedData();
-            }
-          }
-        };
-        item.querySelector(".btn-delete-action").onclick = (e) => {
-          e.stopPropagation();
-          if (confirm(`Xoá vĩnh viễn bản sao lưu:
-${b2.name}?`)) {
-            deleteInternalBackup(b2.id);
-            renderBackupHistory(container);
-            showToast("🗑️ Đã xoá bản sao lưu", "#ff5252");
-          }
-        };
-        container.appendChild(item);
-      });
     }
     document.getElementById("vnpt-btn-default").onclick = () => {
       AppState.isDefaultMode = !AppState.isDefaultMode;
@@ -26191,152 +26361,6 @@ ${b2.name}?`)) {
     document.getElementById("vnpt-btn-fill-back").onclick = () => {
       syncAllFields();
     };
-  }
-  async function syncAllFields(targetKeys = null) {
-    if (!targetKeys) doFillData();
-    let count = 0;
-    const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
-    for (const row of rows) {
-      const btnSync = row.querySelector(".btn-sync-dir");
-      const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
-      if (currentDir === "up") continue;
-      const rawKeyInput = row.querySelector(".f-key").value.trim();
-      const primaryKey = rawKeyInput.split(",")[0].trim();
-      if (targetKeys && !targetKeys.includes(primaryKey)) continue;
-      const val = row.querySelector(".f-val").value;
-      if (val === "") continue;
-      const label = row.querySelector(".f-label").value.trim();
-      const targets = rawKeyInput.split(",").map((x2) => x2.trim()).filter(Boolean);
-      if (label && !targets.includes(label)) {
-        targets.push(label);
-      }
-      await setPageFieldsSequential(targets, val);
-      if (targets.length > 0) count++;
-    }
-    if (!targetKeys) {
-      count > 0 ? showToast(`✅ Đã đồng bộ ${count} hàng dữ liệu`, "#198754") : showToast(`⚠️ Không có trường nào để đồng bộ`, "#ffc107");
-    }
-  }
-  function updateUIForDefaultMode(isDefault) {
-    const btn = document.getElementById("vnpt-btn-default");
-    AppState.fieldsContainer.innerHTML = "";
-    AppState.bannerArea.innerHTML = "";
-    if (isDefault) {
-      btn.classList.add("active");
-      btn.innerHTML = "✅ Chế độ: Dữ liệu mặc định";
-      document.getElementById("vnpt-fields-container").classList.add("vnpt-mode-default");
-      showToast("📌 Chế độ Dữ liệu mặc định (Có thể sửa)", "#ea4335");
-      const banner = document.createElement("div");
-      banner.className = "vnpt-default-banner";
-      banner.innerHTML = `<span style="color: red;"> LƯU Ý: ĐÂY LÀ DỮ LIỆU MẶC ĐỊNH</span>`;
-      AppState.bannerArea.appendChild(banner);
-      const overrides = Storage.get(LOCAL_KEY_DEFAULT_FIELDS);
-      if (overrides === null) {
-        Object.keys(DEFAULT_DATA).forEach((key) => {
-          const item = DEFAULT_DATA[key];
-          const val = item && typeof item === "object" ? item.value : item;
-          const lbl = item && typeof item === "object" ? item.label : DEFAULT_LABELS[key] || "";
-          const s = item && typeof item === "object" && item.sync ? item.sync : "";
-          const dir = item && typeof item === "object" && item.syncDir ? item.syncDir : "down";
-          addOrUpdateFieldRow(key, val, lbl, s, dir);
-        });
-      } else {
-        Object.keys(overrides).forEach((key) => {
-          const item = overrides[key];
-          addOrUpdateFieldRow(key, item.value, item.label, item.sync || "", item.syncDir || "both");
-        });
-      }
-      renderCalcMappingInBanner();
-    } else {
-      btn.classList.remove("active");
-      btn.innerHTML = "🛠 Dữ liệu mặc định VNPT";
-      document.getElementById("vnpt-fields-container").classList.remove("vnpt-mode-default");
-      showToast("📋 Đã quay lại Dữ liệu cá nhân");
-      loadSavedData();
-    }
-  }
-  function renderCalcMappingInBanner() {
-    const section = document.createElement("div");
-    section.className = "vnpt-calc-mapping-default-section";
-    section.style.cssText = "border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 8px; margin: 8px 0; background: rgba(26, 115, 232, 0.05);";
-    section.innerHTML = `
-        <div class="vnpt-calc-mapping-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; padding: 2px 0;">
-            <div class="util-submenu-title" style="margin: 0; color: #1a73e8; font-weight: 800; font-size: 10px; text-transform: uppercase;">🛠️ LIÊN KẾT Ô (MAPPING CALC)</div>
-            <span class="toggle-icon" style="font-size: 10px; color: #1a73e8; transition: transform 0.2s;">▶</span>
-        </div>
-        <div class="vnpt-calc-mapping-body" style="display: none; margin-top: 8px; border-top: 1px dashed rgba(26, 115, 232, 0.2); padding-top: 8px;">
-            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
-                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Trước thuế</span>
-                <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
-                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
-                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
-            </div>
-            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
-                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Tiền thuế</span>
-                <input data-clink="tax" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: thue_gtgt">
-                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
-                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
-            </div>
-            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
-                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Sau thuế</span>
-                <input data-clink="after" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_cong">
-                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
-                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
-            </div>
-            <div class="vnpt-field-row" style="background: none; border: none; padding: 0; gap: 8px;">
-                <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Bằng chữ</span>
-                <input data-clink="text" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: doc_tien">
-                <button class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="both" style="height: 26px; width: 26px; flex-shrink: 0; padding: 0; line-height: 26px;">↔</button>
-                <button class="btn-field-link" title="🔗 Link trực quan" style="height: 26px; width: 26px; flex-shrink: 0;">🔗</button>
-            </div>
-        </div>
-    `;
-    const header = section.querySelector(".vnpt-calc-mapping-header");
-    const body = section.querySelector(".vnpt-calc-mapping-body");
-    const icon = section.querySelector(".toggle-icon");
-    header.onclick = () => {
-      const isHidden = body.style.display === "none";
-      body.style.display = isHidden ? "block" : "none";
-      icon.innerText = isHidden ? "▼" : "▶";
-    };
-    const calcMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
-    section.querySelectorAll(".vnpt-field-row").forEach((row) => {
-      const inp = row.querySelector("input[data-clink]");
-      const btnSyncDir = row.querySelector(".btn-sync-dir");
-      const linkBtn = row.querySelector(".btn-field-link");
-      const k = inp.dataset.clink;
-      const mapInfo = calcMaps[k] || [];
-      const isLegacy = Array.isArray(mapInfo);
-      const currentSync = isLegacy ? mapInfo : mapInfo.sync || [];
-      const currentDir = isLegacy ? "both" : mapInfo.syncDir || "both";
-      inp.value = currentSync.join(", ");
-      if (btnSyncDir) {
-        updateSyncDirIcon(btnSyncDir, currentDir);
-        btnSyncDir.onclick = (e) => {
-          e.preventDefault();
-          let dir = btnSyncDir.getAttribute("data-dir");
-          if (dir === "both") dir = "down";
-          else if (dir === "down") dir = "up";
-          else dir = "both";
-          updateSyncDirIcon(btnSyncDir, dir);
-          saveMap();
-        };
-      }
-      const saveMap = () => {
-        const currentMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
-        const syncs = inp.value.split(",").map((s) => s.trim()).filter(Boolean);
-        const dir = btnSyncDir ? btnSyncDir.getAttribute("data-dir") : "both";
-        currentMaps[k] = { sync: syncs, syncDir: dir };
-        Storage.set(SK_CALC_MAP, currentMaps);
-        showToast("✅ Đã cập nhật Mapping Calc hệ thống");
-      };
-      inp.onchange = saveMap;
-      linkBtn.onclick = (e) => {
-        e.stopPropagation();
-        startFieldLinker(row, inp);
-      };
-    });
-    AppState.bannerArea.appendChild(section);
   }
   let isRecording = false;
   let currentRecordingAction = null;
@@ -27108,9 +27132,7 @@ ${b2.name}?`)) {
 
 
                 <div class="bottom-export-row">
-                    <div class="vnpt-control-group" id="vnpt-local-file-group">
-                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
-                    </div>
+                    <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
                     <div class="vnpt-control-group">
                         <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
                         <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />

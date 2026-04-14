@@ -1,20 +1,18 @@
 # Community 3
 
-> 11 nodes
+> 9 nodes
 
 ## Key Concepts
 
-- **stringHelper.js** (10 connections) — `src\utils\stringHelper.js`
-- **getSimilarity()** (3 connections) — `src\utils\stringHelper.js`
-- **getLevenshteinDistance()** (2 connections) — `src\utils\stringHelper.js`
-- **findBestMatch()** (2 connections) — `src\utils\stringHelper.js`
-- **parseAddressComponents()** (2 connections) — `src\utils\stringHelper.js`
-- **cleanProvinceName()** (2 connections) — `src\utils\stringHelper.js`
-- **capitalizeName()** (1 connections) — `src\utils\stringHelper.js`
-- **formatPhoneNumber()** (1 connections) — `src\utils\stringHelper.js`
-- **normalizeDate()** (1 connections) — `src\utils\stringHelper.js`
-- **getStreetPart()** (1 connections) — `src\utils\stringHelper.js`
-- **splitHouseNumberAndStreet()** (1 connections) — `src\utils\stringHelper.js`
+- **index.js** (8 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\index.js`
+- **renderQueue()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\pdfScan\index.js`
+- **clearQueue()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\pdfScan\index.js`
+- **initCalcWidget()** (1 connections) — `src\features\calc\index.js`
+- **initDataFill()** (1 connections) — `src\features\dataFill\index.js`
+- **applyQRDataToFields()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\pdfScan\index.js`
+- **initPdfScan()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\pdfScan\index.js`
+- **initRawScan()** (1 connections) — `src\features\rawScan\index.js`
+- **injectStyles()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\index.js`
 
 ## Relationships
 
@@ -22,11 +20,15 @@
 
 ## Source Files
 
-- `src\utils\stringHelper.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\pdfScan\index.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\index.js`
+- `src\features\calc\index.js`
+- `src\features\dataFill\index.js`
+- `src\features\rawScan\index.js`
 
 ## Audit Trail
 
-- EXTRACTED: 26 (100%)
+- EXTRACTED: 18 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

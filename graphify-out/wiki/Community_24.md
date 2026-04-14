@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **mockDataGenerator.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
-- **randomDigit()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
-- **generateVNPTMockData()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
+- **gemini.js** (2 connections) — `src\api\gemini.js`
+- **callGemini()** (1 connections) — `src\api\gemini.js`
+- **testGeminiConnection()** (1 connections) — `src\api\gemini.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\mockDataGenerator.js`
+- `src\api\gemini.js`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 4 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

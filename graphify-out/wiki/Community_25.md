@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **calcLogic.js** (2 connections) — `src\features\calc\calcLogic.js`
-- **calculateValues()** (1 connections) — `src\features\calc\calcLogic.js`
-- **syncToPage()** (1 connections) — `src\features\calc\calcLogic.js`
+- **configManager.js** (2 connections) — `src\features\configManager.js`
+- **exportConfig()** (1 connections) — `src\features\configManager.js`
+- **importConfig()** (1 connections) — `src\features\configManager.js`
 
 ## Relationships
 
@@ -14,7 +14,7 @@
 
 ## Source Files
 
-- `src\features\calc\calcLogic.js`
+- `src\features\configManager.js`
 
 ## Audit Trail
 

@@ -4,11 +4,11 @@
 
 ## Key Concepts
 
-- **calcHistory.js** (4 connections) — `src\features\calc\calcHistory.js`
-- **ld()** (3 connections) — `src\features\calc\calcHistory.js`
-- **saveHist()** (3 connections) — `src\features\calc\calcHistory.js`
-- **sv()** (2 connections) — `src\features\calc\calcHistory.js`
-- **renderHist()** (2 connections) — `src\features\calc\calcHistory.js`
+- **row.js** (4 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\row.js`
+- **addOrUpdateFieldRow()** (3 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\row.js`
+- **saveFieldsToLocal()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\row.js`
+- **updateSyncDirIcon()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\row.js`
+- **syncAllFields()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\row.js`
 
 ## Relationships
 
@@ -16,11 +16,11 @@
 
 ## Source Files
 
-- `src\features\calc\calcHistory.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\row.js`
 
 ## Audit Trail
 
-- EXTRACTED: 14 (100%)
+- EXTRACTED: 12 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

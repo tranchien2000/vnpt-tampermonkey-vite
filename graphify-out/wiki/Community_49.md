@@ -1,10 +1,11 @@
 # Community 49
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **firebaseService.js** (0 connections) — `src\api\firebaseService.js`
+- **addressLearning.js** (1 connections) — `src\utils\addressLearning.js`
+- **normalizeForMatch()** (1 connections) — `src\utils\addressLearning.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `src\api\firebaseService.js`
+- `src\utils\addressLearning.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

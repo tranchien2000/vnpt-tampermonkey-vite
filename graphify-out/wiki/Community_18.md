@@ -4,10 +4,10 @@
 
 ## Key Concepts
 
-- **geminiOcr.js** (3 connections) — `src\features\pdfScan\geminiOcr.js`
-- **getSystemPrompt()** (2 connections) — `src\features\pdfScan\geminiOcr.js`
-- **extractWithGemini()** (2 connections) — `src\features\pdfScan\geminiOcr.js`
-- **fileToBase64()** (1 connections) — `src\features\pdfScan\geminiOcr.js`
+- **dataFillUI.js** (3 connections) — `src\features\dataFill\dataFillUI.js`
+- **ld()** (2 connections) — `src\features\dataFill\dataFillUI.js`
+- **renderDataFillTabs()** (2 connections) — `src\features\dataFill\dataFillUI.js`
+- **sv()** (1 connections) — `src\features\dataFill\dataFillUI.js`
 
 ## Relationships
 
@@ -15,7 +15,7 @@
 
 ## Source Files
 
-- `src\features\pdfScan\geminiOcr.js`
+- `src\features\dataFill\dataFillUI.js`
 
 ## Audit Trail
 

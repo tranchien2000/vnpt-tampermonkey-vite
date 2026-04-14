@@ -1,10 +1,11 @@
 # Community 46
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **test_classifier.js** (0 connections) — `scratch\test_classifier.js`
+- **styles.js** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles.js`
+- **injectStyles()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `scratch\test_classifier.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

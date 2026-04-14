@@ -1,11 +1,12 @@
 # Community 36
 
-> 2 nodes
+> 3 nodes
 
 ## Key Concepts
 
-- **autoFillForm.js** (1 connections) — `src\features\autoFillForm.js`
-- **setupAutoFillForm()** (1 connections) — `src\features\autoFillForm.js`
+- **qrHelper.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
+- **extractQRCodeFromImage()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
+- **parseCCCD_QR()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
 
 ## Relationships
 
@@ -13,11 +14,11 @@
 
 ## Source Files
 
-- `src\features\autoFillForm.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\utils\qrHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 2 (100%)
+- EXTRACTED: 4 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

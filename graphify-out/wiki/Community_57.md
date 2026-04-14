@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **controls.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\controls.js`
+- **remoteConfig.js** (0 connections) — `src\api\remoteConfig.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\controls.js`
+- `src\api\remoteConfig.js`
 
 ## Audit Trail
 

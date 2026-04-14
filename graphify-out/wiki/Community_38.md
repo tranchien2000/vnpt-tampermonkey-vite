@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **calcUI.js** (1 connections) — `src\features\calc\calcUI.js`
-- **createCalcUI()** (1 connections) — `src\features\calc\calcUI.js`
+- **vite.config.js** (1 connections) — `vite.config.js`
+- **generateBundle()** (1 connections) — `vite.config.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\features\calc\calcUI.js`
+- `vite.config.js`
 
 ## Audit Trail
 

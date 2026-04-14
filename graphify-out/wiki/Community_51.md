@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **remoteConfig.js** (0 connections) — `src\api\remoteConfig.js`
+- **fix_auth.ps1** (0 connections) — `fix_auth.ps1`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\api\remoteConfig.js`
+- `fix_auth.ps1`
 
 ## Audit Trail
 

@@ -1,12 +1,13 @@
 # Community 22
 
-> 3 nodes
+> 4 nodes
 
 ## Key Concepts
 
-- **gemini.js** (2 connections) — `src\api\gemini.js`
-- **callGemini()** (1 connections) — `src\api\gemini.js`
-- **testGeminiConnection()** (1 connections) — `src\api\gemini.js`
+- **rawScan.js** (3 connections) — `src\features\rawScan\rawScan.js`
+- **getRawTextSystemPrompt()** (2 connections) — `src\features\rawScan\rawScan.js`
+- **extractFieldsFromText()** (2 connections) — `src\features\rawScan\rawScan.js`
+- **extractFieldsLocally()** (1 connections) — `src\features\rawScan\rawScan.js`
 
 ## Relationships
 
@@ -14,11 +15,11 @@
 
 ## Source Files
 
-- `src\api\gemini.js`
+- `src\features\rawScan\rawScan.js`
 
 ## Audit Trail
 
-- EXTRACTED: 4 (100%)
+- EXTRACTED: 8 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

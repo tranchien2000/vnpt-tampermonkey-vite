@@ -1,5 +1,5 @@
 # Workflow Catalog
-*Cập nhật: 02:30:52 15/4/2026*
+*Cập nhật: 02:37:42 15/4/2026*
 
 - **/add-feature**: Quy trình chuẩn để tạo một module tính năng mới từ A-Z
 - **/add-field**: Cách thêm một trường dữ liệu (field) mới vào toàn bộ hệ thống

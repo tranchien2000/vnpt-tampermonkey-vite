@@ -4,14 +4,14 @@
 
 ## Key Concepts
 
-- **hotkeys.js** (7 connections) — `src\features\hotkeys.js`
-- **handleRecording()** (2 connections) — `src\features\hotkeys.js`
-- **getHotkeyString()** (2 connections) — `src\features\hotkeys.js`
-- **initHotkeys()** (1 connections) — `src\features\hotkeys.js`
-- **isMatch()** (1 connections) — `src\features\hotkeys.js`
-- **executeAction()** (1 connections) — `src\features\hotkeys.js`
-- **startRecording()** (1 connections) — `src\features\hotkeys.js`
-- **clearHotkey()** (1 connections) — `src\features\hotkeys.js`
+- **profileManager.js** (7 connections) — `src\features\profileManager.js`
+- **getProfiles()** (4 connections) — `src\features\profileManager.js`
+- **switchProfile()** (4 connections) — `src\features\profileManager.js`
+- **deleteProfile()** (4 connections) — `src\features\profileManager.js`
+- **getActiveProfileId()** (3 connections) — `src\features\profileManager.js`
+- **importProfiles()** (3 connections) — `src\features\profileManager.js`
+- **createProfileFromCurrent()** (2 connections) — `src\features\profileManager.js`
+- **initProfiles()** (1 connections) — `src\features\profileManager.js`
 
 ## Relationships
 
@@ -19,11 +19,11 @@
 
 ## Source Files
 
-- `src\features\hotkeys.js`
+- `src\features\profileManager.js`
 
 ## Audit Trail
 
-- EXTRACTED: 16 (100%)
+- EXTRACTED: 28 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **constants.js** (0 connections) — `src\core\constants.js`
+- **rebuild_wiki.py** (0 connections) — `scripts\rebuild_wiki.py`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\core\constants.js`
+- `scripts\rebuild_wiki.py`
 
 ## Audit Trail
 

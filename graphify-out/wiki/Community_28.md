@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **common.js** (2 connections) — `src\utils\common.js`
-- **debounce()** (1 connections) — `src\utils\common.js`
-- **sleep()** (1 connections) — `src\utils\common.js`
+- **mode.js** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\mode.js`
+- **updateUIForDefaultMode()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\mode.js`
+- **renderCalcMappingInBanner()** (2 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\mode.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `src\utils\common.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\mode.js`
 
 ## Audit Trail
 
-- EXTRACTED: 4 (100%)
+- EXTRACTED: 6 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

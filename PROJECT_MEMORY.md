@@ -47,7 +47,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Tự động chuẩn hóa các trường "Ngày" (`ngaySinhCustomer`, `ngayCapCustomer`, `ngayCapSoDkdnCustomer`...) ngay khi thay đổi giá trị trong widget.
 - [x] Bổ sung console log chi tiết cho quy trình bóc tách và nhập liệu trường `duong` (Địa chỉ đường) để hỗ trợ gỡ lỗi.
 - [x] Điều chỉnh thu hẹp độ rộng cột Nhãn (Label) trong danh sách trường (0.35 -> 0.2) để tối ưu không gian cho ô nhập liệu.
-- [x] Phát hành bản cập nhật v1.6.17 (Tối ưu layout Fields List).
+- [x] Phát hành bản cập nhật v1.6.22 (Refactor UI Styles).
+- [x] Phát hành bản cập nhật v1.6.23 (Tối ưu Modular Styles & Fix Bug).
 - [x] Cấu hình ổn định bản Build: Tắt minification và bật keepNames để tránh lỗi logic mangling trong production.
 - [x] Triển khai logic "Học máy" (Address Learning) cho trường Đường (Street): Tự động ghi nhớ và áp dụng các chỉnh sửa của người dùng.
 - [x] Phát hành bản cập nhật v1.6.20 (Triển khai Address Learning và Tối ưu Build).
@@ -59,6 +60,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 
 - **2026-04-15 (UI - Pinned Mode)**: Thêm tính năng Ghim thu gọn UI. Khi kích hoạt chế độ ghim, `.vnpt-pinned` được thiết lập trên Panel. Thông qua CSS hover thuần túy, nội dung bên trong (`vnpt-panel-body`) sẽ tự động ẩn và trả lại không gian cho trang web, giảm che khuất form nhập liệu, và mở bung khi di chuột qua.
 - **2026-04-15 (Style Refactoring)**: Tách file `styles.js` nguyên khối (~1000 dòng) thành 7 module nhỏ trong thư mục `src/ui/styles/`. Cố định cấu trúc CSS thành các phần: Theme, Panel, Fields, Controls, Calculator, Scanner, Linker. Sử dụng `index.js` làm đầu mối gộp (Aggregator) để duy trì khả năng tương thích ngược cho hàm `injectStyles`. Việc này giúp giảm Cognitive Load khi analyze UI code.
+- **2026-04-15 (Fields Manager Modularization)**: Tách file `fieldsManager.js` (~1100 dòng) thành 7 module chuyên biệt trong `src/features/fields/`: Linker, Validation, Row, Store, Sync, Mode, UI. Sử dụng `fieldsManager.js` làm aggregator re-export. Chuyển các hằng số liên quan đến tỉ lệ cột (`SK_COL_RATIO`, `COL_RATIO_MIN/MAX`) vào `src/core/constants.js` để quản lý tập trung. Cải thiện đáng kể khả năng bảo trì cho logic lõi của Widget.
+- **2026-04-15 (Bug Fixes)**: Sửa lỗi hiển thị chuỗi literal trong bảng Fields do dư dấu backslash khi escape template strings. Sửa lỗi flexbox tại `bottom-export-row` gây ép dẹp ô nhập tên file.
 - **2026-04-07 (Glassmorphism UI)**: Thay thế hoàn toàn giao diện cũ sang phong cách mờ đục (blur) với màu Indigo/Slate để tăng tính sang trọng.
 - **2026-04-07 (Storage Abstraction)**: Di chuyển toàn bộ logic `localStorage` vào `src/api/storage/` để quản lý tập trung và tránh xung đột dữ liệu.
 - **2026-04-09 (Memory System)**: Quyết định dùng file `PROJECT_MEMORY.md` kết hợp `.cursorrules` để AI "nhớ" tốt hơn.

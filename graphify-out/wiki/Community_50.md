@@ -1,10 +1,11 @@
 # Community 50
 
-> 1 nodes
+> 2 nodes
 
 ## Key Concepts
 
-- **mstService.js** (0 connections) — `src\api\mstService.js`
+- **migrationHelper.js** (1 connections) — `src\utils\migrationHelper.js`
+- **initStorageMerge()** (1 connections) — `src\utils\migrationHelper.js`
 
 ## Relationships
 
@@ -12,11 +13,11 @@
 
 ## Source Files
 
-- `src\api\mstService.js`
+- `src\utils\migrationHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 2 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

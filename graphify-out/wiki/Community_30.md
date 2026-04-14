@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **fileHelper.js** (2 connections) — `src\utils\fileHelper.js`
-- **downloadAsBase64()** (1 connections) — `src\utils\fileHelper.js`
-- **arrayBufferToBase64()** (1 connections) — `src\utils\fileHelper.js`
+- **dragDrop.js** (2 connections) — `src\ui\dragDrop.js`
+- **makeDraggable()** (2 connections) — `src\ui\dragDrop.js`
+- **initDragDrop()** (2 connections) — `src\ui\dragDrop.js`
 
 ## Relationships
 
@@ -14,11 +14,11 @@
 
 ## Source Files
 
-- `src\utils\fileHelper.js`
+- `src\ui\dragDrop.js`
 
 ## Audit Trail
 
-- EXTRACTED: 4 (100%)
+- EXTRACTED: 6 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

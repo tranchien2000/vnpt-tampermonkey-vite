@@ -1,13 +1,14 @@
 # Community 16
 
-> 4 nodes
+> 5 nodes
 
 ## Key Concepts
 
-- **docExport.js** (3 connections) — `src\features\docExport.js`
-- **renderDocx()** (2 connections) — `src\features\docExport.js`
-- **initDocExport()** (2 connections) — `src\features\docExport.js`
-- **copyTxtToClipboard()** (1 connections) — `src\features\docExport.js`
+- **store.js** (4 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\store.js`
+- **saveFieldsToLocal()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\store.js`
+- **getBackupName()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\store.js`
+- **getExportFileName()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\store.js`
+- **loadSavedData()** (1 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\store.js`
 
 ## Relationships
 
@@ -15,7 +16,7 @@
 
 ## Source Files
 
-- `src\features\docExport.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\features\fields\store.js`
 
 ## Audit Trail
 

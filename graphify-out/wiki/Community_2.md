@@ -1,21 +1,20 @@
 # Community 2
 
-> 12 nodes
+> 11 nodes
 
 ## Key Concepts
 
-- **templateManager.js** (11 connections) — `src\features\templateManager.js`
-- **loadTemplates()** (6 connections) — `src\features\templateManager.js`
-- **saveTemplates()** (5 connections) — `src\features\templateManager.js`
-- **renderTemplateManager()** (5 connections) — `src\features\templateManager.js`
-- **selectTemplate()** (5 connections) — `src\features\templateManager.js`
-- **saveLocalTemplate()** (4 connections) — `src\features\templateManager.js`
-- **renderLocalTemplates()** (3 connections) — `src\features\templateManager.js`
-- **importCloudTemplate()** (3 connections) — `src\features\templateManager.js`
-- **fetchTemplateFromUrl()** (2 connections) — `src\features\templateManager.js`
-- **renderCloudTemplates()** (2 connections) — `src\features\templateManager.js`
-- **normalizeUrl()** (1 connections) — `src\features\templateManager.js`
-- **createTemplateRow()** (1 connections) — `src\features\templateManager.js`
+- **stringHelper.js** (10 connections) — `src\utils\stringHelper.js`
+- **getSimilarity()** (3 connections) — `src\utils\stringHelper.js`
+- **getLevenshteinDistance()** (2 connections) — `src\utils\stringHelper.js`
+- **findBestMatch()** (2 connections) — `src\utils\stringHelper.js`
+- **parseAddressComponents()** (2 connections) — `src\utils\stringHelper.js`
+- **cleanProvinceName()** (2 connections) — `src\utils\stringHelper.js`
+- **capitalizeName()** (1 connections) — `src\utils\stringHelper.js`
+- **formatPhoneNumber()** (1 connections) — `src\utils\stringHelper.js`
+- **normalizeDate()** (1 connections) — `src\utils\stringHelper.js`
+- **getStreetPart()** (1 connections) — `src\utils\stringHelper.js`
+- **splitHouseNumberAndStreet()** (1 connections) — `src\utils\stringHelper.js`
 
 ## Relationships
 
@@ -23,11 +22,11 @@
 
 ## Source Files
 
-- `src\features\templateManager.js`
+- `src\utils\stringHelper.js`
 
 ## Audit Trail
 
-- EXTRACTED: 48 (100%)
+- EXTRACTED: 26 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

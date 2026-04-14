@@ -62,6 +62,9 @@ export const LOCAL_KEY_PROFILES = 'vnpt_docx_profiles';
 export const LOCAL_KEY_ACTIVE_PROFILE_ID = 'vnpt_docx_active_profile_id';
 export const SK_RAW_SCAN = 'vnpt_raw_scan_text';    // string — Lưu nội dung raw text để tránh mất khi refresh
 export const SK_ADDRESS_LEARNING = 'vnpt_address_learning'; // object — mapping full_address -> corrected_street
+export const SK_COL_RATIO = 'vnpt_col_ratio'; // number — tỉ lệ flex của cột label (0.2)
+export const COL_RATIO_MIN = 0.08;
+export const COL_RATIO_MAX = 0.6;
 
 import pkg from '../../package.json';
 

@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **linker.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\linker.js`
+- **constants.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\core\constants.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\linker.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\core\constants.js`
 
 ## Audit Trail
 

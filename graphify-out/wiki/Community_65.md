@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **test_address.js** (0 connections) — `src\utils\tests\test_address.js`
+- **fields.js** (0 connections) — `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\fields.js`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src\utils\tests\test_address.js`
+- `C:\Users\Chien\vnpt-tampermonkey-vite\src\ui\styles\fields.js`
 
 ## Audit Trail
 

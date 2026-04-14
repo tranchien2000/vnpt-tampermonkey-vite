@@ -1,16 +1,15 @@
 # Community 9
 
-> 7 nodes
+> 6 nodes
 
 ## Key Concepts
 
-- **mailScanner.js** (6 connections) — `src\features\mailScan\mailScanner.js`
-- **injectMailBridge()** (2 connections) — `src\features\mailScan\mailScanner.js`
-- **_waitForBody()** (2 connections) — `src\features\mailScan\mailScanner.js`
-- **getMailData()** (1 connections) — `src\features\mailScan\mailScanner.js`
-- **_keepAlive()** (1 connections) — `src\features\mailScan\mailScanner.js`
-- **_doInject()** (1 connections) — `src\features\mailScan\mailScanner.js`
-- **_showBridgeToast()** (1 connections) — `src\features\mailScan\mailScanner.js`
+- **syncEngine.js** (5 connections) — `src\features\dataFill\syncEngine.js`
+- **loadFreshenedDefaultData()** (2 connections) — `src\features\dataFill\syncEngine.js`
+- **doFillData()** (2 connections) — `src\features\dataFill\syncEngine.js`
+- **doSyncData()** (1 connections) — `src\features\dataFill\syncEngine.js`
+- **processSync()** (1 connections) — `src\features\dataFill\syncEngine.js`
+- **initSyncEngine()** (1 connections) — `src\features\dataFill\syncEngine.js`
 
 ## Relationships
 
@@ -18,11 +17,11 @@
 
 ## Source Files
 
-- `src\features\mailScan\mailScanner.js`
+- `src\features\dataFill\syncEngine.js`
 
 ## Audit Trail
 
-- EXTRACTED: 14 (100%)
+- EXTRACTED: 12 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

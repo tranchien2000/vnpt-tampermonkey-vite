@@ -1,5 +1,5 @@
 # Project Identity & Memory
-*Cập nhật: 02:30:52 15/4/2026*
+*Cập nhật: 02:37:42 15/4/2026*
 
 ## PROJECT_MEMORY.md
 
@@ -52,7 +52,8 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - [x] Tự động chuẩn hóa các trường "Ngày" (`ngaySinhCustomer`, `ngayCapCustomer`, `ngayCapSoDkdnCustomer`...) ngay khi thay đổi giá trị trong widget.
 - [x] Bổ sung console log chi tiết cho quy trình bóc tách và nhập liệu trường `duong` (Địa chỉ đường) để hỗ trợ gỡ lỗi.
 - [x] Điều chỉnh thu hẹp độ rộng cột Nhãn (Label) trong danh sách trường (0.35 -> 0.2) để tối ưu không gian cho ô nhập liệu.
-- [x] Phát hành bản cập nhật v1.6.17 (Tối ưu layout Fields List).
+- [x] Phát hành bản cập nhật v1.6.22 (Refactor UI Styles).
+- [x] Phát hành bản cập nhật v1.6.23 (Tối ưu Modular Styles & Fix Bug).
 - [x] Cấu hình ổn định bản Build: Tắt minification và bật keepNames để tránh lỗi logic mangling trong production.
 - [x] Triển khai logic "Học máy" (Address Learning) cho trường Đường (Street): Tự động ghi nhớ và áp dụng các chỉnh sửa của người dùng.
 - [x] Phát hành bản cập nhật v1.6.20 (Triển khai Address Learning và Tối ưu Build).

@@ -4,8 +4,8 @@
 
 ## Key Concepts
 
-- **screenScanner.js** (1 connections) — `src\features\screenScan\screenScanner.js`
-- **scrapeScreenText()** (1 connections) — `src\features\screenScan\screenScanner.js`
+- **scannerFallbacks.js** (1 connections) — `src\core\scannerFallbacks.js`
+- **getScannerFallback()** (1 connections) — `src\core\scannerFallbacks.js`
 
 ## Relationships
 
@@ -13,7 +13,7 @@
 
 ## Source Files
 
-- `src\features\screenScan\screenScanner.js`
+- `src\core\scannerFallbacks.js`
 
 ## Audit Trail
 
