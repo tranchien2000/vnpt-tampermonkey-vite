@@ -1,5 +1,5 @@
 {
-  "version": "1.6.27",
+  "version": "1.6.28",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.27 - Fix template corruption error and improve extension compatibility"
+  "message": "v1.6.28 - Nâng cấp Field Linker thông minh, tích hợp sơ đồ kiến trúc và tối ưu bộ nhớ dự án"
 }
