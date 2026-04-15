@@ -1,26 +1,69 @@
 /**
  * @file docExport.js
- * @desc Xử lý xuất file DOCX từ template bằng docxtemplater + PizZip.
- *       Bao gồm: render DOCX (fill data), tự động cập nhật tên file xuất,
- *       và ưu tiên template: URL buffer → file local.
- * @exports initDocExport  — gán click handler cho nút xuất DOCX và logic tên file
- * @seeAlso templateManager.js (template buffer), fieldsManager.js (data source)
+ * @desc Xu ly xuat file DOCX tu template local bang docxtemplater + PizZip.
+ * @exports initDocExport - gan click handler cho nut xuat DOCX va logic ten file
+ * @seeAlso templateManager.js, fieldsManager.js
  */
-// src/features/docExport.js
+
 import { AppState } from '../core/state.js';
 import { storage } from '../api/storage/index.js';
 import { DEFAULT_LABELS, REQUIRED_KEYS } from '../core/constants.js';
 
+function diagnoseTemplateBuffer(arrayBuffer) {
+    if (!arrayBuffer) {
+        return { ok: false, message: 'Chua co du lieu template. Hay chon mot file .docx local.' };
+    }
+
+    let buf = arrayBuffer;
+    if (ArrayBuffer.isView(buf) && buf.buffer) buf = buf.buffer;
+
+    if (!(buf instanceof ArrayBuffer)) {
+        return { ok: false, message: `Template khong dung dinh dang ArrayBuffer (nhan: ${typeof arrayBuffer}). Hay chon lai file .docx.` };
+    }
+
+    if (buf.byteLength < 4) {
+        return { ok: false, message: 'File template (.docx) rong hoac bi hong (0 byte).' };
+    }
+
+    const bytes = new Uint8Array(buf, 0, Math.min(buf.byteLength, 512));
+    const isZip = bytes[0] === 0x50 && bytes[1] === 0x4B;
+    if (isZip) return { ok: true };
+
+    let headText = '';
+    try {
+        headText = new TextDecoder('utf-8').decode(bytes).toLowerCase();
+    } catch {}
+
+    if (headText.includes('<!doctype html') || headText.includes('<html')) {
+        return {
+            ok: false,
+            message: 'Template dang la noi dung HTML, khong phai file .docx hop le. Hay chon lai file local.'
+        };
+    }
+
+    return {
+        ok: false,
+        message: 'File template khong dung dinh dang DOCX/ZIP hop le. Hay kiem tra lai file .docx local.'
+    };
+}
+
 function renderDocx(arrayBuffer, dataToFill, exportFileName) {
     try {
+        const diag = diagnoseTemplateBuffer(arrayBuffer);
+        if (!diag.ok) {
+            alert(diag.message);
+            return;
+        }
+
         let zip;
         try {
             zip = new window.PizZip(arrayBuffer);
-        } catch(zipErr) {
-            alert('Lỗi định dạng: File template (.docx) rỗng, bị hỏng hoặc cấu hình Link URL Google Drive chưa bật "Bất kỳ ai có liên kết". Vui lòng kiểm tra lại!');
+        } catch (zipErr) {
+            alert('Loi dinh dang: File template (.docx) rong, bi hong hoac khong phai file Word hop le. Vui long kiem tra lai file local.');
             console.error(zipErr);
             return;
         }
+
         const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
         doc.render(dataToFill);
 
@@ -28,47 +71,42 @@ function renderDocx(arrayBuffer, dataToFill, exportFileName) {
             type: 'blob',
             mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             compression: 'DEFLATE',
-            compressionOptions: {
-                level: 9
-            }
+            compressionOptions: { level: 9 }
         });
+
         const url = URL.createObjectURL(out);
         const a = document.createElement('a');
         a.href = url;
         a.download = exportFileName;
         document.body.appendChild(a);
         a.click();
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
     } catch (error) {
         let msg = error.message;
         if (error.properties && error.properties.errors instanceof Array) {
             const details = error.properties.errors.map(e => '- ' + (e.properties.explanation || e.message)).join('\n');
-            msg = 'Cấu trúc thẻ (tag) trong file Word Template (.docx) của bạn đang bị lỗi:\n\n' + details;
+            msg = 'Cau truc the (tag) trong file Word Template (.docx) dang bi loi:\n\n' + details;
         } else {
-            msg = 'Lỗi phần mềm Word sinh ra: ' + msg;
+            msg = 'Loi phan mem Word sinh ra: ' + msg;
         }
         alert(msg);
         console.error('DocX Error:', error);
     }
 }
 
-/**
- * Render text template với placeholder {key} → value rồi sao chép vào clipboard
- * @param {string} template  — chuỗi văn bản có dạng "Tôi là @tenDaiDienn"
- * @param {Object} data      — map key→value từ bảng fields
- */
 function copyTxtToClipboard(template, data) {
-    // Thay thế @key bằng giá trị tương ứng trong data
     const result = template.replace(/@(\w+)/g, (match, key) => {
         return data[key] !== undefined ? data[key] : match;
     });
 
     navigator.clipboard.writeText(result).then(() => {
-        // Tạo hiệu ứng thông báo nhẹ nhàng (alert hoặc có thể dùng toast sau này)
-        alert('✅ Đã sao chép nội dung vào Clipboard!');
+        alert('Da sao chep noi dung vao Clipboard!');
     }).catch(err => {
-        console.error('Lỗi khi copy:', err);
-        alert('❌ Lỗi khi sao chép vào Clipboard. Vui lòng thử lại!');
+        console.error('Loi khi copy:', err);
+        alert('Loi khi sao chep vao Clipboard. Vui long thu lai!');
     });
 }
 
@@ -99,26 +137,29 @@ export function initDocExport() {
 
         if (!tenToChuc) {
             const docEl = document.getElementById('tenToChuc');
-            if (docEl) tenToChuc = docEl.tagName.toLowerCase() === 'textarea' || docEl.tagName.toLowerCase() === 'input' ? docEl.value.trim() : docEl.innerText.trim();
+            if (docEl) {
+                tenToChuc = docEl.tagName.toLowerCase() === 'textarea' || docEl.tagName.toLowerCase() === 'input'
+                    ? docEl.value.trim()
+                    : docEl.innerText.trim();
+            }
         }
 
         function shrinkName(name) {
             if (!name) return '';
             let s = name;
-            
-            s = s.replace(/Tổng công ty/gi, '');
-            s = s.replace(/Công ty/gi, '');
+
+            s = s.replace(/Tong cong ty/gi, '');
+            s = s.replace(/Cong ty/gi, '');
             s = s.replace(/\bCty\b/gi, '');
-            s = s.replace(/Trách nhiệm hữu hạn/gi, '');
+            s = s.replace(/Trach nhiem huu han/gi, '');
             s = s.replace(/\bTNHH\b/gi, '');
-            s = s.replace(/Cổ phần/gi, '');
+            s = s.replace(/Co phan/gi, '');
             s = s.replace(/\bCP\b/gi, '');
-            s = s.replace(/Một thành viên/gi, '');
+            s = s.replace(/Mot thanh vien/gi, '');
             s = s.replace(/\bMTV\b/gi, '');
-            s = s.replace(/Chi nhánh/gi, '');
-            s = s.replace(/Việt Nam/gi, 'VN');
+            s = s.replace(/Chi nhanh/gi, '');
             s = s.replace(/Viet Nam/gi, 'VN');
-            
+
             s = s.replace(/\s+/g, ' ').trim();
             s = s.replace(/^[-,\s]+|[-,\s]+$/g, '');
 
@@ -126,13 +167,13 @@ export function initDocExport() {
             return s.replace(/[<>:"/\\|?*]/g, '');
         }
 
-        let shortTen = shrinkName(tenToChuc);
-        let tplName = AppState.templateName ? AppState.templateName.replace(/\.docx$/i, '') : '';
-        
-        let parts = [];
+        const shortTen = shrinkName(tenToChuc);
+        const tplName = AppState.templateName ? AppState.templateName.replace(/\.docx$/i, '') : '';
+
+        const parts = [];
         if (tplName) parts.push(tplName);
         if (shortTen) parts.push(shortTen);
-        
+
         if (parts.length > 0) {
             filenameInput.value = parts.join(' - ') + '.docx';
         } else if (!filenameInput.value) {
@@ -140,11 +181,9 @@ export function initDocExport() {
         }
     }
 
-    // Cập nhật định kỳ (dùng interval cho gọn)
     setInterval(autoUpdateExportFileName, 1000);
 
     document.getElementById('vnpt-btn-export').addEventListener('click', function () {
-        // Lấy data từ bảng fields
         const dataToFill = {};
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
         rows.forEach(row => {
@@ -155,10 +194,10 @@ export function initDocExport() {
         });
 
         if (Object.keys(dataToFill).length === 0) {
-            alert('Bạn chưa Quét dữ liệu hoặc chưa có Biến nào.'); return;
+            alert('Ban chua quet du lieu hoac chua co bien nao.');
+            return;
         }
 
-        // Kiểm tra các trường bắt buộc
         const missingFields = [];
         REQUIRED_KEYS.forEach(key => {
             if (!dataToFill[key] || !dataToFill[key].trim()) {
@@ -168,44 +207,39 @@ export function initDocExport() {
         });
 
         if (missingFields.length > 0) {
-            const confirmMsg = `Cảnh báo: Bạn còn các trường sau chưa điền dữ liệu:\n\n- ${missingFields.join('\n- ')}\n\nBạn có chắc chắn muốn tiếp tục xuất file không?`;
+            const confirmMsg = `Canh bao: Ban con cac truong sau chua dien du lieu:\n\n- ${missingFields.join('\n- ')}\n\nBan co chac chan muon tiep tuc xuat file khong?`;
             if (!confirm(confirmMsg)) return;
         }
 
         let exportFileName = document.getElementById('vnpt-export-filename').value.trim() || 'HopDong_Auto.docx';
         if (!exportFileName.toLowerCase().endsWith('.docx')) exportFileName += '.docx';
 
-        // Ưu tiên 1: template đã fetch từ URL (AppState.templateBuffer)
         if (AppState.templateBuffer) {
             renderDocx(AppState.templateBuffer, dataToFill, exportFileName);
             return;
         }
 
-        // Ưu tiên 2: file local
         const fileInput = document.getElementById('vnpt-template-file');
         if (fileInput.files && fileInput.files.length > 0) {
             storage.download('local', fileInput.files[0], { type: 'arraybuffer' })
                 .then(buf => renderDocx(buf, dataToFill, exportFileName))
-                .catch(err => alert(`Lỗi đọc file: ${err.message}`));
+                .catch(err => alert(`Loi doc file: ${err.message}`));
             return;
         }
 
-        alert('Vui lòng chọn Template: nhấn "✔ Dùng" từ danh sách hoặc chọn file local bên dưới.');
+        alert('Vui long chon template local: chon tu danh sach da luu hoac tai file .docx tu may tinh.');
     });
 
-    // Nút Xuất TXT đã được chuyển lên khu vực UI raw-scan-actions
     const btnExportTxt = document.getElementById('vnpt-btn-export-txt');
-    
     if (btnExportTxt) {
         btnExportTxt.addEventListener('click', () => {
             const txtTemplateArea = document.getElementById('vnpt-raw-scan-input');
             const template = txtTemplateArea ? txtTemplateArea.value : '';
             if (!template.trim()) {
-                alert('Bạn chưa nhập nội dung Text Template!\n\nSử dụng @key làm placeholder, ví dụ: Tôi là @tenDaiDienn');
+                alert('Ban chua nhap noi dung Text Template!\n\nSu dung @key lam placeholder, vi du: Toi la @tenDaiDienn');
                 return;
             }
 
-            // Thu thập dữ liệu từ bảng fields
             const dataToFill = {};
             const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
             rows.forEach(row => {
@@ -216,7 +250,8 @@ export function initDocExport() {
             });
 
             if (Object.keys(dataToFill).length === 0) {
-                alert('Bạn chưa Quét dữ liệu hoặc chưa có Biến nào.'); return;
+                alert('Ban chua quet du lieu hoac chua co bien nao.');
+                return;
             }
 
             copyTxtToClipboard(template, dataToFill);

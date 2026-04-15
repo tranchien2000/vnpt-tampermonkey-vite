@@ -60,25 +60,29 @@ export function loadSavedData() {
         AppState.fieldsContainer.innerHTML = '';
         const savedFields = Storage.get(LOCAL_KEY_FIELDS) || {};
 
-        Object.keys(DEFAULT_LABELS).forEach(key => {
-            const label = DEFAULT_LABELS[key];
-            const saved = savedFields[key];
+        const defaultEntries = Object.entries(DEFAULT_LABELS);
+        const defaultPKs = new Set(defaultEntries.map(([keyString]) => keyString.split(',')[0].trim()));
+
+        // DEFAULT_LABELS có thể là keyString dạng "a, b, c" nhưng storage luôn lưu theo primary key (a)
+        defaultEntries.forEach(([keyString, label]) => {
+            const primaryKey = keyString.split(',')[0].trim();
+            const saved = savedFields[primaryKey];
             if (saved && typeof saved === 'object') {
-                addOrUpdateFieldRow(key, saved.value, saved.label || label, saved.sync || '', saved.syncDir || 'both');
+                addOrUpdateFieldRow(keyString, saved.value, saved.label || label, saved.sync || '', saved.syncDir || 'both');
             } else if (saved) {
-                addOrUpdateFieldRow(key, saved, label, '', 'both');
+                addOrUpdateFieldRow(keyString, saved, label, '', 'both');
             } else {
-                addOrUpdateFieldRow(key, '', label, '', 'both');
+                addOrUpdateFieldRow(keyString, '', label, '', 'both');
             }
         });
 
-        Object.keys(savedFields).forEach(key => {
-            if (!(key in DEFAULT_LABELS)) {
-                const saved = savedFields[key];
+        Object.keys(savedFields).forEach(primaryKey => {
+            if (!defaultPKs.has(primaryKey)) {
+                const saved = savedFields[primaryKey];
                 if (typeof saved === 'object') {
-                    addOrUpdateFieldRow(key, saved.value, saved.label, saved.sync || '', saved.syncDir || 'both');
+                    addOrUpdateFieldRow(primaryKey, saved.value, saved.label, saved.sync || '', saved.syncDir || 'both');
                 } else {
-                    addOrUpdateFieldRow(key, saved, '', '', 'both');
+                    addOrUpdateFieldRow(primaryKey, saved, '', '', 'both');
                 }
             }
         });

@@ -1,30 +1,3 @@
-// ==UserScript==
-// @name         VNPT Word Automation
-// @namespace    http://tampermonkey.net/
-// @version      1.6.24
-// @description  Tool tự động lấy dữ liệu trên portal VNPT
-// @author       You
-// @match        *://hopdong.vnpt.vn/*
-// @match        *://mail.google.com/*
-// @match        *://outlook.live.com/*
-// @match        *://outlook.office.com/*
-// @match        *://outlook.office365.com/*
-// @require      https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js
-// @require      https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.js
-// @updateURL    https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
-// @downloadURL  https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
-// @grant        GM_addStyle
-// @grant        GM_xmlhttpRequest
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_addValueChangeListener
-// @connect      localhost
-// @connect      raw.githubusercontent.com
-// @connect      firebaseio.com
-// @connect      googleapis.com
-// @connect      firebasestorage.googleapis.com
-// @connect      *
-// ==/UserScript==
 (function() {
   "use strict";
   const logger$1 = {
@@ -963,6 +936,70 @@
   function injectStyles() {
     injectStyles$1();
   }
+  const scriptRel = "modulepreload";
+  const assetsURL = function(dep) {
+    return "/" + dep;
+  };
+  const seen = {};
+  const __vitePreload = function preload(baseModule, deps, importerUrl) {
+    let promise = Promise.resolve();
+    if (false) {
+      document.getElementsByTagName("link");
+      const cspNonceMeta = document.querySelector(
+        "meta[property=csp-nonce]"
+      );
+      const cspNonce = cspNonceMeta?.nonce || cspNonceMeta?.getAttribute("nonce");
+      promise = Promise.allSettled(
+        deps.map((dep) => {
+          dep = assetsURL(dep);
+          if (dep in seen) return;
+          seen[dep] = true;
+          const isCss = dep.endsWith(".css");
+          const cssSelector = isCss ? '[rel="stylesheet"]' : "";
+          if (document.querySelector(`link[href="${dep}"]${cssSelector}`)) {
+            return;
+          }
+          const link = document.createElement("link");
+          link.rel = isCss ? "stylesheet" : scriptRel;
+          if (!isCss) {
+            link.as = "script";
+          }
+          link.crossOrigin = "";
+          link.href = dep;
+          if (cspNonce) {
+            link.setAttribute("nonce", cspNonce);
+          }
+          document.head.appendChild(link);
+          if (isCss) {
+            return new Promise((res, rej) => {
+              link.addEventListener("load", res);
+              link.addEventListener(
+                "error",
+                () => rej(new Error(`Unable to preload CSS for ${dep}`))
+              );
+            });
+          }
+        })
+      );
+    }
+    function handlePreloadError(err) {
+      const e = new Event("vite:preloadError", {
+        cancelable: true
+      });
+      e.payload = err;
+      window.dispatchEvent(e);
+      if (!e.defaultPrevented) {
+        throw err;
+      }
+    }
+    return promise.then((res) => {
+      for (const item of res || []) {
+        if (item.status !== "rejected") continue;
+        handlePreloadError(item.reason);
+      }
+      return baseModule().catch(handlePreloadError);
+    });
+  };
   const internalState = {
     // VNPT Docx Widget
     widget: null,
@@ -1961,7 +1998,6 @@
     el.dispatchEvent(new Event("blur", eventOptions));
   }
   function syncSetValue(el, value) {
-    var _a;
     if (!el || value === void 0 || value === null) return false;
     let isSuccess = false;
     if (el.tagName === "SELECT" || el.tagName === "NG-SELECT2") {
@@ -2026,7 +2062,7 @@
         console.debug(`[Sync] Trường thường (${idLower}) nhận giá trị: "${value}"`);
       }
       const proto = el.tagName === "TEXTAREA" ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
-      const setter = (_a = Object.getOwnPropertyDescriptor(proto, "value")) == null ? void 0 : _a.set;
+      const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
       console.debug(`[Sync] Ghi giá trị vào element {id: ${el.id}, name: ${el.name}}: "${value}"`);
       if (setter) {
         setter.call(el, value);
@@ -2124,11 +2160,11 @@
     return false;
   }
   function getFieldRank(name2, el) {
-    const id = (name2 || (el == null ? void 0 : el.id) || (el == null ? void 0 : el.getAttribute("formcontrolname")) || "").toLowerCase();
+    const id = (name2 || el?.id || el?.getAttribute("formcontrolname") || "").toLowerCase();
     if (id.includes("tinh") || id.includes("province") || id.includes("city")) return 1;
     if (id.includes("xaIdNew") || id.includes("huyen") || id.includes("quan") || id.includes("district") || id.includes("xa") || id.includes("phuong") || id.includes("ward")) return 2;
-    const labelEl = (el == null ? void 0 : el.id) ? document.querySelector(`label[for="${el.id}"]`) : null;
-    const labelText = ((labelEl == null ? void 0 : labelEl.innerText) || "").toLowerCase();
+    const labelEl = el?.id ? document.querySelector(`label[for="${el.id}"]`) : null;
+    const labelText = (labelEl?.innerText || "").toLowerCase();
     if (labelText.includes("tỉnh") || labelText.includes("thành phố")) return 1;
     if (labelText.includes("huyện") || labelText.includes("quận") || labelText.includes("xã") || labelText.includes("phường")) return 2;
     return 9;
@@ -2282,8 +2318,8 @@
       }
     }
   };
-  const saveFieldsToLocal$1 = () => Promise.resolve().then(() => store).then((m) => m.saveFieldsToLocal());
-  const syncAllFields$1 = (keys) => Promise.resolve().then(() => sync).then((m) => m.syncAllFields(keys));
+  const saveFieldsToLocal$1 = () => __vitePreload(() => Promise.resolve().then(() => store), false ? __VITE_PRELOAD__ : void 0).then((m) => m.saveFieldsToLocal());
+  const syncAllFields$1 = (keys) => __vitePreload(() => Promise.resolve().then(() => sync), false ? __VITE_PRELOAD__ : void 0).then((m) => m.syncAllFields(keys));
   function updateSyncDirIcon(btn, dir) {
     const icons = {
       both: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 8 4 4-4 4"></path><path d="M2 12h20"></path><path d="m6 16-4-4 4-4"></path></svg>`,
@@ -2484,21 +2520,19 @@
     }
   }
   function getBackupName() {
-    var _a, _b, _c;
     const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
-    const org = ((_a = data["tenToChuc"]) == null ? void 0 : _a.value) || "";
-    const name2 = ((_b = data["tenDaiDienn"]) == null ? void 0 : _b.value) || "";
-    const contract = ((_c = data["soHopDong"]) == null ? void 0 : _c.value) || "";
+    const org = data["tenToChuc"]?.value || "";
+    const name2 = data["tenDaiDienn"]?.value || "";
+    const contract = data["soHopDong"]?.value || "";
     if (!org && !name2 && !contract) return `Bản sao lưu ${(/* @__PURE__ */ new Date()).toLocaleString()}`;
     let label = org || name2;
     if (contract) label += ` - ${contract}`;
     return label;
   }
   function getExportFileName() {
-    var _a, _b;
     const data = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
-    const contract = ((_a = data["soHopDong"]) == null ? void 0 : _a.value) || "";
-    const org = ((_b = data["tenToChuc"]) == null ? void 0 : _b.value) || "";
+    const contract = data["soHopDong"]?.value || "";
+    const org = data["tenToChuc"]?.value || "";
     if (!contract && !org) return `Backup_VNPT_${(/* @__PURE__ */ new Date()).toLocaleDateString().replace(/\//g, "-")}`;
     const parts = [];
     if (contract) parts.push(contract);
@@ -2702,7 +2736,6 @@
   const targetElementCache = /* @__PURE__ */ new Map();
   let boundHandleEvents = null;
   const processSync = (target, val) => {
-    var _a;
     if (isSyncing) return;
     let userSyncMap = Storage.get(SK_DATA_SYNC) ?? {};
     const sMap = { ...DEFAULT_SYNC_DATA, ...userSyncMap };
@@ -2716,7 +2749,7 @@
     }
     if (!keyLblStr) {
       const p = target.closest("label");
-      if (p) keyLblStr = (_a = Array.from(p.childNodes).find((n) => n.nodeType === 3)) == null ? void 0 : _a.textContent.trim();
+      if (p) keyLblStr = Array.from(p.childNodes).find((n) => n.nodeType === 3)?.textContent.trim();
     }
     let targets = sMap[keyId] || sMap[keyName] || sMap[keyLblStr];
     if (targets) {
@@ -3008,10 +3041,9 @@
     console.log(`✅ Field backup created: ${newEntry.name}`);
   }
   function generateBackupName() {
-    var _a, _b;
     const data = Storage.get(LOCAL_KEY_FIELDS) || {};
-    const name2 = ((_a = data["tenDaiDienn"]) == null ? void 0 : _a.value) || "";
-    const contract = ((_b = data["soHopDong"]) == null ? void 0 : _b.value) || "";
+    const name2 = data["tenDaiDienn"]?.value || "";
+    const contract = data["soHopDong"]?.value || "";
     if (!name2 && !contract) return `Quét dữ liệu - ${(/* @__PURE__ */ new Date()).toLocaleTimeString()}`;
     return `${name2} - ${contract}`;
   }
@@ -3201,13 +3233,11 @@ ${b2.name}?`)) {
     };
     AppState.on("isDefaultMode", (newVal) => updateUIForDefaultMode(newVal));
     document.getElementById("vnpt-btn-batch-del").onclick = (e) => {
-      var _a;
       const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
       const isDeleteMode = e.shiftKey;
       let checkedCount = 0;
       rows.forEach((row) => {
-        var _a2;
-        if ((_a2 = row.querySelector(".row-chk")) == null ? void 0 : _a2.checked) {
+        if (row.querySelector(".row-chk")?.checked) {
           if (isDeleteMode) {
             row.remove();
           } else {
@@ -3219,7 +3249,7 @@ ${b2.name}?`)) {
       });
       if (checkedCount === 0) {
         const fields = Storage.get(AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS) || {};
-        const orgName = ((_a = fields["tenToChuc"]) == null ? void 0 : _a.value) || "Dữ liệu hiện tại";
+        const orgName = fields["tenToChuc"]?.value || "Dữ liệu hiện tại";
         const displayName = orgName.length > 25 ? orgName.substring(0, 25) + "..." : orgName;
         if (isDeleteMode) {
           if (confirm(`Xóa TOÀN BỘ hàng dữ liệu của:
@@ -3297,28 +3327,27 @@ ${b2.name}?`)) {
     return keyMatch && altMatch && ctrlMatch && shiftMatch;
   }
   function executeAction(action) {
-    var _a, _b, _c, _d, _e, _f, _g;
     switch (action) {
       case "SCAN":
-        (_a = document.getElementById("vnpt-btn-scan")) == null ? void 0 : _a.click();
+        document.getElementById("vnpt-btn-scan")?.click();
         break;
       case "FILL":
-        (_b = document.getElementById("vnpt-btn-fill-back")) == null ? void 0 : _b.click();
+        document.getElementById("vnpt-btn-fill-back")?.click();
         break;
       case "SCAN_PDF":
-        (_c = document.getElementById("vnpt-btn-scan-pdf")) == null ? void 0 : _c.click();
+        document.getElementById("vnpt-btn-scan-pdf")?.click();
         break;
       case "EXPORT_DOCX":
-        (_d = document.getElementById("vnpt-btn-export")) == null ? void 0 : _d.click();
+        document.getElementById("vnpt-btn-export")?.click();
         break;
       case "COPY_TXT":
-        (_e = document.getElementById("vnpt-btn-export-txt")) == null ? void 0 : _e.click();
+        document.getElementById("vnpt-btn-export-txt")?.click();
         break;
       case "TOGGLE":
-        (_f = document.getElementById("vnpt-toggle-btn")) == null ? void 0 : _f.click();
+        document.getElementById("vnpt-toggle-btn")?.click();
         break;
       case "CLEAN":
-        (_g = document.getElementById("vnpt-btn-clean-data")) == null ? void 0 : _g.click();
+        document.getElementById("vnpt-btn-clean-data")?.click();
         break;
     }
   }
@@ -3329,7 +3358,6 @@ ${b2.name}?`)) {
     showToast("Vui lòng nhấn tổ hợp phím mong muốn...", "info");
   }
   function handleRecording(e) {
-    var _a;
     if (["Alt", "Control", "Shift", "Meta"].includes(e.key)) return;
     e.preventDefault();
     e.stopPropagation();
@@ -3345,7 +3373,7 @@ ${b2.name}?`)) {
       ...newConfig
     };
     Storage.set(SK_HOTKEYS, hotkeys);
-    const actionLabel = ((_a = hotkeys[currentRecordingAction]) == null ? void 0 : _a.label) || currentRecordingAction;
+    const actionLabel = hotkeys[currentRecordingAction]?.label || currentRecordingAction;
     showToast(`Đã lưu phím tắt cho ${actionLabel}: ${getHotkeyString(newConfig)}`, "success");
     if (recordingCallback) recordingCallback(newConfig);
     isRecording = false;
@@ -3451,12 +3479,11 @@ ${b2.name}?`)) {
           data: JSON.stringify(requestData),
           timeout: 3e4,
           onload: (response) => {
-            var _a, _b, _c, _d, _e, _f;
             if (response.status >= 200 && response.status < 300) {
               try {
                 const resObj = JSON.parse(response.responseText);
-                const textResponse = (_e = (_d = (_c = (_b = (_a = resObj == null ? void 0 : resObj.candidates) == null ? void 0 : _a[0]) == null ? void 0 : _b.content) == null ? void 0 : _c.parts) == null ? void 0 : _d[0]) == null ? void 0 : _e.text;
-                if ((_f = resObj == null ? void 0 : resObj.usageMetadata) == null ? void 0 : _f.totalTokenCount) {
+                const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (resObj?.usageMetadata?.totalTokenCount) {
                   TokenTracker.addUsage(resObj.usageMetadata.totalTokenCount);
                 }
                 handleResponse(textResponse);
@@ -3476,10 +3503,9 @@ ${b2.name}?`)) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestData)
         }).then((r) => r.json()).then((resObj) => {
-          var _a, _b, _c, _d, _e, _f;
           if (resObj.error) return reject(resObj.error.message);
-          const textResponse = (_e = (_d = (_c = (_b = (_a = resObj == null ? void 0 : resObj.candidates) == null ? void 0 : _a[0]) == null ? void 0 : _b.content) == null ? void 0 : _c.parts) == null ? void 0 : _d[0]) == null ? void 0 : _e.text;
-          if ((_f = resObj == null ? void 0 : resObj.usageMetadata) == null ? void 0 : _f.totalTokenCount) {
+          const textResponse = resObj?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (resObj?.usageMetadata?.totalTokenCount) {
             TokenTracker.addUsage(resObj.usageMetadata.totalTokenCount);
           }
           handleResponse(textResponse);
@@ -3499,10 +3525,9 @@ ${b2.name}?`)) {
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     return new Promise((resolve, reject) => {
       const parseError = (responseText) => {
-        var _a;
         try {
           const errObj = JSON.parse(responseText);
-          return ((_a = errObj.error) == null ? void 0 : _a.message) || responseText;
+          return errObj.error?.message || responseText;
         } catch (e) {
           return responseText;
         }
@@ -3539,6 +3564,7 @@ ${b2.name}?`)) {
     });
   }
   const getDefaultsFromPostinstall = () => void 0;
+  var define_process_env_default = {};
   /**
    * @license
    * Copyright 2017 Google LLC
@@ -3849,10 +3875,10 @@ ${b2.name}?`)) {
    */
   const getDefaultsFromGlobal = () => getGlobal().__FIREBASE_DEFAULTS__;
   const getDefaultsFromEnvVariable = () => {
-    if (typeof process === "undefined" || typeof process.env === "undefined") {
+    if (typeof process === "undefined" || typeof define_process_env_default === "undefined") {
       return;
     }
-    const defaultsJsonString = process.env.__FIREBASE_DEFAULTS__;
+    const defaultsJsonString = define_process_env_default.__FIREBASE_DEFAULTS__;
     if (defaultsJsonString) {
       return JSON.parse(defaultsJsonString);
     }
@@ -3878,10 +3904,7 @@ ${b2.name}?`)) {
       return;
     }
   };
-  const getDefaultEmulatorHost = (productName) => {
-    var _a, _b;
-    return (_b = (_a = getDefaults()) == null ? void 0 : _a.emulatorHosts) == null ? void 0 : _b[productName];
-  };
+  const getDefaultEmulatorHost = (productName) => getDefaults()?.emulatorHosts?.[productName];
   const getDefaultEmulatorHostnameAndPort = (productName) => {
     const host = getDefaultEmulatorHost(productName);
     if (!host) {
@@ -3898,14 +3921,8 @@ ${b2.name}?`)) {
       return [host.substring(0, separatorIndex), port];
     }
   };
-  const getDefaultAppConfig = () => {
-    var _a;
-    return (_a = getDefaults()) == null ? void 0 : _a.config;
-  };
-  const getExperimentalSetting = (name2) => {
-    var _a;
-    return (_a = getDefaults()) == null ? void 0 : _a[`_${name2}`];
-  };
+  const getDefaultAppConfig = () => getDefaults()?.config;
+  const getExperimentalSetting = (name2) => getDefaults()?.[`_${name2}`];
   /**
    * @license
    * Copyright 2017 Google LLC
@@ -4039,8 +4056,7 @@ ${b2.name}?`)) {
     !!(window["cordova"] || window["phonegap"] || window["PhoneGap"]) && /ios|iphone|ipod|ipad|android|blackberry|iemobile/i.test(getUA());
   }
   function isNode() {
-    var _a;
-    const forceEnvironment = (_a = getDefaults()) == null ? void 0 : _a.forceEnvironment;
+    const forceEnvironment = getDefaults()?.forceEnvironment;
     if (forceEnvironment === "node") {
       return true;
     } else if (forceEnvironment === "browser") {
@@ -4093,8 +4109,7 @@ ${b2.name}?`)) {
           preExist = false;
         };
         request.onerror = () => {
-          var _a;
-          reject(((_a = request.error) == null ? void 0 : _a.message) || "");
+          reject(request.error?.message || "");
         };
       } catch (error) {
         reject(error);
@@ -4545,8 +4560,8 @@ ${b2.name}?`)) {
       return this.instancesDeferred.get(normalizedIdentifier).promise;
     }
     getImmediate(options) {
-      const normalizedIdentifier = this.normalizeInstanceIdentifier(options == null ? void 0 : options.identifier);
-      const optional = (options == null ? void 0 : options.optional) ?? false;
+      const normalizedIdentifier = this.normalizeInstanceIdentifier(options?.identifier);
+      const optional = options?.optional ?? false;
       if (this.isInitialized(normalizedIdentifier) || this.shouldAutoInitialize()) {
         try {
           return this.getOrInitializeService({
@@ -5135,7 +5150,7 @@ ${b2.name}?`)) {
   }
   function isVersionServiceProvider(provider) {
     const component = provider.getComponent();
-    return (component == null ? void 0 : component.type) === "VERSION";
+    return component?.type === "VERSION";
   }
   const name$q = "@firebase/app";
   const version$1$1 = "0.14.11";
@@ -5580,7 +5595,7 @@ ${b2.name}?`)) {
         logger.warn(e.message);
       } else {
         const idbGetError = ERROR_FACTORY.create("idb-get", {
-          originalErrorMessage: e == null ? void 0 : e.message
+          originalErrorMessage: e?.message
         });
         logger.warn(idbGetError.message);
       }
@@ -5598,7 +5613,7 @@ ${b2.name}?`)) {
         logger.warn(e.message);
       } else {
         const idbGetError = ERROR_FACTORY.create("idb-set", {
-          originalErrorMessage: e == null ? void 0 : e.message
+          originalErrorMessage: e?.message
         });
         logger.warn(idbGetError.message);
       }
@@ -5644,14 +5659,13 @@ ${b2.name}?`)) {
      * already logged, subsequent calls to this function in the same day will be ignored.
      */
     async triggerHeartbeat() {
-      var _a, _b;
       try {
         const platformLogger = this.container.getProvider("platform-logger").getImmediate();
         const agent = platformLogger.getPlatformInfoString();
         const date = getUTCDateString();
-        if (((_a = this._heartbeatsCache) == null ? void 0 : _a.heartbeats) == null) {
+        if (this._heartbeatsCache?.heartbeats == null) {
           this._heartbeatsCache = await this._heartbeatsCachePromise;
-          if (((_b = this._heartbeatsCache) == null ? void 0 : _b.heartbeats) == null) {
+          if (this._heartbeatsCache?.heartbeats == null) {
             return;
           }
         }
@@ -5677,12 +5691,11 @@ ${b2.name}?`)) {
      * returns an empty string.
      */
     async getHeartbeatsHeader() {
-      var _a;
       try {
         if (this._heartbeatsCache === null) {
           await this._heartbeatsCachePromise;
         }
-        if (((_a = this._heartbeatsCache) == null ? void 0 : _a.heartbeats) == null || this._heartbeatsCache.heartbeats.length === 0) {
+        if (this._heartbeatsCache?.heartbeats == null || this._heartbeatsCache.heartbeats.length === 0) {
           return "";
         }
         const date = getUTCDateString();
@@ -5756,7 +5769,7 @@ ${b2.name}?`)) {
         return { heartbeats: [] };
       } else {
         const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-        if (idbHeartbeatObject == null ? void 0 : idbHeartbeatObject.heartbeats) {
+        if (idbHeartbeatObject?.heartbeats) {
           return idbHeartbeatObject;
         } else {
           return { heartbeats: [] };
@@ -5981,15 +5994,13 @@ ${b2.name}?`)) {
    * limitations under the License.
    */
   function _getCurrentUrl() {
-    var _a;
-    return typeof self !== "undefined" && ((_a = self.location) == null ? void 0 : _a.href) || "";
+    return typeof self !== "undefined" && self.location?.href || "";
   }
   function _isHttpOrHttps() {
     return _getCurrentScheme() === "http:" || _getCurrentScheme() === "https:";
   }
   function _getCurrentScheme() {
-    var _a;
-    return typeof self !== "undefined" && ((_a = self.location) == null ? void 0 : _a.protocol) || null;
+    return typeof self !== "undefined" && self.location?.protocol || null;
   }
   /**
    * @license
@@ -6695,7 +6706,7 @@ ${b2.name}?`)) {
       /* AuthErrorCode.INTERNAL_ERROR */
     );
     const firebase = typeof claims.firebase === "object" ? claims.firebase : void 0;
-    const signInProvider = firebase == null ? void 0 : firebase["sign_in_provider"];
+    const signInProvider = firebase?.["sign_in_provider"];
     return {
       claims,
       token,
@@ -6703,7 +6714,7 @@ ${b2.name}?`)) {
       issuedAtTime: utcTimestampToDateString(secondsStringToMilliseconds(claims.iat)),
       expirationTime: utcTimestampToDateString(secondsStringToMilliseconds(claims.exp)),
       signInProvider: signInProvider || null,
-      signInSecondFactor: (firebase == null ? void 0 : firebase["sign_in_second_factor"]) || null
+      signInSecondFactor: firebase?.["sign_in_second_factor"] || null
     };
   }
   function secondsStringToMilliseconds(seconds) {
@@ -6723,7 +6734,7 @@ ${b2.name}?`)) {
       }
       return JSON.parse(decoded);
     } catch (e) {
-      _logError("Caught error parsing JWT payload as JSON", e == null ? void 0 : e.toString());
+      _logError("Caught error parsing JWT payload as JSON", e?.toString());
       return null;
     }
   }
@@ -6848,7 +6859,7 @@ ${b2.name}?`)) {
       try {
         await this.user.getIdToken(true);
       } catch (e) {
-        if ((e == null ? void 0 : e.code) === `auth/${"network-request-failed"}`) {
+        if (e?.code === `auth/${"network-request-failed"}`) {
           this.schedule(
             /* wasError */
             true
@@ -6914,22 +6925,21 @@ ${b2.name}?`)) {
    * limitations under the License.
    */
   async function _reloadWithoutSaving(user) {
-    var _a;
     const auth2 = user.auth;
     const idToken = await user.getIdToken();
     const response = await _logoutIfInvalidated(user, getAccountInfo(auth2, { idToken }));
     _assert(
-      response == null ? void 0 : response.users.length,
+      response?.users.length,
       auth2,
       "internal-error"
       /* AuthErrorCode.INTERNAL_ERROR */
     );
     const coreAccount = response.users[0];
     user._notifyReloadListener(coreAccount);
-    const newProviderData = ((_a = coreAccount.providerUserInfo) == null ? void 0 : _a.length) ? extractProviderData(coreAccount.providerUserInfo) : [];
+    const newProviderData = coreAccount.providerUserInfo?.length ? extractProviderData(coreAccount.providerUserInfo) : [];
     const providerData = mergeProviderData(user.providerData, newProviderData);
     const oldIsAnonymous = user.isAnonymous;
-    const newIsAnonymous = !(user.email && coreAccount.passwordHash) && !(providerData == null ? void 0 : providerData.length);
+    const newIsAnonymous = !(user.email && coreAccount.passwordHash) && !providerData?.length;
     const isAnonymous = !oldIsAnonymous ? false : newIsAnonymous;
     const updates = {
       uid: coreAccount.localId,
@@ -7398,7 +7408,7 @@ ${b2.name}?`)) {
         /* AuthErrorCode.INTERNAL_ERROR */
       );
       const providerData = coreAccount.providerUserInfo !== void 0 ? extractProviderData(coreAccount.providerUserInfo) : [];
-      const isAnonymous = !(coreAccount.email && coreAccount.passwordHash) && !(providerData == null ? void 0 : providerData.length);
+      const isAnonymous = !(coreAccount.email && coreAccount.passwordHash) && !providerData?.length;
       const stsTokenManager = new StsTokenManager();
       stsTokenManager.updateFromIdToken(idToken);
       const user = new UserImpl({
@@ -7417,7 +7427,7 @@ ${b2.name}?`)) {
         tenantId: coreAccount.tenantId || null,
         providerData,
         metadata: new UserMetadata(coreAccount.createdAt, coreAccount.lastLoginAt),
-        isAnonymous: !(coreAccount.email && coreAccount.passwordHash) && !(providerData == null ? void 0 : providerData.length)
+        isAnonymous: !(coreAccount.email && coreAccount.passwordHash) && !providerData?.length
       };
       Object.assign(user, updates);
       return user;
@@ -7661,7 +7671,7 @@ ${b2.name}?`)) {
     } else {
       const re = /([a-zA-Z\d\.]+)\/[a-zA-Z\d\.]*$/;
       const matches = userAgent.match(re);
-      if ((matches == null ? void 0 : matches.length) === 2) {
+      if (matches?.length === 2) {
         return matches[1];
       }
     }
@@ -7693,8 +7703,7 @@ ${b2.name}?`)) {
     return /iphone|ipad|ipod/i.test(ua) || /macintosh/i.test(ua) && /mobile/i.test(ua);
   }
   function _isIOSStandalone(ua = getUA()) {
-    var _a;
-    return _isIOS(ua) && !!((_a = window.navigator) == null ? void 0 : _a.standalone);
+    return _isIOS(ua) && !!window.navigator?.standalone;
   }
   function _isIE10() {
     return isIE() && document.documentMode === 10;
@@ -7791,7 +7800,7 @@ ${b2.name}?`)) {
           }
         }
         throw this.auth._errorFactory.create("login-blocked", {
-          originalMessage: e == null ? void 0 : e.message
+          originalMessage: e?.message
         });
       }
     }
@@ -7834,7 +7843,6 @@ ${b2.name}?`)) {
   const MINIMUM_MIN_PASSWORD_LENGTH = 6;
   class PasswordPolicyImpl {
     constructor(response) {
-      var _a;
       const responseOptions = response.customStrengthOptions;
       this.customStrengthOptions = {};
       this.customStrengthOptions.minPasswordLength = responseOptions.minPasswordLength ?? MINIMUM_MIN_PASSWORD_LENGTH;
@@ -7857,7 +7865,7 @@ ${b2.name}?`)) {
       if (this.enforcementState === "ENFORCEMENT_STATE_UNSPECIFIED") {
         this.enforcementState = "OFF";
       }
-      this.allowedNonAlphanumericCharacters = ((_a = response.allowedNonAlphanumericCharacters) == null ? void 0 : _a.join("")) ?? "";
+      this.allowedNonAlphanumericCharacters = response.allowedNonAlphanumericCharacters?.join("") ?? "";
       this.forceUpgradeOnSignin = response.forceUpgradeOnSignin ?? false;
       this.schemaVersion = response.schemaVersion;
     }
@@ -8008,23 +8016,22 @@ ${b2.name}?`)) {
         this._popupRedirectResolver = _getInstance(popupRedirectResolver);
       }
       this._initializationPromise = this.queue(async () => {
-        var _a, _b, _c;
         if (this._deleted) {
           return;
         }
         this.persistenceManager = await PersistenceUserManager.create(this, persistenceHierarchy);
-        (_a = this._resolvePersistenceManagerAvailable) == null ? void 0 : _a.call(this);
+        this._resolvePersistenceManagerAvailable?.();
         if (this._deleted) {
           return;
         }
-        if ((_b = this._popupRedirectResolver) == null ? void 0 : _b._shouldInitProactively) {
+        if (this._popupRedirectResolver?._shouldInitProactively) {
           try {
             await this._popupRedirectResolver._initialize(this);
           } catch (e) {
           }
         }
         await this.initializeCurrentUser(popupRedirectResolver);
-        this.lastNotifiedUid = ((_c = this.currentUser) == null ? void 0 : _c.uid) || null;
+        this.lastNotifiedUid = this.currentUser?.uid || null;
         if (this._deleted) {
           return;
         }
@@ -8065,7 +8072,6 @@ ${b2.name}?`)) {
       }
     }
     async initializeCurrentUser(popupRedirectResolver) {
-      var _a;
       if (_isFirebaseServerApp(this.app)) {
         const idToken = this.app.settings.authIdToken;
         if (idToken) {
@@ -8081,10 +8087,10 @@ ${b2.name}?`)) {
       let needsTocheckMiddleware = false;
       if (popupRedirectResolver && this.config.authDomain) {
         await this.getOrInitRedirectPersistenceManager();
-        const redirectUserEventId = (_a = this.redirectUser) == null ? void 0 : _a._redirectEventId;
-        const storedUserEventId = futureCurrentUser == null ? void 0 : futureCurrentUser._redirectEventId;
+        const redirectUserEventId = this.redirectUser?._redirectEventId;
+        const storedUserEventId = futureCurrentUser?._redirectEventId;
         const result = await this.tryRedirectSignIn(popupRedirectResolver);
-        if ((!redirectUserEventId || redirectUserEventId === storedUserEventId) && (result == null ? void 0 : result.user)) {
+        if ((!redirectUserEventId || redirectUserEventId === storedUserEventId) && result?.user) {
           futureCurrentUser = result.user;
           needsTocheckMiddleware = true;
         }
@@ -8132,7 +8138,7 @@ ${b2.name}?`)) {
       try {
         await _reloadWithoutSaving(user);
       } catch (e) {
-        if ((e == null ? void 0 : e.code) !== `auth/${"network-request-failed"}`) {
+        if (e?.code !== `auth/${"network-request-failed"}`) {
           return this.directlySetCurrentUser(null);
         }
       }
@@ -8283,12 +8289,11 @@ ${b2.name}?`)) {
       }
     }
     toJSON() {
-      var _a;
       return {
         apiKey: this.config.apiKey,
         authDomain: this.config.authDomain,
         appName: this.name,
-        currentUser: (_a = this._currentUser) == null ? void 0 : _a.toJSON()
+        currentUser: this._currentUser?.toJSON()
       };
     }
     async _setRedirectUser(user, popupRedirectResolver) {
@@ -8315,15 +8320,14 @@ ${b2.name}?`)) {
       return this.redirectPersistenceManager;
     }
     async _redirectUserForId(id) {
-      var _a, _b;
       if (this._isInitialized) {
         await this.queue(async () => {
         });
       }
-      if (((_a = this._currentUser) == null ? void 0 : _a._redirectEventId) === id) {
+      if (this._currentUser?._redirectEventId === id) {
         return this._currentUser;
       }
-      if (((_b = this.redirectUser) == null ? void 0 : _b._redirectEventId) === id) {
+      if (this.redirectUser?._redirectEventId === id) {
         return this.redirectUser;
       }
       return null;
@@ -8359,12 +8363,11 @@ ${b2.name}?`)) {
       return this.currentUser;
     }
     notifyAuthListeners() {
-      var _a;
       if (!this._isInitialized) {
         return;
       }
       this.idTokenSubscription.next(this.currentUser);
-      const currentUid = ((_a = this.currentUser) == null ? void 0 : _a.uid) ?? null;
+      const currentUid = this.currentUser?.uid ?? null;
       if (this.lastNotifiedUid !== currentUid) {
         this.lastNotifiedUid = currentUid;
         this.authStateSubscription.next(this.currentUser);
@@ -8448,7 +8451,6 @@ ${b2.name}?`)) {
       return this.frameworks;
     }
     async _getAdditionalHeaders() {
-      var _a;
       const headers = {
         [
           "X-Client-Version"
@@ -8461,9 +8463,9 @@ ${b2.name}?`)) {
           /* HttpHeader.X_FIREBASE_GMPID */
         ] = this.app.options.appId;
       }
-      const heartbeatsHeader = await ((_a = this.heartbeatServiceProvider.getImmediate({
+      const heartbeatsHeader = await this.heartbeatServiceProvider.getImmediate({
         optional: true
-      })) == null ? void 0 : _a.getHeartbeatsHeader());
+      })?.getHeartbeatsHeader();
       if (heartbeatsHeader) {
         headers[
           "X-Firebase-Client"
@@ -8480,15 +8482,14 @@ ${b2.name}?`)) {
       return headers;
     }
     async _getAppCheckToken() {
-      var _a;
       if (_isFirebaseServerApp(this.app) && this.app.settings.appCheckToken) {
         return this.app.settings.appCheckToken;
       }
-      const appCheckTokenResult = await ((_a = this.appCheckServiceProvider.getImmediate({ optional: true })) == null ? void 0 : _a.getToken());
-      if (appCheckTokenResult == null ? void 0 : appCheckTokenResult.error) {
+      const appCheckTokenResult = await this.appCheckServiceProvider.getImmediate({ optional: true })?.getToken();
+      if (appCheckTokenResult?.error) {
         _logWarn(`Error while retrieving App Check token: ${appCheckTokenResult.error}`);
       }
-      return appCheckTokenResult == null ? void 0 : appCheckTokenResult.token;
+      return appCheckTokenResult?.token;
     }
   }
   function _castAuth(auth2) {
@@ -8723,9 +8724,11 @@ ${b2.name}?`)) {
     return newRequest;
   }
   async function handleRecaptchaFlow(authInstance, request, actionName, actionMethod, recaptchaAuthProvider) {
-    var _a;
     {
-      if ((_a = authInstance._getRecaptchaConfig()) == null ? void 0 : _a.isProviderEnabled("EMAIL_PASSWORD_PROVIDER")) {
+      if (authInstance._getRecaptchaConfig()?.isProviderEnabled(
+        "EMAIL_PASSWORD_PROVIDER"
+        /* RecaptchaAuthProvider.EMAIL_PASSWORD_PROVIDER */
+      )) {
         const requestWithRecaptcha = await injectRecaptchaFields(
           authInstance,
           request,
@@ -8788,12 +8791,12 @@ ${b2.name}?`)) {
     return auth2;
   }
   function _initializeAuthInstance(auth2, deps) {
-    const persistence = (deps == null ? void 0 : deps.persistence) || [];
+    const persistence = deps?.persistence || [];
     const hierarchy = (Array.isArray(persistence) ? persistence : [persistence]).map(_getInstance);
-    if (deps == null ? void 0 : deps.errorMap) {
+    if (deps?.errorMap) {
       auth2._updateErrorMap(deps.errorMap);
     }
-    auth2._initializeWithPersistence(hierarchy, deps == null ? void 0 : deps.popupRedirectResolver);
+    auth2._initializeWithPersistence(hierarchy, deps?.popupRedirectResolver);
   }
   function connectAuthEmulator(auth2, url, options) {
     const authInternal = _castAuth(auth2);
@@ -9040,7 +9043,7 @@ ${b2.name}?`)) {
      */
     static fromJSON(json) {
       const obj = typeof json === "string" ? JSON.parse(json) : json;
-      if ((obj == null ? void 0 : obj.email) && (obj == null ? void 0 : obj.password)) {
+      if (obj?.email && obj?.password) {
         if (obj.signInMethod === "password") {
           return this._fromEmailAndPassword(obj.email, obj.password);
         } else if (obj.signInMethod === "emailLink") {
@@ -9987,7 +9990,7 @@ ${b2.name}?`)) {
       );
       return UserCredentialImpl._forOperation(user, operationType, response);
     } catch (e) {
-      if ((e == null ? void 0 : e.code) === `auth/${"user-not-found"}`) {
+      if (e?.code === `auth/${"user-not-found"}`) {
         _fail(
           auth2,
           "user-mismatch"
@@ -10413,7 +10416,7 @@ ${b2.name}?`)) {
       const messageEvent = event;
       const { eventId, eventType, data } = messageEvent.data;
       const handlers = this.handlersMap[eventType];
-      if (!(handlers == null ? void 0 : handlers.size)) {
+      if (!handlers?.size) {
         return;
       }
       messageEvent.ports[0].postMessage({
@@ -10646,7 +10649,7 @@ ${b2.name}?`)) {
     return typeof _window()["WorkerGlobalScope"] !== "undefined" && typeof _window()["importScripts"] === "function";
   }
   async function _getActiveServiceWorker() {
-    if (!(navigator == null ? void 0 : navigator.serviceWorker)) {
+    if (!navigator?.serviceWorker) {
       return null;
     }
     try {
@@ -10657,8 +10660,7 @@ ${b2.name}?`)) {
     }
   }
   function _getServiceWorkerController() {
-    var _a;
-    return ((_a = navigator == null ? void 0 : navigator.serviceWorker) == null ? void 0 : _a.controller) || null;
+    return navigator?.serviceWorker?.controller || null;
   }
   function _getWorkerGlobalScope() {
     return _isWorker() ? self : null;
@@ -10822,7 +10824,6 @@ ${b2.name}?`)) {
      * may not resolve.
      */
     async initializeSender() {
-      var _a, _b;
       this.activeServiceWorker = await _getActiveServiceWorker();
       if (!this.activeServiceWorker) {
         return;
@@ -10837,7 +10838,10 @@ ${b2.name}?`)) {
       if (!results) {
         return;
       }
-      if (((_a = results[0]) == null ? void 0 : _a.fulfilled) && ((_b = results[0]) == null ? void 0 : _b.value.includes("keyChanged"))) {
+      if (results[0]?.fulfilled && results[0]?.value.includes(
+        "keyChanged"
+        /* _EventType.KEY_CHANGED */
+      )) {
         this.serviceWorkerReceiverAvailable = true;
       }
     }
@@ -11243,8 +11247,7 @@ ${b2.name}?`)) {
       this.pollUserCancellation();
     }
     get eventId() {
-      var _a;
-      return ((_a = this.authWindow) == null ? void 0 : _a.associatedEvent) || null;
+      return this.authWindow?.associatedEvent || null;
     }
     cancel() {
       this.reject(_createError(
@@ -11266,8 +11269,7 @@ ${b2.name}?`)) {
     }
     pollUserCancellation() {
       const poll = () => {
-        var _a, _b;
-        if ((_b = (_a = this.authWindow) == null ? void 0 : _a.window) == null ? void 0 : _b.closed) {
+        if (this.authWindow?.window?.closed) {
           this.pollId = window.setTimeout(
             () => {
               this.pollId = null;
@@ -11454,9 +11456,8 @@ ${b2.name}?`)) {
       return handled;
     }
     sendToConsumer(event, consumer) {
-      var _a;
       if (event.error && !isNullRedirectEvent(event)) {
-        const code = ((_a = event.error.code) == null ? void 0 : _a.split("auth/")[1]) || "internal-error";
+        const code = event.error.code?.split("auth/")[1] || "internal-error";
         consumer.onError(_createError(this.auth, code));
       } else {
         consumer.onAuthEvent(event);
@@ -11481,7 +11482,7 @@ ${b2.name}?`)) {
     return [e.type, e.eventId, e.sessionId, e.tenantId].filter((v2) => v2).join("-");
   }
   function isNullRedirectEvent({ type, error }) {
-    return type === "unknown" && (error == null ? void 0 : error.code) === `auth/${"no-auth-event"}`;
+    return type === "unknown" && error?.code === `auth/${"no-auth-event"}`;
   }
   function isRedirectEvent(event) {
     switch (event.type) {
@@ -11590,7 +11591,7 @@ ${b2.name}?`)) {
   const NETWORK_TIMEOUT = new Delay(3e4, 6e4);
   function resetUnloadedGapiModules() {
     const beacon = _window().___jsl;
-    if (beacon == null ? void 0 : beacon.H) {
+    if (beacon?.H) {
       for (const hint of Object.keys(beacon.H)) {
         beacon.H[hint].r = beacon.H[hint].r || [];
         beacon.H[hint].L = beacon.H[hint].L || [];
@@ -11605,7 +11606,6 @@ ${b2.name}?`)) {
   }
   function loadGapi(auth2) {
     return new Promise((resolve, reject) => {
-      var _a, _b, _c;
       function loadGapiIframe() {
         resetUnloadedGapiModules();
         gapi.load("gapi.iframes", {
@@ -11623,9 +11623,9 @@ ${b2.name}?`)) {
           timeout: NETWORK_TIMEOUT.get()
         });
       }
-      if ((_b = (_a = _window().gapi) == null ? void 0 : _a.iframes) == null ? void 0 : _b.Iframe) {
+      if (_window().gapi?.iframes?.Iframe) {
         resolve(gapi.iframes.getContext());
-      } else if (!!((_c = _window().gapi) == null ? void 0 : _c.load)) {
+      } else if (!!_window().gapi?.load) {
         loadGapiIframe();
       } else {
         const cbName = _generateCallbackName("iframefcb");
@@ -11939,8 +11939,7 @@ ${b2.name}?`)) {
     // Wrapping in async even though we don't await anywhere in order
     // to make sure errors are raised as promise rejections
     async _openPopup(auth2, provider, authType, eventId) {
-      var _a;
-      debugAssert((_a = this.eventManagers[auth2._key()]) == null ? void 0 : _a.manager, "_initialize() not called before _openPopup()");
+      debugAssert(this.eventManagers[auth2._key()]?.manager, "_initialize() not called before _openPopup()");
       const url = await _getRedirectUrl(auth2, provider, authType, _getCurrentUrl(), eventId);
       return _open(auth2, url, _generateEventId());
     }
@@ -11974,7 +11973,7 @@ ${b2.name}?`)) {
       const manager = new AuthEventManager(auth2);
       iframe.register("authEvent", (iframeEvent) => {
         _assert(
-          iframeEvent == null ? void 0 : iframeEvent.authEvent,
+          iframeEvent?.authEvent,
           auth2,
           "invalid-auth-event"
           /* AuthErrorCode.INVALID_AUTH_EVENT */
@@ -11992,8 +11991,7 @@ ${b2.name}?`)) {
     _isIframeWebStorageSupported(auth2, cb) {
       const iframe = this.iframes[auth2._key()];
       iframe.send(WEB_STORAGE_SUPPORT_KEY, { type: WEB_STORAGE_SUPPORT_KEY }, (result) => {
-        var _a;
-        const isSupported = (_a = result == null ? void 0 : result[0]) == null ? void 0 : _a[WEB_STORAGE_SUPPORT_KEY];
+        const isSupported = result?.[0]?.[WEB_STORAGE_SUPPORT_KEY];
         if (isSupported !== void 0) {
           cb(!!isSupported);
         }
@@ -12040,9 +12038,8 @@ ${b2.name}?`)) {
       this.internalListeners = /* @__PURE__ */ new Map();
     }
     getUid() {
-      var _a;
       this.assertAuthConfigured();
-      return ((_a = this.auth.currentUser) == null ? void 0 : _a.uid) || null;
+      return this.auth.currentUser?.uid || null;
     }
     async getToken(forceRefresh) {
       this.assertAuthConfigured();
@@ -12059,7 +12056,7 @@ ${b2.name}?`)) {
         return;
       }
       const unsubscribe = this.auth.onIdTokenChanged((user) => {
-        listener((user == null ? void 0 : user.stsTokenManager.accessToken) || null);
+        listener(user?.stsTokenManager.accessToken || null);
       });
       this.internalListeners.set(listener, unsubscribe);
       this.updateProactiveRefresh();
@@ -12198,7 +12195,7 @@ ${b2.name}?`)) {
     if (idTokenAge && idTokenAge > authIdTokenMaxAge) {
       return;
     }
-    const idToken = idTokenResult == null ? void 0 : idTokenResult.token;
+    const idToken = idTokenResult?.token;
     if (lastPostedIdToken === idToken) {
       return;
     }
@@ -12239,8 +12236,7 @@ ${b2.name}?`)) {
     return auth2;
   }
   function getScriptParentElement() {
-    var _a;
-    return ((_a = document.getElementsByTagName("head")) == null ? void 0 : _a[0]) ?? document;
+    return document.getElementsByTagName("head")?.[0] ?? document;
   }
   _setExternalJSProvider({
     loadJS(url) {
@@ -16890,8 +16886,7 @@ ${b2.name}?`)) {
    */
   const et = "server_timestamp", tt = "__type__", nt = "__previous_value__", rt = "__local_write_time__";
   function __PRIVATE_isServerTimestamp(e) {
-    var _a, _b;
-    const t = (_b = (((_a = e == null ? void 0 : e.mapValue) == null ? void 0 : _a.fields) || {})[tt]) == null ? void 0 : _b.stringValue;
+    const t = (e?.mapValue?.fields || {})[tt]?.stringValue;
     return t === et;
   }
   function __PRIVATE_getPreviousValue(e) {
@@ -17091,8 +17086,7 @@ ${b2.name}?`)) {
         return __PRIVATE_compareArrays(e.arrayValue, t.arrayValue);
       case 10:
         return function __PRIVATE_compareVectors(e2, t2) {
-          var _a, _b, _c, _d;
-          const n2 = e2.fields || {}, r2 = t2.fields || {}, i = (_a = n2[ut]) == null ? void 0 : _a.arrayValue, s = (_b = r2[ut]) == null ? void 0 : _b.arrayValue, o = __PRIVATE_primitiveComparator(((_c = i == null ? void 0 : i.values) == null ? void 0 : _c.length) || 0, ((_d = s == null ? void 0 : s.values) == null ? void 0 : _d.length) || 0);
+          const n2 = e2.fields || {}, r2 = t2.fields || {}, i = n2[ut]?.arrayValue, s = r2[ut]?.arrayValue, o = __PRIVATE_primitiveComparator(i?.values?.length || 0, s?.values?.length || 0);
           if (0 !== o) return o;
           return __PRIVATE_compareArrays(i, s);
         }(e.mapValue, t.mapValue);
@@ -17214,8 +17208,7 @@ ${b2.name}?`)) {
     return !!e && "mapValue" in e;
   }
   function __PRIVATE_isVectorValue(e) {
-    var _a, _b;
-    const t = (_b = (((_a = e == null ? void 0 : e.mapValue) == null ? void 0 : _a.fields) || {})[st]) == null ? void 0 : _b.stringValue;
+    const t = (e?.mapValue?.fields || {})[st]?.stringValue;
     return t === at;
   }
   function __PRIVATE_deepClone(e) {
@@ -17755,8 +17748,7 @@ ${b2.name}?`)) {
     }
   }
   function __PRIVATE_extractDocumentKeysFromArrayValue(e, t) {
-    var _a;
-    return (((_a = t.arrayValue) == null ? void 0 : _a.values) || []).map((e2) => DocumentKey.fromName(e2.referenceValue));
+    return (t.arrayValue?.values || []).map((e2) => DocumentKey.fromName(e2.referenceValue));
   }
   class __PRIVATE_ArrayContainsFilter extends FieldFilter {
     constructor(e, t) {
@@ -22000,7 +21992,7 @@ Total Duration: ${a - u}ms`);
                 if (__PRIVATE_logDebug(Gt, `RPC '${e}' ${s} failed with status:`, n2, "response text:", _.getResponseText()), n2 > 0) {
                   let e2 = _.getResponseJson();
                   Array.isArray(e2) && (e2 = e2[0]);
-                  const t3 = e2 == null ? void 0 : e2.error;
+                  const t3 = e2?.error;
                   if (t3 && t3.status && t3.message) {
                     const e3 = function __PRIVATE_mapCodeFromHttpResponseErrorStatus(e4) {
                       const t4 = e4.toLowerCase().replace(/_/g, "-");
@@ -22080,11 +22072,10 @@ Total Duration: ${a - u}ms`);
       }), __PRIVATE_unguardedEventListen(u, WebChannel.EventType.ERROR, (t2) => {
         l || (l = true, __PRIVATE_logWarn(Gt, `RPC '${e}' stream ${r} transport errored. Name:`, t2.name, "Message:", t2.message), h.o_(new FirestoreError(D.UNAVAILABLE, "The operation could not be completed")));
       }), __PRIVATE_unguardedEventListen(u, WebChannel.EventType.MESSAGE, (t2) => {
-        var _a;
         if (!l) {
           const n2 = t2.data[0];
           __PRIVATE_hardAssert(!!n2, 16349);
-          const i2 = n2, s2 = (i2 == null ? void 0 : i2.error) || ((_a = i2[0]) == null ? void 0 : _a.error);
+          const i2 = n2, s2 = i2?.error || i2[0]?.error;
           if (s2) {
             __PRIVATE_logDebug(Gt, `RPC '${e}' stream ${r} received error:`, s2);
             const t3 = s2.status;
@@ -24066,9 +24057,8 @@ This typically indicates that your device does not have a healthy Internet conne
     const r = __PRIVATE_debugCast(e), i = [], s = [], o = [];
     r.Tu.isEmpty() || (r.Tu.forEach((e2, _) => {
       o.push(r.pu(_, t, n).then((e3) => {
-        var _a;
         if ((e3 || n) && r.isPrimaryClient) {
-          const t2 = e3 ? !e3.fromCache : (_a = n == null ? void 0 : n.targetChanges.get(_.targetId)) == null ? void 0 : _a.current;
+          const t2 = e3 ? !e3.fromCache : n?.targetChanges.get(_.targetId)?.current;
           r.sharedClientState.updateQueryState(_.targetId, t2 ? "current" : "not-current");
         }
         if (e3) {
@@ -24155,8 +24145,7 @@ This typically indicates that your device does not have a healthy Internet conne
       return new __PRIVATE_MemorySharedClientState();
     }
     async terminate() {
-      var _a, _b;
-      (_a = this.gcScheduler) == null ? void 0 : _a.stop(), (_b = this.indexBackfillerScheduler) == null ? void 0 : _b.stop(), this.sharedClientState.shutdown(), await this.persistence.shutdown();
+      this.gcScheduler?.stop(), this.indexBackfillerScheduler?.stop(), this.sharedClientState.shutdown(), await this.persistence.shutdown();
     }
   }
   __PRIVATE_MemoryOfflineComponentProvider.provider = {
@@ -24217,7 +24206,6 @@ This typically indicates that your device does not have a healthy Internet conne
       }(this.localStore, this.remoteStore, this.eventManager, this.sharedClientState, e.initialUser, e.maxConcurrentLimboResolutions, t);
     }
     async terminate() {
-      var _a, _b;
       await async function __PRIVATE_remoteStoreShutdown(e) {
         const t = __PRIVATE_debugCast(e);
         __PRIVATE_logDebug(jt, "RemoteStore shutting down."), t.Ia.add(
@@ -24229,7 +24217,7 @@ This typically indicates that your device does not have a healthy Internet conne
           "Unknown"
           /* OnlineState.Unknown */
         );
-      }(this.remoteStore), (_a = this.datastore) == null ? void 0 : _a.terminate(), (_b = this.eventManager) == null ? void 0 : _b.terminate();
+      }(this.remoteStore), this.datastore?.terminate(), this.eventManager?.terminate();
     }
   }
   OnlineComponentProvider.provider = {
@@ -24604,7 +24592,6 @@ This typically indicates that your device does not have a healthy Internet conne
     }
   }
   function connectFirestoreEmulator(e, t, n, r = {}) {
-    var _a;
     e = __PRIVATE_cast(e, Firestore$1);
     const i = isCloudWorkstation(t), s = e._getSettings(), o = {
       ...s,
@@ -24621,7 +24608,7 @@ This typically indicates that your device does not have a healthy Internet conne
       let t2, n2;
       if ("string" == typeof r.mockUserToken) t2 = r.mockUserToken, n2 = User.MOCK_USER;
       else {
-        t2 = createMockUserToken(r.mockUserToken, (_a = e._app) == null ? void 0 : _a.options.projectId);
+        t2 = createMockUserToken(r.mockUserToken, e._app?.options.projectId);
         const i2 = r.mockUserToken.sub || r.mockUserToken.user_id;
         if (!i2) throw new FirestoreError(D.INVALID_ARGUMENT, "mockUserToken must contain 'sub' or 'user_id' field!");
         n2 = new User(i2);
@@ -24952,7 +24939,7 @@ This typically indicates that your device does not have a healthy Internet conne
       super(e, t, n, r), /**
        * Whether it's a {@link Firestore} or Firestore Lite instance.
        */
-      this.type = "firestore", this._queue = new __PRIVATE_AsyncQueueImpl(), this._persistenceKey = (r == null ? void 0 : r.name) || "[DEFAULT]";
+      this.type = "firestore", this._queue = new __PRIVATE_AsyncQueueImpl(), this._persistenceKey = r?.name || "[DEFAULT]";
     }
     async _terminate() {
       if (this._firestoreClient) {
@@ -24976,15 +24963,14 @@ This typically indicates that your device does not have a healthy Internet conne
     return e._firestoreClient || __PRIVATE_configureFirestore(e), e._firestoreClient;
   }
   function __PRIVATE_configureFirestore(e) {
-    var _a, _b, _c, _d;
-    const t = e._freezeSettings(), n = __PRIVATE_makeDatabaseInfo(e._databaseId, ((_a = e._app) == null ? void 0 : _a.options.appId) || "", e._persistenceKey, (_b = e._app) == null ? void 0 : _b.options.apiKey, t);
-    e._componentsProvider || ((_c = t.localCache) == null ? void 0 : _c._offlineComponentProvider) && ((_d = t.localCache) == null ? void 0 : _d._onlineComponentProvider) && (e._componentsProvider = {
+    const t = e._freezeSettings(), n = __PRIVATE_makeDatabaseInfo(e._databaseId, e._app?.options.appId || "", e._persistenceKey, e._app?.options.apiKey, t);
+    e._componentsProvider || t.localCache?._offlineComponentProvider && t.localCache?._onlineComponentProvider && (e._componentsProvider = {
       _offline: t.localCache._offlineComponentProvider,
       _online: t.localCache._onlineComponentProvider
     }), e._firestoreClient = new FirestoreClient(e._authCredentials, e._appCheckCredentials, e._queue, n, e._componentsProvider && function __PRIVATE_buildComponentProvider(e2) {
-      const t2 = e2 == null ? void 0 : e2._online.build();
+      const t2 = e2?._online.build();
       return {
-        _offline: e2 == null ? void 0 : e2._offline.build(t2),
+        _offline: e2?._offline.build(t2),
         _online: t2
       };
     }(e._componentsProvider));
@@ -25383,16 +25369,14 @@ This typically indicates that your device does not have a healthy Internet conne
       }, this.databaseId, this.serializer, this.ignoreUndefinedProperties, this.fieldTransforms, this.fieldMask);
     }
     dc(e) {
-      var _a;
-      const t = (_a = this.path) == null ? void 0 : _a.child(e), n = this.i({
+      const t = this.path?.child(e), n = this.i({
         path: t,
         arrayElement: false
       });
       return n.mc(e), n;
     }
     fc(e) {
-      var _a;
-      const t = (_a = this.path) == null ? void 0 : _a.child(e), n = this.i({
+      const t = this.path?.child(e), n = this.i({
         path: t,
         arrayElement: false
       });
@@ -25711,8 +25695,7 @@ This typically indicates that your device does not have a healthy Internet conne
      * @internal
      */
     convertVectorValue(e) {
-      var _a, _b, _c;
-      const t = (_c = (_b = (_a = e.fields) == null ? void 0 : _a[ut].arrayValue) == null ? void 0 : _b.values) == null ? void 0 : _c.map((e2) => __PRIVATE_normalizeNumber(e2.doubleValue));
+      const t = e.fields?.[ut].arrayValue?.values?.map((e2) => __PRIVATE_normalizeNumber(e2.doubleValue));
       return new VectorValue(t);
     }
     convertGeoPoint(e) {
@@ -25860,8 +25843,7 @@ This typically indicates that your device does not have a healthy Internet conne
      * if the document doesn't exist.
      */
     _fieldsProto() {
-      var _a;
-      return ((_a = this._document) == null ? void 0 : _a.data.clone().value.mapValue.fields) ?? void 0;
+      return this._document?.data.clone().value.mapValue.fields ?? void 0;
     }
     /**
      * Retrieves the field specified by `fieldPath`. Returns `undefined` if the
@@ -26515,7 +26497,7 @@ This typically indicates that your device does not have a healthy Internet conne
     async getSharedTemplates() {
       try {
         const userSettings = await this.getUserSettings();
-        const workspaceId = (userSettings == null ? void 0 : userSettings.workspace) || "global";
+        const workspaceId = userSettings?.workspace || "global";
         const templatesCol = collection(db, "shared_templates");
         const q2 = query(
           templatesCol,
@@ -26581,7 +26563,10 @@ This typically indicates that your device does not have a healthy Internet conne
         document.getElementById("vnpt-btn-cloud-push").onclick = async () => {
           try {
             showToast("⏳ Đang đẩy dữ liệu...");
-            const { getProfiles: getProfiles2 } = await Promise.resolve().then(() => profileManager);
+            const { getProfiles: getProfiles2 } = await __vitePreload(async () => {
+              const { getProfiles: getProfiles3 } = await Promise.resolve().then(() => profileManager);
+              return { getProfiles: getProfiles3 };
+            }, false ? __VITE_PRELOAD__ : void 0);
             const profiles = getProfiles2();
             for (const p of profiles) {
               await FirebaseService.pushProfile(p);
@@ -26595,9 +26580,36 @@ This typically indicates that your device does not have a healthy Internet conne
               SK_DATA_DEF: SK_DATA_DEF2,
               LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS2,
               SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING2
-            } = await Promise.resolve().then(() => constants);
-            const { Storage: Storage2 } = await Promise.resolve().then(() => storage$1);
-            const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await Promise.resolve().then(() => defaults);
+            } = await __vitePreload(async () => {
+              const {
+                SK_CALC_MAP: SK_CALC_MAP3,
+                SK_HOTKEYS: SK_HOTKEYS3,
+                LOCAL_KEY_FIELDS: LOCAL_KEY_FIELDS3,
+                SK_TEMPLATES: SK_TEMPLATES3,
+                SK_TAX: SK_TAX3,
+                SK_DATA_DEF: SK_DATA_DEF3,
+                LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS3,
+                SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING3
+              } = await Promise.resolve().then(() => constants);
+              return {
+                SK_CALC_MAP: SK_CALC_MAP3,
+                SK_HOTKEYS: SK_HOTKEYS3,
+                LOCAL_KEY_FIELDS: LOCAL_KEY_FIELDS3,
+                SK_TEMPLATES: SK_TEMPLATES3,
+                SK_TAX: SK_TAX3,
+                SK_DATA_DEF: SK_DATA_DEF3,
+                LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS3,
+                SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING3
+              };
+            }, false ? __VITE_PRELOAD__ : void 0);
+            const { Storage: Storage2 } = await __vitePreload(async () => {
+              const { Storage: Storage3 } = await Promise.resolve().then(() => storage$1);
+              return { Storage: Storage3 };
+            }, false ? __VITE_PRELOAD__ : void 0);
+            const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await __vitePreload(async () => {
+              const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP3 } = await Promise.resolve().then(() => defaults);
+              return { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP3 };
+            }, false ? __VITE_PRELOAD__ : void 0);
             const globalConfig = {
               calcMap: Storage2.get(SK_CALC_MAP2) ?? DEFAULT_CALC_MAP2,
               hotkeys: Storage2.get(SK_HOTKEYS2),
@@ -26624,7 +26636,10 @@ This typically indicates that your device does not have a healthy Internet conne
               return;
             }
             if (confirm(`Tìm thấy ${cloudProfiles.length} bản ghi dữ liệu. Bạn có muốn ghi đè bộ cài đặt Local không?`)) {
-              const { importProfiles: importProfiles2 } = await Promise.resolve().then(() => profileManager);
+              const { importProfiles: importProfiles2 } = await __vitePreload(async () => {
+                const { importProfiles: importProfiles3 } = await Promise.resolve().then(() => profileManager);
+                return { importProfiles: importProfiles3 };
+              }, false ? __VITE_PRELOAD__ : void 0);
               importProfiles2(cloudProfiles);
               if (cloudConfig) {
                 const {
@@ -26636,9 +26651,36 @@ This typically indicates that your device does not have a healthy Internet conne
                   SK_DATA_DEF: SK_DATA_DEF2,
                   LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS2,
                   SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING2
-                } = await Promise.resolve().then(() => constants);
-                const { Storage: Storage2 } = await Promise.resolve().then(() => storage$1);
-                const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await Promise.resolve().then(() => defaults);
+                } = await __vitePreload(async () => {
+                  const {
+                    SK_CALC_MAP: SK_CALC_MAP3,
+                    SK_HOTKEYS: SK_HOTKEYS3,
+                    LOCAL_KEY_FIELDS: LOCAL_KEY_FIELDS3,
+                    SK_TEMPLATES: SK_TEMPLATES3,
+                    SK_TAX: SK_TAX3,
+                    SK_DATA_DEF: SK_DATA_DEF3,
+                    LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS3,
+                    SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING3
+                  } = await Promise.resolve().then(() => constants);
+                  return {
+                    SK_CALC_MAP: SK_CALC_MAP3,
+                    SK_HOTKEYS: SK_HOTKEYS3,
+                    LOCAL_KEY_FIELDS: LOCAL_KEY_FIELDS3,
+                    SK_TEMPLATES: SK_TEMPLATES3,
+                    SK_TAX: SK_TAX3,
+                    SK_DATA_DEF: SK_DATA_DEF3,
+                    LOCAL_KEY_DEFAULT_FIELDS: LOCAL_KEY_DEFAULT_FIELDS3,
+                    SK_ADDRESS_LEARNING: SK_ADDRESS_LEARNING3
+                  };
+                }, false ? __VITE_PRELOAD__ : void 0);
+                const { Storage: Storage2 } = await __vitePreload(async () => {
+                  const { Storage: Storage3 } = await Promise.resolve().then(() => storage$1);
+                  return { Storage: Storage3 };
+                }, false ? __VITE_PRELOAD__ : void 0);
+                const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await __vitePreload(async () => {
+                  const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP3 } = await Promise.resolve().then(() => defaults);
+                  return { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP3 };
+                }, false ? __VITE_PRELOAD__ : void 0);
                 Storage2.set(SK_CALC_MAP2, cloudConfig.calcMap ?? DEFAULT_CALC_MAP2);
                 if (cloudConfig.hotkeys) Storage2.set(SK_HOTKEYS2, cloudConfig.hotkeys);
                 if (cloudConfig.fields) Storage2.set(LOCAL_KEY_FIELDS2, cloudConfig.fields);
@@ -26657,8 +26699,14 @@ This typically indicates that your device does not have a healthy Internet conne
         };
         document.getElementById("vnpt-btn-cloud-keys-push").onclick = async () => {
           try {
-            const { SK_GEMINI_KEY: SK_GEMINI_KEY2 } = await Promise.resolve().then(() => constants);
-            const { Storage: Storage2 } = await Promise.resolve().then(() => storage$1);
+            const { SK_GEMINI_KEY: SK_GEMINI_KEY2 } = await __vitePreload(async () => {
+              const { SK_GEMINI_KEY: SK_GEMINI_KEY3 } = await Promise.resolve().then(() => constants);
+              return { SK_GEMINI_KEY: SK_GEMINI_KEY3 };
+            }, false ? __VITE_PRELOAD__ : void 0);
+            const { Storage: Storage2 } = await __vitePreload(async () => {
+              const { Storage: Storage3 } = await Promise.resolve().then(() => storage$1);
+              return { Storage: Storage3 };
+            }, false ? __VITE_PRELOAD__ : void 0);
             const geminiKey = Storage2.get(SK_GEMINI_KEY2);
             if (!geminiKey) {
               showToast("ℹ️ Không tìm thấy Gemini Key để sao lưu");
@@ -26679,8 +26727,14 @@ This typically indicates that your device does not have a healthy Internet conne
               showToast("ℹ️ Không tìm thấy Keys trên Cloud");
               return;
             }
-            const { SK_GEMINI_KEY: SK_GEMINI_KEY2 } = await Promise.resolve().then(() => constants);
-            const { Storage: Storage2 } = await Promise.resolve().then(() => storage$1);
+            const { SK_GEMINI_KEY: SK_GEMINI_KEY2 } = await __vitePreload(async () => {
+              const { SK_GEMINI_KEY: SK_GEMINI_KEY3 } = await Promise.resolve().then(() => constants);
+              return { SK_GEMINI_KEY: SK_GEMINI_KEY3 };
+            }, false ? __VITE_PRELOAD__ : void 0);
+            const { Storage: Storage2 } = await __vitePreload(async () => {
+              const { Storage: Storage3 } = await Promise.resolve().then(() => storage$1);
+              return { Storage: Storage3 };
+            }, false ? __VITE_PRELOAD__ : void 0);
             Storage2.set(SK_GEMINI_KEY2, keys.gemini_key);
             showToast("✅ Đã khôi phục API Keys từ Cloud!");
             setTimeout(() => location.reload(), 1e3);
@@ -27153,7 +27207,10 @@ This typically indicates that your device does not have a healthy Internet conne
     const geminiKeyInput = document.getElementById("vnpt-gemini-key");
     const geminiModelSelect = document.getElementById("vnpt-gemini-model");
     if (geminiKeyInput && geminiModelSelect) {
-      Promise.resolve().then(() => constants).then(({ SK_GEMINI_KEY: SK_GEMINI_KEY2, SK_GEMINI_MODEL: SK_GEMINI_MODEL2 }) => {
+      __vitePreload(async () => {
+        const { SK_GEMINI_KEY: SK_GEMINI_KEY2, SK_GEMINI_MODEL: SK_GEMINI_MODEL2 } = await Promise.resolve().then(() => constants);
+        return { SK_GEMINI_KEY: SK_GEMINI_KEY2, SK_GEMINI_MODEL: SK_GEMINI_MODEL2 };
+      }, false ? __VITE_PRELOAD__ : void 0).then(({ SK_GEMINI_KEY: SK_GEMINI_KEY2, SK_GEMINI_MODEL: SK_GEMINI_MODEL2 }) => {
         geminiKeyInput.value = Storage.get(SK_GEMINI_KEY2) || "";
         const savedModel = Storage.get(SK_GEMINI_MODEL2) || "gemini-2.5-flash";
         let isModelExist = Array.from(geminiModelSelect.options).some((opt) => opt.value === savedModel);
@@ -27352,7 +27409,10 @@ This typically indicates that your device does not have a healthy Internet conne
       }
     }
     setTimeout(checkUpdateUI, 1e3);
-    Promise.resolve().then(() => tokenTracker).then(({ TokenTracker: TokenTracker2 }) => {
+    __vitePreload(async () => {
+      const { TokenTracker: TokenTracker2 } = await Promise.resolve().then(() => tokenTracker);
+      return { TokenTracker: TokenTracker2 };
+    }, false ? __VITE_PRELOAD__ : void 0).then(({ TokenTracker: TokenTracker2 }) => {
       const usageEl = document.getElementById("vnpt-token-usage");
       if (usageEl) {
         const usage = TokenTracker2.getUsage();
@@ -27562,11 +27622,10 @@ This typically indicates that your device does not have a healthy Internet conne
   let keydownHandler = null;
   let mutationObserver = null;
   function getElValueText(el) {
-    var _a;
     if (!el) return "";
     const tag = el.tagName.toLowerCase();
     if (tag === "select") {
-      return ((_a = el.options[el.selectedIndex]) == null ? void 0 : _a.text) || "";
+      return el.options[el.selectedIndex]?.text || "";
     }
     if (tag === "ng-select2") {
       const span = el.querySelector(".select2-selection__rendered");
@@ -27633,7 +27692,7 @@ This typically indicates that your device does not have a healthy Internet conne
       const s2List = document.querySelectorAll("ng-select2");
       for (const s2 of s2List) {
         const span = s2.querySelector(".select2-selection__rendered");
-        const title = ((span == null ? void 0 : span.getAttribute("title")) || (span == null ? void 0 : span.textContent) || "").trim();
+        const title = (span?.getAttribute("title") || span?.textContent || "").trim();
         if (title && (title.startsWith("Tỉnh") || title.startsWith("Thành phố")) && !title.includes("Chọn")) {
           rawVal = title;
           break;
@@ -28553,8 +28612,7 @@ ${rawText}`
     return classifyTextLocally(rawText);
   }
   function hasChromeStorage() {
-    var _a;
-    return typeof chrome !== "undefined" && !!((_a = chrome.storage) == null ? void 0 : _a.local);
+    return typeof chrome !== "undefined" && !!chrome.storage?.local;
   }
   const BridgeStore = {
     /**
@@ -28570,7 +28628,7 @@ ${rawText}`
       }
       if (hasChromeStorage()) {
         const obj = await chrome.storage.local.get(key);
-        return (obj == null ? void 0 : obj[key]) ?? null;
+        return obj?.[key] ?? null;
       }
       try {
         const raw = localStorage.getItem(key);
@@ -28812,9 +28870,8 @@ ${rawText}`
         url,
         responseType: "arraybuffer",
         onload: function(response) {
-          var _a;
           if (response.status === 200) {
-            const mimeType = ((_a = response.responseHeaders.match(/content-type:\s*([^\s;]+)/i)) == null ? void 0 : _a[1]) || "application/octet-stream";
+            const mimeType = response.responseHeaders.match(/content-type:\s*([^\s;]+)/i)?.[1] || "application/octet-stream";
             const base642 = arrayBufferToBase64(response.response);
             resolve({
               base64: base642,
@@ -39986,6 +40043,56 @@ Bạn có muốn cập nhật ngay không?`);
       init();
     }
   }
+  function gmAddStyle(css) {
+    const style = document.createElement("style");
+    style.textContent = css;
+    document.head.appendChild(style);
+    return style;
+  }
+  function gmXmlHttpRequest(details) {
+    const {
+      method = "GET",
+      url,
+      headers,
+      data,
+      timeout,
+      onload,
+      onerror,
+      ontimeout
+    } = details || {};
+    chrome.runtime.sendMessage(
+      {
+        type: "GM_xmlhttpRequest",
+        payload: { method, url, headers, data, timeout }
+      },
+      (res) => {
+        const err = chrome.runtime.lastError;
+        if (err) {
+          onerror?.(err);
+          return;
+        }
+        if (!res) {
+          onerror?.(new Error("No response from service worker"));
+          return;
+        }
+        if (res.type === "timeout") {
+          ontimeout?.();
+          return;
+        }
+        if (res.type === "error") {
+          onerror?.(res.error);
+          return;
+        }
+        onload?.({
+          status: res.status,
+          responseText: res.responseText,
+          finalUrl: res.finalUrl
+        });
+      }
+    );
+  }
+  if (typeof window.GM_addStyle === "undefined") window.GM_addStyle = gmAddStyle;
+  if (typeof window.GM_xmlhttpRequest === "undefined") window.GM_xmlhttpRequest = gmXmlHttpRequest;
   function initProfiles() {
     const profiles = Storage.get(LOCAL_KEY_PROFILES);
     if (!profiles || profiles.length === 0) {
