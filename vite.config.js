@@ -22,7 +22,6 @@ const tampermonkeyHeader = `// ==UserScript==
 // @grant        GM_getValue
 // @grant        GM_addValueChangeListener
 // @connect      localhost
-// @connect      drive.google.com
 // @connect      raw.githubusercontent.com
 // @connect      firebaseio.com
 // @connect      googleapis.com

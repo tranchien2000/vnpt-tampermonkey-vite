@@ -18,6 +18,13 @@ import { capitalizeName, formatPhoneNumber, normalizeDate } from '../utils/strin
 import { createInternalBackup, generateBackupName } from '../utils/backupHelper.js';
 import { debounce } from '../utils/common.js';
 
+let isBound = false;
+let clickHandler = null;
+let inputHandler = null;
+let changeHandler = null;
+let keydownHandler = null;
+let mutationObserver = null;
+
 /**
  * Lấy giá trị hiển thị (text/title) của một element.
  * Tự động xử lý Select, Ng-Select2 và Input thông thường.
@@ -141,7 +148,16 @@ function getProvinceName() {
 }
 
 export function initWebScanner() {
-    document.getElementById('vnpt-btn-scan').addEventListener('click', function () {
+    if (isBound) return; // Prevent duplicate listeners (hot reload)
+    isBound = true;
+
+    const btnScan = document.getElementById('vnpt-btn-scan');
+    if (!btnScan) {
+        isBound = false;
+        return;
+    }
+
+    btnScan.addEventListener('click', clickHandler = function () {
         if (AppState.isDefaultMode) {
             Object.keys(DEFAULT_DATA).forEach(key => {
                 addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');
@@ -315,12 +331,35 @@ export function initWebScanner() {
         setupProvinceSync();
     }, 500);
 
-    document.addEventListener('input', debouncedHandleSync);
-    document.addEventListener('change', handleSyncEvent); // Change thì sync ngay
-    document.addEventListener('keydown', handleSyncEvent);
+    inputHandler = debouncedHandleSync;
+    changeHandler = handleSyncEvent; // Change thì sync ngay
+    keydownHandler = handleSyncEvent;
+
+    document.addEventListener('input', inputHandler);
+    document.addEventListener('change', changeHandler);
+    document.addEventListener('keydown', keydownHandler);
 
     // Chạy setupProvinceSync định kỳ hoặc qua MutationObserver để bắt các form load chậm
     setupProvinceSync();
-    const observer = new MutationObserver(() => debouncedOnMutation());
-    observer.observe(document.body, { childList: true, subtree: true });
+    mutationObserver = new MutationObserver(() => debouncedOnMutation());
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+}
+
+export function cleanupWebScanner() {
+    if (!isBound) return;
+    isBound = false;
+
+    const btnScan = document.getElementById('vnpt-btn-scan');
+    if (btnScan && clickHandler) btnScan.removeEventListener('click', clickHandler);
+    clickHandler = null;
+
+    if (inputHandler) document.removeEventListener('input', inputHandler);
+    if (changeHandler) document.removeEventListener('change', changeHandler);
+    if (keydownHandler) document.removeEventListener('keydown', keydownHandler);
+    inputHandler = null;
+    changeHandler = null;
+    keydownHandler = null;
+
+    if (mutationObserver) mutationObserver.disconnect();
+    mutationObserver = null;
 }

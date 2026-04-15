@@ -7,7 +7,9 @@
     "dev": "set VITE_DEV=true && vite build --watch",
     "serve": "serve dist --cors --no-clipboard -p 8788",
     "dev:all": "concurrently \"npm run dev\" \"npm run serve\"",
-    "build": "vite build",
+    "build:userscript": "vite build",
+    "build:ext": "vite build --config vite.ext.sw.config.js && vite build --config vite.ext.content.config.js",
+    "build": "npm run build:userscript && npm run build:ext",
     "release": "node scripts/release.cjs"
   },
   "devDependencies": {

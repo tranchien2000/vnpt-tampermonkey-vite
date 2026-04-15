@@ -7,6 +7,8 @@
  *          khi click sẽ lưu dữ liệu qua GM_setValue để tab VNPT đọc được.
  */
 
+import { BridgeStore } from '../../utils/bridgeStore.js';
+
 const GM_MAIL_KEY = 'vnpt_pending_mail_data';
 
 // ─── Storage Key Constant ──────────────────────────────────────────────────
@@ -165,7 +167,7 @@ function _doInject() {
         }
 
         try {
-            GM_setValue(GM_MAIL_KEY, JSON.stringify({
+            BridgeStore.set(GM_MAIL_KEY, JSON.stringify({
                 ...data,
                 _timestamp: Date.now(),
                 _source: window.location.hostname
@@ -181,8 +183,8 @@ function _doInject() {
                 btn.style.background = 'linear-gradient(135deg, #4f46e5, #7c3aed)';
             }, 2500);
         } catch (err) {
-            console.error('[VNPT] Lỗi GM_setValue:', err);
-            _showBridgeToast('❌ Lỗi ghi dữ liệu. Kiểm tra lại grant Tampermonkey.', '#ef4444');
+            console.error('[VNPT] Lỗi BridgeStore.set:', err);
+            _showBridgeToast('❌ Lỗi ghi dữ liệu. Kiểm tra lại quyền lưu trữ.', '#ef4444');
         }
     });
 

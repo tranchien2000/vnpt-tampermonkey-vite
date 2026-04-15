@@ -11,12 +11,15 @@ import { showToast } from '../ui/toast.js';
 let isRecording = false;
 let currentRecordingAction = null;
 let recordingCallback = null;
+let keydownHandler = null;
 
 /**
  * Khởi tạo hệ thống phím tắt
  */
 export function initHotkeys() {
-    window.addEventListener('keydown', (e) => {
+    if (keydownHandler) return; // Prevent duplicate listeners (hot reload)
+
+    keydownHandler = (e) => {
         // Nếu đang ở chế độ ghi phím tắt
         if (isRecording && recordingCallback) {
             handleRecording(e);
@@ -33,7 +36,15 @@ export function initHotkeys() {
                 return;
             }
         }
-    });
+    };
+
+    window.addEventListener('keydown', keydownHandler);
+}
+
+export function cleanupHotkeys() {
+    if (!keydownHandler) return;
+    window.removeEventListener('keydown', keydownHandler);
+    keydownHandler = null;
 }
 
 /**

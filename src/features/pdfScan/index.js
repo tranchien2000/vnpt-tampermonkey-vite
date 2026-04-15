@@ -13,6 +13,7 @@ import { showToast } from '../../ui/toast.js';
 import { createInternalBackup, generateBackupName } from '../../utils/backupHelper.js';
 import { extractFieldsFromText, extractFieldsLocally } from '../rawScan/rawScan.js';
 import { MAIL_BRIDGE_KEY } from '../mailScan/mailScanner.js';
+import { BridgeStore } from '../../utils/bridgeStore.js';
 import { scrapeScreenText } from '../screenScan/screenScanner.js';
 import { downloadAsBase64 } from '../../utils/fileHelper.js';
 import { extractQRCodeFromImage, parseCCCD_QR } from '../../utils/qrHelper.js';
@@ -188,9 +189,9 @@ export function initPdfScan() {
             // Đọc dữ liệu mail từ GM storage (do tab Gmail/Outlook đã gửi qua)
             let rawMailJson;
             try {
-                rawMailJson = GM_getValue(MAIL_BRIDGE_KEY, null);
+                rawMailJson = await BridgeStore.get(MAIL_BRIDGE_KEY);
             } catch (err) {
-                showToast('❌ Lỗi GM_getValue. Kiểm tra lại grant Tampermonkey.', '#ef4444');
+                showToast('❌ Lỗi đọc dữ liệu mail. Kiểm tra lại quyền lưu trữ.', '#ef4444');
                 return;
             }
 

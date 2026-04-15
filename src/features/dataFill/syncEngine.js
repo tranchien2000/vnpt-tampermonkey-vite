@@ -14,7 +14,10 @@ import { debounce } from '../../utils/common.js';
 let isAutoFilling = false;
 
 function loadFreshenedDefaultData() {
-    let cached = Storage.get(SK_DATA_DEF);
+    // Một số UI module ghi trực tiếp vào localStorage (không qua Storage wrapper),
+    // nên cần đọc "fresh" và tránh dùng reference/cached object.
+    const cachedRaw = Storage.get(SK_DATA_DEF);
+    let cached = cachedRaw ? JSON.parse(JSON.stringify(cachedRaw)) : null;
     let fresh = JSON.parse(JSON.stringify(_DEFAULT_DATA));
     if (!cached) return fresh;
 
@@ -29,12 +32,15 @@ function loadFreshenedDefaultData() {
 }
 
 export async function doFillData() {
+    // Ensure we read latest values even if other modules wrote storage directly
+    Storage.clearCache();
     if (isAutoFilling) return;
     isAutoFilling = true;
 
     try {
         const defaultData = loadFreshenedDefaultData();
-        const customData = Storage.get(SK_DATA_CUS) ?? {};
+        const customRaw = Storage.get(SK_DATA_CUS) ?? {};
+        const customData = JSON.parse(JSON.stringify(customRaw));
         const merged = { ...defaultData, ...customData };
 
         // Fill fields B (Merged)
@@ -61,6 +67,7 @@ export async function doFillData() {
 }
 
 export function doSyncData() {
+    Storage.clearCache();
     if (isAutoFilling) return;
     isAutoFilling = true;
 
@@ -87,6 +94,7 @@ export function doSyncData() {
 // ─── Event Listener Logic ───
 let isSyncing = false;
 const targetElementCache = new Map(); // Cache cho các target elements (tăng tốc độ gõ phím)
+let boundHandleEvents = null;
 
 const processSync = (target, val) => {
     if (isSyncing) return;
@@ -141,7 +149,9 @@ const debouncedSync = debounce((target, val) => {
 }, 250);
 
 export function initSyncEngine() {
-    const handleEvents = (e) => {
+    if (boundHandleEvents) return; // Prevent duplicate listeners (hot reload)
+
+    boundHandleEvents = (e) => {
         // Nếu trang web đang trong quá trình Auto-fill tự động, bỏ qua các sự kiện input/change
         if (isAutoFilling) return;
 
@@ -165,6 +175,14 @@ export function initSyncEngine() {
         debouncedSync(target, val);
     };
 
-    document.addEventListener('input', handleEvents);
-    document.addEventListener('change', handleEvents);
+    document.addEventListener('input', boundHandleEvents);
+    document.addEventListener('change', boundHandleEvents);
+}
+
+export function cleanupSyncEngine() {
+    if (!boundHandleEvents) return;
+    document.removeEventListener('input', boundHandleEvents);
+    document.removeEventListener('change', boundHandleEvents);
+    boundHandleEvents = null;
+    targetElementCache.clear();
 }

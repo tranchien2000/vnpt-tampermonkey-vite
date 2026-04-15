@@ -20,7 +20,9 @@ import { initSyncEngine } from './features/dataFill/syncEngine.js';
 import { initCalcWidget } from './features/calc/index.js';
 import { clearDOMCache, refreshLabelsCache } from './utils/domHelper.js';
 import { debounce } from './utils/common.js';
-import { initHotkeys } from './features/hotkeys.js';
+import { initHotkeys, cleanupHotkeys } from './features/hotkeys.js';
+import { cleanupSyncEngine } from './features/dataFill/syncEngine.js';
+import { cleanupWebScanner } from './features/webScanner.js';
 import { initStorageMerge } from './utils/migrationHelper.js';
 import { RemoteConfig } from './api/remoteConfig.js';
 import { injectMailBridge } from './features/mailScan/mailScanner.js';
@@ -138,6 +140,11 @@ function cleanup() {
     cacheObserver.disconnect();
     cacheObserver = null;
   }
+
+  // 1.1 Gỡ global listeners (tránh bị bind nhiều lần khi hot reload)
+  try { cleanupWebScanner(); } catch (e) { /* ignore */ }
+  try { cleanupSyncEngine(); } catch (e) { /* ignore */ }
+  try { cleanupHotkeys(); } catch (e) { /* ignore */ }
 
   // 2. Xóa Widget chính
   const widget = document.getElementById('vnpt-docx-widget');
