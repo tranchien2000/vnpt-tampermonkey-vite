@@ -1,5 +1,5 @@
 {
-  "version": "1.6.24",
+  "version": "1.6.25",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
+  "message": "v1.6.25 - Phát hành bản cập nhật: Tích hợp Quét mã QR CCCD nội bộ và Bộ sinh dữ liệu Mock"
 }
