@@ -1,5 +1,5 @@
 {
-  "version": "1.6.25",
+  "version": "1.6.26",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.25 - Phát hành bản cập nhật: Tích hợp Quét mã QR CCCD nội bộ và Bộ sinh dữ liệu Mock"
+  "message": "v1.6.26 - Sửa lỗi nhập liệu soGiayUyQuyenB và tích hợp reverseSync"
 }
