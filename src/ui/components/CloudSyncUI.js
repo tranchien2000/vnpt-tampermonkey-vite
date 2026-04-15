@@ -10,21 +10,125 @@ export function initCloudSyncUI(container) {
     if (user) {
       cloudSection.innerHTML = `
         <div class="util-submenu-title">☁️ Tài khoản Cloud</div>
-        <div class="cloud-user-info" style="padding: 4px 12px; font-size: 11px; display: flex; align-items: center; justify-content: space-between;">
-          <span style="font-weight: 700; color: var(--vnpt-success);">● ${user.email}</span>
-          <button class="util-item-small danger" id="vnpt-btn-cloud-logout" style="width: auto; padding: 2px 8px;">Đăng xuất</button>
+        <div class="cloud-user-info" style="padding: 6px 12px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; background: rgba(26, 115, 232, 0.02);">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 8px; height: 8px; background: #34a853; border-radius: 50%; box-shadow: 0 0 8px #34a853;"></div>
+            <span style="font-weight: 700; color: #3c4043; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${user.email}</span>
+          </div>
+          <button class="util-btn-logout-mini" id="vnpt-btn-cloud-logout" title="Đăng xuất">Đăng xuất</button>
         </div>
 
         <div class="util-separator"></div>
         <div class="util-submenu-title">Đồng bộ cá nhân</div>
-        <div class="util-action-row">
-          <button class="util-item-small" id="vnpt-btn-cloud-push">📤 Đẩy dữ liệu</button>
-          <button class="util-item-small" id="vnpt-btn-cloud-pull">📥 Kéo dữ liệu</button>
+        <div class="cloud-action-grid">
+          <div class="cloud-action-item" id="vnpt-btn-cloud-push">
+            <div class="cloud-action-icon">📤</div>
+            <div class="cloud-action-content">
+              <div class="cloud-action-label">Đẩy dữ liệu</div>
+              <div class="cloud-action-desc">Lên Cloud</div>
+            </div>
+          </div>
+          <div class="cloud-action-item" id="vnpt-btn-cloud-pull">
+            <div class="cloud-action-icon">📥</div>
+            <div class="cloud-action-content">
+              <div class="cloud-action-label">Kéo dữ liệu</div>
+              <div class="cloud-action-desc">Về máy này</div>
+            </div>
+          </div>
+          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-push">
+            <div class="cloud-action-icon">🔑</div>
+            <div class="cloud-action-content">
+              <div class="cloud-action-label">Sao lưu Keys</div>
+              <div class="cloud-action-desc">Gemini Key</div>
+            </div>
+          </div>
+          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-pull">
+            <div class="cloud-action-icon">🔄</div>
+            <div class="cloud-action-content">
+              <div class="cloud-action-label">Khôi phục Keys</div>
+              <div class="cloud-action-desc">Từ Cloud</div>
+            </div>
+          </div>
         </div>
-        <div class="util-action-row" style="margin-top: 2px;">
-          <button class="util-item-small" id="vnpt-btn-cloud-keys-push" style="background: var(--vnpt-primary-light); color: var(--vnpt-primary);">💾 Sao lưu Keys</button>
-          <button class="util-item-small" id="vnpt-btn-cloud-keys-pull" style="background: var(--vnpt-primary-light); color: var(--vnpt-primary);">🔄 Khôi phục Keys</button>
-        </div>
+
+        <style>
+          .cloud-action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            padding: 8px 12px;
+          }
+          .cloud-action-item {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 6px 4px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            gap: 8px;
+          }
+          .cloud-action-item:hover {
+            border-color: var(--vnpt-primary);
+            background: var(--vnpt-primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.1);
+          }
+          .cloud-action-item:active {
+            transform: translateY(0);
+          }
+          .cloud-action-icon {
+            font-size: 14px;
+            margin-bottom: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 6px;
+            flex-shrink: 0;
+          }
+          .cloud-action-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          }
+          .cloud-action-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #3c4043;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .cloud-action-desc {
+            font-size: 8px;
+            color: #70757a;
+            margin-top: 0px;
+            white-space: nowrap;
+          }
+          .util-btn-logout-mini {
+            background: #f8f9fa;
+            border: 1px solid #dadce0;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #d93025;
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+          .util-btn-logout-mini:hover {
+            background: #fdf2f2;
+            border-color: #d93025;
+          }
+        </style>
       `;
       
       

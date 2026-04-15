@@ -81,8 +81,8 @@ export const fieldsStyles = `
     .btn-sync-dir:active svg, .btn-sync-dir-calc:active svg { transform: rotate(180deg); }
 
     .vnpt-field-row input { 
-        flex: 1; padding: 4px 8px; border: 1px solid #1f5bd2ff; border-radius: 6px; 
-        font-size: 11.5px; transition: all 0.2s; background: #fff;
+        flex: 1; padding: 2px 6px; border: 1px solid #1f5bd2ff; border-radius: 4px; 
+        font-size: 11px; transition: all 0.2s; background: #fff;
     }
     .vnpt-field-row input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
     

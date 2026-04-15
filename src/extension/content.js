@@ -56,5 +56,18 @@ function gmXmlHttpRequest(details) {
 if (typeof window.GM_addStyle === 'undefined') window.GM_addStyle = gmAddStyle;
 if (typeof window.GM_xmlhttpRequest === 'undefined') window.GM_xmlhttpRequest = gmXmlHttpRequest;
 
+// Mocking GM_getValue/setValue for Extension context using localStorage
+if (typeof window.GM_getValue === 'undefined') {
+  window.GM_getValue = (key, defaultValue) => {
+    const val = localStorage.getItem(key);
+    return val !== null ? JSON.parse(val) : defaultValue;
+  };
+}
+if (typeof window.GM_setValue === 'undefined') {
+  window.GM_setValue = (key, value) => {
+    localStorage.setItem(key, JSON.stringify(value));
+  };
+}
+
 import '../main.js';
 

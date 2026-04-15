@@ -5,9 +5,14 @@
  * @seeAlso templateManager.js, fieldsManager.js
  */
 
+import { logger } from '../utils/logger.js';
 import { AppState } from '../core/state.js';
 import { storage } from '../api/storage/index.js';
 import { DEFAULT_LABELS, REQUIRED_KEYS } from '../core/constants.js';
+
+// Import thư viện trực tiếp để hỗ trợ cả Extension (Vite sẽ bundle vào)
+import PizZip from 'pizzip';
+import Docxtemplater from 'docxtemplater';
 
 function diagnoseTemplateBuffer(arrayBuffer) {
     if (!arrayBuffer) {
@@ -22,11 +27,11 @@ function diagnoseTemplateBuffer(arrayBuffer) {
     }
 
     if (buf.byteLength < 4) {
-        return { ok: false, message: 'File template (.docx) rong hoac bi hong (0 byte).' };
+        return { ok: false, message: `File template (.docx) dang rong (0 byte) hoac bi hong. Kich thuoc nhan duoc: ${buf.byteLength} bytes.` };
     }
 
     const bytes = new Uint8Array(buf, 0, Math.min(buf.byteLength, 512));
-    const isZip = bytes[0] === 0x50 && bytes[1] === 0x4B;
+    const isZip = bytes[0] === 0x50 && bytes[1] === 0x4B; // Magic number 'PK'
     if (isZip) return { ok: true };
 
     let headText = '';
@@ -37,8 +42,12 @@ function diagnoseTemplateBuffer(arrayBuffer) {
     if (headText.includes('<!doctype html') || headText.includes('<html')) {
         return {
             ok: false,
-            message: 'Template dang la noi dung HTML, khong phai file .docx hop le. Hay chon lai file local.'
+            message: 'CANH BAO: File nay thuc chat la mot trang web (HTML) duoc doi duoi thanh .docx. Vui long tai lai file Word chuan tu Portal.'
         };
+    }
+
+    if (headText.includes('%pdf-')) {
+        return { ok: false, message: 'Loi: Day la file PDF duoc doi duoi thanh .docx. He thong chi ho tro file Word (.docx) that.' };
     }
 
     return {
@@ -57,14 +66,14 @@ function renderDocx(arrayBuffer, dataToFill, exportFileName) {
 
         let zip;
         try {
-            zip = new window.PizZip(arrayBuffer);
+            zip = new PizZip(arrayBuffer);
         } catch (zipErr) {
             alert('Loi dinh dang: File template (.docx) rong, bi hong hoac khong phai file Word hop le. Vui long kiem tra lai file local.');
             console.error(zipErr);
             return;
         }
 
-        const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+        const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
         doc.render(dataToFill);
 
         const out = doc.getZip().generate({
@@ -221,7 +230,8 @@ export function initDocExport() {
 
         const fileInput = document.getElementById('vnpt-template-file');
         if (fileInput.files && fileInput.files.length > 0) {
-            storage.download('local', fileInput.files[0], { type: 'arraybuffer' })
+            const file = fileInput.files[0];
+            file.arrayBuffer()
                 .then(buf => renderDocx(buf, dataToFill, exportFileName))
                 .catch(err => alert(`Loi doc file: ${err.message}`));
             return;
