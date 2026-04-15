@@ -56,11 +56,16 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 - **Module Hóa**: Không viết toàn bộ logic vào file duy nhất. Biên dịch qua Vite/Rollup. Cần export đủ `init()` và `cleanup()`.
 - **Hot Reload Friendly**: Hàm `cleanup()` phải gỡ bỏ tất cả DOM, Listeners, Observers và Timers.
 - **Quyền hạn `@grant` (Least Privilege)**: Cấp phát quyền thật mỏng và vừa đủ cho ứng dụng. Khai báo rõ `@connect` đối với API. Không nhúng thư viện lớn mà dùng định dạng CDN `@require`.
+- **Tối ưu dung lượng (Bundle Size)**: 
+    - Bắt buộc dùng bản Lite của các thư viện nếu có thể (ví dụ: `firebase/firestore/lite`).
+    - Các thư viện nặng (>100KB) phải được cấu hình `external` trong `vite.config.js` và load qua `@require`.
+    - Cấu hình build phải luôn bật `drop: ['console', 'debugger']` và `legalComments: 'none'`.
 - **Shadow DOM**: Xóa bỏ xung đột bằng cách giới hạn widget trong Shadow DOM. Không dùng ID thông tục bừa bãi.
 - **Đợi Web Load Dữ Liệu**: Gỡ dần `window.onload`. Bắt logic với các hàm WaitForElement hoặc xử lý quan sát qua `MutationObserver` kết hợp cơ chế `Debounce` (500-1500ms).
 - **Giao Tiếp Cross-Domain**: Sử dụng `GM_xmlhttpRequest` để bypass CORS khi gọi backend riêng biệt.
 - **Xử lý File/Mảng Nặng**: Ưu tiên Blob Object kết hợp `URL.createObjectURL(blob)`, và bắt buộc gọi **`URL.revokeObjectURL()`** để chống Memory Leak khi xuất file PDF/WORD.
 - **Trạng thái cấu hình**: Không dùng `GM_setValue` cục bộ, dùng màng bọc `Storage` (trong `src/utils/storage.js`) để có caching. Dùng Singleton `AppState` (trong `src/core/state.js`).
+- **Quản lý Lịch sử (Backup)**: Hệ thống duy trì tối đa **20 bản ghi** lịch sử cục bộ (Auto-backup).
 - **Z-Index Management**: UI components phải có `z-index` trong khoảng `9999 - 2147483647`.
 - **Centralized Selectors**: Không hard-code selector trong logic. Dùng `src/core/scannerFallbacks.js` hoặc `RemoteConfig`.
 

@@ -15,7 +15,7 @@ import {
   query, 
   where,
   serverTimestamp 
-} from "firebase/firestore";
+} from "firebase/firestore/lite";
 
 export const FirebaseService = {
   /**

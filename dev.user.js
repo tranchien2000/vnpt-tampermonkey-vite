@@ -11,11 +11,14 @@
 // @match        *://outlook.office365.com/*
 // @require      https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js
 // @require      https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.js
+// @require      https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_addValueChangeListener
+// @grant        GM_notification
+// @grant        GM_setClipboard
 // @connect      localhost
 // @connect      raw.githubusercontent.com
 // @connect      firebaseio.com
@@ -27,7 +30,7 @@
 (function() {
     'use strict';
     let lastScriptContent = '';
-    const pollInterval = 5000; // 5 seconds
+    const pollInterval = 2000; // Giảm xuống 2s để reload nhanh hơn
 
     function loadScript() {
         const url = `http://localhost:8788/myscript.user.js?t=${Date.now()}`;

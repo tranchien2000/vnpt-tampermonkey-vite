@@ -14,6 +14,7 @@ const tampermonkeyHeader = `// ==UserScript==
 // @match        *://outlook.office365.com/*
 // @require      https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js
 // @require      https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.js
+// @require      https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js
 // @updateURL    https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
 // @downloadURL  https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js
 // @grant        GM_addStyle
@@ -40,11 +41,23 @@ export default defineConfig({
       formats: ['iife'],
       fileName: () => 'myscript.user.js'
     },
-    minify: false, // Tắt nén hoàn toàn để tránh lỗi logic mangling trong Userscript
-    esbuild: {
-      keepNames: true, // Giữ nguyên tên function/class
-      target: 'es2022'
-    },
+    minify: 'esbuild', // Bật nén để giảm dung lượng file
+    rollupOptions: {
+      external: ['pizzip', 'docxtemplater', 'jsqr'],
+      output: {
+        globals: {
+          pizzip: 'PizZip',
+          docxtemplater: 'docxtemplater',
+          jsqr: 'jsQR'
+        }
+      }
+    }
+  },
+  esbuild: {
+    keepNames: true, // Giữ nguyên tên function/class để tránh lỗi logic
+    target: 'es2022',
+    legalComments: 'none', // Xóa bỏ các dòng Copyright, License để file nhẹ hơn
+    drop: ['console', 'debugger'] // Tự động xóa các lệnh console để sạch code và nhẹ file
   },
   plugins: [
     {
