@@ -1,1 +1,0 @@
-{"nodes": [{"id": "test_classifier", "label": "test_classifier.js", "file_type": "code", "source_file": "scratch\\test_classifier.js", "source_location": "L1"}], "edges": [{"source": "test_classifier", "target": "localclassifier_js", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "scratch\\test_classifier.js", "source_location": "L1", "weight": 1.0}]}

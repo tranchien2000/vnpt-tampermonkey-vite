@@ -69,7 +69,7 @@ export function initColSplitter() {
 
 function renderBackupHistory(container) {
     const backups = getInternalBackups();
-    container.innerHTML = `<div class="backup-history-header">📋 Local History (Max 10)</div>`;
+    container.innerHTML = `<div class="backup-history-header">📋 Local History (Max 20)</div>`;
 
     if (backups.length === 0) {
         container.innerHTML += '<div class="backup-history-empty">Chưa có lịch sử. Dữ liệu sẽ tự lưu khi bạn Quét hoặc Dọn dẹp!</div>';
@@ -79,18 +79,62 @@ function renderBackupHistory(container) {
     backups.forEach((b) => {
         const item = document.createElement('div');
         item.className = 'backup-history-item';
+        item.style.flexDirection = 'column';
+        item.style.alignItems = 'stretch';
+
         const timeStr = new Date(b.id * 1).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
 
         item.innerHTML = `
-            <div class="backup-info">
-                <div class="backup-history-name" title="${b.name}">${b.name}</div>
-                <div class="backup-history-time">${timeStr}</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <div class="backup-info">
+                    <div class="backup-history-name" title="${b.name}">${b.name}</div>
+                    <div class="backup-history-time">${timeStr}</div>
+                </div>
+                <div class="backup-actions">
+                    <button class="btn-restore-action" title="Khôi phục">⏪</button>
+                    <button class="btn-delete-action" title="Xóa bản này">🗑️</button>
+                </div>
             </div>
-            <div class="backup-actions">
-                <button class="btn-restore-action" title="Khôi phục">⏪</button>
-                <button class="btn-delete-action" title="Xóa bản này">🗑️</button>
-            </div>
+            <div class="backup-preview-content"></div>
         `;
+
+        const previewContent = item.querySelector('.backup-preview-content');
+        
+        // Tự động nạp dữ liệu khi di chuột qua (Hover)
+        item.onmouseenter = () => {
+            if (previewContent.innerHTML === '') {
+                const fields = b.data?.fields || {};
+                // Ưu tiên các trường quan trọng để preview
+                const importantKeys = ['tenToChuc', 'soHopDong', 'tenDaiDienn', 'soDkdn', 'diaChi'];
+                let html = '';
+                
+                importantKeys.forEach(k => {
+                    if (fields[k] && fields[k].value) {
+                        const label = fields[k].label || k;
+                        html += `
+                            <div class="preview-row">
+                                <span class="preview-label">${label}:</span>
+                                <span class="preview-val">${fields[k].value}</span>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!html) {
+                    // Nếu không có trường quan trọng, lấy 5 trường bất kỳ
+                    Object.keys(fields).slice(0, 5).forEach(k => {
+                        html += `
+                            <div class="preview-row">
+                                <span class="preview-label">${fields[k].label || k}:</span>
+                                <span class="preview-val">${fields[k].value || ''}</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                previewContent.innerHTML = html || '<div style="text-align:center; color:#9aa0a6;">(Trống)</div>';
+            }
+        };
 
         item.querySelector('.btn-restore-action').onclick = (e) => {
             e.stopPropagation();
@@ -158,7 +202,7 @@ export function initFieldsManager() {
     const backupHistory = document.getElementById('vnpt-backup-history');
 
     if (btnRestore && backupHistory) {
-        btnRestore.title = "Click để xem lịch sử sao lưu (Tối đa 10 bản)";
+        btnRestore.title = "Click để xem lịch sử sao lưu (Tối đa 20 bản)";
 
         btnRestore.onclick = (e) => {
             e.preventDefault();

@@ -88,6 +88,24 @@ export const controlStyles = `
     .btn-restore-action:hover { background: var(--vnpt-success); color: #fff; border-color: var(--vnpt-success); }
     .btn-delete-action:hover { background: var(--vnpt-danger); color: #fff; border-color: var(--vnpt-danger); }
     
+    .backup-history-item:hover .backup-preview-content { display: flex; }
+
+    .backup-preview-content {
+        margin-top: 8px;
+        padding: 8px;
+        background: rgba(0,0,0,0.03);
+        border-radius: 8px;
+        font-size: 10px;
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        border: 1px dashed #dadce0;
+    }
+    .backup-preview-content.show { display: flex; }
+    .preview-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.02); padding-bottom: 2px; }
+    .preview-label { font-weight: 700; color: #5f6368; }
+    .preview-val { color: #1a73e8; font-weight: 600; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+    
     .backup-history-empty { padding: 30px 20px; text-align: center; font-size: 11px; color: #9aa0a6; font-style: italic; line-height: 1.6; }
 
     /* Utility Menu UI */

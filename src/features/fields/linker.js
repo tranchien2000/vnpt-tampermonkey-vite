@@ -91,40 +91,79 @@ export function startFieldLinker(row, fKey) {
     /** @param {Element} el */
     const getBestSelector = (el) => {
         // 1. Kiểm tra chính nó (Strong Keys)
-        const strongKey = el.id || el.getAttribute('formcontrolname') || el.name || el.getAttribute('placeholder');
-        if (strongKey) return strongKey;
+        const id = el.id;
+        const formControl = el.getAttribute('formcontrolname') || el.getAttribute('ng-reflect-name');
+        const name = el.name;
+        const placeholder = el.getAttribute('placeholder');
+
+        // Bỏ qua ID tự sinh của framework (thường chứa số hoặc prefix ng-)
+        const isGenericId = id && (/^[0-9]/.test(id) || id.includes('ng-') || id.length > 20);
+        
+        if (id && !isGenericId) return id;
+        if (formControl) return formControl;
+        if (name) return name;
+        if (placeholder) return placeholder;
 
         // 2. Nếu là Label (hoặc chứa text giống label), dùng InnerText
         const isLabel = el.tagName === 'LABEL' || el.classList.contains('label') || el.classList.contains('form-label');
         if (isLabel && el.innerText.trim()) return el.innerText.trim();
 
         // 3. Tìm xung quanh (Siblings / Parent) để lấy Label hoặc Wrapper ID
+        // Ưu tiên tìm label có thuộc tính 'for' trỏ đến el
+        if (id) {
+            const labelFor = document.querySelector(`label[for="${CSS.escape(id)}"]`);
+            if (labelFor && labelFor.innerText.trim()) return labelFor.innerText.trim();
+        }
+
         let p = el.parentElement;
         let depth = 0;
         while (p && depth < 3) {
-            // Thử tìm label anh em hoặc trong cha
-            const lbl = p.querySelector('label, .label, .label-text, span.title, .form-label');
-            if (lbl && lbl.innerText.trim()) return lbl.innerText.trim();
+            // Thử tìm label anh em
+            const prevLabel = p.querySelector('label, .label, .label-text, span.title, .form-label');
+            if (prevLabel && prevLabel.innerText.trim()) return prevLabel.innerText.trim();
+
+            // Nếu cha có title (thường là wrapper của select2 hoặc dropdown)
+            const titleAttr = p.getAttribute('title');
+            if (titleAttr) return titleAttr;
 
             // Thử lấy ID của cha nếu cha có vẻ là một wrapper định danh tốt
-            if (p.id && !p.id.startsWith('ng-')) return p.id;
+            if (p.id && !p.id.includes('ng-') && p.id.length < 30) return p.id;
 
             p = p.parentElement;
             depth++;
         }
 
-        // 4. Fallback: Tag + Class
+        // 4. Fallback: Tag + Class (Rút gọn)
         const cls = el.className && typeof el.className === 'string' ? el.className.trim().split(/\s+/)[0] : '';
-        return el.tagName.toLowerCase() + (cls ? '.' + cls : '');
+        return el.tagName.toLowerCase() + (cls && !cls.includes('ng-') ? '.' + cls : '');
     };
 
-    const LINKABLE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT', 'SPAN', 'DIV', 'P', 'LABEL', 'BUTTON', 'TD', 'TH', 'SECTION']);
+    // ── Tooltip gợi ý selector ──
+    const tooltip = document.createElement('div');
+    tooltip.className = 'vnpt-link-tooltip';
+    tooltip.style.cssText = 'position:fixed;z-index:1000000;pointer-events:none;background:#333;color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-family:monospace;display:none;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,0.2);';
+    document.body.appendChild(tooltip);
+
+    const LINKABLE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT', 'SPAN', 'DIV', 'P', 'LABEL', 'BUTTON', 'TD', 'TH', 'SECTION', 'NG-SELECT2']);
 
     // ── Hover highlight ──
     const onMouseOver = (e) => {
         const el = e.target;
-        if (widget.contains(el) || banner.contains(el)) return;
-        if (!LINKABLE_TAGS.has(el.tagName)) return;
+        if (widget.contains(el) || banner.contains(el)) {
+            tooltip.style.display = 'none';
+            return;
+        }
+        if (!LINKABLE_TAGS.has(el.tagName)) {
+            tooltip.style.display = 'none';
+            return;
+        }
+
+        // Cập nhật Tooltip
+        const sel = getBestSelector(el);
+        tooltip.textContent = `Target: ${sel}`;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 10) + 'px';
+        tooltip.style.top = (e.clientY + 10) + 'px';
 
         // Dọn state ở element cũ
         if (lastHoverEl && lastHoverEl !== el) {
@@ -204,6 +243,7 @@ export function startFieldLinker(row, fKey) {
         widget.style.opacity = '';
         widget.style.pointerEvents = '';
         if (banner.parentNode) banner.parentNode.removeChild(banner);
+        if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
 
         if (doSync) {
             // Dispatch 'change' một lần duy nhất khi xong → syncThisRow()

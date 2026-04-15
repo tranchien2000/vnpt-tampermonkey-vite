@@ -7,7 +7,7 @@ Userscript tối ưu hóa và tự động hóa toàn bộ luồng quy trình ng
 - **Real-time 2-way Sync**: Động bộ dữ liệu hai chiều giữa Widget và Form web với quyền kiểm soát hướng (Sync Direction).
 - **Xuất file DOCX**: Render tài liệu theo template chuyên nghiệp hỗ trợ cả Cloud (Google Drive) và Local.
 - **Tính thuế & Phí**: Bộ công cụ Calc Widget thông minh, tự động điền kết quả vào các trường tương ứng trên trang.
-- **Quản lý Lịch sử & Cloud Sync**: Lưu trữ an toàn 10 phiên làm việc gần nhất và đồng bộ dữ liệu qua Firebase.
+- **Quản lý Lịch sử & Cloud Sync**: Lưu trữ an toàn 20 phiên làm việc gần nhất và đồng bộ dữ liệu qua Firebase.
 
 ---
 
@@ -215,7 +215,7 @@ Lắng nghe sự kiện `input` toàn trang để đồng bộ dữ liệu tức
 Bộ công cụ tính toán thuế VAT và phí dịch vụ. Tự động chuyển đổi số thành chữ tiếng Việt và điền kết quả vào form hệ thống.
 
 #### `backupHelper.js` (Hệ thống Lịch sử)
-Tự động sao lưu 10 bản ghi gần nhất vào LocalStorage. Hỗ trợ khôi phục nhanh qua menu ⏪ để đảm bảo an toàn dữ liệu.
+Tự động sao lưu 20 bản ghi gần nhất vào LocalStorage. Hỗ trợ khôi phục nhanh qua menu ⏪ để đảm bảo an toàn dữ liệu.
 
 #### `docExport.js` & `templateManager.js`
 Xuất dữ liệu ra file `.docx` dựa trên template. Hỗ trợ lưu trữ template trong IndexedDB để tái sử dụng nhanh chóng.

@@ -124,8 +124,8 @@ export function createInternalBackup(name = '') {
     // Đưa lên đầu mảng
     backups.unshift(newEntry);
     
-    // Giới hạn 10 bản theo yêu cầu người dùng
-    const limitedBackups = backups.slice(0, 10);
+    // Giới hạn 20 bản theo yêu cầu người dùng
+    const limitedBackups = backups.slice(0, 20);
     
     Storage.set(LOCAL_KEY_AUTO_BACKUP, limitedBackups);
     console.log(`✅ Field backup created: ${newEntry.name}`);
