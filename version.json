@@ -1,5 +1,5 @@
 {
-  "version": "1.6.26",
+  "version": "1.6.27",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.26 - Sửa lỗi nhập liệu soGiayUyQuyenB và tích hợp reverseSync"
+  "message": "v1.6.27 - Fix template corruption error and improve extension compatibility"
 }
