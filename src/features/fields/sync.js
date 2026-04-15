@@ -10,30 +10,32 @@ export async function syncAllFields(targetKeys = null) {
     if (!targetKeys) doFillData(); // Chỉ đồng bộ Tab Calc nếu là full sync
 
     let count = 0;
-    const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
-
-    for (const row of rows) {
+    const rows = Array.from(AppState.fieldsContainer.querySelectorAll('.vnpt-field-row'));
+    
+    // Thu thập toàn bộ dữ liệu cần sync trước khi bắt đầu loop async (để tránh DOM mutation làm chậm)
+    const syncTasks = rows.map(row => {
         const btnSync = row.querySelector('.btn-sync-dir');
         const currentDir = btnSync ? btnSync.getAttribute('data-dir') : 'both';
-        if (currentDir === 'up') continue;
+        if (currentDir === 'up') return null;
 
         const rawKeyInput = row.querySelector('.f-key').value.trim();
         const primaryKey = rawKeyInput.split(',')[0].trim();
-
-        if (targetKeys && !targetKeys.includes(primaryKey)) continue;
+        if (targetKeys && !targetKeys.includes(primaryKey)) return null;
 
         const val = row.querySelector('.f-val').value;
-        if (val === '') continue;
+        if (val === '') return null;
 
         const label = row.querySelector('.f-label').value.trim();
         const targets = rawKeyInput.split(',').map(x => x.trim()).filter(Boolean);
+        if (label && !targets.includes(label)) targets.push(label);
 
-        if (label && !targets.includes(label)) {
-            targets.push(label);
-        }
+        return { targets, val };
+    }).filter(Boolean);
 
-        await setPageFieldsSequential(targets, val);
-        if (targets.length > 0) count++;
+    // Thực hiện sync tuần tự (sequential) để tránh nghẽn browser khi xử lý nhiều dropdown AJAX cùng lúc
+    for (const task of syncTasks) {
+        await setPageFieldsSequential(task.targets, task.val);
+        count++;
     }
 
     if (!targetKeys) {

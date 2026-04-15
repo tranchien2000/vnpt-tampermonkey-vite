@@ -24,6 +24,7 @@ Dưới đây là danh sách tất cả các workflows trong thư mục `.agents
 - `/upnote`: Tổng hợp brain và đẩy lên NotebookLM dự án.
 - `/release`: Quy trình tự động hóa phát hành bản cập nhật (Bump version, Build, Commit, Push).
 - `/bug-report`: *(Mới)* Quy trình tối ưu xử lý bug tiết kiệm Tokens.
+- `/pi`: Ủy thác nhiệm vụ lập trình ở cấp độ tệp/module cho Pi.dev sub-agent.
 
 > [!TIP]
 > Sử dụng lệnh view_file file `[tên].md` tương ứng khi cần xem chi tiết quy trình.

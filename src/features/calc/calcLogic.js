@@ -34,15 +34,15 @@ export function calculateValues(type, value, taxRate) {
         t = a - b;
     }
     
-    const text = capFirst(numToVN(a)) + ' đồng';
+    const text = a === 0 ? '' : capFirst(numToVN(a)) + ' đồng';
     
     return {
         beforeNum: b,
         taxNum: t,
         afterNum: a,
-        beforeStr: formatNum(b),
-        taxStr: formatNum(t),
-        afterStr: formatNum(a),
+        beforeStr: b === 0 ? '' : formatNum(b),
+        taxStr: t === 0 ? '' : formatNum(t),
+        afterStr: a === 0 ? '' : formatNum(a),
         textStr: text
     };
 }

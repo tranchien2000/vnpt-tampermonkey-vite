@@ -164,12 +164,19 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
         if (primaryKey === 'soDkdn') {
             const btnLookup = row.querySelector('.btn-mst-lookup');
-            btnLookup.onclick = async () => {
+            const handleLookup = async (e) => {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                
                 const mst = fVal.value.trim();
                 if (!mst) {
                     showToast("⚠️ Vui lòng nhập mã số thuế", "#ffc107");
                     return;
                 }
+
+                if (btnLookup.classList.contains('loading')) return;
 
                 btnLookup.classList.add('loading');
                 try {
@@ -192,11 +199,19 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
                         showToast("❌ Không tìm thấy thông tin MST này", "#ea4335");
                     }
                 } catch (err) {
+                    console.error("[MST Lookup] Error:", err);
                     showToast("❌ Lỗi khi tra cứu MST", "#ea4335");
                 } finally {
                     btnLookup.classList.remove('loading');
                 }
             };
+
+            btnLookup.addEventListener('click', handleLookup);
+            fVal.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    handleLookup(e);
+                }
+            });
         }
 
         const initDir = syncDir || 'both';

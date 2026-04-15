@@ -10,7 +10,7 @@ import { logger } from './utils/logger.js';
 import { injectStyles } from './ui/styles.js';
 import { initWidget } from './ui/widget.js';
 import { initDragDrop } from './ui/dragDrop.js';
-import { initFieldsManager, loadSavedData } from './features/fieldsManager.js';
+import { initFieldsManager, loadSavedData, initReverseSync, cleanupReverseSync } from './features/fieldsManager.js';
 import { initWebScanner } from './features/webScanner.js';
 import { initDocExport } from './features/docExport.js';
 import { setupAutoFillForm } from './features/autoFillForm.js';
@@ -59,6 +59,7 @@ async function init() {
     initCalcWidget();    // Calculator UI (will attach to #vnpt-inline-calc)
     initDragDrop();      // Make Docx widget draggable
     initFieldsManager();
+    initReverseSync();
     loadSavedData();
     initWebScanner();
     initDocExport();
@@ -143,6 +144,7 @@ function cleanup() {
 
   // 1.1 Gỡ global listeners (tránh bị bind nhiều lần khi hot reload)
   try { cleanupWebScanner(); } catch (e) { /* ignore */ }
+  try { cleanupReverseSync(); } catch (e) { /* ignore */ }
   try { cleanupSyncEngine(); } catch (e) { /* ignore */ }
   try { cleanupHotkeys(); } catch (e) { /* ignore */ }
 
