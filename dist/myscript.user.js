@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VNPT Word Automation
 // @namespace    http://tampermonkey.net/
-// @version      1.6.24
+// @version      1.6.25
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
@@ -1004,7 +1004,7 @@
       return true;
     }
   });
-  const version$3 = "1.6.24";
+  const version$3 = "1.6.25";
   const pkg = {
     version: version$3
   };
