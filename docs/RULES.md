@@ -32,6 +32,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 - **Concise Response & No Fluff**: Phản hồi ở mức tối giản (Ultra-Minimalist). Trả lời báo cáo kết quả cực ngắn (1-2 câu). Tuyệt đối KHÔNG chào hỏi rườm rà, KHÔNG lặp lại phân tích tư duy.
 - **Language Mandate**: Toàn bộ phản hồi, tài liệu, và **code comments** phải dùng **Tiếng Việt**.
 - **Trace-First / Error-First**: Giải quyết lỗi dựa trên Line Number. Không Dump Code ra cửa sổ chat.
+- **Context-Aware Scanning**: Trước khi sửa logic scanner, AI **PHẢI** kiểm tra `src/core/constants.js` để tránh trùng lặp Labels.
 
 ---
 
@@ -45,20 +46,23 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
   - Hằng số: `UPPER_SNAKE`.
   - ID DOM: Prefix `vnpt-` (ví dụ: `vnpt-btn-submit`).
 - **Comment Phân Đoạn**: Khi file lớn, ghi `/* Section: Tên Phần */` trên đầu khu vực để AI dễ dàng Grep_Search.
-- **Error Handling**: Mọi thao tác DOM và API ảo dễ gãy phải bọc `try-catch` và dùng logging tại `src/utils/logger.js`.
-- **Lint**: Tôn trọng cấu hình ESlint và Hook Pre-commit.
+- **Error Handling**: Mọi thao tác DOM và API ảo dễ gãy phải bọc `try-catch` và dùng logging tại `src/utils/logger.js`. Luôn đính kèm tên hàm trong log lỗi.
+- **Data Validation**: Dữ liệu từ Web Scanner/Input phải được kiểm tra qua `VALIDATION_REGEX` (`src/core/constants.js`) trước khi lưu.
 
 ---
 
 ## 🦍 3. Chuyên sâu Tampermonkey (Tampermonkey Specs)
 
-- **Module Hóa**: Không viết toàn bộ logic vào file duy nhất. Biên dịch qua Vite/Rollup.
+- **Module Hóa**: Không viết toàn bộ logic vào file duy nhất. Biên dịch qua Vite/Rollup. Cần export đủ `init()` và `cleanup()`.
+- **Hot Reload Friendly**: Hàm `cleanup()` phải gỡ bỏ tất cả DOM, Listeners, Observers và Timers.
 - **Quyền hạn `@grant` (Least Privilege)**: Cấp phát quyền thật mỏng và vừa đủ cho ứng dụng. Khai báo rõ `@connect` đối với API. Không nhúng thư viện lớn mà dùng định dạng CDN `@require`.
 - **Shadow DOM**: Xóa bỏ xung đột bằng cách giới hạn widget trong Shadow DOM. Không dùng ID thông tục bừa bãi.
-- **Đợi Web Load Dữ Liệu**: Gỡ dần `window.onload`. Bắt logic với các hàm WaitForElement hoặc xử lý quan sát qua `MutationObserver` kết hợp cơ chế `Debounce / Throttle` cẩn trọng.
+- **Đợi Web Load Dữ Liệu**: Gỡ dần `window.onload`. Bắt logic với các hàm WaitForElement hoặc xử lý quan sát qua `MutationObserver` kết hợp cơ chế `Debounce` (500-1500ms).
 - **Giao Tiếp Cross-Domain**: Sử dụng `GM_xmlhttpRequest` để bypass CORS khi gọi backend riêng biệt.
 - **Xử lý File/Mảng Nặng**: Ưu tiên Blob Object kết hợp `URL.createObjectURL(blob)`, và bắt buộc gọi **`URL.revokeObjectURL()`** để chống Memory Leak khi xuất file PDF/WORD.
-- **Trạng thái cấu hình**: Không dùng `GM_setValue` cục bộ, dùng màng bọc `Storage` (trong src/api/storage) để có caching. Dùng Singleton `AppState` (trong src/core/state.js).
+- **Trạng thái cấu hình**: Không dùng `GM_setValue` cục bộ, dùng màng bọc `Storage` (trong `src/utils/storage.js`) để có caching. Dùng Singleton `AppState` (trong `src/core/state.js`).
+- **Z-Index Management**: UI components phải có `z-index` trong khoảng `9999 - 2147483647`.
+- **Centralized Selectors**: Không hard-code selector trong logic. Dùng `src/core/scannerFallbacks.js` hoặc `RemoteConfig`.
 
 ---
 

@@ -27,8 +27,8 @@ export const panelStyles = `
        ═══════════════════════════════════════════ */
     #vnpt-export-panel { 
         position: relative; 
-        width: 460px; min-width: 360px; 
-        height: auto; min-height: 250px;
+        width: 380px; min-width: 320px; 
+        height: auto; min-height: 200px;
         max-height: 92vh; max-width: 98vw;
         display: flex; flex-direction: column; 
         background: var(--vnpt-bg-glass);
@@ -44,13 +44,13 @@ export const panelStyles = `
     #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 4px; border-radius: 12px; }
 
     #vnpt-panel-header { 
-        margin: -4px -4px 0 -4px; padding: 4px 8px;
+        margin: -4px -4px 0 -4px; padding: 2px 8px;
         border-bottom: 1px solid var(--vnpt-border); 
         cursor: move; user-select: none; 
         display: flex; align-items: center; justify-content: space-between; 
         background: rgba(255, 255, 255, 0.4);
         border-radius: var(--vnpt-radius) var(--vnpt-radius) 0 0;
-        gap: 4px;
+        gap: 2px;
         position: relative;
     }
     #vnpt-panel-header::after {
@@ -60,15 +60,15 @@ export const panelStyles = `
     }
     #vnpt-panel-header:hover { background: rgba(255, 255, 255, 0.6); }
     
-    .header-left { display: flex; align-items: center; min-width: 60px; flex-shrink: 0; }
-    .header-center { display: flex; gap: 4px; flex: 1; justify-content: center; min-width: 0; overflow: hidden; }
+    .header-left { display: flex; align-items: center; min-width: 40px; flex-shrink: 0; }
+    .header-center { display: flex; gap: 2px; flex: 1; justify-content: center; min-width: 0; overflow: hidden; }
     .header-right { 
-        display: flex; gap: 4px; align-items: center; 
+        display: flex; gap: 2px; align-items: center; 
         margin-right: 34px; flex-shrink: 0;
     }
 
     #vnpt-panel-title { 
-        font-size: 13px; font-weight: 800; letter-spacing: 0.5px;
+        font-size: 11px; font-weight: 800; letter-spacing: 0.3px;
         background: var(--vnpt-primary-grad);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;

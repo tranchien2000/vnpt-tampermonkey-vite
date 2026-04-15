@@ -1,7 +1,9 @@
 import { localAdapter } from './localAdapter.js';
+import { firebaseAdapter } from './firebaseAdapter.js';
 
 const adapters = {
-  local: localAdapter
+  local: localAdapter,
+  firebase: firebaseAdapter
 };
 
 export const storage = {
