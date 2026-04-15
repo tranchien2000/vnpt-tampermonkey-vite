@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         VNPT Word Automation
+// @name         VNPT Word Automation v1.6.26
 // @namespace    http://tampermonkey.net/
-// @version      1.6.25
+// @version      1.6.26
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
@@ -1004,7 +1004,7 @@
       return true;
     }
   });
-  const version$3 = "1.6.25";
+  const version$3 = "1.6.26";
   const pkg = {
     version: version$3
   };
@@ -2408,12 +2408,17 @@
       });
       if (primaryKey === "soDkdn") {
         const btnLookup = row.querySelector(".btn-mst-lookup");
-        btnLookup.onclick = async () => {
+        const handleLookup = async (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
           const mst = fVal.value.trim();
           if (!mst) {
             showToast("⚠️ Vui lòng nhập mã số thuế", "#ffc107");
             return;
           }
+          if (btnLookup.classList.contains("loading")) return;
           btnLookup.classList.add("loading");
           try {
             const info = await mstService.lookupMST(mst);
@@ -2432,11 +2437,18 @@
               showToast("❌ Không tìm thấy thông tin MST này", "#ea4335");
             }
           } catch (err) {
+            console.error("[MST Lookup] Error:", err);
             showToast("❌ Lỗi khi tra cứu MST", "#ea4335");
           } finally {
             btnLookup.classList.remove("loading");
           }
         };
+        btnLookup.addEventListener("click", handleLookup);
+        fVal.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            handleLookup(e);
+          }
+        });
       }
       const initDir = syncDir || "both";
       const btnSyncDir = row.querySelector(".btn-sync-dir");
@@ -2700,7 +2712,7 @@
   }
   let isSyncing = false;
   const targetElementCache = /* @__PURE__ */ new Map();
-  let boundHandleEvents = null;
+  let boundHandleEvents$1 = null;
   const processSync = (target, val) => {
     var _a;
     if (isSyncing) return;
@@ -2744,8 +2756,8 @@
     processSync(target, val);
   }, 250);
   function initSyncEngine() {
-    if (boundHandleEvents) return;
-    boundHandleEvents = (e) => {
+    if (boundHandleEvents$1) return;
+    boundHandleEvents$1 = (e) => {
       if (isAutoFilling) return;
       const target = e.target.closest("input, textarea, select, ng-select2");
       if (!target) return;
@@ -2761,36 +2773,37 @@
       }
       debouncedSync(target, val);
     };
-    document.addEventListener("input", boundHandleEvents);
-    document.addEventListener("change", boundHandleEvents);
+    document.addEventListener("input", boundHandleEvents$1);
+    document.addEventListener("change", boundHandleEvents$1);
   }
   function cleanupSyncEngine() {
-    if (!boundHandleEvents) return;
-    document.removeEventListener("input", boundHandleEvents);
-    document.removeEventListener("change", boundHandleEvents);
-    boundHandleEvents = null;
+    if (!boundHandleEvents$1) return;
+    document.removeEventListener("input", boundHandleEvents$1);
+    document.removeEventListener("change", boundHandleEvents$1);
+    boundHandleEvents$1 = null;
     targetElementCache.clear();
   }
   async function syncAllFields(targetKeys = null) {
     if (!targetKeys) doFillData();
     let count = 0;
-    const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
-    for (const row of rows) {
+    const rows = Array.from(AppState.fieldsContainer.querySelectorAll(".vnpt-field-row"));
+    const syncTasks = rows.map((row) => {
       const btnSync = row.querySelector(".btn-sync-dir");
       const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
-      if (currentDir === "up") continue;
+      if (currentDir === "up") return null;
       const rawKeyInput = row.querySelector(".f-key").value.trim();
       const primaryKey = rawKeyInput.split(",")[0].trim();
-      if (targetKeys && !targetKeys.includes(primaryKey)) continue;
+      if (targetKeys && !targetKeys.includes(primaryKey)) return null;
       const val = row.querySelector(".f-val").value;
-      if (val === "") continue;
+      if (val === "") return null;
       const label = row.querySelector(".f-label").value.trim();
       const targets = rawKeyInput.split(",").map((x2) => x2.trim()).filter(Boolean);
-      if (label && !targets.includes(label)) {
-        targets.push(label);
-      }
-      await setPageFieldsSequential(targets, val);
-      if (targets.length > 0) count++;
+      if (label && !targets.includes(label)) targets.push(label);
+      return { targets, val };
+    }).filter(Boolean);
+    for (const task of syncTasks) {
+      await setPageFieldsSequential(task.targets, task.val);
+      count++;
     }
     if (!targetKeys) {
       count > 0 ? showToast(`✅ Đã đồng bộ ${count} hàng dữ liệu`, "#198754") : showToast(`⚠️ Không có trường nào để đồng bộ`, "#ffc107");
@@ -3257,9 +3270,70 @@ ${b2.name}?`)) {
       addOrUpdateFieldRow("bien_moi_" + uniqueNumber, "", "", "");
       saveFieldsToLocal();
     };
-    document.getElementById("vnpt-btn-fill-back").onclick = () => {
-      syncAllFields();
+    const btnFillBack = document.getElementById("vnpt-btn-fill-back");
+    if (btnFillBack) {
+      btnFillBack.onclick = async () => {
+        if (btnFillBack.classList.contains("loading")) return;
+        btnFillBack.classList.add("loading");
+        btnFillBack.disabled = true;
+        try {
+          await syncAllFields();
+        } finally {
+          btnFillBack.classList.remove("loading");
+          btnFillBack.disabled = false;
+        }
+      };
+    }
+  }
+  let boundHandleEvents = null;
+  const debouncedReverseSync = debounce((target, val) => {
+    let keyId = target.id;
+    let keyName = target.name || target.getAttribute("formcontrolname");
+    let keyLblStr = null;
+    if (keyId) {
+      const lblEl = document.querySelector(`label[for="${keyId}"]`);
+      if (lblEl) keyLblStr = lblEl.textContent.trim();
+    }
+    const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
+    for (const row of rows) {
+      const fKey = row.querySelector(".f-key");
+      const btnSync = row.querySelector(".btn-sync-dir");
+      const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
+      if (currentDir === "down") continue;
+      const targets = fKey.value.split(",").map((x2) => x2.trim()).filter(Boolean);
+      const isMatch2 = targets.some((t) => t === keyId || t === keyName || t === keyLblStr);
+      if (isMatch2) {
+        const fVal = row.querySelector(".f-val");
+        if (fVal && fVal.value === val) continue;
+        addOrUpdateFieldRow(targets[0], val, null, "", null, true);
+      }
+    }
+  }, 300);
+  function initReverseSync() {
+    if (boundHandleEvents) return;
+    boundHandleEvents = (e) => {
+      const target = e.target.closest("input, textarea, select, ng-select2");
+      if (!target) return;
+      if (target.closest("#vnpt-docx-widget") || target.closest("#vnpt-inline-calc")) return;
+      let val = target.value;
+      if (target.tagName === "NG-SELECT2" || target.classList.contains("select2-hidden-accessible")) {
+        const span = target.parentElement ? target.parentElement.querySelector(".select2-selection__rendered") : null;
+        if (span && span.getAttribute("title")) {
+          val = span.getAttribute("title");
+        } else if (span && span.textContent) {
+          val = span.textContent.trim();
+        }
+      }
+      debouncedReverseSync(target, val);
     };
+    document.addEventListener("input", boundHandleEvents);
+    document.addEventListener("change", boundHandleEvents);
+  }
+  function cleanupReverseSync() {
+    if (!boundHandleEvents) return;
+    document.removeEventListener("input", boundHandleEvents);
+    document.removeEventListener("change", boundHandleEvents);
+    boundHandleEvents = null;
   }
   let isRecording = false;
   let currentRecordingAction = null;
@@ -28214,10 +28288,14 @@ ${fieldsHint}    "ngayKy": "dd/MM/yyyy"
 
 QUY TẮC TRÍCH XUẤT:
 1. "soDkdn": Lấy Mã số thuế (10 hoặc 13 số) hoặc số GPKD.
-2. "noiCapSoDkdn": Luôn trả về định dạng "SKDT {Tỉnh}" (VD: "SKDT TP.HCM").
+2. "noiCapSoDkdn": Luôn trả về định dạng "SKDT {Tỉnh}" (VD: "SKDT TP.HCM"). Nếu là cá nhân có CCCD, lấy nơi cấp theo CCCD.
 3. Định dạng ngày: Luôn là dd/MM/yyyy. Nếu chỉ có tháng/năm, hãy để trống ngày.
 4. Ưu tiên lấy thông tin ở các trang có chữ ký/dấu mộc nếu có mâu thuẫn.
 5. Nếu không tìm thấy trường thông tin, trả về "".
+6. "tenToChuc": Nếu là cá nhân, điền Họ và tên của người đó. Nếu là hộ kinh doanh, lấy tên hộ kinh doanh.
+7. "diaChi": Ưu tiên lấy địa chỉ thường trú hoặc địa chỉ trụ sở chính. 
+8. "goiDV": Trích xuất gói cước dịch vụ (VD: Fiber150, HomeNet2, ...).
+9. "soHopDong": Tìm số hợp đồng thường nằm ở góc trên bên phải hoặc tiêu đề.
 
 VÍ DỤ TRÍCH XUẤT:
 Văn bản: "...Bên A: Công ty TNHH Giải Pháp AI. MST: 0312345678. Đại diện: Ông Trần Văn B. CMND: 123456789 cấp ngày 01/01/2010 tại CA TP.HCM..."
@@ -39399,14 +39477,14 @@ ${rawText}`;
       b2 = taxRate > 0 ? Math.round(a / (1 + taxRate)) : a;
       t = a - b2;
     }
-    const text = capFirst(numToVN(a)) + " đồng";
+    const text = a === 0 ? "" : capFirst(numToVN(a)) + " đồng";
     return {
       beforeNum: b2,
       taxNum: t,
       afterNum: a,
-      beforeStr: formatNum(b2),
-      taxStr: formatNum(t),
-      afterStr: formatNum(a),
+      beforeStr: b2 === 0 ? "" : formatNum(b2),
+      taxStr: t === 0 ? "" : formatNum(t),
+      afterStr: a === 0 ? "" : formatNum(a),
       textStr: text
     };
   }
@@ -39692,6 +39770,13 @@ ${rawText}`;
     renderHist(SK_HIST_B, "wg-before-list");
     renderHist(SK_HIST_A, "wg-after-list");
     function updateLocal(type, val) {
+      if (val === "") {
+        els.before.value = "";
+        els.tax.value = "";
+        els.after.value = "";
+        els.text.value = "";
+        return { beforeStr: "", taxStr: "", afterStr: "", textStr: "" };
+      }
       const res = calculateValues(type, val, TAX_RATE);
       els.before.value = res.beforeStr;
       els.tax.value = res.taxStr;
@@ -39700,6 +39785,7 @@ ${rawText}`;
       return res;
     }
     function doSync(type, val) {
+      if (val === "") return;
       buildFullDOMMap();
       const res = calculateValues(type, val, TAX_RATE);
       const currentMaps = ld$1(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
@@ -39887,6 +39973,7 @@ ${rawText}`;
       initCalcWidget();
       initDragDrop();
       initFieldsManager();
+      initReverseSync();
       loadSavedData();
       initWebScanner();
       initDocExport();
@@ -39950,6 +40037,10 @@ Bạn có muốn cập nhật ngay không?`);
     }
     try {
       cleanupWebScanner();
+    } catch (e) {
+    }
+    try {
+      cleanupReverseSync();
     } catch (e) {
     }
     try {

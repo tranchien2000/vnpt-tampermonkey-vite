@@ -34,10 +34,14 @@ ${fieldsHint}    "ngayKy": "dd/MM/yyyy"
 
 QUY TẮC TRÍCH XUẤT:
 1. "soDkdn": Lấy Mã số thuế (10 hoặc 13 số) hoặc số GPKD.
-2. "noiCapSoDkdn": Luôn trả về định dạng "SKDT {Tỉnh}" (VD: "SKDT TP.HCM").
+2. "noiCapSoDkdn": Luôn trả về định dạng "SKDT {Tỉnh}" (VD: "SKDT TP.HCM"). Nếu là cá nhân có CCCD, lấy nơi cấp theo CCCD.
 3. Định dạng ngày: Luôn là dd/MM/yyyy. Nếu chỉ có tháng/năm, hãy để trống ngày.
 4. Ưu tiên lấy thông tin ở các trang có chữ ký/dấu mộc nếu có mâu thuẫn.
 5. Nếu không tìm thấy trường thông tin, trả về "".
+6. "tenToChuc": Nếu là cá nhân, điền Họ và tên của người đó. Nếu là hộ kinh doanh, lấy tên hộ kinh doanh.
+7. "diaChi": Ưu tiên lấy địa chỉ thường trú hoặc địa chỉ trụ sở chính. 
+8. "goiDV": Trích xuất gói cước dịch vụ (VD: Fiber150, HomeNet2, ...).
+9. "soHopDong": Tìm số hợp đồng thường nằm ở góc trên bên phải hoặc tiêu đề.
 
 VÍ DỤ TRÍCH XUẤT:
 Văn bản: "...Bên A: Công ty TNHH Giải Pháp AI. MST: 0312345678. Đại diện: Ông Trần Văn B. CMND: 123456789 cấp ngày 01/01/2010 tại CA TP.HCM..."

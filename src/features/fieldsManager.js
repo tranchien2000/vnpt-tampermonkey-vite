@@ -11,3 +11,4 @@ export { saveFieldsToLocal, loadSavedData, getBackupName, getExportFileName } fr
 export { syncAllFields } from './fields/sync.js';
 export { updateUIForDefaultMode, renderCalcMappingInBanner } from './fields/mode.js';
 export { initFieldsManager, initColSplitter } from './fields/ui.js';
+export { initReverseSync, cleanupReverseSync } from './fields/reverseSync.js';

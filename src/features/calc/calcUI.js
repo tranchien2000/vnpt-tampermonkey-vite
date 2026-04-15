@@ -110,6 +110,13 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     renderHist(SK_HIST_A, 'wg-after-list');
 
     function updateLocal(type, val) {
+        if (val === '') {
+            els.before.value = '';
+            els.tax.value = '';
+            els.after.value = '';
+            els.text.value = '';
+            return { beforeStr: '', taxStr: '', afterStr: '', textStr: '' };
+        }
         const res = calculateValues(type, val, TAX_RATE);
         els.before.value = res.beforeStr;
         els.tax.value = res.taxStr;
@@ -119,6 +126,7 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     }
 
     function doSync(type, val) {
+        if (val === '') return; // Không sync khi giá trị rỗng (để tránh xóa form khi chưa nhập xong)
         buildFullDOMMap(); // Đảm bảo map mới nhất trước khi điền
         const res = calculateValues(type, val, TAX_RATE);
         const currentMaps = ld(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };

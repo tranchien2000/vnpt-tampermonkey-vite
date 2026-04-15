@@ -253,7 +253,19 @@ export function initFieldsManager() {
         saveFieldsToLocal();
     };
 
-    document.getElementById('vnpt-btn-fill-back').onclick = () => {
-        syncAllFields();
-    };
+    const btnFillBack = document.getElementById('vnpt-btn-fill-back');
+    if (btnFillBack) {
+        btnFillBack.onclick = async () => {
+            if (btnFillBack.classList.contains('loading')) return;
+            
+            btnFillBack.classList.add('loading');
+            btnFillBack.disabled = true;
+            try {
+                await syncAllFields();
+            } finally {
+                btnFillBack.classList.remove('loading');
+                btnFillBack.disabled = false;
+            }
+        };
+    }
 }

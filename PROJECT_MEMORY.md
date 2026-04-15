@@ -89,6 +89,7 @@ File này lưu trữ các quyết định quan trọng, lỗi đặc thù và tr
 - **2026-04-14 (Address Learning Logic)**: Triển khai tính năng "Học máy" cho trường Đường (Street). Script sẽ lưu trữ cặp `Địa chỉ gốc` -> `Đường đã sửa` vào `SK_ADDRESS_LEARNING`. Khi gặp lại địa chỉ gốc này, script sẽ ưu tiên dùng giá trị đã học thay vì regex mặc định, giúp giảm thiểu việc chỉnh sửa lặp lại cho các địa chỉ phức tạp.
 - **2026-04-15 (Mock Data & CCCD QR Scanner)**: Thêm nút bấm 🎲 Sinh Mock tạo dữ liệu giả rác hợp lệ cho form. Tích hợp `jsqr` chạy Auto-Detect vào luồng nạp ảnh để đọc mã QR CCCD 100% local, bypass được Gemini AI -> Không tốn 1 đồng token, và có độ chính xác 100% cực nhanh.
 - **2026-04-15 (Local Token Tracker)**: Tại thời điểm này Google không hỗ trợ API truy xuất Quota giới hạn. Quyết định viết bộ tính điểm (Tracker) chạy ở client: Chặn thông số `usageMetadata.totalTokenCount` ngay khi có Response JSON, lưu vào Storage (chìa khoá `VNPT_TOKEN_USAGE`) và Reset tự động khi sang ngày mới. Hiển thị qua Panel AI OCR.
+- **2026-04-15 (Release v1.6.25)**: Phát hành bản cập nhật tích hợp CCCD QR Scanner và Mock Data Generator.
 
 ## 3. Lỗi đặc thù & Giải pháp (Technical Gotchas)
 
