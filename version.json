@@ -1,5 +1,5 @@
 {
   "version": "1.6.24",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "feat: initialize VNPT Word Automation userscript with UI panel and styling"
+  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
 }
