@@ -26,7 +26,9 @@ export function initHotkeys() {
             return;
         }
 
-        const hotkeys = Storage.get(SK_HOTKEYS, DEFAULT_HOTKEYS);
+        // Lấy cấu hình cũ và gộp với mặc định để không mất phím mới
+        const savedHotkeys = Storage.get(SK_HOTKEYS) || {};
+        const hotkeys = { ...DEFAULT_HOTKEYS, ...savedHotkeys };
         
         // Duyệt qua các action để tìm phím khớp
         for (const [action, config] of Object.entries(hotkeys)) {
@@ -90,6 +92,34 @@ function executeAction(action) {
         case 'CLEAN':
             document.getElementById('vnpt-btn-clean-data')?.click();
             break;
+        case 'SIZE_S':
+            setPanelSize('380px', '420px', 'S', 0.9);
+            break;
+        case 'SIZE_M':
+            setPanelSize('460px', '600px', 'M', 1);
+            break;
+        case 'SIZE_L':
+            setPanelSize('620px', '800px', 'L', 1.15);
+            break;
+    }
+}
+
+import { LOCAL_KEY_SIZE } from '../core/constants.js';
+
+function setPanelSize(width, height, label, zoom = 1) {
+    const panel = document.getElementById('vnpt-export-panel');
+    if (panel) {
+        panel.style.width = width;
+        panel.style.height = height;
+        panel.style.zoom = zoom;
+        
+        Storage.set(LOCAL_KEY_SIZE, {
+            width: parseInt(width),
+            height: parseInt(height),
+            zoom: zoom
+        });
+
+        showToast(`Cỡ UI đã đổi thành: ${label} (Zoom: ${zoom*100}%)`);
     }
 }
 

@@ -43,16 +43,33 @@ export async function doFillData() {
         const customData = JSON.parse(JSON.stringify(customRaw));
         const merged = { ...defaultData, ...customData };
 
+        // Danh sách các biến NHẠY CẢM của Khách hàng (Bên A)
+        // Nếu các biến này bị trống trong Custom Data, tuyệt đối không lấy Default Data của VNPT điền vào.
+        const SENSITIVE_KEYS = ['tenToChuc', 'tenDaiDien', 'diaChi', 'soDkdn', 'sdt', 'email'];
+
         // Fill fields B (Merged)
         const keys = Object.keys(merged);
         for (const k of keys) {
             const dataItem = merged[k];
-            const val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'))
+            let val = (dataItem && typeof dataItem === 'object' && dataItem.hasOwnProperty('value'))
                 ? dataItem.value
                 : dataItem;
 
             const targets = k.split(',').map(s => s.trim()).filter(s => s);
             const label = (dataItem && typeof dataItem === 'object') ? dataItem.label : null;
+            
+            // --- KIỂM TRA BẢO VỆ DỮ LIỆU ---
+            const isSensitive = SENSITIVE_KEYS.some(sk => k.toLowerCase().includes(sk.toLowerCase()));
+            if (isSensitive) {
+                // Nếu trường này có trong Default Data nhưng lại trống trong Custom Data, 
+                // và nó là trường nhạy cảm của khách hàng -> Bỏ qua không điền (tránh điền tên AM vào tên khách)
+                const isBlank = !val || val.toString().trim() === '';
+                if (isBlank) {
+                    console.warn(`[Fill Guard] Bỏ qua điền trường nhạy cảm bị trống: ${k}`);
+                    continue; 
+                }
+            }
+
             if (label && !targets.includes(label)) {
                 targets.push(label);
             }

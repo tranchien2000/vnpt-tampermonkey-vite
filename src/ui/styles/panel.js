@@ -37,7 +37,6 @@ export const panelStyles = `
         border: 1px solid var(--vnpt-border-bright);
         border-radius: var(--vnpt-radius); padding: 4px; 
         box-shadow: var(--vnpt-shadow);
-        transition: width 0.2s ease, height 0.2s ease;
     }
     #vnpt-export-panel.vnpt-resizing { transition: none !important; user-select: none !important; }
     
@@ -107,16 +106,23 @@ export const panelStyles = `
     body.vnpt-resizing-global * { user-select: none !important; cursor: inherit !important; }
 
     /* Pinned state */
+    #vnpt-export-panel.vnpt-pinned {
+        transition: none !important;
+    }
+
     #vnpt-export-panel.vnpt-pinned:not(:hover) {
         min-height: unset !important;
-        height: auto !important;
-        padding-bottom: 0 !important;
+        height: 64px !important;
         width: 460px;
+        overflow: hidden;
+        padding-bottom: 0 !important;
     }
+    
     #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-panel-body {
         display: none !important;
     }
-    #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-inline-calc {
-        display: block !important;
+
+    #vnpt-export-panel.vnpt-pinned:hover #vnpt-panel-body {
+        display: flex !important;
     }
 `;

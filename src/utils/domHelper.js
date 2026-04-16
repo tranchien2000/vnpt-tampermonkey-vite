@@ -146,14 +146,36 @@ export function triggerCustom(el) {
     el.dispatchEvent(new Event('blur', eventOptions));
 }
 
+/**
+ * Làm nổi bật phần tử trên trang khi được tương tác.
+ */
+function highlightElement(el, type = 'success') {
+    if (!el) return;
+    const color = type === 'success' ? '#28a745' : '#dc3545';
+    const originalTransition = el.style.transition;
+    const originalOutline = el.style.outline;
+    const originalBoxShadow = el.style.boxShadow;
+
+    el.style.transition = 'all 0.3s ease';
+    el.style.outline = `2px solid ${color}`;
+    el.style.boxShadow = `0 0 10px ${color}`;
+
+    setTimeout(() => {
+        el.style.outline = originalOutline;
+        el.style.boxShadow = originalBoxShadow;
+        setTimeout(() => { el.style.transition = originalTransition; }, 300);
+    }, 1000);
+}
+
 export function syncSetValue(el, value) {
     if (!el || value === undefined || value === null) return false;
 
     let isSuccess = false;
+    const actualEl = el.tagName === 'NG-SELECT2' ? el.querySelector('select') || el : el;
 
     // --- Xử lý đặc biệt cho SELECT (Dropdown) ---
     if (el.tagName === 'SELECT' || el.tagName === 'NG-SELECT2') {
-        const selectEl = el.tagName === 'NG-SELECT2' ? el.querySelector('select') || el : el;
+        const selectEl = actualEl;
         const options = Array.from(selectEl.options || []);
         const optionTexts = options.map(o => o.text.trim());
 
@@ -198,13 +220,11 @@ export function syncSetValue(el, value) {
         if (foundOption) {
             const $ = window.jQuery || window.$;
             if ($ && typeof $(selectEl).val === 'function') {
-                // TỐI ƯU: Trigger change.select2 giúp các plugin khác nhận biết
                 $(selectEl).val(foundOption.value).trigger('change').trigger('change.select2').trigger('select2:select');
             }
             selectEl.value = foundOption.value;
             isSuccess = true;
         } else if (value && !value.toString().includes(',')) {
-            // Fallback gán ID trực tiếp
             const $ = window.jQuery || window.$;
             if ($ && typeof $(selectEl).val === 'function') {
                 $(selectEl).val(value).trigger('change').trigger('change.select2');
@@ -213,36 +233,22 @@ export function syncSetValue(el, value) {
         }
 
         triggerCustom(selectEl);
+        if (isSuccess) highlightElement(el, 'success');
         return isSuccess;
 
     } else {
         // --- Xử lý cho INPUT/TEXTAREA thông thường ---
         const addressGroup = getVNPTAddressGroup();
         const idLower = (el.id || el.name || el.getAttribute('formcontrolname') || '').toLowerCase();
-        const placeholderLower = (el.getAttribute('placeholder') || '').toLowerCase();
         
-        // Mở rộng bộ lọc nhận diện trường Đường
-        const isDuongField = (addressGroup && el === addressGroup.duong) || 
-                             idLower.includes('duong') || 
-                             idLower.includes('diachichitiet') ||
-                             placeholderLower.includes('đường') ||
-                             placeholderLower.includes('số nhà');
+        const isDuongField = (addressGroup && el === addressGroup.duong) || idLower.includes('duong') || idLower.includes('diachichitiet');
 
         if (isDuongField && typeof value === 'string' && value.includes(',')) {
-            const oldVal = value;
             value = parseAddressComponents(value).street;
-            console.log(`[Sync] Phát hiện trường 'duong' (${idLower}), bóc tách địa chỉ: "${oldVal}" -> "${value}"`);
-        } else if (isDuongField) {
-            console.log(`[Sync] Trường 'duong' (${idLower}) nhận giá trị gốc (không có dấu phẩy): "${value}"`);
-        } else {
-            console.debug(`[Sync] Trường thường (${idLower}) nhận giá trị: "${value}"`);
         }
 
-        // Dispatch sự kiện gốc để trigger Angular/React bindings
         const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
         const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
-        
-        console.debug(`[Sync] Ghi giá trị vào element {id: ${el.id}, name: ${el.name}}: "${value}"`);
         
         if (setter) {
             setter.call(el, value);
@@ -250,11 +256,13 @@ export function syncSetValue(el, value) {
             el.value = value;
         }
         isSuccess = true;
+        highlightElement(el, 'success');
     }
 
     triggerCustom(el);
     return isSuccess;
 }
+
 
 /**
  * Đợi dropdown có options (AJAX load xong).
