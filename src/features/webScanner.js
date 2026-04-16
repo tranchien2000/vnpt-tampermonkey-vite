@@ -86,16 +86,18 @@ function scanFullAddress(forceRefresh = false) {
     });
 
     // 2. Nhận diện Thông minh theo tiền tố Title (Nếu còn thiếu)
-    document.querySelectorAll('ng-select2').forEach(s2 => {
-        const span = s2.querySelector('.select2-selection__rendered');
-        if (!span) return;
-        const title = (span.getAttribute('title') || span.textContent || '').trim();
-        if (!title || title === '--- Chọn ---' || title.includes('Chọn')) return;
+    if (!addressObj.ward || !addressObj.district || !addressObj.province) {
+        document.querySelectorAll('ng-select2').forEach(s2 => {
+            const span = s2.querySelector('.select2-selection__rendered');
+            if (!span) return;
+            const title = (span.getAttribute('title') || span.textContent || '').trim();
+            if (!title || title === '--- Chọn ---' || title.includes('Chọn')) return;
 
-        if ((title.startsWith('Xã') || title.startsWith('Phường') || title.startsWith('Thị trấn')) && !addressObj.ward) addressObj.ward = title;
-        else if ((title.startsWith('Quận') || title.startsWith('Huyện') || title.startsWith('Thị xã')) && !addressObj.district) addressObj.district = title;
-        else if ((title.startsWith('Tỉnh') || title.startsWith('Thành phố')) && !addressObj.province) addressObj.province = title;
-    });
+            if ((title.startsWith('Xã') || title.startsWith('Phường') || title.startsWith('Thị trấn')) && !addressObj.ward) addressObj.ward = title;
+            else if ((title.startsWith('Quận') || title.startsWith('Huyện') || title.startsWith('Thị xã')) && !addressObj.district) addressObj.district = title;
+            else if ((title.startsWith('Tỉnh') || title.startsWith('Thành phố')) && !addressObj.province) addressObj.province = title;
+        });
+    }
 
     // 3. Nối chuỗi
     let parts = [];
@@ -128,7 +130,7 @@ function getProvinceName() {
     }
 
     if (!rawVal || rawVal === '--- Chọn ---') {
-        // Tìm theo Title (Select2)
+        // Chỉ quét lại nếu chưa có
         const s2List = document.querySelectorAll('ng-select2');
         for (const s2 of s2List) {
             const span = s2.querySelector('.select2-selection__rendered');
@@ -276,12 +278,15 @@ export function initWebScanner() {
                 val = scanFullAddress(false);
 
                 // --- BỔ SUNG: Cập nhật luôn noiCapSoDkdn trong Widget khi Tỉnh thay đổi ---
-                const province = getProvinceName();
-                if (province) {
-                    const skdtVal = "SKDT " + province;
-                    const skdtKey = Array.from(lookup.values()).find(k => k.includes('noiCapSoDkdn'));
-                    if (skdtKey) {
-                        addOrUpdateFieldRow(skdtKey, skdtVal, null, '', null, true);
+                const idLower = (targetId || targetFcn || '').toLowerCase();
+                if (idLower.includes('tinh') || idLower.includes('province') || idLower.includes('city')) {
+                    const province = getProvinceName();
+                    if (province) {
+                        const skdtVal = "SKDT " + province;
+                        const skdtKey = Array.from(lookup.values()).find(k => k.includes('noiCapSoDkdn'));
+                        if (skdtKey) {
+                            addOrUpdateFieldRow(skdtKey, skdtVal, null, '', null, true);
+                        }
                     }
                 }
             } else {
@@ -328,11 +333,24 @@ export function initWebScanner() {
     }
 
     // Debounce cho Sync Event và Observer
-    const debouncedHandleSync = debounce(handleSyncEvent, 100);
-    const debouncedOnMutation = debounce(() => {
-        invalidateDOMMap();
-        setupProvinceSync();
-    }, 500);
+    const debouncedHandleSync = debounce(handleSyncEvent, 300);
+    const debouncedOnMutation = debounce((mutations) => {
+        let shouldInvalidate = false;
+        if (mutations) {
+            for (const m of mutations) {
+                if (m.addedNodes.length > 0 || m.removedNodes.length > 0) {
+                    shouldInvalidate = true;
+                    break;
+                }
+            }
+        } else {
+            shouldInvalidate = true;
+        }
+        if (shouldInvalidate) {
+            invalidateDOMMap();
+            setupProvinceSync();
+        }
+    }, 1000);
 
     inputHandler = debouncedHandleSync;
     changeHandler = handleSyncEvent; // Change thì sync ngay
@@ -344,7 +362,7 @@ export function initWebScanner() {
 
     // Chạy setupProvinceSync định kỳ hoặc qua MutationObserver để bắt các form load chậm
     setupProvinceSync();
-    mutationObserver = new MutationObserver(() => debouncedOnMutation());
+    mutationObserver = new MutationObserver((mutations) => debouncedOnMutation(mutations));
     mutationObserver.observe(document.body, { childList: true, subtree: true });
 }
 

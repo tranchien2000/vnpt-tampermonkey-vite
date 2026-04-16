@@ -1037,7 +1037,7 @@
       return true;
     }
   });
-  const version$4 = "1.6.29";
+  const version$4 = "1.6.30";
   const pkg = {
     version: version$4
   };
@@ -16792,12 +16792,14 @@ ${this.customData.serverResponse}`;
     allInputs: []
   };
   let LabelCache = [];
+  let cachedAddressGroup = null;
   function clearDOMCache() {
     FullDOMMap.byId.clear();
     FullDOMMap.byName.clear();
     FullDOMMap.byPlaceholder.clear();
     FullDOMMap.byLabel.clear();
     FullDOMMap.allInputs = [];
+    cachedAddressGroup = null;
   }
   function invalidateDOMMap() {
     lastMapBuild = 0;
@@ -17139,6 +17141,7 @@ ${this.customData.serverResponse}`;
     }
   }
   function getVNPTAddressGroup() {
+    if (cachedAddressGroup) return cachedAddressGroup;
     try {
       const labels = Array.from(document.querySelectorAll("label, .label, span.title"));
       const addressLabel = labels.find((l) => {
@@ -17148,7 +17151,6 @@ ${this.customData.serverResponse}`;
       let targetRow = null;
       if (addressLabel) {
         targetRow = addressLabel.closest(".row.row-form") || addressLabel.closest(".row");
-        console.debug(`[Positioning] Tìm thấy hàng địa chỉ qua nhãn: "${addressLabel.innerText.trim()}"`);
       }
       if (!targetRow) {
         const mainRows = Array.from(document.querySelectorAll("form .row.row-form, .row.row-form"));
@@ -17168,18 +17170,13 @@ ${this.customData.serverResponse}`;
       if (!duongEl && controlsInRight.length > 0) {
         fallbackDuong = soNhaEl && controlsInRight[controlsInRight.length - 1] === soNhaEl ? controlsInRight[controlsInRight.length - 2] : controlsInRight[controlsInRight.length - 1];
       }
-      console.debug(`[Positioning] Kết quả xác định bộ địa chỉ:`, {
-        tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftCol.querySelector("select, ng-select2"),
-        xaIdNew: xaIdNewEl || controlsInRight[0],
-        duong: duongEl || fallbackDuong
-      });
-      return {
+      cachedAddressGroup = {
         tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftCol.querySelector("select, ng-select2"),
         xaIdNew: xaIdNewEl || controlsInRight[0],
         duong: duongEl || fallbackDuong
       };
+      return cachedAddressGroup;
     } catch (e) {
-      console.error("[Positioning] Lỗi khi xác định bộ địa chỉ:", e);
       return null;
     }
   }
@@ -20036,15 +20033,17 @@ ${b2.name}?`)) {
         }
       }
     });
-    document.querySelectorAll("ng-select2").forEach((s2) => {
-      const span = s2.querySelector(".select2-selection__rendered");
-      if (!span) return;
-      const title = (span.getAttribute("title") || span.textContent || "").trim();
-      if (!title || title === "--- Chọn ---" || title.includes("Chọn")) return;
-      if ((title.startsWith("Xã") || title.startsWith("Phường") || title.startsWith("Thị trấn")) && !addressObj.ward) addressObj.ward = title;
-      else if ((title.startsWith("Quận") || title.startsWith("Huyện") || title.startsWith("Thị xã")) && !addressObj.district) addressObj.district = title;
-      else if ((title.startsWith("Tỉnh") || title.startsWith("Thành phố")) && !addressObj.province) addressObj.province = title;
-    });
+    if (!addressObj.ward || !addressObj.district || !addressObj.province) {
+      document.querySelectorAll("ng-select2").forEach((s2) => {
+        const span = s2.querySelector(".select2-selection__rendered");
+        if (!span) return;
+        const title = (span.getAttribute("title") || span.textContent || "").trim();
+        if (!title || title === "--- Chọn ---" || title.includes("Chọn")) return;
+        if ((title.startsWith("Xã") || title.startsWith("Phường") || title.startsWith("Thị trấn")) && !addressObj.ward) addressObj.ward = title;
+        else if ((title.startsWith("Quận") || title.startsWith("Huyện") || title.startsWith("Thị xã")) && !addressObj.district) addressObj.district = title;
+        else if ((title.startsWith("Tỉnh") || title.startsWith("Thành phố")) && !addressObj.province) addressObj.province = title;
+      });
+    }
     let parts = [];
     if (addressObj.detail) parts.push(addressObj.detail);
     if (addressObj.ward) parts.push(addressObj.ward);
@@ -20185,12 +20184,15 @@ ${b2.name}?`)) {
         let val = void 0;
         if (matchedKey.includes("diaChi")) {
           val = scanFullAddress(false);
-          const province = getProvinceName();
-          if (province) {
-            const skdtVal = "SKDT " + province;
-            const skdtKey = Array.from(lookup.values()).find((k2) => k2.includes("noiCapSoDkdn"));
-            if (skdtKey) {
-              addOrUpdateFieldRow(skdtKey, skdtVal, null, "", null, true);
+          const idLower = (targetId || targetFcn || "").toLowerCase();
+          if (idLower.includes("tinh") || idLower.includes("province") || idLower.includes("city")) {
+            const province = getProvinceName();
+            if (province) {
+              const skdtVal = "SKDT " + province;
+              const skdtKey = Array.from(lookup.values()).find((k2) => k2.includes("noiCapSoDkdn"));
+              if (skdtKey) {
+                addOrUpdateFieldRow(skdtKey, skdtVal, null, "", null, true);
+              }
             }
           }
         } else {
@@ -20228,11 +20230,24 @@ ${b2.name}?`)) {
         }
       });
     }
-    const debouncedHandleSync = debounce(handleSyncEvent, 100);
-    const debouncedOnMutation = debounce(() => {
-      invalidateDOMMap();
-      setupProvinceSync();
-    }, 500);
+    const debouncedHandleSync = debounce(handleSyncEvent, 300);
+    const debouncedOnMutation = debounce((mutations) => {
+      let shouldInvalidate = false;
+      if (mutations) {
+        for (const m2 of mutations) {
+          if (m2.addedNodes.length > 0 || m2.removedNodes.length > 0) {
+            shouldInvalidate = true;
+            break;
+          }
+        }
+      } else {
+        shouldInvalidate = true;
+      }
+      if (shouldInvalidate) {
+        invalidateDOMMap();
+        setupProvinceSync();
+      }
+    }, 1e3);
     inputHandler = debouncedHandleSync;
     changeHandler = handleSyncEvent;
     keydownHandler = handleSyncEvent;
@@ -20240,7 +20255,7 @@ ${b2.name}?`)) {
     document.addEventListener("change", changeHandler);
     document.addEventListener("keydown", keydownHandler);
     setupProvinceSync();
-    mutationObserver = new MutationObserver(() => debouncedOnMutation());
+    mutationObserver = new MutationObserver((mutations) => debouncedOnMutation(mutations));
     mutationObserver.observe(document.body, { childList: true, subtree: true });
   }
   function cleanupWebScanner() {
@@ -35974,20 +35989,21 @@ Ban co chac chan muon tiep tuc xuat file khong?`;
     }
     let autoFillTimeout;
     const autoFillObserver = new MutationObserver((mutations) => {
-      const hasFormElement = mutations.some((m2) => {
+      let hasFormElement = false;
+      for (const m2 of mutations) {
         if (m2.addedNodes.length > 0) {
-          const nodes = Array.from(m2.addedNodes);
-          return nodes.some((n) => {
-            if (n.nodeType !== 1) return false;
-            if (["INPUT", "TEXTAREA", "SELECT"].includes(n.tagName)) return true;
-            return n.querySelector && n.querySelector("input, textarea, select");
-          });
+          for (const n of m2.addedNodes) {
+            if (n.nodeType === 1) {
+              hasFormElement = true;
+              break;
+            }
+          }
         }
-        return false;
-      });
+        if (hasFormElement) break;
+      }
       if (hasFormElement) {
         clearTimeout(autoFillTimeout);
-        autoFillTimeout = setTimeout(initAutoFillForm, 200);
+        autoFillTimeout = setTimeout(initAutoFillForm, 500);
       }
     });
     autoFillObserver.observe(document.body, {

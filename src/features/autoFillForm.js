@@ -77,23 +77,22 @@ export function setupAutoFillForm() {
     // Khởi tạo MutationObserver để luôn auto-fill kể cả khi trang tải form bằng AJAX
     let autoFillTimeout;
     const autoFillObserver = new MutationObserver((mutations) => {
-        // Chỉ chạy nếu có thêm node là INPUT, TEXTAREA, hoặc SELECT
-        const hasFormElement = mutations.some(m => {
+        let hasFormElement = false;
+        for (const m of mutations) {
             if (m.addedNodes.length > 0) {
-                const nodes = Array.from(m.addedNodes);
-                return nodes.some(n => {
-                    if (n.nodeType !== 1) return false;
-                    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(n.tagName)) return true;
-                    // Kiểm tra con của node được thêm vào
-                    return n.querySelector && n.querySelector('input, textarea, select');
-                });
+                for (const n of m.addedNodes) {
+                    if (n.nodeType === 1) {
+                        hasFormElement = true;
+                        break;
+                    }
+                }
             }
-            return false;
-        });
+            if (hasFormElement) break;
+        }
 
         if (hasFormElement) {
             clearTimeout(autoFillTimeout);
-            autoFillTimeout = setTimeout(initAutoFillForm, 200);
+            autoFillTimeout = setTimeout(initAutoFillForm, 500);
         }
     });
 

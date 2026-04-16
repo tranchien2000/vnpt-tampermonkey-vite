@@ -12,6 +12,7 @@ let FullDOMMap = {
 
 let LabelCache = [];
 let lastLabelUpdate = 0;
+let cachedAddressGroup = null; // Cache address group
 
 /**
  * Xóa bộ nhớ đệm DOM khi trang thay đổi cấu trúc lớn.
@@ -22,6 +23,7 @@ export function clearDOMCache() {
     FullDOMMap.byPlaceholder.clear();
     FullDOMMap.byLabel.clear();
     FullDOMMap.allInputs = [];
+    cachedAddressGroup = null;
 }
 
 /**
@@ -522,6 +524,8 @@ export async function setPageFieldsSequential(names, value) {
 }
 
 export function getVNPTAddressGroup() {
+    if (cachedAddressGroup) return cachedAddressGroup;
+
     try {
         // 1. Tìm container chứa địa chỉ dựa trên Label (Tăng độ bền vững)
         const labels = Array.from(document.querySelectorAll('label, .label, span.title'));
@@ -534,7 +538,6 @@ export function getVNPTAddressGroup() {
         if (addressLabel) {
             // Thường label nằm trong .col rồi nằm trong .row
             targetRow = addressLabel.closest('.row.row-form') || addressLabel.closest('.row');
-            console.debug(`[Positioning] Tìm thấy hàng địa chỉ qua nhãn: "${addressLabel.innerText.trim()}"`);
         }
 
         // Fallback về hàng thứ 3 nếu không tìm thấy nhãn (Cũ)
@@ -567,19 +570,14 @@ export function getVNPTAddressGroup() {
                 : controlsInRight[controlsInRight.length - 1];
         }
 
-        console.debug(`[Positioning] Kết quả xác định bộ địa chỉ:`, {
-            tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftCol.querySelector('select, ng-select2'),
-            xaIdNew: xaIdNewEl || controlsInRight[0],
-            duong: duongEl || fallbackDuong
-        });
-
-        return {
+        cachedAddressGroup = {
             tinh: findDeep(leftCol, '[formcontrolname*="tinhIdNew" i], [id*="tinhId" i]') || leftCol.querySelector('select, ng-select2'),
             xaIdNew: xaIdNewEl || controlsInRight[0],
             duong: duongEl || fallbackDuong
         };
+        
+        return cachedAddressGroup;
     } catch (e) {
-        console.error("[Positioning] Lỗi khi xác định bộ địa chỉ:", e);
         return null;
     }
 }
