@@ -3,22 +3,22 @@ export const controlStyles = `
        SECTION 4: CONTROL BUTTONS
        ═══════════════════════════════════════════ */
     .vnpt-btn-action { 
-        padding: 0 10px; height: 30px; 
+        padding: 0 8px; height: 24px; 
         display: flex; align-items: center; justify-content: center; 
         font-weight: 700; font-size: 11px; cursor: pointer; 
-        border-radius: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        border-radius: 6px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
         white-space: nowrap; box-sizing: border-box; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         flex-shrink: 1; min-width: 0;
     }
-    .vnpt-btn-action:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .vnpt-btn-action:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .vnpt-btn-action:active { transform: translateY(0) scale(0.96); }
 
     .vnpt-btn-icon {
         border: 1px solid #1f5bd2ff;
-        background: rgba(0,0,0,0.03); width: 30px; height: 30px;
+        background: rgba(0,0,0,0.03); width: 24px; height: 24px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 15px; cursor: pointer; border-radius: 8px;
+        font-size: 12px; cursor: pointer; border-radius: 6px;
         color: #5f6368; transition: all 0.2s;
     }
     .vnpt-btn-icon:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); transform: scale(1.05); }
@@ -108,121 +108,67 @@ export const controlStyles = `
     
     .backup-history-empty { padding: 30px 20px; text-align: center; font-size: 11px; color: #9aa0a6; font-style: italic; line-height: 1.6; }
 
-    /* Utility Menu UI */
+    /* Utility Menu UI - Ultra Compact */
     .vnpt-util-dropdown { position: relative; }
     .vnpt-util-menu {
-        position: absolute; top: calc(100% + 12px); right: 0;
-        background: #ffffffff; 
-        backdrop-filter: blur(15px);
-        border: 1px solid var(--vnpt-border); border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 100000;
-        display: none; flex-direction: column; min-width: 380px;
-        padding: 0; animation: menuFadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: absolute; top: calc(100% + 8px); right: 0;
+        background: #fff; border: 1px solid var(--vnpt-border); border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100000;
+        display: none; flex-direction: column; width: 260px;
+        padding: 4px;
         transform-origin: top right;
-        overflow: hidden;
-    }
-    @keyframes menuFadeIn { 
-        from { opacity: 0; transform: translateY(-15px) scale(0.95); } 
-        to { opacity: 1; transform: translateY(0) scale(1); } 
     }
     .vnpt-util-menu.show { display: flex; }
     
-    .util-item, .util-item-compact {
-        background: none; border: none; padding: 6px 12px;
-        text-align: left; font-size: 11px; cursor: pointer;
-        color: #3c4043; font-weight: 600; transition: all 0.2s;
-        display: flex; align-items: center; gap: 6px;
-    }
-    .util-item:hover, .util-item-compact:hover { 
-        background: var(--vnpt-primary-light); color: var(--vnpt-primary); 
-    }
-    
-    .util-item-compact {
-        padding: 5px 8px; border-radius: 8px; font-size: 10px;
-        background: #f8f9fa; border: 1px solid #e0e0e0;
-        justify-content: center; flex: 1;
-    }
-    .util-item-compact.danger { color: #d93025; }
-    .util-item-compact.danger:hover { background: #fdf2f2; border-color: #d93025; }
+    .util-config-container { display: flex; flex-direction: column; gap: 8px; }
 
-    .util-action-grid {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px 12px;
+    .util-section-mini {
+        padding: 4px; border-bottom: 1px solid #f0f0f0;
     }
-    
-    .util-separator { height: 1px; background: #eee; margin: 0; }
-    .util-submenu-title { 
-        padding: 10px 12px 6px 12px; font-size: 10px; font-weight: 800; 
-        color: #1a73e8; text-transform: uppercase; letter-spacing: 0.5px; 
-        background: #f8f9fa; border-bottom: 1px solid #eee;
-        display: flex; align-items: center; gap: 6px;
-    }
+    .util-section-mini:last-child { border-bottom: none; }
 
-    /* 2-Column Grid for Top Config */
-    .util-config-grid {
-        display: grid; grid-template-columns: 1.2fr 1fr; padding: 0;
-    }
-    .util-column { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 8px; }
-    .util-column.vertical-separator { border-left: 1px solid #eee; background: #fafafa; }
-
-    .util-row-compact { display: flex; align-items: center; padding: 8px 12px; gap: 8px; }
-    .util-label-mini { font-size: 9px; font-weight: 800; color: #70757a; text-transform: uppercase; width: 30px; }
+    .util-action-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
     
-    .size-options-compact { display: flex; gap: 3px; flex: 1; }
-    .size-options-compact button {
-        flex: 1; padding: 3px 0; border: 1px solid #dadce0; border-radius: 6px;
+    .util-item-mini {
+        background: #f8f9fa; border: 1px solid #eee; border-radius: 6px;
+        padding: 4px 6px; font-size: 10px; font-weight: 700; color: #3c4043;
+        cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .util-item-mini:hover { background: var(--vnpt-primary-light); border-color: var(--vnpt-primary); color: var(--vnpt-primary); }
+    .util-item-mini.danger:hover { background: #fdf2f2; border-color: #d93025; color: #d93025; }
+
+    .util-row-compact { display: flex; align-items: center; gap: 8px; }
+    .util-label-tiny { font-size: 9px; font-weight: 800; color: #9aa0a6; text-transform: uppercase; }
+    
+    .size-options-tiny { display: flex; gap: 2px; flex: 1; }
+    .size-options-tiny button {
+        flex: 1; padding: 2px 0; border: 1px solid #eee; border-radius: 4px;
         background: #fff; font-size: 9px; font-weight: 700; cursor: pointer;
-        transition: all 0.2s; color: #3c4043;
     }
-    .size-options-compact button:hover { 
-        background: var(--vnpt-primary); border-color: var(--vnpt-primary); color: #fff; 
+    .size-options-tiny button:hover { background: var(--vnpt-primary); color: #fff; border-color: var(--vnpt-primary); }
+
+    .cw-row-mini { display: flex; gap: 4px; }
+    .cw-input-mini {
+        flex: 1; padding: 4px 8px; border: 1px solid #eee; border-radius: 6px;
+        font-size: 10px; background: #fafafa;
+    }
+    .cw-input-mini:focus { border-color: var(--vnpt-primary); outline: none; background: #fff; }
+    
+    .util-btn-test-tiny {
+        background: #f0f4ff; color: var(--vnpt-primary); border: none;
+        border-radius: 6px; width: 24px; cursor: pointer; font-size: 10px;
     }
 
-    /* Mapping Rows in Utility Menu / Hotkeys */
-    .cw-row-map-compact {
-        display: flex; align-items: center; padding: 6px 12px; gap: 6px;
-    }
-    .cw-row-map-compact span { font-size: 14px; flex: 0 0 20px; text-align: center; }
-    .cw-map-input {
-        flex: 1; padding: 5px 10px; border: 1px solid #dadce0; border-radius: 8px;
-        font-size: 11px; background: #fff; transition: all 0.2s;
-    }
-    .cw-map-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
-    
-    .util-btn-test-mini {
-        background: #fff; color: var(--vnpt-primary);
-        border: 1px solid #dadce0; border-radius: 8px;
-        width: 30px; height: 28px; cursor: pointer; transition: all 0.2s;
-        display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;
-    }
-    .util-btn-test-mini:hover { border-color: var(--vnpt-primary); background: var(--vnpt-primary-light); }
-    
-    .vnpt-hotkey-list { 
-        display: flex; flex-direction: column; padding: 8px; gap: 6px;
-        max-height: 200px; overflow-y: auto;
-    }
-    .vnpt-hotkey-list::-webkit-scrollbar { width: 3px; }
-    .vnpt-hotkey-list::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
-
+    .vnpt-hotkey-list-mini { display: flex; flex-direction: column; gap: 3px; max-height: 120px; overflow-y: auto; }
     .vnpt-hotkey-row {
         display: flex; align-items: center; justify-content: space-between;
-        background: rgba(0,0,0,0.02); padding: 4px 8px; border-radius: 8px;
-        transition: all 0.2s; border: 1px solid transparent; gap: 8px;
+        padding: 2px 4px; background: #fafafa; border-radius: 4px;
     }
-    .vnpt-hotkey-row:hover { 
-        background: #fff; border-color: var(--vnpt-primary-light); 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    .vnpt-hotkey-label { font-size: 10px; font-weight: 700; color: #5f6368; }
+    .vnpt-hotkey-label { font-size: 9px; color: #5f6368; }
     .vnpt-hotkey-btn {
-        background: #fff; border: 1px solid #dadce0; border-radius: 6px;
-        padding: 3px 8px; font-size: 10px; font-weight: 800; cursor: pointer;
-        min-width: 70px; text-align: center; color: var(--vnpt-primary);
-        transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .vnpt-hotkey-btn:hover { border-color: var(--vnpt-primary); background: var(--vnpt-primary-light); }
-    .vnpt-hotkey-btn.recording {
-        background: var(--vnpt-danger); color: #fff; border-color: var(--vnpt-danger);
-        animation: pulse 1.5s infinite;
+        background: #fff; border: 1px solid #eee; border-radius: 4px;
+        padding: 1px 4px; font-size: 9px; font-weight: 700; color: var(--vnpt-primary);
+        min-width: 50px; text-align: center;
     }
     @keyframes pulse {
         0% { opacity: 1; }

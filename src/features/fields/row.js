@@ -1,6 +1,6 @@
 import { AppState } from '../../core/state.js';
 import { DEFAULT_LABELS } from '../../core/constants.js';
-import { setPageFieldsSequential } from '../../utils/domHelper.js';
+import { setPageFieldsSequential, findPageInput } from '../../utils/domHelper.js';
 import { mstService } from '../../api/mstService.js';
 import { parseAddressComponents, normalizeDate } from '../../utils/stringHelper.js';
 import { AddressLearning } from '../../utils/addressLearning.js';
@@ -28,6 +28,25 @@ export function updateSyncDirIcon(btn, dir) {
         btn.title = 'Chỉ đồng bộ XUỐNG: Bảng dữ liệu ➔ Form Trang web';
     } else if (dir === 'up') {
         btn.title = 'Chỉ đồng bộ LÊN: Form Trang web ➔ Bảng dữ liệu';
+    }
+}
+
+export function updateRowConnectionStatus(row) {
+    const fKey = row.querySelector('.f-key');
+    const badge = row.querySelector('.connection-badge');
+    if (!fKey || !badge) return;
+
+    const targets = fKey.value.split(',').map(s => s.trim()).filter(s => s);
+    const isConnected = targets.some(t => findPageInput(t) !== null);
+
+    if (isConnected) {
+        badge.innerText = '●';
+        badge.className = 'connection-badge connected';
+        badge.title = 'Đã tìm thấy ô nhập liệu tương ứng trên trang web';
+    } else {
+        badge.innerText = '○';
+        badge.className = 'connection-badge disconnected';
+        badge.title = 'Không tìm thấy ô nhập liệu nào khớp trên trang web';
     }
 }
 
@@ -72,6 +91,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
             // QUAN TRỌNG: Re-validate sau khi cập nhật
             refreshRowValidation(row);
+            updateRowConnectionStatus(row);
 
             isDuplicate = true;
             break;
@@ -94,6 +114,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
         row.innerHTML = `
             <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
+            <span class="connection-badge disconnected" title="Đang kiểm tra kết nối...">○</span>
             <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
             <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
             <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="${syncDir || 'both'}">↔</button>
@@ -133,6 +154,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
         fKey.addEventListener('input', function () {
             saveFieldsToLocal();
+            updateRowConnectionStatus(row);
             const firstKey = this.value.split(',')[0].trim();
             fVal.style.textAlign = firstKey === 'tenToChuc' ? 'right' : '';
         });
@@ -238,6 +260,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         }
 
         AppState.fieldsContainer.appendChild(row);
+        updateRowConnectionStatus(row);
         AppState.fieldsContainer.scrollTop = AppState.fieldsContainer.scrollHeight;
     }
 }

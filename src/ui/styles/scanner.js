@@ -87,9 +87,8 @@ export const scannerStyles = `
 
     .vnpt-ai-scanner-section {
         padding: 8px; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid var(--vnpt-border);
-        display: flex; flex-direction: column; gap: 6px; animation: slideDown 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: flex; flex-direction: column; gap: 6px;
     }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     .ai-scanner-header { display: flex; align-items: center; justify-content: space-between; }
     .ai-title { font-size: 11px; font-weight: 800; color: #1a73e8; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -150,16 +149,35 @@ export const scannerStyles = `
     /* ═══════════════════════════════════════════
        SECTION 5: TEMPLATE MANAGER & BOTTOM ROW
        ═══════════════════════════════════════════ */
-    #vnpt-template-section { border-top: 1px solid var(--vnpt-border); margin-top: 4px; padding-top: 4px; }
-    .bottom-export-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 0 4px; }
+    .bottom-export-area {
+        display: flex; flex-direction: column;
+        border-top: 1px solid var(--vnpt-border);
+        background: rgba(255, 255, 255, 0.1);
+        padding-top: 2px;
+    }
+
+    #vnpt-template-section {
+        display: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .bottom-export-area:hover #vnpt-template-section {
+        display: block;
+        max-height: 400px;
+        margin-bottom: 8px;
+        padding-top: 4px;
+    }
+
+    .bottom-export-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0 4px; }
     .bottom-export-row .vnpt-control-group { margin-bottom: 0; flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; }
-    .bottom-export-row .vnpt-control-group input[type="text"] { height: 32px; padding: 6px 10px; border-radius: 8px; border: 1px solid #0055ffff; flex: 1; min-width: 0; }
+    .bottom-export-row .vnpt-control-group input[type="text"] { height: 24px; padding: 2px 8px; border-radius: 6px; border: 1px solid #1f5bd2ff; flex: 1; min-width: 0; font-size: 11px; }
     
     .btn-upload-local {
         display: inline-flex; align-items: center; justify-content: center;
-        width: 32px; height: 32px; border-radius: 8px;
+        width: 24px; height: 24px; border-radius: 6px;
         background: rgba(0,0,0,0.04); border: 1px solid #dadce0;
-        font-size: 15px; cursor: pointer; transition: all 0.2s;
+        font-size: 12px; cursor: pointer; transition: all 0.2s;
         color: #5f6368; box-sizing: border-box;
         flex-shrink: 0;
     }
@@ -168,7 +186,7 @@ export const scannerStyles = `
         color: var(--vnpt-primary); transform: scale(1.05);
     }
     
-    .vnpt-control-group .btn-export { flex: 0 0 auto; height: 32px; margin: 0; border-radius: 8px; background: var(--vnpt-primary-grad); color: white; border: none; font-weight: 800; padding: 0 16px; cursor: pointer; }
+    .vnpt-control-group .btn-export { flex: 0 0 auto; height: 24px; margin: 0; border-radius: 6px; background: var(--vnpt-primary-grad); color: white; border: none; font-weight: 800; font-size: 11px; padding: 0 12px; cursor: pointer; }
     .vnpt-control-group .btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
 
     #vnpt-btn-export-txt { color: #00695c; border-color: rgba(0, 105, 92, 0.3); }

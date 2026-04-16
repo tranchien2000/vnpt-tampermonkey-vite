@@ -65,7 +65,6 @@
         border: 1px solid var(--vnpt-border-bright);
         border-radius: var(--vnpt-radius); padding: 4px; 
         box-shadow: var(--vnpt-shadow);
-        transition: width 0.2s ease, height 0.2s ease;
     }
     #vnpt-export-panel.vnpt-resizing { transition: none !important; user-select: none !important; }
     
@@ -135,17 +134,24 @@
     body.vnpt-resizing-global * { user-select: none !important; cursor: inherit !important; }
 
     /* Pinned state */
+    #vnpt-export-panel.vnpt-pinned {
+        transition: none !important;
+    }
+
     #vnpt-export-panel.vnpt-pinned:not(:hover) {
         min-height: unset !important;
-        height: auto !important;
-        padding-bottom: 0 !important;
+        height: 64px !important;
         width: 460px;
+        overflow: hidden;
+        padding-bottom: 0 !important;
     }
+    
     #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-panel-body {
         display: none !important;
     }
-    #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-inline-calc {
-        display: block !important;
+
+    #vnpt-export-panel.vnpt-pinned:hover #vnpt-panel-body {
+        display: flex !important;
     }
 `;
   const fieldsStyles = `
@@ -158,28 +164,14 @@
         border: 1px solid var(--vnpt-border); border-radius: 12px; 
         margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
         box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
-        transition: all 0.3s ease;
     }
+
     #vnpt-fields-container.vnpt-mode-default {
         border: 2px dashed var(--vnpt-danger);
         background: rgba(234, 67, 53, 0.05);
         box-shadow: inset 0 0 15px rgba(234, 67, 53, 0.1);
     }
     #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
-
-    .vnpt-fields-header {
-        display: flex; gap: 4px; padding: 2px 4px;
-        background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid var(--vnpt-border);
-        font-size: 10px; font-weight: 800; color: #5f6368;
-        align-items: center; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .vnpt-fields-header span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .vnpt-fields-header .h-chk { flex: 0 0 24px; text-align: center; }
-    .vnpt-fields-header .h-label { flex: var(--label-flex); padding-left: 5px; }
-    .vnpt-fields-header .h-key { flex: 0.45; display: none; padding-left: 5px; }
-    .show-ids .vnpt-fields-header .h-key { display: block; }
-    .vnpt-fields-header .h-drag { flex: 0 0 18px; }
-    .vnpt-fields-header .h-val { flex: 1; padding-left: 50px; }
 
     /* Column splitter */
     .fields-col-splitter {
@@ -201,25 +193,25 @@
     .fields-col-splitter.dragging { opacity: 1; cursor: col-resize; }
 
     .vnpt-field-row { 
-        display: flex; gap: 4px; margin-bottom: 2px; align-items: center; 
-        padding: 2px; border-radius: 10px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; gap: 2px; margin-bottom: 2px; align-items: center; 
+        padding: 1px 2px; border-radius: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         background: rgba(255, 255, 255, 0.6); border: 1px solid transparent;
     }
     .vnpt-field-row:hover { 
         background: #fff; border-color: var(--vnpt-primary-light); 
-        transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
+        transform: translateX(2px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
     }
-    
+
     .btn-sync-dir, .btn-sync-dir-calc {
         cursor: pointer; padding: 0; user-select: none;
-        flex: 0 0 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+        flex: 0 0 16px; height: 16px; display: flex; align-items: center; justify-content: center;
         border: none; background: transparent; color: #bdc1c6;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         opacity: 0.8;
     }
     .btn-sync-dir:hover, .btn-sync-dir-calc:hover { 
-        transform: scale(1.25); opacity: 1;
-        background: rgba(0,0,0,0.03); border-radius: 4px;
+        transform: scale(1.15); opacity: 1;
+        background: rgba(0,0,0,0.03); border-radius: 3px;
     }
     .btn-sync-dir:active, .btn-sync-dir-calc:active { transform: scale(0.9); }
     
@@ -227,25 +219,46 @@
     .btn-sync-dir[data-dir="up"], .btn-sync-dir-calc[data-dir="up"] { color: #f57c00; }
     .btn-sync-dir[data-dir="down"], .btn-sync-dir-calc[data-dir="down"] { color: var(--vnpt-success); }
     
-    .btn-sync-dir svg, .btn-sync-dir-calc svg { transition: transform 0.3s ease; }
+    .btn-sync-dir svg, .btn-sync-dir-calc svg { transition: transform 0.3s ease; width: 12px; height: 12px; }
     .btn-sync-dir:active svg, .btn-sync-dir-calc:active svg { transform: rotate(180deg); }
 
     .vnpt-field-row input { 
-        flex: 1; padding: 2px 6px; border: 1px solid #1f5bd2ff; border-radius: 4px; 
-        font-size: 11px; transition: all 0.2s; background: #fff;
+        flex: 1; padding: 1px 4px; border: 1px solid #1f5bd2ff; border-radius: 4px; 
+        font-size: 10px; height: 20px; transition: all 0.2s; background: #fff;
     }
     .vnpt-field-row input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
     
-    .vnpt-field-row input.row-chk { flex: 0 0 24px; width: 16px; height: 16px; cursor: pointer; accent-color: var(--vnpt-primary); }
+    .vnpt-field-row input.row-chk { flex: 0 0 16px; width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--vnpt-primary); }
     .vnpt-field-row input.f-label { flex: var(--label-flex); color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.03); }
     .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.03); }
     .show-ids .vnpt-field-row input.f-key { display: block; }
 
-    .vnpt-btn-hide { background: #f1f3f4; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; padding: 4px 8px; color: #5f6368; font-weight: 600; }
+    .btn-field-link {
+        cursor: pointer; padding: 0; user-select: none;
+        flex: 0 0 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+        border: none; background: transparent; color: #bdc1c6; transition: 0.2s; font-size: 10px;
+    }
+    .btn-field-link:hover { color: var(--vnpt-primary); transform: scale(1.1); }
+
+
+    .vnpt-btn-hide { background: #f1f3f4; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; padding: 2px 6px; color: #5f6368; font-weight: 600; }
     .vnpt-btn-hide:hover { background: #e8eaed; color: #3c4043; }
     
-    .vnpt-btn-del { background: #fce8e6; color: var(--vnpt-danger); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
+    .vnpt-btn-del { background: #fce8e6; color: var(--vnpt-danger); border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
     .vnpt-btn-del:hover { background: #f9d7d1; }
+
+    /* Connection Badge */
+    .connection-badge {
+        font-size: 8px;
+        margin: 0 1px;
+        flex-shrink: 0;
+        cursor: help;
+        opacity: 0.7;
+        width: 10px;
+        text-align: center;
+    }
+    .connection-badge.connected { color: #28a745; filter: drop-shadow(0 0 2px rgba(40, 167, 69, 0.4)); }
+    .connection-badge.disconnected { color: #ccc; }
 
     /* MST Lookup Button */
     .mst-lookup-wrapper {
@@ -253,12 +266,13 @@
         display: flex;
         align-items: center;
         flex: 1;
+        height: 24px;
     }
     .btn-mst-lookup {
         position: absolute;
-        right: 4px;
-        width: 22px;
-        height: 22px;
+        right: 3px;
+        width: 18px;
+        height: 18px;
         border-radius: 4px;
         border: none;
         background: var(--vnpt-primary-light);
@@ -267,7 +281,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: 10px;
         transition: all 0.2s;
         z-index: 5;
         padding: 0;
@@ -325,22 +339,22 @@
        SECTION 4: CONTROL BUTTONS
        ═══════════════════════════════════════════ */
     .vnpt-btn-action { 
-        padding: 0 10px; height: 30px; 
+        padding: 0 8px; height: 24px; 
         display: flex; align-items: center; justify-content: center; 
         font-weight: 700; font-size: 11px; cursor: pointer; 
-        border-radius: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        border-radius: 6px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
         white-space: nowrap; box-sizing: border-box; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         flex-shrink: 1; min-width: 0;
     }
-    .vnpt-btn-action:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .vnpt-btn-action:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .vnpt-btn-action:active { transform: translateY(0) scale(0.96); }
 
     .vnpt-btn-icon {
         border: 1px solid #1f5bd2ff;
-        background: rgba(0,0,0,0.03); width: 30px; height: 30px;
+        background: rgba(0,0,0,0.03); width: 24px; height: 24px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 15px; cursor: pointer; border-radius: 8px;
+        font-size: 12px; cursor: pointer; border-radius: 6px;
         color: #5f6368; transition: all 0.2s;
     }
     .vnpt-btn-icon:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); transform: scale(1.05); }
@@ -430,121 +444,67 @@
     
     .backup-history-empty { padding: 30px 20px; text-align: center; font-size: 11px; color: #9aa0a6; font-style: italic; line-height: 1.6; }
 
-    /* Utility Menu UI */
+    /* Utility Menu UI - Ultra Compact */
     .vnpt-util-dropdown { position: relative; }
     .vnpt-util-menu {
-        position: absolute; top: calc(100% + 12px); right: 0;
-        background: #ffffffff; 
-        backdrop-filter: blur(15px);
-        border: 1px solid var(--vnpt-border); border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 100000;
-        display: none; flex-direction: column; min-width: 380px;
-        padding: 0; animation: menuFadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: absolute; top: calc(100% + 8px); right: 0;
+        background: #fff; border: 1px solid var(--vnpt-border); border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100000;
+        display: none; flex-direction: column; width: 260px;
+        padding: 4px;
         transform-origin: top right;
-        overflow: hidden;
-    }
-    @keyframes menuFadeIn { 
-        from { opacity: 0; transform: translateY(-15px) scale(0.95); } 
-        to { opacity: 1; transform: translateY(0) scale(1); } 
     }
     .vnpt-util-menu.show { display: flex; }
     
-    .util-item, .util-item-compact {
-        background: none; border: none; padding: 6px 12px;
-        text-align: left; font-size: 11px; cursor: pointer;
-        color: #3c4043; font-weight: 600; transition: all 0.2s;
-        display: flex; align-items: center; gap: 6px;
-    }
-    .util-item:hover, .util-item-compact:hover { 
-        background: var(--vnpt-primary-light); color: var(--vnpt-primary); 
-    }
-    
-    .util-item-compact {
-        padding: 5px 8px; border-radius: 8px; font-size: 10px;
-        background: #f8f9fa; border: 1px solid #e0e0e0;
-        justify-content: center; flex: 1;
-    }
-    .util-item-compact.danger { color: #d93025; }
-    .util-item-compact.danger:hover { background: #fdf2f2; border-color: #d93025; }
+    .util-config-container { display: flex; flex-direction: column; gap: 8px; }
 
-    .util-action-grid {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px 12px;
+    .util-section-mini {
+        padding: 4px; border-bottom: 1px solid #f0f0f0;
     }
-    
-    .util-separator { height: 1px; background: #eee; margin: 0; }
-    .util-submenu-title { 
-        padding: 10px 12px 6px 12px; font-size: 10px; font-weight: 800; 
-        color: #1a73e8; text-transform: uppercase; letter-spacing: 0.5px; 
-        background: #f8f9fa; border-bottom: 1px solid #eee;
-        display: flex; align-items: center; gap: 6px;
-    }
+    .util-section-mini:last-child { border-bottom: none; }
 
-    /* 2-Column Grid for Top Config */
-    .util-config-grid {
-        display: grid; grid-template-columns: 1.2fr 1fr; padding: 0;
-    }
-    .util-column { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 8px; }
-    .util-column.vertical-separator { border-left: 1px solid #eee; background: #fafafa; }
-
-    .util-row-compact { display: flex; align-items: center; padding: 8px 12px; gap: 8px; }
-    .util-label-mini { font-size: 9px; font-weight: 800; color: #70757a; text-transform: uppercase; width: 30px; }
+    .util-action-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
     
-    .size-options-compact { display: flex; gap: 3px; flex: 1; }
-    .size-options-compact button {
-        flex: 1; padding: 3px 0; border: 1px solid #dadce0; border-radius: 6px;
+    .util-item-mini {
+        background: #f8f9fa; border: 1px solid #eee; border-radius: 6px;
+        padding: 4px 6px; font-size: 10px; font-weight: 700; color: #3c4043;
+        cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .util-item-mini:hover { background: var(--vnpt-primary-light); border-color: var(--vnpt-primary); color: var(--vnpt-primary); }
+    .util-item-mini.danger:hover { background: #fdf2f2; border-color: #d93025; color: #d93025; }
+
+    .util-row-compact { display: flex; align-items: center; gap: 8px; }
+    .util-label-tiny { font-size: 9px; font-weight: 800; color: #9aa0a6; text-transform: uppercase; }
+    
+    .size-options-tiny { display: flex; gap: 2px; flex: 1; }
+    .size-options-tiny button {
+        flex: 1; padding: 2px 0; border: 1px solid #eee; border-radius: 4px;
         background: #fff; font-size: 9px; font-weight: 700; cursor: pointer;
-        transition: all 0.2s; color: #3c4043;
     }
-    .size-options-compact button:hover { 
-        background: var(--vnpt-primary); border-color: var(--vnpt-primary); color: #fff; 
+    .size-options-tiny button:hover { background: var(--vnpt-primary); color: #fff; border-color: var(--vnpt-primary); }
+
+    .cw-row-mini { display: flex; gap: 4px; }
+    .cw-input-mini {
+        flex: 1; padding: 4px 8px; border: 1px solid #eee; border-radius: 6px;
+        font-size: 10px; background: #fafafa;
+    }
+    .cw-input-mini:focus { border-color: var(--vnpt-primary); outline: none; background: #fff; }
+    
+    .util-btn-test-tiny {
+        background: #f0f4ff; color: var(--vnpt-primary); border: none;
+        border-radius: 6px; width: 24px; cursor: pointer; font-size: 10px;
     }
 
-    /* Mapping Rows in Utility Menu / Hotkeys */
-    .cw-row-map-compact {
-        display: flex; align-items: center; padding: 6px 12px; gap: 6px;
-    }
-    .cw-row-map-compact span { font-size: 14px; flex: 0 0 20px; text-align: center; }
-    .cw-map-input {
-        flex: 1; padding: 5px 10px; border: 1px solid #dadce0; border-radius: 8px;
-        font-size: 11px; background: #fff; transition: all 0.2s;
-    }
-    .cw-map-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
-    
-    .util-btn-test-mini {
-        background: #fff; color: var(--vnpt-primary);
-        border: 1px solid #dadce0; border-radius: 8px;
-        width: 30px; height: 28px; cursor: pointer; transition: all 0.2s;
-        display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;
-    }
-    .util-btn-test-mini:hover { border-color: var(--vnpt-primary); background: var(--vnpt-primary-light); }
-    
-    .vnpt-hotkey-list { 
-        display: flex; flex-direction: column; padding: 8px; gap: 6px;
-        max-height: 200px; overflow-y: auto;
-    }
-    .vnpt-hotkey-list::-webkit-scrollbar { width: 3px; }
-    .vnpt-hotkey-list::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
-
+    .vnpt-hotkey-list-mini { display: flex; flex-direction: column; gap: 3px; max-height: 120px; overflow-y: auto; }
     .vnpt-hotkey-row {
         display: flex; align-items: center; justify-content: space-between;
-        background: rgba(0,0,0,0.02); padding: 4px 8px; border-radius: 8px;
-        transition: all 0.2s; border: 1px solid transparent; gap: 8px;
+        padding: 2px 4px; background: #fafafa; border-radius: 4px;
     }
-    .vnpt-hotkey-row:hover { 
-        background: #fff; border-color: var(--vnpt-primary-light); 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    .vnpt-hotkey-label { font-size: 10px; font-weight: 700; color: #5f6368; }
+    .vnpt-hotkey-label { font-size: 9px; color: #5f6368; }
     .vnpt-hotkey-btn {
-        background: #fff; border: 1px solid #dadce0; border-radius: 6px;
-        padding: 3px 8px; font-size: 10px; font-weight: 800; cursor: pointer;
-        min-width: 70px; text-align: center; color: var(--vnpt-primary);
-        transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .vnpt-hotkey-btn:hover { border-color: var(--vnpt-primary); background: var(--vnpt-primary-light); }
-    .vnpt-hotkey-btn.recording {
-        background: var(--vnpt-danger); color: #fff; border-color: var(--vnpt-danger);
-        animation: pulse 1.5s infinite;
+        background: #fff; border: 1px solid #eee; border-radius: 4px;
+        padding: 1px 4px; font-size: 9px; font-weight: 700; color: var(--vnpt-primary);
+        min-width: 50px; text-align: center;
     }
     @keyframes pulse {
         0% { opacity: 1; }
@@ -565,23 +525,23 @@
     .cw-body-inline { display: flex; flex-direction: column; gap: 4px; }
     .cw-inline-row { display: flex; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; }
     .cw-input-inline { 
-        flex: 1; min-width: 60px; padding: 4px 10px; border: 1px solid #0055ffff; border-radius: 8px; 
-        font-size: 11.5px; font-weight: 600; height: 30px; box-sizing: border-box;
+        flex: 1; min-width: 60px; padding: 2px 6px; border: 1px solid #1f5bd2ff; border-radius: 6px; 
+        font-size: 11px; font-weight: 600; height: 24px; box-sizing: border-box;
         background: #fff; transition: all 0.2s;
     }
     .cw-input-inline:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 3px var(--vnpt-primary-light); outline: none; }
     .cw-input-readonly-inline { background-color: rgba(30, 142, 62, 0.05); color: var(--vnpt-success); cursor: default; flex: 1.5; border-color: rgba(30, 142, 62, 0.2); }
     
     .cw-tax-group-inline { position: relative; display: flex; align-items: center; flex: 0 0 auto; min-width: 45px; }
-    .cw-tax-input-inline { width: 45px; padding: 4px 18px 4px 8px; border: 1px solid #dadce0; border-radius: 6px; font-size: 11px; text-align: right; height: 30px; }
-    .cw-tax-symbol { position: absolute; right: 6px; color: #5f6368; font-size: 9px; font-weight: bold; pointer-events: none; }
+    .cw-tax-input-inline { width: 45px; padding: 2px 14px 2px 6px; border: 1px solid #dadce0; border-radius: 6px; font-size: 11px; text-align: right; height: 24px; box-sizing: border-box; }
+    .cw-tax-symbol { position: absolute; right: 4px; color: #5f6368; font-size: 9px; font-weight: bold; pointer-events: none; }
 
     .cw-map-btn-inline {
-        background: rgba(255, 255, 255, 0.82); border: 1px solid #1a73e8; border-radius: 8px;
-        width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-        font-size: 13px; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        background: rgba(255, 255, 255, 0.82); border: 1px solid #1a73e8; border-radius: 6px;
+        width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+        font-size: 12px; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         color: #1a73e8; flex-shrink: 0; padding: 0;
-        box-shadow: 0 2px 4px rgba(26, 115, 232, 0.1);
+        box-shadow: 0 1px 3px rgba(26, 115, 232, 0.1);
     }
     .cw-map-btn-inline:hover { background: var(--vnpt-primary-grad); color: white; transform: scale(1.1) rotate(5deg); box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3); }
 
@@ -678,9 +638,8 @@
 
     .vnpt-ai-scanner-section {
         padding: 8px; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid var(--vnpt-border);
-        display: flex; flex-direction: column; gap: 6px; animation: slideDown 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: flex; flex-direction: column; gap: 6px;
     }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     .ai-scanner-header { display: flex; align-items: center; justify-content: space-between; }
     .ai-title { font-size: 11px; font-weight: 800; color: #1a73e8; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -741,16 +700,35 @@
     /* ═══════════════════════════════════════════
        SECTION 5: TEMPLATE MANAGER & BOTTOM ROW
        ═══════════════════════════════════════════ */
-    #vnpt-template-section { border-top: 1px solid var(--vnpt-border); margin-top: 4px; padding-top: 4px; }
-    .bottom-export-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 0 4px; }
+    .bottom-export-area {
+        display: flex; flex-direction: column;
+        border-top: 1px solid var(--vnpt-border);
+        background: rgba(255, 255, 255, 0.1);
+        padding-top: 2px;
+    }
+
+    #vnpt-template-section {
+        display: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .bottom-export-area:hover #vnpt-template-section {
+        display: block;
+        max-height: 400px;
+        margin-bottom: 8px;
+        padding-top: 4px;
+    }
+
+    .bottom-export-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0 4px; }
     .bottom-export-row .vnpt-control-group { margin-bottom: 0; flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; }
-    .bottom-export-row .vnpt-control-group input[type="text"] { height: 32px; padding: 6px 10px; border-radius: 8px; border: 1px solid #0055ffff; flex: 1; min-width: 0; }
+    .bottom-export-row .vnpt-control-group input[type="text"] { height: 24px; padding: 2px 8px; border-radius: 6px; border: 1px solid #1f5bd2ff; flex: 1; min-width: 0; font-size: 11px; }
     
     .btn-upload-local {
         display: inline-flex; align-items: center; justify-content: center;
-        width: 32px; height: 32px; border-radius: 8px;
+        width: 24px; height: 24px; border-radius: 6px;
         background: rgba(0,0,0,0.04); border: 1px solid #dadce0;
-        font-size: 15px; cursor: pointer; transition: all 0.2s;
+        font-size: 12px; cursor: pointer; transition: all 0.2s;
         color: #5f6368; box-sizing: border-box;
         flex-shrink: 0;
     }
@@ -759,7 +737,7 @@
         color: var(--vnpt-primary); transform: scale(1.05);
     }
     
-    .vnpt-control-group .btn-export { flex: 0 0 auto; height: 32px; margin: 0; border-radius: 8px; background: var(--vnpt-primary-grad); color: white; border: none; font-weight: 800; padding: 0 16px; cursor: pointer; }
+    .vnpt-control-group .btn-export { flex: 0 0 auto; height: 24px; margin: 0; border-radius: 6px; background: var(--vnpt-primary-grad); color: white; border: none; font-weight: 800; font-size: 11px; padding: 0 12px; cursor: pointer; }
     .vnpt-control-group .btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
 
     #vnpt-btn-export-txt { color: #00695c; border-color: rgba(0, 105, 92, 0.3); }
@@ -1059,7 +1037,7 @@
       return true;
     }
   });
-  const version$4 = "1.6.28";
+  const version$4 = "1.6.29";
   const pkg = {
     version: version$4
   };
@@ -1363,53 +1341,10 @@
       cache.clear();
     }
   };
-  const storage$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const storage = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     Storage
   }, Symbol.toStringTag, { value: "Module" }));
-  const localAdapter = {
-    /**
-     * Read a file and return its content in the specified format
-     * @param {File|Blob} file 
-     * @param {string} type - 'arraybuffer', 'base64', 'text', 'dataurl'
-     * @returns {Promise<any>}
-     */
-    download(file, type = "arraybuffer") {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          let result = e.target.result;
-          if (type === "base64" && typeof result === "string") {
-            result = result.split(",")[1] || result;
-          }
-          resolve(result);
-        };
-        reader.onerror = (err) => reject(err);
-        switch (type.toLowerCase()) {
-          case "arraybuffer":
-            reader.readAsArrayBuffer(file);
-            break;
-          case "base64":
-          case "dataurl":
-            reader.readAsDataURL(file);
-            break;
-          case "text":
-            reader.readAsText(file);
-            break;
-          default:
-            reject(new Error(`Unsupported read type: ${type}`));
-        }
-      });
-    },
-    /**
-     * For local, upload just means reading the file to a serializable format
-     * @param {File} file 
-     * @returns {Promise<string>} base64 data
-     */
-    async upload(file) {
-      return this.download(file, "base64");
-    }
-  };
   const getDefaultsFromPostinstall = () => void 0;
   var define_process_env_default = {};
   /**
@@ -3804,22 +3739,6 @@ ${this.customData.serverResponse}`;
     const message = "An unknown error occurred, please check the error payload for server response.";
     return new StorageError(StorageErrorCode.UNKNOWN, message);
   }
-  function objectNotFound(path) {
-    return new StorageError(StorageErrorCode.OBJECT_NOT_FOUND, "Object '" + path + "' does not exist.");
-  }
-  function quotaExceeded(bucket) {
-    return new StorageError(StorageErrorCode.QUOTA_EXCEEDED, "Quota for bucket '" + bucket + "' exceeded, please view quota on https://firebase.google.com/pricing/.");
-  }
-  function unauthenticated() {
-    const message = "User is not authenticated, please authenticate using Firebase Authentication and try again.";
-    return new StorageError(StorageErrorCode.UNAUTHENTICATED, message);
-  }
-  function unauthorizedApp() {
-    return new StorageError(StorageErrorCode.UNAUTHORIZED_APP, "This app does not have permission to access Firebase Storage on this project.");
-  }
-  function unauthorized(path) {
-    return new StorageError(StorageErrorCode.UNAUTHORIZED, "User does not have permission to access '" + path + "'.");
-  }
   function retryLimitExceeded() {
     return new StorageError(StorageErrorCode.RETRY_LIMIT_EXCEEDED, "Max retry time for operation exceeded, please try again.");
   }
@@ -3832,18 +3751,6 @@ ${this.customData.serverResponse}`;
   function invalidDefaultBucket(bucket) {
     return new StorageError(StorageErrorCode.INVALID_DEFAULT_BUCKET, "Invalid default bucket '" + bucket + "'.");
   }
-  function noDefaultBucket() {
-    return new StorageError(StorageErrorCode.NO_DEFAULT_BUCKET, "No default bucket found. Did you set the '" + CONFIG_STORAGE_BUCKET_KEY + "' property when initializing the app?");
-  }
-  function cannotSliceBlob() {
-    return new StorageError(StorageErrorCode.CANNOT_SLICE_BLOB, "Cannot slice blob for upload. Please retry the upload.");
-  }
-  function noDownloadURL() {
-    return new StorageError(StorageErrorCode.NO_DOWNLOAD_URL, "The given file does not have any download URLs.");
-  }
-  function missingPolyFill(polyFill) {
-    return new StorageError(StorageErrorCode.UNSUPPORTED_ENVIRONMENT, `${polyFill} is missing. Make sure to install the required polyfills. See https://firebase.google.com/docs/web/environments-js-sdk#polyfills for more information.`);
-  }
   function invalidArgument(message) {
     return new StorageError(StorageErrorCode.INVALID_ARGUMENT, message);
   }
@@ -3852,12 +3759,6 @@ ${this.customData.serverResponse}`;
   }
   function invalidRootOperation(name2) {
     return new StorageError(StorageErrorCode.INVALID_ROOT_OPERATION, "The operation '" + name2 + "' cannot be performed on a root reference, create a non-root reference using child, such as .child('file.png').");
-  }
-  function invalidFormat(format, message) {
-    return new StorageError(StorageErrorCode.INVALID_FORMAT, "String does not match format '" + format + "': " + message);
-  }
-  function internalError(message) {
-    throw new StorageError(StorageErrorCode.INTERNAL_ERROR, "Internal error: " + message);
   }
   /**
    * @license
@@ -4097,18 +3998,6 @@ ${this.customData.serverResponse}`;
   function isJustDef(p2) {
     return p2 !== void 0;
   }
-  function isNonArrayObject(p2) {
-    return typeof p2 === "object" && !Array.isArray(p2);
-  }
-  function isString(p2) {
-    return typeof p2 === "string" || p2 instanceof String;
-  }
-  function isNativeBlob(p2) {
-    return isNativeBlobDefined() && p2 instanceof Blob;
-  }
-  function isNativeBlobDefined() {
-    return typeof Blob !== "undefined";
-  }
   function validateNumber(argument, minValue, maxValue, value) {
     if (value < minValue) {
       throw invalidArgument(`Invalid value for '${argument}'. Expected ${minValue} or greater.`);
@@ -4116,29 +4005,6 @@ ${this.customData.serverResponse}`;
     if (value > maxValue) {
       throw invalidArgument(`Invalid value for '${argument}'. Expected ${maxValue} or less.`);
     }
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  function makeUrl(urlPart, host, protocol) {
-    let origin = host;
-    if (protocol == null) {
-      origin = `https://${host}`;
-    }
-    return `${protocol}://${origin}/v0${urlPart}`;
   }
   function makeQueryString(params) {
     const encode = encodeURIComponent;
@@ -4372,388 +4238,6 @@ ${this.customData.serverResponse}`;
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  function getBlobBuilder() {
-    if (typeof BlobBuilder !== "undefined") {
-      return BlobBuilder;
-    } else if (typeof WebKitBlobBuilder !== "undefined") {
-      return WebKitBlobBuilder;
-    } else {
-      return void 0;
-    }
-  }
-  function getBlob$1(...args) {
-    const BlobBuilder2 = getBlobBuilder();
-    if (BlobBuilder2 !== void 0) {
-      const bb = new BlobBuilder2();
-      for (let i2 = 0; i2 < args.length; i2++) {
-        bb.append(args[i2]);
-      }
-      return bb.getBlob();
-    } else {
-      if (isNativeBlobDefined()) {
-        return new Blob(args);
-      } else {
-        throw new StorageError(StorageErrorCode.UNSUPPORTED_ENVIRONMENT, "This browser doesn't seem to support creating Blobs");
-      }
-    }
-  }
-  function sliceBlob(blob2, start2, end) {
-    if (blob2.webkitSlice) {
-      return blob2.webkitSlice(start2, end);
-    } else if (blob2.mozSlice) {
-      return blob2.mozSlice(start2, end);
-    } else if (blob2.slice) {
-      return blob2.slice(start2, end);
-    }
-    return null;
-  }
-  /**
-   * @license
-   * Copyright 2021 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  function decodeBase64(encoded) {
-    if (typeof atob === "undefined") {
-      throw missingPolyFill("base-64");
-    }
-    return atob(encoded);
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  const StringFormat = {
-    /**
-     * Indicates the string should be interpreted "raw", that is, as normal text.
-     * The string will be interpreted as UTF-16, then uploaded as a UTF-8 byte
-     * sequence.
-     * Example: The string 'Hello! \\ud83d\\ude0a' becomes the byte sequence
-     * 48 65 6c 6c 6f 21 20 f0 9f 98 8a
-     */
-    RAW: "raw",
-    /**
-     * Indicates the string should be interpreted as base64-encoded data.
-     * Padding characters (trailing '='s) are optional.
-     * Example: The string 'rWmO++E6t7/rlw==' becomes the byte sequence
-     * ad 69 8e fb e1 3a b7 bf eb 97
-     */
-    BASE64: "base64",
-    /**
-     * Indicates the string should be interpreted as base64url-encoded data.
-     * Padding characters (trailing '='s) are optional.
-     * Example: The string 'rWmO--E6t7_rlw==' becomes the byte sequence
-     * ad 69 8e fb e1 3a b7 bf eb 97
-     */
-    BASE64URL: "base64url",
-    /**
-     * Indicates the string is a data URL, such as one obtained from
-     * canvas.toDataURL().
-     * Example: the string 'data:application/octet-stream;base64,aaaa'
-     * becomes the byte sequence
-     * 69 a6 9a
-     * (the content-type "application/octet-stream" is also applied, but can
-     * be overridden in the metadata object).
-     */
-    DATA_URL: "data_url"
-  };
-  class StringData {
-    constructor(data, contentType) {
-      this.data = data;
-      this.contentType = contentType || null;
-    }
-  }
-  function dataFromString(format, stringData) {
-    switch (format) {
-      case StringFormat.RAW:
-        return new StringData(utf8Bytes_(stringData));
-      case StringFormat.BASE64:
-      case StringFormat.BASE64URL:
-        return new StringData(base64Bytes_(format, stringData));
-      case StringFormat.DATA_URL:
-        return new StringData(dataURLBytes_(stringData), dataURLContentType_(stringData));
-    }
-    throw unknown();
-  }
-  function utf8Bytes_(value) {
-    const b2 = [];
-    for (let i2 = 0; i2 < value.length; i2++) {
-      let c = value.charCodeAt(i2);
-      if (c <= 127) {
-        b2.push(c);
-      } else {
-        if (c <= 2047) {
-          b2.push(192 | c >> 6, 128 | c & 63);
-        } else {
-          if ((c & 64512) === 55296) {
-            const valid = i2 < value.length - 1 && (value.charCodeAt(i2 + 1) & 64512) === 56320;
-            if (!valid) {
-              b2.push(239, 191, 189);
-            } else {
-              const hi = c;
-              const lo = value.charCodeAt(++i2);
-              c = 65536 | (hi & 1023) << 10 | lo & 1023;
-              b2.push(240 | c >> 18, 128 | c >> 12 & 63, 128 | c >> 6 & 63, 128 | c & 63);
-            }
-          } else {
-            if ((c & 64512) === 56320) {
-              b2.push(239, 191, 189);
-            } else {
-              b2.push(224 | c >> 12, 128 | c >> 6 & 63, 128 | c & 63);
-            }
-          }
-        }
-      }
-    }
-    return new Uint8Array(b2);
-  }
-  function percentEncodedBytes_(value) {
-    let decoded;
-    try {
-      decoded = decodeURIComponent(value);
-    } catch (e) {
-      throw invalidFormat(StringFormat.DATA_URL, "Malformed data URL.");
-    }
-    return utf8Bytes_(decoded);
-  }
-  function base64Bytes_(format, value) {
-    switch (format) {
-      case StringFormat.BASE64: {
-        const hasMinus = value.indexOf("-") !== -1;
-        const hasUnder = value.indexOf("_") !== -1;
-        if (hasMinus || hasUnder) {
-          const invalidChar = hasMinus ? "-" : "_";
-          throw invalidFormat(format, "Invalid character '" + invalidChar + "' found: is it base64url encoded?");
-        }
-        break;
-      }
-      case StringFormat.BASE64URL: {
-        const hasPlus = value.indexOf("+") !== -1;
-        const hasSlash = value.indexOf("/") !== -1;
-        if (hasPlus || hasSlash) {
-          const invalidChar = hasPlus ? "+" : "/";
-          throw invalidFormat(format, "Invalid character '" + invalidChar + "' found: is it base64 encoded?");
-        }
-        value = value.replace(/-/g, "+").replace(/_/g, "/");
-        break;
-      }
-    }
-    let bytes;
-    try {
-      bytes = decodeBase64(value);
-    } catch (e) {
-      if (e.message.includes("polyfill")) {
-        throw e;
-      }
-      throw invalidFormat(format, "Invalid character found");
-    }
-    const array = new Uint8Array(bytes.length);
-    for (let i2 = 0; i2 < bytes.length; i2++) {
-      array[i2] = bytes.charCodeAt(i2);
-    }
-    return array;
-  }
-  class DataURLParts {
-    constructor(dataURL) {
-      this.base64 = false;
-      this.contentType = null;
-      const matches = dataURL.match(/^data:([^,]+)?,/);
-      if (matches === null) {
-        throw invalidFormat(StringFormat.DATA_URL, "Must be formatted 'data:[<mediatype>][;base64],<data>");
-      }
-      const middle = matches[1] || null;
-      if (middle != null) {
-        this.base64 = endsWith$1(middle, ";base64");
-        this.contentType = this.base64 ? middle.substring(0, middle.length - ";base64".length) : middle;
-      }
-      this.rest = dataURL.substring(dataURL.indexOf(",") + 1);
-    }
-  }
-  function dataURLBytes_(dataUrl) {
-    const parts = new DataURLParts(dataUrl);
-    if (parts.base64) {
-      return base64Bytes_(StringFormat.BASE64, parts.rest);
-    } else {
-      return percentEncodedBytes_(parts.rest);
-    }
-  }
-  function dataURLContentType_(dataUrl) {
-    const parts = new DataURLParts(dataUrl);
-    return parts.contentType;
-  }
-  function endsWith$1(s, end) {
-    const longEnough = s.length >= end.length;
-    if (!longEnough) {
-      return false;
-    }
-    return s.substring(s.length - end.length) === end;
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  class FbsBlob {
-    constructor(data, elideCopy) {
-      let size = 0;
-      let blobType = "";
-      if (isNativeBlob(data)) {
-        this.data_ = data;
-        size = data.size;
-        blobType = data.type;
-      } else if (data instanceof ArrayBuffer) {
-        if (elideCopy) {
-          this.data_ = new Uint8Array(data);
-        } else {
-          this.data_ = new Uint8Array(data.byteLength);
-          this.data_.set(new Uint8Array(data));
-        }
-        size = this.data_.length;
-      } else if (data instanceof Uint8Array) {
-        if (elideCopy) {
-          this.data_ = data;
-        } else {
-          this.data_ = new Uint8Array(data.length);
-          this.data_.set(data);
-        }
-        size = data.length;
-      }
-      this.size_ = size;
-      this.type_ = blobType;
-    }
-    size() {
-      return this.size_;
-    }
-    type() {
-      return this.type_;
-    }
-    slice(startByte, endByte) {
-      if (isNativeBlob(this.data_)) {
-        const realBlob = this.data_;
-        const sliced = sliceBlob(realBlob, startByte, endByte);
-        if (sliced === null) {
-          return null;
-        }
-        return new FbsBlob(sliced);
-      } else {
-        const slice = new Uint8Array(this.data_.buffer, startByte, endByte - startByte);
-        return new FbsBlob(slice, true);
-      }
-    }
-    static getBlob(...args) {
-      if (isNativeBlobDefined()) {
-        const blobby = args.map((val) => {
-          if (val instanceof FbsBlob) {
-            return val.data_;
-          } else {
-            return val;
-          }
-        });
-        return new FbsBlob(getBlob$1.apply(null, blobby));
-      } else {
-        const uint8Arrays = args.map((val) => {
-          if (isString(val)) {
-            return dataFromString(StringFormat.RAW, val).data;
-          } else {
-            return val.data_;
-          }
-        });
-        let finalLength = 0;
-        uint8Arrays.forEach((array) => {
-          finalLength += array.byteLength;
-        });
-        const merged = new Uint8Array(finalLength);
-        let index = 0;
-        uint8Arrays.forEach((array) => {
-          for (let i2 = 0; i2 < array.length; i2++) {
-            merged[index++] = array[i2];
-          }
-        });
-        return new FbsBlob(merged, true);
-      }
-    }
-    uploadData() {
-      return this.data_;
-    }
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  function jsonObjectOrNull(s) {
-    let obj;
-    try {
-      obj = JSON.parse(s);
-    } catch (e) {
-      return null;
-    }
-    if (isNonArrayObject(obj)) {
-      return obj;
-    } else {
-      return null;
-    }
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
   function parent(path) {
     if (path.length === 0) {
       return null;
@@ -4765,14 +4249,6 @@ ${this.customData.serverResponse}`;
     const newPath = path.slice(0, index);
     return newPath;
   }
-  function child(path, childPath) {
-    const canonicalChildPath = childPath.split("/").filter((component) => component.length > 0).join("/");
-    if (path.length === 0) {
-      return canonicalChildPath;
-    } else {
-      return path + "/" + canonicalChildPath;
-    }
-  }
   function lastComponent(path) {
     const index = path.lastIndexOf("/", path.length - 2);
     if (index === -1) {
@@ -4780,389 +4256,6 @@ ${this.customData.serverResponse}`;
     } else {
       return path.slice(index + 1);
     }
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  function noXform_(metadata, value) {
-    return value;
-  }
-  class Mapping {
-    constructor(server, local, writable, xform) {
-      this.server = server;
-      this.local = local || server;
-      this.writable = !!writable;
-      this.xform = xform || noXform_;
-    }
-  }
-  let mappings_ = null;
-  function xformPath(fullPath) {
-    if (!isString(fullPath) || fullPath.length < 2) {
-      return fullPath;
-    } else {
-      return lastComponent(fullPath);
-    }
-  }
-  function getMappings() {
-    if (mappings_) {
-      return mappings_;
-    }
-    const mappings = [];
-    mappings.push(new Mapping("bucket"));
-    mappings.push(new Mapping("generation"));
-    mappings.push(new Mapping("metageneration"));
-    mappings.push(new Mapping("name", "fullPath", true));
-    function mappingsXformPath(_metadata, fullPath) {
-      return xformPath(fullPath);
-    }
-    const nameMapping = new Mapping("name");
-    nameMapping.xform = mappingsXformPath;
-    mappings.push(nameMapping);
-    function xformSize(_metadata, size) {
-      if (size !== void 0) {
-        return Number(size);
-      } else {
-        return size;
-      }
-    }
-    const sizeMapping = new Mapping("size");
-    sizeMapping.xform = xformSize;
-    mappings.push(sizeMapping);
-    mappings.push(new Mapping("timeCreated"));
-    mappings.push(new Mapping("updated"));
-    mappings.push(new Mapping("md5Hash", null, true));
-    mappings.push(new Mapping("cacheControl", null, true));
-    mappings.push(new Mapping("contentDisposition", null, true));
-    mappings.push(new Mapping("contentEncoding", null, true));
-    mappings.push(new Mapping("contentLanguage", null, true));
-    mappings.push(new Mapping("contentType", null, true));
-    mappings.push(new Mapping("metadata", "customMetadata", true));
-    mappings_ = mappings;
-    return mappings_;
-  }
-  function addRef(metadata, service) {
-    function generateRef() {
-      const bucket = metadata["bucket"];
-      const path = metadata["fullPath"];
-      const loc = new Location(bucket, path);
-      return service._makeStorageReference(loc);
-    }
-    Object.defineProperty(metadata, "ref", { get: generateRef });
-  }
-  function fromResource(service, resource, mappings) {
-    const metadata = {};
-    metadata["type"] = "file";
-    const len = mappings.length;
-    for (let i2 = 0; i2 < len; i2++) {
-      const mapping = mappings[i2];
-      metadata[mapping.local] = mapping.xform(metadata, resource[mapping.server]);
-    }
-    addRef(metadata, service);
-    return metadata;
-  }
-  function fromResourceString(service, resourceString, mappings) {
-    const obj = jsonObjectOrNull(resourceString);
-    if (obj === null) {
-      return null;
-    }
-    const resource = obj;
-    return fromResource(service, resource, mappings);
-  }
-  function downloadUrlFromResourceString(metadata, resourceString, host, protocol) {
-    const obj = jsonObjectOrNull(resourceString);
-    if (obj === null) {
-      return null;
-    }
-    if (!isString(obj["downloadTokens"])) {
-      return null;
-    }
-    const tokens = obj["downloadTokens"];
-    if (tokens.length === 0) {
-      return null;
-    }
-    const encode = encodeURIComponent;
-    const tokensList = tokens.split(",");
-    const urls = tokensList.map((token) => {
-      const bucket = metadata["bucket"];
-      const path = metadata["fullPath"];
-      const urlPart = "/b/" + encode(bucket) + "/o/" + encode(path);
-      const base = makeUrl(urlPart, host, protocol);
-      const queryString = makeQueryString({
-        alt: "media",
-        token
-      });
-      return base + queryString;
-    });
-    return urls[0];
-  }
-  function toResourceString(metadata, mappings) {
-    const resource = {};
-    const len = mappings.length;
-    for (let i2 = 0; i2 < len; i2++) {
-      const mapping = mappings[i2];
-      if (mapping.writable) {
-        resource[mapping.server] = metadata[mapping.local];
-      }
-    }
-    return JSON.stringify(resource);
-  }
-  class RequestInfo {
-    constructor(url, method, handler, timeout) {
-      this.url = url;
-      this.method = method;
-      this.handler = handler;
-      this.timeout = timeout;
-      this.urlParams = {};
-      this.headers = {};
-      this.body = null;
-      this.errorHandler = null;
-      this.progressCallback = null;
-      this.successCodes = [200];
-      this.additionalRetryCodes = [];
-    }
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  function handlerCheck(cndn) {
-    if (!cndn) {
-      throw unknown();
-    }
-  }
-  function metadataHandler(service, mappings) {
-    function handler(xhr, text) {
-      const metadata = fromResourceString(service, text, mappings);
-      handlerCheck(metadata !== null);
-      return metadata;
-    }
-    return handler;
-  }
-  function downloadUrlHandler(service, mappings) {
-    function handler(xhr, text) {
-      const metadata = fromResourceString(service, text, mappings);
-      handlerCheck(metadata !== null);
-      return downloadUrlFromResourceString(metadata, text, service.host, service._protocol);
-    }
-    return handler;
-  }
-  function sharedErrorHandler(location2) {
-    function errorHandler(xhr, err) {
-      let newErr;
-      if (xhr.getStatus() === 401) {
-        if (
-          // This exact message string is the only consistent part of the
-          // server's error response that identifies it as an App Check error.
-          xhr.getErrorText().includes("Firebase App Check token is invalid")
-        ) {
-          newErr = unauthorizedApp();
-        } else {
-          newErr = unauthenticated();
-        }
-      } else {
-        if (xhr.getStatus() === 402) {
-          newErr = quotaExceeded(location2.bucket);
-        } else {
-          if (xhr.getStatus() === 403) {
-            newErr = unauthorized(location2.path);
-          } else {
-            newErr = err;
-          }
-        }
-      }
-      newErr.status = xhr.getStatus();
-      newErr.serverResponse = err.serverResponse;
-      return newErr;
-    }
-    return errorHandler;
-  }
-  function objectErrorHandler(location2) {
-    const shared = sharedErrorHandler(location2);
-    function errorHandler(xhr, err) {
-      let newErr = shared(xhr, err);
-      if (xhr.getStatus() === 404) {
-        newErr = objectNotFound(location2.path);
-      }
-      newErr.serverResponse = err.serverResponse;
-      return newErr;
-    }
-    return errorHandler;
-  }
-  function getDownloadUrl(service, location2, mappings) {
-    const urlPart = location2.fullServerUrl();
-    const url = makeUrl(urlPart, service.host, service._protocol);
-    const method = "GET";
-    const timeout = service.maxOperationRetryTime;
-    const requestInfo = new RequestInfo(url, method, downloadUrlHandler(service, mappings), timeout);
-    requestInfo.errorHandler = objectErrorHandler(location2);
-    return requestInfo;
-  }
-  function determineContentType_(metadata, blob2) {
-    return metadata && metadata["contentType"] || blob2 && blob2.type() || "application/octet-stream";
-  }
-  function metadataForUpload_(location2, blob2, metadata) {
-    const metadataClone = Object.assign({}, metadata);
-    metadataClone["fullPath"] = location2.path;
-    metadataClone["size"] = blob2.size();
-    if (!metadataClone["contentType"]) {
-      metadataClone["contentType"] = determineContentType_(null, blob2);
-    }
-    return metadataClone;
-  }
-  function multipartUpload(service, location2, mappings, blob2, metadata) {
-    const urlPart = location2.bucketOnlyServerUrl();
-    const headers = {
-      "X-Goog-Upload-Protocol": "multipart"
-    };
-    function genBoundary() {
-      let str = "";
-      for (let i2 = 0; i2 < 2; i2++) {
-        str = str + Math.random().toString().slice(2);
-      }
-      return str;
-    }
-    const boundary = genBoundary();
-    headers["Content-Type"] = "multipart/related; boundary=" + boundary;
-    const metadata_ = metadataForUpload_(location2, blob2, metadata);
-    const metadataString = toResourceString(metadata_, mappings);
-    const preBlobPart = "--" + boundary + "\r\nContent-Type: application/json; charset=utf-8\r\n\r\n" + metadataString + "\r\n--" + boundary + "\r\nContent-Type: " + metadata_["contentType"] + "\r\n\r\n";
-    const postBlobPart = "\r\n--" + boundary + "--";
-    const body = FbsBlob.getBlob(preBlobPart, blob2, postBlobPart);
-    if (body === null) {
-      throw cannotSliceBlob();
-    }
-    const urlParams = { name: metadata_["fullPath"] };
-    const url = makeUrl(urlPart, service.host, service._protocol);
-    const method = "POST";
-    const timeout = service.maxUploadRetryTime;
-    const requestInfo = new RequestInfo(url, method, metadataHandler(service, mappings), timeout);
-    requestInfo.urlParams = urlParams;
-    requestInfo.headers = headers;
-    requestInfo.body = body.uploadData();
-    requestInfo.errorHandler = sharedErrorHandler(location2);
-    return requestInfo;
-  }
-  class XhrConnection {
-    constructor() {
-      this.sent_ = false;
-      this.xhr_ = new XMLHttpRequest();
-      this.initXhr();
-      this.errorCode_ = ErrorCode.NO_ERROR;
-      this.sendPromise_ = new Promise((resolve) => {
-        this.xhr_.addEventListener("abort", () => {
-          this.errorCode_ = ErrorCode.ABORT;
-          resolve();
-        });
-        this.xhr_.addEventListener("error", () => {
-          this.errorCode_ = ErrorCode.NETWORK_ERROR;
-          resolve();
-        });
-        this.xhr_.addEventListener("load", () => {
-          resolve();
-        });
-      });
-    }
-    send(url, method, isUsingEmulator, body, headers) {
-      if (this.sent_) {
-        throw internalError("cannot .send() more than once");
-      }
-      if (isCloudWorkstation(url) && isUsingEmulator) {
-        this.xhr_.withCredentials = true;
-      }
-      this.sent_ = true;
-      this.xhr_.open(method, url, true);
-      if (headers !== void 0) {
-        for (const key2 in headers) {
-          if (headers.hasOwnProperty(key2)) {
-            this.xhr_.setRequestHeader(key2, headers[key2].toString());
-          }
-        }
-      }
-      if (body !== void 0) {
-        this.xhr_.send(body);
-      } else {
-        this.xhr_.send();
-      }
-      return this.sendPromise_;
-    }
-    getErrorCode() {
-      if (!this.sent_) {
-        throw internalError("cannot .getErrorCode() before sending");
-      }
-      return this.errorCode_;
-    }
-    getStatus() {
-      if (!this.sent_) {
-        throw internalError("cannot .getStatus() before sending");
-      }
-      try {
-        return this.xhr_.status;
-      } catch (e) {
-        return -1;
-      }
-    }
-    getResponse() {
-      if (!this.sent_) {
-        throw internalError("cannot .getResponse() before sending");
-      }
-      return this.xhr_.response;
-    }
-    getErrorText() {
-      if (!this.sent_) {
-        throw internalError("cannot .getErrorText() before sending");
-      }
-      return this.xhr_.statusText;
-    }
-    /** Aborts the request. */
-    abort() {
-      this.xhr_.abort();
-    }
-    getResponseHeader(header) {
-      return this.xhr_.getResponseHeader(header);
-    }
-    addUploadProgressListener(listener) {
-      if (this.xhr_.upload != null) {
-        this.xhr_.upload.addEventListener("progress", listener);
-      }
-    }
-    removeUploadProgressListener(listener) {
-      if (this.xhr_.upload != null) {
-        this.xhr_.upload.removeEventListener("progress", listener);
-      }
-    }
-  }
-  class XhrTextConnection extends XhrConnection {
-    initXhr() {
-      this.xhr_.responseType = "text";
-    }
-  }
-  function newTextConnection() {
-    return new XhrTextConnection();
   }
   /**
    * @license
@@ -5253,84 +4346,6 @@ ${this.customData.serverResponse}`;
       }
     }
   };
-  function uploadBytes$1(ref2, data, metadata) {
-    ref2._throwIfRoot("uploadBytes");
-    const requestInfo = multipartUpload(ref2.storage, ref2._location, getMappings(), new FbsBlob(data, true), metadata);
-    return ref2.storage.makeRequestWithTokens(requestInfo, newTextConnection).then((finalMetadata) => {
-      return {
-        metadata: finalMetadata,
-        ref: ref2
-      };
-    });
-  }
-  function getDownloadURL$1(ref2) {
-    ref2._throwIfRoot("getDownloadURL");
-    const requestInfo = getDownloadUrl(ref2.storage, ref2._location, getMappings());
-    return ref2.storage.makeRequestWithTokens(requestInfo, newTextConnection).then((url) => {
-      if (url === null) {
-        throw noDownloadURL();
-      }
-      return url;
-    });
-  }
-  function _getChild$1(ref2, childPath) {
-    const newPath = child(ref2._location.path, childPath);
-    const location2 = new Location(ref2._location.bucket, newPath);
-    return new Reference$1(ref2.storage, location2);
-  }
-  /**
-   * @license
-   * Copyright 2017 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  function isUrl(path) {
-    return /^[A-Za-z]+:\/\//.test(path);
-  }
-  function refFromURL(service, url) {
-    return new Reference$1(service, url);
-  }
-  function refFromPath(ref2, path) {
-    if (ref2 instanceof FirebaseStorageImpl) {
-      const service = ref2;
-      if (service._bucket == null) {
-        throw noDefaultBucket();
-      }
-      const reference = new Reference$1(service, service._bucket);
-      if (path != null) {
-        return refFromPath(reference, path);
-      } else {
-        return reference;
-      }
-    } else {
-      if (path !== void 0) {
-        return _getChild$1(ref2, path);
-      } else {
-        return ref2;
-      }
-    }
-  }
-  function ref$1(serviceOrRef, pathOrUrl) {
-    if (pathOrUrl && isUrl(pathOrUrl)) {
-      if (serviceOrRef instanceof FirebaseStorageImpl) {
-        return refFromURL(serviceOrRef, pathOrUrl);
-      } else {
-        throw invalidArgument("To use ref(service, url), the first argument must be a Storage instance.");
-      }
-    } else {
-      return refFromPath(serviceOrRef, pathOrUrl);
-    }
-  }
   function extractBucket(host, config) {
     const bucketString = config?.[CONFIG_STORAGE_BUCKET_KEY];
     if (bucketString == null) {
@@ -5506,18 +4521,6 @@ ${this.customData.serverResponse}`;
    * limitations under the License.
    */
   const STORAGE_TYPE = "storage";
-  function uploadBytes(ref2, data, metadata) {
-    ref2 = getModularInstance(ref2);
-    return uploadBytes$1(ref2, data, metadata);
-  }
-  function getDownloadURL(ref2) {
-    ref2 = getModularInstance(ref2);
-    return getDownloadURL$1(ref2);
-  }
-  function ref(serviceOrRef, pathOrUrl) {
-    serviceOrRef = getModularInstance(serviceOrRef);
-    return ref$1(serviceOrRef, pathOrUrl);
-  }
   function getStorage(app2 = getApp(), bucketUrl) {
     app2 = getModularInstance(app2);
     const storageProvider = _getProvider(app2, STORAGE_TYPE);
@@ -17193,85 +16196,7 @@ ${this.customData.serverResponse}`;
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const storage$1 = getStorage(app);
-  const firebaseAdapter = {
-    /**
-     * Upload data to Firebase Storage
-     * @param {File|Blob|ArrayBuffer} data 
-     * @param {object} options 
-     * @param {string} options.path - Destination path in storage
-     * @param {string} options.contentType - Optional content type
-     * @returns {Promise<string>} Download URL
-     */
-    async upload(data, options = {}) {
-      if (!options.path) throw new Error("Path is required for Firebase Storage upload");
-      const storageRef = ref(storage$1, options.path);
-      const metadata = options.contentType ? { contentType: options.contentType } : {};
-      await uploadBytes(storageRef, data, metadata);
-      return await getDownloadURL(storageRef);
-    },
-    /**
-     * Download data from Firebase Storage
-     * @param {string} source - The path or URL of the file
-     * @param {string} type - 'blob', 'arraybuffer', etc (handled via fetch)
-     * @returns {Promise<any>}
-     */
-    async download(source, type = "blob") {
-      let url = source;
-      if (!source.startsWith("http")) {
-        const storageRef = ref(storage$1, source);
-        url = await getDownloadURL(storageRef);
-      }
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Failed to download from ${url}`);
-      switch (type.toLowerCase()) {
-        case "blob":
-          return await response.blob();
-        case "arraybuffer":
-          return await response.arrayBuffer();
-        case "text":
-          return await response.text();
-        case "json":
-          return await response.json();
-        default:
-          return await response.blob();
-      }
-    }
-  };
-  const adapters = {
-    local: localAdapter,
-    firebase: firebaseAdapter
-  };
-  const storage = {
-    /**
-     * Get adapter by name
-     * @param {string} type 
-     * @returns {object}
-     */
-    getAdapter(type) {
-      const adapter = adapters[type];
-      if (!adapter) throw new Error(`Storage adapter not found: ${type}`);
-      return adapter;
-    },
-    /**
-     * Unified upload
-     * @param {string} type - 'local' or 'firebase'
-     * @param {any} data 
-     * @param {object} options 
-     */
-    async upload(type, data, options = {}) {
-      return await this.getAdapter(type).upload(data, options);
-    },
-    /**
-     * Unified download
-     * @param {string} type - 'local' or 'firebase'
-     * @param {any} source 
-     * @param {object} options 
-     */
-    async download(type, source, options = {}) {
-      return await this.getAdapter(type).download(source, options.type || "arraybuffer");
-    }
-  };
+  getStorage(app);
   const LOCAL_TEMPLATE_TYPES = /* @__PURE__ */ new Set(["local", "local_base64", "local_idb", "firebase"]);
   function loadTemplates() {
     try {
@@ -17315,20 +16240,11 @@ ${this.customData.serverResponse}`;
   function renderTemplateManager(container, onSelectTemplate, currentActiveName = null) {
     let mainWrap = container.querySelector(".vnpt-template-manager-inner");
     let localListWrapper;
-    let sharedListWrapper;
     let btnWrap;
     if (!mainWrap) {
       container.innerHTML = "";
       mainWrap = document.createElement("div");
       mainWrap.className = "vnpt-template-manager-inner";
-      const sharedHeader = document.createElement("div");
-      sharedHeader.style.cssText = "display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;";
-      sharedHeader.innerHTML = '<span style="font-size:11px;font-weight:700;color:#444;">Templates hệ thống</span>';
-      mainWrap.appendChild(sharedHeader);
-      sharedListWrapper = document.createElement("div");
-      sharedListWrapper.className = "vnpt-shared-list-container";
-      sharedListWrapper.style.cssText = "display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;";
-      mainWrap.appendChild(sharedListWrapper);
       const headerRow = document.createElement("div");
       headerRow.style.cssText = "display:flex;align-items:center;justify-content:space-between;margin-bottom:5px; border-top: 1px solid #eee; padding-top: 5px;";
       const title = document.createElement("span");
@@ -17346,60 +16262,12 @@ ${this.customData.serverResponse}`;
       mainWrap.appendChild(localListWrapper);
       container.appendChild(mainWrap);
     } else {
-      sharedListWrapper = mainWrap.querySelector(".vnpt-shared-list-container");
       localListWrapper = mainWrap.querySelector(".vnpt-local-list-container");
       btnWrap = mainWrap.querySelector(".vnpt-btn-wrap");
     }
     if (btnWrap) btnWrap.innerHTML = "";
     const titleEl = mainWrap.querySelector(".vnpt-title-main");
     renderLocalTemplates(localListWrapper, titleEl, onSelectTemplate, currentActiveName, container);
-    renderSharedTemplates(sharedListWrapper, onSelectTemplate, currentActiveName);
-  }
-  async function renderSharedTemplates(wrapper, onSelectTemplate, currentActiveName) {
-    const { FirebaseService: FirebaseService2 } = await __vitePreload(async () => {
-      const { FirebaseService: FirebaseService3 } = await Promise.resolve().then(() => firebaseService);
-      return { FirebaseService: FirebaseService3 };
-    }, false ? __VITE_PRELOAD__ : void 0);
-    const shared = await FirebaseService2.getSharedTemplates();
-    if (!shared || shared.length === 0) {
-      wrapper.innerHTML = '<div style="font-size:10px;color:#999;font-style:italic;padding:4px 12px;">Không có mẫu dùng chung.</div>';
-      return;
-    }
-    wrapper.innerHTML = "";
-    shared.forEach((tpl) => {
-      const row = createSharedTemplateRow(tpl, onSelectTemplate, currentActiveName);
-      wrapper.appendChild(row);
-    });
-  }
-  function createSharedTemplateRow(tpl, onSelectTemplate, currentActiveName) {
-    const row = document.createElement("div");
-    row.style.cssText = "display:flex;align-items:center;gap:4px;padding:3px 8px;background:#e3f2fd;border:1px solid #bbdefb;border-radius:15px;cursor:pointer;outline:none;transition:all 0.2s;";
-    if (tpl.name === currentActiveName) {
-      row.style.borderColor = "var(--vnpt-primary)";
-      row.style.background = "var(--vnpt-primary-light)";
-    }
-    row.title = tpl.description || tpl.name;
-    row.onclick = async () => {
-      try {
-        showToast(`⏳ Đang tải ${tpl.name}...`);
-        const arrayBuffer = await storage.download("firebase", tpl.path, { type: "arraybuffer" });
-        if (onSelectTemplate) onSelectTemplate(arrayBuffer, tpl.name);
-        showToast(`✅ Đã tải xong: ${tpl.name}`);
-        const container = document.getElementById("vnpt-template-manager");
-        renderTemplateManager(container, onSelectTemplate, tpl.name);
-      } catch (err) {
-        showToast(`Lỗi tải template: ${err.message}`, "#dc3545");
-      }
-    };
-    const badge = document.createElement("span");
-    badge.textContent = "CLOUD";
-    badge.style.cssText = "font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:#1976d2;color:#fff;";
-    const nameEl = document.createElement("span");
-    nameEl.textContent = tpl.name;
-    nameEl.style.cssText = "font-size:11px;font-weight:600;color:#0d47a1;white-space:nowrap;";
-    row.appendChild(badge);
-    row.appendChild(nameEl);
-    return row;
   }
   function renderLocalTemplates(wrapper, titleEl, onSelectTemplate, currentActiveName, container) {
     const templates = loadTemplates();
@@ -18010,11 +16878,29 @@ ${this.customData.serverResponse}`;
     }
     el.dispatchEvent(new Event("blur", eventOptions));
   }
+  function highlightElement(el, type = "success") {
+    if (!el) return;
+    const color = type === "success" ? "#28a745" : "#dc3545";
+    const originalTransition = el.style.transition;
+    const originalOutline = el.style.outline;
+    const originalBoxShadow = el.style.boxShadow;
+    el.style.transition = "all 0.3s ease";
+    el.style.outline = `2px solid ${color}`;
+    el.style.boxShadow = `0 0 10px ${color}`;
+    setTimeout(() => {
+      el.style.outline = originalOutline;
+      el.style.boxShadow = originalBoxShadow;
+      setTimeout(() => {
+        el.style.transition = originalTransition;
+      }, 300);
+    }, 1e3);
+  }
   function syncSetValue(el, value) {
     if (!el || value === void 0 || value === null) return false;
     let isSuccess = false;
+    const actualEl = el.tagName === "NG-SELECT2" ? el.querySelector("select") || el : el;
     if (el.tagName === "SELECT" || el.tagName === "NG-SELECT2") {
-      const selectEl = el.tagName === "NG-SELECT2" ? el.querySelector("select") || el : el;
+      const selectEl = actualEl;
       const options = Array.from(selectEl.options || []);
       const optionTexts = options.map((o) => o.text.trim());
       let searchVal = value.toString().trim();
@@ -18059,30 +16945,24 @@ ${this.customData.serverResponse}`;
         selectEl.value = value;
       }
       triggerCustom(selectEl);
+      if (isSuccess) highlightElement(el, "success");
       return isSuccess;
     } else {
       const addressGroup = getVNPTAddressGroup();
       const idLower = (el.id || el.name || el.getAttribute("formcontrolname") || "").toLowerCase();
-      const placeholderLower = (el.getAttribute("placeholder") || "").toLowerCase();
-      const isDuongField = addressGroup && el === addressGroup.duong || idLower.includes("duong") || idLower.includes("diachichitiet") || placeholderLower.includes("đường") || placeholderLower.includes("số nhà");
+      const isDuongField = addressGroup && el === addressGroup.duong || idLower.includes("duong") || idLower.includes("diachichitiet");
       if (isDuongField && typeof value === "string" && value.includes(",")) {
-        const oldVal = value;
         value = parseAddressComponents$1(value).street;
-        console.log(`[Sync] Phát hiện trường 'duong' (${idLower}), bóc tách địa chỉ: "${oldVal}" -> "${value}"`);
-      } else if (isDuongField) {
-        console.log(`[Sync] Trường 'duong' (${idLower}) nhận giá trị gốc (không có dấu phẩy): "${value}"`);
-      } else {
-        console.debug(`[Sync] Trường thường (${idLower}) nhận giá trị: "${value}"`);
       }
       const proto = el.tagName === "TEXTAREA" ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
       const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
-      console.debug(`[Sync] Ghi giá trị vào element {id: ${el.id}, name: ${el.name}}: "${value}"`);
       if (setter) {
         setter.call(el, value);
       } else {
         el.value = value;
       }
       isSuccess = true;
+      highlightElement(el, "success");
     }
     triggerCustom(el);
     return isSuccess;
@@ -18349,6 +17229,22 @@ ${this.customData.serverResponse}`;
       btn.title = "Chỉ đồng bộ LÊN: Form Trang web ➔ Bảng dữ liệu";
     }
   }
+  function updateRowConnectionStatus(row) {
+    const fKey = row.querySelector(".f-key");
+    const badge = row.querySelector(".connection-badge");
+    if (!fKey || !badge) return;
+    const targets = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
+    const isConnected = targets.some((t) => findPageInput(t) !== null);
+    if (isConnected) {
+      badge.innerText = "●";
+      badge.className = "connection-badge connected";
+      badge.title = "Đã tìm thấy ô nhập liệu tương ứng trên trang web";
+    } else {
+      badge.innerText = "○";
+      badge.className = "connection-badge disconnected";
+      badge.title = "Không tìm thấy ô nhập liệu nào khớp trên trang web";
+    }
+  }
   function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = "", syncDir = null, isFromWebForm = false, sourceContext = null) {
     const hint = AppState.fieldsContainer.querySelector(".text-hint");
     if (hint) hint.remove();
@@ -18381,6 +17277,7 @@ ${this.customData.serverResponse}`;
           valueInput.dataset.sourceAddress = sourceContext;
         }
         refreshRowValidation(row);
+        updateRowConnectionStatus(row);
         isDuplicate = true;
         break;
       }
@@ -18397,6 +17294,7 @@ ${this.customData.serverResponse}`;
       const primaryKey = incomingPK;
       row.innerHTML = `
             <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
+            <span class="connection-badge disconnected" title="Đang kiểm tra kết nối...">○</span>
             <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
             <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
             <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="${syncDir || "both"}">↔</button>
@@ -18430,6 +17328,7 @@ ${this.customData.serverResponse}`;
       const debouncedSyncRow = debounce(syncThisRow, 250);
       fKey.addEventListener("input", function() {
         saveFieldsToLocal$1();
+        updateRowConnectionStatus(row);
         const firstKey = this.value.split(",")[0].trim();
         fVal.style.textAlign = firstKey === "tenToChuc" ? "right" : "";
       });
@@ -18521,6 +17420,7 @@ ${this.customData.serverResponse}`;
         });
       }
       AppState.fieldsContainer.appendChild(row);
+      updateRowConnectionStatus(row);
       AppState.fieldsContainer.scrollTop = AppState.fieldsContainer.scrollHeight;
     }
   }
@@ -18677,10 +17577,11 @@ ${this.customData.serverResponse}`;
     "SCAN": { key: "s", altKey: true, ctrlKey: false, shiftKey: false, label: "Quét dữ liệu" },
     "FILL": { key: "f", altKey: true, ctrlKey: false, shiftKey: false, label: "Điền Web" },
     "SCAN_PDF": { key: "p", altKey: true, ctrlKey: false, shiftKey: false, label: "Scan PDF (AI)" },
-    //'EXPORT_DOCX': { key: 'e', altKey: true, ctrlKey: false, shiftKey: false, label: 'Xuất DOCX' },
-    //'COPY_TXT': { key: 'c', altKey: true, ctrlKey: false, shiftKey: false, label: 'Copy Text (Template)' },
     "TOGGLE": { key: "`", altKey: true, ctrlKey: false, shiftKey: false, label: "Đóng/Mở Widget" },
-    "CLEAN": { key: "d", altKey: true, ctrlKey: false, shiftKey: false, label: "Dọn dẹp & Reset" }
+    "CLEAN": { key: "d", altKey: true, ctrlKey: false, shiftKey: false, label: "Dọn dẹp & Reset" },
+    "SIZE_S": { key: "1", altKey: true, ctrlKey: false, shiftKey: false, label: "Cỡ UI: S" },
+    "SIZE_M": { key: "2", altKey: true, ctrlKey: false, shiftKey: false, label: "Cỡ UI: M" },
+    "SIZE_L": { key: "3", altKey: true, ctrlKey: false, shiftKey: false, label: "Cỡ UI: L" }
   };
   const defaults$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
@@ -18713,12 +17614,21 @@ ${this.customData.serverResponse}`;
       const customRaw = Storage.get(SK_DATA_CUS) ?? {};
       const customData = JSON.parse(JSON.stringify(customRaw));
       const merged = { ...defaultData, ...customData };
+      const SENSITIVE_KEYS = ["tenToChuc", "tenDaiDien", "diaChi", "soDkdn", "sdt", "email"];
       const keys = Object.keys(merged);
       for (const k2 of keys) {
         const dataItem = merged[k2];
-        const val = dataItem && typeof dataItem === "object" && dataItem.hasOwnProperty("value") ? dataItem.value : dataItem;
+        let val = dataItem && typeof dataItem === "object" && dataItem.hasOwnProperty("value") ? dataItem.value : dataItem;
         const targets = k2.split(",").map((s) => s.trim()).filter((s) => s);
         const label = dataItem && typeof dataItem === "object" ? dataItem.label : null;
+        const isSensitive = SENSITIVE_KEYS.some((sk) => k2.toLowerCase().includes(sk.toLowerCase()));
+        if (isSensitive) {
+          const isBlank = !val || val.toString().trim() === "";
+          if (isBlank) {
+            console.warn(`[Fill Guard] Bỏ qua điền trường nhạy cảm bị trống: ${k2}`);
+            continue;
+          }
+        }
         if (label && !targets.includes(label)) {
           targets.push(label);
         }
@@ -18874,6 +17784,7 @@ ${this.customData.serverResponse}`;
       banner.innerHTML = `<span style="color: red;"> LƯU Ý: ĐÂY LÀ DỮ LIỆU MẶC ĐỊNH</span>`;
       AppState.bannerArea.appendChild(banner);
       const overrides = Storage.get(LOCAL_KEY_DEFAULT_FIELDS);
+      renderCalcMappingInBanner();
       if (overrides === null) {
         Object.keys(DEFAULT_DATA).forEach((key2) => {
           const item = DEFAULT_DATA[key2];
@@ -18889,7 +17800,6 @@ ${this.customData.serverResponse}`;
           addOrUpdateFieldRow(key2, item.value, item.label, item.sync || "", item.syncDir || "both");
         });
       }
-      renderCalcMappingInBanner();
     } else {
       btn.classList.remove("active");
       btn.innerHTML = "🛠 Dữ liệu mặc định VNPT";
@@ -18901,13 +17811,9 @@ ${this.customData.serverResponse}`;
   function renderCalcMappingInBanner() {
     const section = document.createElement("div");
     section.className = "vnpt-calc-mapping-default-section";
-    section.style.cssText = "border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 8px; margin: 8px 0; background: rgba(26, 115, 232, 0.05);";
+    section.style.cssText = "border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 6px; margin-bottom: 8px; background: rgba(26, 115, 232, 0.03);";
     section.innerHTML = `
-        <div class="vnpt-calc-mapping-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; padding: 2px 0;">
-            <div class="util-submenu-title" style="margin: 0; color: #1a73e8; font-weight: 800; font-size: 10px; text-transform: uppercase;">🛠️ LIÊN KẾT Ô (MAPPING CALC)</div>
-            <span class="toggle-icon" style="font-size: 10px; color: #1a73e8; transition: transform 0.2s;">▶</span>
-        </div>
-        <div class="vnpt-calc-mapping-body" style="display: none; margin-top: 8px; border-top: 1px dashed rgba(26, 115, 232, 0.2); padding-top: 8px;">
+        <div class="vnpt-calc-mapping-body" style="display: block; margin-top: 0; padding-top: 0;">
             <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
                 <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Trước thuế</span>
                 <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
@@ -18934,14 +17840,6 @@ ${this.customData.serverResponse}`;
             </div>
         </div>
     `;
-    const header = section.querySelector(".vnpt-calc-mapping-header");
-    const body = section.querySelector(".vnpt-calc-mapping-body");
-    const icon = section.querySelector(".toggle-icon");
-    header.onclick = () => {
-      const isHidden = body.style.display === "none";
-      body.style.display = isHidden ? "block" : "none";
-      icon.innerText = isHidden ? "▼" : "▶";
-    };
     const calcMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
     section.querySelectorAll(".vnpt-field-row").forEach((row) => {
       const inp = row.querySelector("input[data-clink]");
@@ -18979,7 +17877,7 @@ ${this.customData.serverResponse}`;
         startFieldLinker(row, inp);
       };
     });
-    AppState.bannerArea.appendChild(section);
+    AppState.fieldsContainer.prepend(section);
   }
   function flattenData(obj) {
     if (!obj) return obj;
@@ -19424,7 +18322,8 @@ ${b2.name}?`)) {
         handleRecording(e);
         return;
       }
-      const hotkeys = Storage.get(SK_HOTKEYS, DEFAULT_HOTKEYS);
+      const savedHotkeys = Storage.get(SK_HOTKEYS) || {};
+      const hotkeys = { ...DEFAULT_HOTKEYS, ...savedHotkeys };
       for (const [action, config] of Object.entries(hotkeys)) {
         if (isMatch(e, config)) {
           e.preventDefault();
@@ -19471,6 +18370,29 @@ ${b2.name}?`)) {
       case "CLEAN":
         document.getElementById("vnpt-btn-clean-data")?.click();
         break;
+      case "SIZE_S":
+        setPanelSize("380px", "420px", "S", 0.9);
+        break;
+      case "SIZE_M":
+        setPanelSize("460px", "600px", "M", 1);
+        break;
+      case "SIZE_L":
+        setPanelSize("620px", "800px", "L", 1.15);
+        break;
+    }
+  }
+  function setPanelSize(width, height, label, zoom = 1) {
+    const panel = document.getElementById("vnpt-export-panel");
+    if (panel) {
+      panel.style.width = width;
+      panel.style.height = height;
+      panel.style.zoom = zoom;
+      Storage.set(LOCAL_KEY_SIZE, {
+        width: parseInt(width),
+        height: parseInt(height),
+        zoom
+      });
+      showToast(`Cỡ UI đã đổi thành: ${label} (Zoom: ${zoom * 100}%)`);
     }
   }
   function startRecording(action, callback) {
@@ -19881,10 +18803,6 @@ ${b2.name}?`)) {
       }
     }
   };
-  const firebaseService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-    __proto__: null,
-    FirebaseService
-  }, Symbol.toStringTag, { value: "Module" }));
   function initCloudSyncUI(container) {
     const cloudSection = document.createElement("div");
     cloudSection.className = "vnpt-cloud-sync-section";
@@ -20059,7 +18977,7 @@ ${b2.name}?`)) {
               };
             }, false ? __VITE_PRELOAD__ : void 0);
             const { Storage: Storage2 } = await __vitePreload(async () => {
-              const { Storage: Storage3 } = await Promise.resolve().then(() => storage$2);
+              const { Storage: Storage3 } = await Promise.resolve().then(() => storage);
               return { Storage: Storage3 };
             }, false ? __VITE_PRELOAD__ : void 0);
             const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await __vitePreload(async () => {
@@ -20130,7 +19048,7 @@ ${b2.name}?`)) {
                   };
                 }, false ? __VITE_PRELOAD__ : void 0);
                 const { Storage: Storage2 } = await __vitePreload(async () => {
-                  const { Storage: Storage3 } = await Promise.resolve().then(() => storage$2);
+                  const { Storage: Storage3 } = await Promise.resolve().then(() => storage);
                   return { Storage: Storage3 };
                 }, false ? __VITE_PRELOAD__ : void 0);
                 const { DEFAULT_CALC_MAP: DEFAULT_CALC_MAP2 } = await __vitePreload(async () => {
@@ -20160,7 +19078,7 @@ ${b2.name}?`)) {
               return { SK_GEMINI_KEY: SK_GEMINI_KEY3 };
             }, false ? __VITE_PRELOAD__ : void 0);
             const { Storage: Storage2 } = await __vitePreload(async () => {
-              const { Storage: Storage3 } = await Promise.resolve().then(() => storage$2);
+              const { Storage: Storage3 } = await Promise.resolve().then(() => storage);
               return { Storage: Storage3 };
             }, false ? __VITE_PRELOAD__ : void 0);
             const geminiKey = Storage2.get(SK_GEMINI_KEY2);
@@ -20188,7 +19106,7 @@ ${b2.name}?`)) {
               return { SK_GEMINI_KEY: SK_GEMINI_KEY3 };
             }, false ? __VITE_PRELOAD__ : void 0);
             const { Storage: Storage2 } = await __vitePreload(async () => {
-              const { Storage: Storage3 } = await Promise.resolve().then(() => storage$2);
+              const { Storage: Storage3 } = await Promise.resolve().then(() => storage);
               return { Storage: Storage3 };
             }, false ? __VITE_PRELOAD__ : void 0);
             Storage2.set(SK_GEMINI_KEY2, keys.gemini_key);
@@ -20451,53 +19369,54 @@ ${b2.name}?`)) {
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
-                            <div class="util-config-grid">
-                                <div class="util-column">
-                                    <div class="util-submenu-title">Hệ thống & Sao lưu</div>
-                                    <div class="util-action-grid">
-                                        <button class="util-item-compact" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
-                                        <button class="util-item-compact danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">🧹 Reset</button>
-                                        <button class="util-item-compact" id="vnpt-btn-import-json" title="Nhập dữ liệu từ file JSON">📥 Nhập</button>
-                                        <button class="util-item-compact" id="vnpt-btn-export-json" title="Xuất toàn bộ dữ liệu ra file JSON">📤 Xuất</button>
+                            <div class="util-config-container">
+                                <!-- Nhóm 1: Hệ thống -->
+                                <div class="util-section-mini">
+                                    <div class="util-action-row">
+                                        <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
+                                        <button class="util-item-mini" id="vnpt-btn-import-json" title="Nhập JSON">📥 Nhập</button>
+                                        <button class="util-item-mini" id="vnpt-btn-export-json" title="Xuất JSON">📤 Xuất</button>
+                                        <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>
+                                </div>
 
-                                    <div class="util-separator"></div>
+                                <!-- Nhóm 2: Giao diện -->
+                                <div class="util-section-mini">
                                     <div class="util-row-compact">
-                                        <span class="util-label-mini">Cỡ:</span>
-                                        <div class="size-options-compact">
+                                        <span class="util-label-tiny">Cỡ:</span>
+                                        <div class="size-options-tiny">
                                             <button data-size="S">S</button>
                                             <button data-size="M">M</button>
                                             <button data-size="L">L</button>
-                                            <button data-size="Full">Full</button>
+                                            <button data-size="Full">MAX</button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="util-column vertical-separator">
-                                    <div class="util-submenu-title">Phím tắt</div>
-                                    <div id="vnpt-hotkey-list" class="vnpt-hotkey-list">
+
+                                <!-- Nhóm 3: Cloud & AI -->
+                                <div class="util-section-mini">
+                                    <div id="vnpt-cloud-sync-container"></div>
+                                    <div class="gemini-config-mini">
+                                        <div class="cw-row-mini">
+                                            <input id="vnpt-gemini-key" type="text" placeholder="Gemini Key..." class="cw-input-mini sensitive-mask">
+                                            <button class="util-btn-test-tiny" id="vnpt-btn-test-gemini">⚡</button>
+                                        </div>
+                                        <select id="vnpt-gemini-model" class="cw-input-mini" style="margin-top:4px;">
+                                            <option value="gemini-2.5-flash">2.5 Flash</option>
+                                            <option value="gemini-2.5-flash-lite">2.5 Lite</option>
+                                            <option value="gemini-3.1-flash-lite-preview">3.1 Lite</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Nhóm 4: Phím tắt -->
+                                <div class="util-section-mini">
+                                    <div class="util-label-tiny" style="margin-bottom:4px;">PHÍM TẮT:</div>
+                                    <div id="vnpt-hotkey-list" class="vnpt-hotkey-list-mini">
                                         <!-- Replaced by renderHotkeys -->
                                     </div>
                                 </div>
-                            </div>
-                                                        
-                            <div class="util-separator"></div>
-                            <div id="vnpt-cloud-sync-container"></div>
-
-                            <div class="util-separator"></div>
-                            <div class="util-submenu-title">AI OCR (Gemini)</div>
-                            <div class="cw-row-map-compact">
-                                <span title="API Key">🔑</span>
-                                <input id="vnpt-gemini-key" type="text" placeholder="API Key..." class="cw-map-input sensitive-mask" autocomplete="new-password">
-                                <button class="util-btn-test-mini" id="vnpt-btn-test-gemini" title="Kiểm tra kết nối">⚡</button>
-                            </div>
-                            <div class="cw-row-map-compact">
-                                <span title="Mô hình">🤖</span>
-                                <select id="vnpt-gemini-model" class="cw-map-input">
-                                    <option value="gemini-2.5-flash" selected>2.5 Flash</option>
-                                    <option value="gemini-2.5-flash-lite">2.5 Lite</option>
-                                    <option value="gemini-3.1-flash-lite-preview">3.1 Lite</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -20539,14 +19458,6 @@ ${b2.name}?`)) {
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
-                    <div class="vnpt-fields-header">
-                        <span class="h-chk"></span>
-                        <span class="h-label">Tên</span>
-                        <div class="fields-col-splitter" id="vnpt-col-splitter" title="Kéo để thay đổi tỉ lệ cột Tên / Giá trị"></div>
-                        <span class="h-key">Key</span>
-                        <span class="h-drag"></span>
-                        <span class="h-val">Giá trị</span>
-                    </div>
                     <div id="vnpt-fields-list">
                         <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                     </div>
@@ -20554,21 +19465,19 @@ ${b2.name}?`)) {
 
 
 
-                <!-- Template Manager -->
-                <div id="vnpt-template-section">
-                    <div id="vnpt-template-manager"></div>
-                </div>
-
-
-
-                <div class="bottom-export-row">
-                    <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
-                    <div class="vnpt-control-group">
-                        <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
-                        <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
-                        <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
+                <div class="bottom-export-area">
+                    <div id="vnpt-template-section">
+                        <div id="vnpt-template-manager"></div>
                     </div>
 
+                    <div class="bottom-export-row">
+                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
+                        <div class="vnpt-control-group">
+                            <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
+                            <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
+                            <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -20586,6 +19495,9 @@ ${b2.name}?`)) {
       if (savedSize && savedSize.width && savedSize.height) {
         AppState.panel.style.width = savedSize.width + "px";
         AppState.panel.style.height = savedSize.height + "px";
+        if (savedSize.zoom) {
+          AppState.panel.style.zoom = savedSize.zoom;
+        }
       }
     } catch (e) {
       console.error("Lỗi load size panel:", e);
@@ -20597,7 +19509,8 @@ ${b2.name}?`)) {
         if (width > 0 && height > 0) {
           Storage.setDebounced(LOCAL_KEY_SIZE, {
             width: Math.round(width + 20),
-            height: Math.round(height + 20)
+            height: Math.round(height + 20),
+            zoom: parseFloat(AppState.panel.style.zoom) || 1
           }, 1e3);
         }
       }
@@ -20655,10 +19568,10 @@ ${b2.name}?`)) {
     const moreBtn = document.getElementById("vnpt-btn-more");
     const utilMenu = document.getElementById("vnpt-util-menu");
     const SIZE_PRESETS = {
-      "S": { width: "380px", height: "420px" },
-      "M": { width: "460px", height: "600px" },
-      "L": { width: "620px", height: "800px" },
-      "Full": { width: "98vw", height: "92vh" }
+      "S": { width: "380px", height: "420px", zoom: 0.9 },
+      "M": { width: "460px", height: "600px", zoom: 1 },
+      "L": { width: "620px", height: "800px", zoom: 1.15 },
+      "Full": { width: "98vw", height: "92vh", zoom: 1.25 }
     };
     const geminiKeyInput = document.getElementById("vnpt-gemini-key");
     const geminiModelSelect = document.getElementById("vnpt-gemini-model");
@@ -20732,13 +19645,22 @@ ${b2.name}?`)) {
         moreBtn.classList.remove("active");
       }
     });
-    utilMenu.querySelectorAll(".size-options button").forEach((btn) => {
+    const closeUtilBtn = document.getElementById("vnpt-btn-close-util");
+    if (closeUtilBtn) {
+      closeUtilBtn.onclick = (e) => {
+        e.stopPropagation();
+        utilMenu.classList.remove("show");
+        moreBtn.classList.remove("active");
+      };
+    }
+    utilMenu.querySelectorAll(".size-options-tiny button").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const sizeKey = e.target.getAttribute("data-size");
         const preset = SIZE_PRESETS[sizeKey];
         if (preset) {
           AppState.panel.style.width = preset.width;
           AppState.panel.style.height = preset.height;
+          AppState.panel.style.zoom = preset.zoom;
         }
         utilMenu.classList.remove("show");
         moreBtn.classList.remove("active");
@@ -20833,7 +19755,8 @@ ${b2.name}?`)) {
           }, 500);
           Storage.setDebounced(LOCAL_KEY_SIZE, {
             width: AppState.panel.offsetWidth,
-            height: AppState.panel.offsetHeight
+            height: AppState.panel.offsetHeight,
+            zoom: parseFloat(AppState.panel.style.zoom) || 1
           }, 500);
         };
         window.addEventListener("mousemove", onMouseMove);
@@ -21169,6 +20092,7 @@ ${b2.name}?`)) {
       return;
     }
     btnScan.addEventListener("click", clickHandler = function() {
+      createInternalBackup(generateBackupName());
       if (AppState.isDefaultMode) {
         Object.keys(DEFAULT_DATA).forEach((key2) => {
           addOrUpdateFieldRow(key2, DEFAULT_DATA[key2], DEFAULT_LABELS[key2] || "");
@@ -25948,15 +24872,15 @@ ${b2.name}?`)) {
      * @see {@link CharacterData.appendData}
      */
     normalize: function() {
-      var child2 = this.firstChild;
-      while (child2) {
-        var next = child2.nextSibling;
-        if (next && next.nodeType == TEXT_NODE && child2.nodeType == TEXT_NODE) {
+      var child = this.firstChild;
+      while (child) {
+        var next = child.nextSibling;
+        if (next && next.nodeType == TEXT_NODE && child.nodeType == TEXT_NODE) {
           this.removeChild(next);
-          child2.appendData(next.data);
+          child.appendData(next.data);
         } else {
-          child2.normalize();
-          child2 = next;
+          child.normalize();
+          child = next;
         }
       }
     },
@@ -26133,11 +25057,11 @@ ${b2.name}?`)) {
       chain2.reverse();
       var ca = commonAncestor(chain1, chain2);
       for (var n in ca.childNodes) {
-        var child2 = ca.childNodes[n];
-        if (child2 === node2) return DocumentPosition.DOCUMENT_POSITION_FOLLOWING;
-        if (child2 === node1) return DocumentPosition.DOCUMENT_POSITION_PRECEDING;
-        if (chain2.indexOf(child2) >= 0) return DocumentPosition.DOCUMENT_POSITION_FOLLOWING;
-        if (chain1.indexOf(child2) >= 0) return DocumentPosition.DOCUMENT_POSITION_PRECEDING;
+        var child = ca.childNodes[n];
+        if (child === node2) return DocumentPosition.DOCUMENT_POSITION_FOLLOWING;
+        if (child === node1) return DocumentPosition.DOCUMENT_POSITION_PRECEDING;
+        if (chain2.indexOf(child) >= 0) return DocumentPosition.DOCUMENT_POSITION_FOLLOWING;
+        if (chain1.indexOf(child) >= 0) return DocumentPosition.DOCUMENT_POSITION_PRECEDING;
       }
       return 0;
     }
@@ -26189,23 +25113,23 @@ ${b2.name}?`)) {
       if (newChild && !newChild.nextSibling) {
         childNodes[childNodes.length++] = newChild;
       } else {
-        var child2 = parent2.firstChild;
+        var child = parent2.firstChild;
         var i2 = 0;
-        while (child2) {
-          childNodes[i2++] = child2;
-          child2 = child2.nextSibling;
+        while (child) {
+          childNodes[i2++] = child;
+          child = child.nextSibling;
         }
         childNodes.length = i2;
         delete childNodes[childNodes.length];
       }
     }
   }
-  function _removeChild(parentNode, child2) {
-    if (parentNode !== child2.parentNode) {
+  function _removeChild(parentNode, child) {
+    if (parentNode !== child.parentNode) {
       throw new DOMException$2(DOMException$2.NOT_FOUND_ERR, "child's parent is not parent");
     }
-    var oldPreviousSibling = child2.previousSibling;
-    var oldNextSibling = child2.nextSibling;
+    var oldPreviousSibling = child.previousSibling;
+    var oldNextSibling = child.nextSibling;
     if (oldPreviousSibling) {
       oldPreviousSibling.nextSibling = oldNextSibling;
     } else {
@@ -26217,10 +25141,10 @@ ${b2.name}?`)) {
       parentNode.lastChild = oldPreviousSibling;
     }
     _onUpdateChild(parentNode.ownerDocument, parentNode);
-    child2.parentNode = null;
-    child2.previousSibling = null;
-    child2.nextSibling = null;
-    return child2;
+    child.parentNode = null;
+    child.previousSibling = null;
+    child.nextSibling = null;
+    return child;
   }
   function hasValidParentNodeType(node) {
     return node && (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.DOCUMENT_FRAGMENT_NODE || node.nodeType === Node.ELEMENT_NODE);
@@ -26237,30 +25161,30 @@ ${b2.name}?`)) {
   function isTextNode(node) {
     return node && node.nodeType === Node.TEXT_NODE;
   }
-  function isElementInsertionPossible(doc2, child2) {
+  function isElementInsertionPossible(doc2, child) {
     var parentChildNodes = doc2.childNodes || [];
-    if (find(parentChildNodes, isElementNode) || isDocTypeNode(child2)) {
+    if (find(parentChildNodes, isElementNode) || isDocTypeNode(child)) {
       return false;
     }
     var docTypeNode = find(parentChildNodes, isDocTypeNode);
-    return !(child2 && docTypeNode && parentChildNodes.indexOf(docTypeNode) > parentChildNodes.indexOf(child2));
+    return !(child && docTypeNode && parentChildNodes.indexOf(docTypeNode) > parentChildNodes.indexOf(child));
   }
-  function isElementReplacementPossible(doc2, child2) {
+  function isElementReplacementPossible(doc2, child) {
     var parentChildNodes = doc2.childNodes || [];
     function hasElementChildThatIsNotChild(node) {
-      return isElementNode(node) && node !== child2;
+      return isElementNode(node) && node !== child;
     }
     if (find(parentChildNodes, hasElementChildThatIsNotChild)) {
       return false;
     }
     var docTypeNode = find(parentChildNodes, isDocTypeNode);
-    return !(child2 && docTypeNode && parentChildNodes.indexOf(docTypeNode) > parentChildNodes.indexOf(child2));
+    return !(child && docTypeNode && parentChildNodes.indexOf(docTypeNode) > parentChildNodes.indexOf(child));
   }
-  function assertPreInsertionValidity1to5(parent2, node, child2) {
+  function assertPreInsertionValidity1to5(parent2, node, child) {
     if (!hasValidParentNodeType(parent2)) {
       throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Unexpected parent node type " + parent2.nodeType);
     }
-    if (child2 && child2.parentNode !== parent2) {
+    if (child && child.parentNode !== parent2) {
       throw new DOMException$2(DOMException$2.NOT_FOUND_ERR, "child not in parent");
     }
     if (
@@ -26277,7 +25201,7 @@ ${b2.name}?`)) {
       );
     }
   }
-  function assertPreInsertionValidityInDocument(parent2, node, child2) {
+  function assertPreInsertionValidityInDocument(parent2, node, child) {
     var parentChildNodes = parent2.childNodes || [];
     var nodeChildNodes = node.childNodes || [];
     if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
@@ -26285,12 +25209,12 @@ ${b2.name}?`)) {
       if (nodeChildElements.length > 1 || find(nodeChildNodes, isTextNode)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "More than one element or text in fragment");
       }
-      if (nodeChildElements.length === 1 && !isElementInsertionPossible(parent2, child2)) {
+      if (nodeChildElements.length === 1 && !isElementInsertionPossible(parent2, child)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Element in fragment can not be inserted before doctype");
       }
     }
     if (isElementNode(node)) {
-      if (!isElementInsertionPossible(parent2, child2)) {
+      if (!isElementInsertionPossible(parent2, child)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Only one element can be added and only after doctype");
       }
     }
@@ -26299,15 +25223,15 @@ ${b2.name}?`)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Only one doctype is allowed");
       }
       var parentElementChild = find(parentChildNodes, isElementNode);
-      if (child2 && parentChildNodes.indexOf(parentElementChild) < parentChildNodes.indexOf(child2)) {
+      if (child && parentChildNodes.indexOf(parentElementChild) < parentChildNodes.indexOf(child)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Doctype can only be inserted before an element");
       }
-      if (!child2 && parentElementChild) {
+      if (!child && parentElementChild) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Doctype can not be appended since element is present");
       }
     }
   }
-  function assertPreReplacementValidityInDocument(parent2, node, child2) {
+  function assertPreReplacementValidityInDocument(parent2, node, child) {
     var parentChildNodes = parent2.childNodes || [];
     var nodeChildNodes = node.childNodes || [];
     if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
@@ -26315,32 +25239,32 @@ ${b2.name}?`)) {
       if (nodeChildElements.length > 1 || find(nodeChildNodes, isTextNode)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "More than one element or text in fragment");
       }
-      if (nodeChildElements.length === 1 && !isElementReplacementPossible(parent2, child2)) {
+      if (nodeChildElements.length === 1 && !isElementReplacementPossible(parent2, child)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Element in fragment can not be inserted before doctype");
       }
     }
     if (isElementNode(node)) {
-      if (!isElementReplacementPossible(parent2, child2)) {
+      if (!isElementReplacementPossible(parent2, child)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Only one element can be added and only after doctype");
       }
     }
     if (isDocTypeNode(node)) {
       let hasDoctypeChildThatIsNotChild = function(node2) {
-        return isDocTypeNode(node2) && node2 !== child2;
+        return isDocTypeNode(node2) && node2 !== child;
       };
       if (find(parentChildNodes, hasDoctypeChildThatIsNotChild)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Only one doctype is allowed");
       }
       var parentElementChild = find(parentChildNodes, isElementNode);
-      if (child2 && parentChildNodes.indexOf(parentElementChild) < parentChildNodes.indexOf(child2)) {
+      if (child && parentChildNodes.indexOf(parentElementChild) < parentChildNodes.indexOf(child)) {
         throw new DOMException$2(DOMException$2.HIERARCHY_REQUEST_ERR, "Doctype can only be inserted before an element");
       }
     }
   }
-  function _insertBefore(parent2, node, child2, _inDocumentAssertion) {
-    assertPreInsertionValidity1to5(parent2, node, child2);
+  function _insertBefore(parent2, node, child, _inDocumentAssertion) {
+    assertPreInsertionValidity1to5(parent2, node, child);
     if (parent2.nodeType === Node.DOCUMENT_NODE) {
-      (_inDocumentAssertion || assertPreInsertionValidityInDocument)(parent2, node, child2);
+      (_inDocumentAssertion || assertPreInsertionValidityInDocument)(parent2, node, child);
     }
     var cp = node.parentNode;
     if (cp) {
@@ -26355,18 +25279,18 @@ ${b2.name}?`)) {
     } else {
       newFirst = newLast = node;
     }
-    var pre = child2 ? child2.previousSibling : parent2.lastChild;
+    var pre = child ? child.previousSibling : parent2.lastChild;
     newFirst.previousSibling = pre;
-    newLast.nextSibling = child2;
+    newLast.nextSibling = child;
     if (pre) {
       pre.nextSibling = newFirst;
     } else {
       parent2.firstChild = newFirst;
     }
-    if (child2 == null) {
+    if (child == null) {
       parent2.lastChild = newLast;
     } else {
-      child2.previousSibling = newLast;
+      child.previousSibling = newLast;
     }
     do {
       newFirst.parentNode = parent2;
@@ -26398,11 +25322,11 @@ ${b2.name}?`)) {
     _inc: 1,
     insertBefore: function(newChild, refChild) {
       if (newChild.nodeType === DOCUMENT_FRAGMENT_NODE) {
-        var child2 = newChild.firstChild;
-        while (child2) {
-          var next = child2.nextSibling;
-          this.insertBefore(child2, refChild);
-          child2 = next;
+        var child = newChild.firstChild;
+        while (child) {
+          var next = child.nextSibling;
+          this.insertBefore(child, refChild);
+          child = next;
         }
         return newChild;
       }
@@ -27049,7 +25973,7 @@ ${b2.name}?`)) {
       case ELEMENT_NODE:
         var attrs = node.attributes;
         var len = attrs.length;
-        var child2 = node.firstChild;
+        var child = node.firstChild;
         var nodeName = node.tagName;
         var prefixedNodeName = nodeName;
         if (!isHTML && !node.prefix && node.namespaceURI) {
@@ -27109,7 +26033,7 @@ ${b2.name}?`)) {
           addSerializedAttribute(buf, prefix ? "xmlns:" + prefix : "xmlns", uri);
           visibleNamespaces.push({ prefix, namespace: uri });
         }
-        var canCloseTag = !child2;
+        var canCloseTag = !child;
         if (canCloseTag && (isHTML || node.namespaceURI === NAMESPACE$2.HTML)) {
           canCloseTag = isHTMLVoidElement(nodeName);
         }
@@ -27118,18 +26042,18 @@ ${b2.name}?`)) {
         } else {
           buf.push(">");
           if (isHTML && isHTMLRawTextElement$1(nodeName)) {
-            while (child2) {
-              if (child2.data) {
-                buf.push(child2.data);
+            while (child) {
+              if (child.data) {
+                buf.push(child.data);
               } else {
-                serializeToString(child2, buf, nodeFilter, visibleNamespaces.slice());
+                serializeToString(child, buf, nodeFilter, visibleNamespaces.slice());
               }
-              child2 = child2.nextSibling;
+              child = child.nextSibling;
             }
           } else {
-            while (child2) {
-              serializeToString(child2, buf, nodeFilter, visibleNamespaces.slice());
-              child2 = child2.nextSibling;
+            while (child) {
+              serializeToString(child, buf, nodeFilter, visibleNamespaces.slice());
+              child = child.nextSibling;
             }
           }
           buf.push("</", prefixedNodeName, ">");
@@ -27137,10 +26061,10 @@ ${b2.name}?`)) {
         return;
       case DOCUMENT_NODE:
       case DOCUMENT_FRAGMENT_NODE:
-        var child2 = node.firstChild;
-        while (child2) {
-          serializeToString(child2, buf, nodeFilter, visibleNamespaces.slice());
-          child2 = child2.nextSibling;
+        var child = node.firstChild;
+        while (child) {
+          serializeToString(child, buf, nodeFilter, visibleNamespaces.slice());
+          child = child.nextSibling;
         }
         return;
       case ATTRIBUTE_NODE:
@@ -27194,10 +26118,10 @@ ${b2.name}?`)) {
     node2.ownerDocument = doc2;
     node2.parentNode = null;
     if (deep) {
-      var child2 = node.firstChild;
-      while (child2) {
-        node2.appendChild(importNode(doc2, child2, deep));
-        child2 = child2.nextSibling;
+      var child = node.firstChild;
+      while (child) {
+        node2.appendChild(importNode(doc2, child, deep));
+        child = child.nextSibling;
       }
     }
     return node2;
@@ -27232,10 +26156,10 @@ ${b2.name}?`)) {
         deep = true;
     }
     if (deep) {
-      var child2 = node.firstChild;
-      while (child2) {
-        node2.appendChild(cloneNode(doc2, child2, deep));
-        child2 = child2.nextSibling;
+      var child = node.firstChild;
+      while (child) {
+        node2.appendChild(cloneNode(doc2, child, deep));
+        child = child.nextSibling;
       }
     }
     return node2;
@@ -27245,12 +26169,12 @@ ${b2.name}?`)) {
   }
   function childrenRefresh(node) {
     var ls = [];
-    var child2 = node.firstChild;
-    while (child2) {
-      if (child2.nodeType === ELEMENT_NODE) {
-        ls.push(child2);
+    var child = node.firstChild;
+    while (child) {
+      if (child.nodeType === ELEMENT_NODE) {
+        ls.push(child);
       }
-      child2 = child2.nextSibling;
+      child = child.nextSibling;
     }
     return ls;
   }

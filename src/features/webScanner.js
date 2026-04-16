@@ -158,6 +158,9 @@ export function initWebScanner() {
     }
 
     btnScan.addEventListener('click', clickHandler = function () {
+        // Tự động tạo bản sao lưu trước khi quét mới (Ghi đè dữ liệu cũ)
+        createInternalBackup(generateBackupName());
+
         if (AppState.isDefaultMode) {
             Object.keys(DEFAULT_DATA).forEach(key => {
                 addOrUpdateFieldRow(key, DEFAULT_DATA[key], DEFAULT_LABELS[key] || '');

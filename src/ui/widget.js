@@ -64,53 +64,54 @@ export function initWidget() {
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
-                            <div class="util-config-grid">
-                                <div class="util-column">
-                                    <div class="util-submenu-title">Hệ thống & Sao lưu</div>
-                                    <div class="util-action-grid">
-                                        <button class="util-item-compact" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
-                                        <button class="util-item-compact danger" id="vnpt-btn-clean-data" title="Xóa dữ liệu hoặc Reset cài đặt hệ thống">🧹 Reset</button>
-                                        <button class="util-item-compact" id="vnpt-btn-import-json" title="Nhập dữ liệu từ file JSON">📥 Nhập</button>
-                                        <button class="util-item-compact" id="vnpt-btn-export-json" title="Xuất toàn bộ dữ liệu ra file JSON">📤 Xuất</button>
+                            <div class="util-config-container">
+                                <!-- Nhóm 1: Hệ thống -->
+                                <div class="util-section-mini">
+                                    <div class="util-action-row">
+                                        <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
+                                        <button class="util-item-mini" id="vnpt-btn-import-json" title="Nhập JSON">📥 Nhập</button>
+                                        <button class="util-item-mini" id="vnpt-btn-export-json" title="Xuất JSON">📤 Xuất</button>
+                                        <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>
+                                </div>
 
-                                    <div class="util-separator"></div>
+                                <!-- Nhóm 2: Giao diện -->
+                                <div class="util-section-mini">
                                     <div class="util-row-compact">
-                                        <span class="util-label-mini">Cỡ:</span>
-                                        <div class="size-options-compact">
+                                        <span class="util-label-tiny">Cỡ:</span>
+                                        <div class="size-options-tiny">
                                             <button data-size="S">S</button>
                                             <button data-size="M">M</button>
                                             <button data-size="L">L</button>
-                                            <button data-size="Full">Full</button>
+                                            <button data-size="Full">MAX</button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="util-column vertical-separator">
-                                    <div class="util-submenu-title">Phím tắt</div>
-                                    <div id="vnpt-hotkey-list" class="vnpt-hotkey-list">
+
+                                <!-- Nhóm 3: Cloud & AI -->
+                                <div class="util-section-mini">
+                                    <div id="vnpt-cloud-sync-container"></div>
+                                    <div class="gemini-config-mini">
+                                        <div class="cw-row-mini">
+                                            <input id="vnpt-gemini-key" type="text" placeholder="Gemini Key..." class="cw-input-mini sensitive-mask">
+                                            <button class="util-btn-test-tiny" id="vnpt-btn-test-gemini">⚡</button>
+                                        </div>
+                                        <select id="vnpt-gemini-model" class="cw-input-mini" style="margin-top:4px;">
+                                            <option value="gemini-2.5-flash">2.5 Flash</option>
+                                            <option value="gemini-2.5-flash-lite">2.5 Lite</option>
+                                            <option value="gemini-3.1-flash-lite-preview">3.1 Lite</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Nhóm 4: Phím tắt -->
+                                <div class="util-section-mini">
+                                    <div class="util-label-tiny" style="margin-bottom:4px;">PHÍM TẮT:</div>
+                                    <div id="vnpt-hotkey-list" class="vnpt-hotkey-list-mini">
                                         <!-- Replaced by renderHotkeys -->
                                     </div>
                                 </div>
-                            </div>
-                                                        
-                            <div class="util-separator"></div>
-                            <div id="vnpt-cloud-sync-container"></div>
-
-                            <div class="util-separator"></div>
-                            <div class="util-submenu-title">AI OCR (Gemini)</div>
-                            <div class="cw-row-map-compact">
-                                <span title="API Key">🔑</span>
-                                <input id="vnpt-gemini-key" type="text" placeholder="API Key..." class="cw-map-input sensitive-mask" autocomplete="new-password">
-                                <button class="util-btn-test-mini" id="vnpt-btn-test-gemini" title="Kiểm tra kết nối">⚡</button>
-                            </div>
-                            <div class="cw-row-map-compact">
-                                <span title="Mô hình">🤖</span>
-                                <select id="vnpt-gemini-model" class="cw-map-input">
-                                    <option value="gemini-2.5-flash" selected>2.5 Flash</option>
-                                    <option value="gemini-2.5-flash-lite">2.5 Lite</option>
-                                    <option value="gemini-3.1-flash-lite-preview">3.1 Lite</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -152,14 +153,6 @@ export function initWidget() {
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
-                    <div class="vnpt-fields-header">
-                        <span class="h-chk"></span>
-                        <span class="h-label">Tên</span>
-                        <div class="fields-col-splitter" id="vnpt-col-splitter" title="Kéo để thay đổi tỉ lệ cột Tên / Giá trị"></div>
-                        <span class="h-key">Key</span>
-                        <span class="h-drag"></span>
-                        <span class="h-val">Giá trị</span>
-                    </div>
                     <div id="vnpt-fields-list">
                         <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                     </div>
@@ -167,21 +160,19 @@ export function initWidget() {
 
 
 
-                <!-- Template Manager -->
-                <div id="vnpt-template-section">
-                    <div id="vnpt-template-manager"></div>
-                </div>
-
-
-
-                <div class="bottom-export-row">
-                    <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
-                    <div class="vnpt-control-group">
-                        <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
-                        <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
-                        <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
+                <div class="bottom-export-area">
+                    <div id="vnpt-template-section">
+                        <div id="vnpt-template-manager"></div>
                     </div>
 
+                    <div class="bottom-export-row">
+                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
+                        <div class="vnpt-control-group">
+                            <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
+                            <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
+                            <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,6 +193,9 @@ export function initWidget() {
         if (savedSize && savedSize.width && savedSize.height) {
             AppState.panel.style.width = savedSize.width + 'px';
             AppState.panel.style.height = savedSize.height + 'px';
+            if (savedSize.zoom) {
+                AppState.panel.style.zoom = savedSize.zoom;
+            }
         }
     } catch (e) { console.error('Lỗi load size panel:', e); }
 
@@ -213,7 +207,8 @@ export function initWidget() {
             if (width > 0 && height > 0) {
                 Storage.setDebounced(LOCAL_KEY_SIZE, {
                     width: Math.round(width + 20),
-                    height: Math.round(height + 20)
+                    height: Math.round(height + 20),
+                    zoom: parseFloat(AppState.panel.style.zoom) || 1
                 }, 1000);
             }
         }
@@ -282,10 +277,10 @@ export function initWidget() {
     const moreBtn = document.getElementById('vnpt-btn-more');
     const utilMenu = document.getElementById('vnpt-util-menu');
     const SIZE_PRESETS = {
-        'S': { width: '380px', height: '420px' },
-        'M': { width: '460px', height: '600px' },
-        'L': { width: '620px', height: '800px' },
-        'Full': { width: '98vw', height: '92vh' }
+        'S': { width: '380px', height: '420px', zoom: 0.9 },
+        'M': { width: '460px', height: '600px', zoom: 1 },
+        'L': { width: '620px', height: '800px', zoom: 1.15 },
+        'Full': { width: '98vw', height: '92vh', zoom: 1.25 }
     };
 
 
@@ -378,13 +373,23 @@ export function initWidget() {
         }
     });
 
-    utilMenu.querySelectorAll('.size-options button').forEach(btn => {
+    const closeUtilBtn = document.getElementById('vnpt-btn-close-util');
+    if (closeUtilBtn) {
+        closeUtilBtn.onclick = (e) => {
+            e.stopPropagation();
+            utilMenu.classList.remove('show');
+            moreBtn.classList.remove('active');
+        };
+    }
+
+    utilMenu.querySelectorAll('.size-options-tiny button').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const sizeKey = e.target.getAttribute('data-size');
             const preset = SIZE_PRESETS[sizeKey];
             if (preset) {
                 AppState.panel.style.width = preset.width;
                 AppState.panel.style.height = preset.height;
+                AppState.panel.style.zoom = preset.zoom;
             }
             utilMenu.classList.remove('show');
             moreBtn.classList.remove('active');
@@ -498,7 +503,8 @@ export function initWidget() {
 
                 Storage.setDebounced(LOCAL_KEY_SIZE, {
                     width: AppState.panel.offsetWidth,
-                    height: AppState.panel.offsetHeight
+                    height: AppState.panel.offsetHeight,
+                    zoom: parseFloat(AppState.panel.style.zoom) || 1
                 }, 500);
             };
 

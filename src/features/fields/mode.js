@@ -28,6 +28,10 @@ export function updateUIForDefaultMode(isDefault) {
         AppState.bannerArea.appendChild(banner);
 
         const overrides = Storage.get(LOCAL_KEY_DEFAULT_FIELDS);
+        
+        // Chèn Mapping Calc lên đầu bảng
+        renderCalcMappingInBanner();
+
         if (overrides === null) {
             Object.keys(DEFAULT_DATA).forEach(key => {
                 const item = DEFAULT_DATA[key];
@@ -44,7 +48,7 @@ export function updateUIForDefaultMode(isDefault) {
             });
         }
 
-        renderCalcMappingInBanner();
+        // renderCalcMappingInBanner(); // Xóa dòng này ở cuối
     } else {
         btn.classList.remove('active');
         btn.innerHTML = '🛠 Dữ liệu mặc định VNPT';
@@ -57,14 +61,10 @@ export function updateUIForDefaultMode(isDefault) {
 export function renderCalcMappingInBanner() {
     const section = document.createElement('div');
     section.className = 'vnpt-calc-mapping-default-section';
-    section.style.cssText = 'border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 8px; margin: 8px 0; background: rgba(26, 115, 232, 0.05);';
+    section.style.cssText = 'border: 1px dashed var(--vnpt-primary); border-radius: 8px; padding: 6px; margin-bottom: 8px; background: rgba(26, 115, 232, 0.03);';
 
     section.innerHTML = `
-        <div class="vnpt-calc-mapping-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; padding: 2px 0;">
-            <div class="util-submenu-title" style="margin: 0; color: #1a73e8; font-weight: 800; font-size: 10px; text-transform: uppercase;">🛠️ LIÊN KẾT Ô (MAPPING CALC)</div>
-            <span class="toggle-icon" style="font-size: 10px; color: #1a73e8; transition: transform 0.2s;">▶</span>
-        </div>
-        <div class="vnpt-calc-mapping-body" style="display: none; margin-top: 8px; border-top: 1px dashed rgba(26, 115, 232, 0.2); padding-top: 8px;">
+        <div class="vnpt-calc-mapping-body" style="display: block; margin-top: 0; padding-top: 0;">
             <div class="vnpt-field-row" style="background: none; border: none; padding: 0; margin-bottom: 4px; gap: 8px;">
                 <span style="min-width: 70px; font-size: 11px; font-weight: bold;">Trước thuế</span>
                 <input data-clink="before" class="cw-map-input" style="flex: 1; height: 26px; font-size: 11px;" placeholder="Ví dụ: tong_tien_truoc_thue">
@@ -91,16 +91,6 @@ export function renderCalcMappingInBanner() {
             </div>
         </div>
     `;
-
-    const header = section.querySelector('.vnpt-calc-mapping-header');
-    const body = section.querySelector('.vnpt-calc-mapping-body');
-    const icon = section.querySelector('.toggle-icon');
-
-    header.onclick = () => {
-        const isHidden = body.style.display === 'none';
-        body.style.display = isHidden ? 'block' : 'none';
-        icon.innerText = isHidden ? '▼' : '▶';
-    };
 
     const calcMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
     section.querySelectorAll('.vnpt-field-row').forEach(row => {
@@ -145,5 +135,5 @@ export function renderCalcMappingInBanner() {
         };
     });
 
-    AppState.bannerArea.appendChild(section);
+    AppState.fieldsContainer.prepend(section);
 }

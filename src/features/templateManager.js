@@ -80,17 +80,6 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         mainWrap = document.createElement('div');
         mainWrap.className = 'vnpt-template-manager-inner';
 
-        // --- Shared / Cloud Section ---
-        const sharedHeader = document.createElement('div');
-        sharedHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;';
-        sharedHeader.innerHTML = '<span style="font-size:11px;font-weight:700;color:#444;">Templates hệ thống</span>';
-        mainWrap.appendChild(sharedHeader);
-
-        sharedListWrapper = document.createElement('div');
-        sharedListWrapper.className = 'vnpt-shared-list-container';
-        sharedListWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;';
-        mainWrap.appendChild(sharedListWrapper);
-
         const headerRow = document.createElement('div');
         headerRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:5px; border-top: 1px solid #eee; padding-top: 5px;';
 
@@ -113,7 +102,6 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
 
         container.appendChild(mainWrap);
     } else {
-        sharedListWrapper = mainWrap.querySelector('.vnpt-shared-list-container');
         localListWrapper = mainWrap.querySelector('.vnpt-local-list-container');
         btnWrap = mainWrap.querySelector('.vnpt-btn-wrap');
     }
@@ -122,7 +110,6 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
 
     const titleEl = mainWrap.querySelector('.vnpt-title-main');
     renderLocalTemplates(localListWrapper, titleEl, onSelectTemplate, currentActiveName, container);
-    renderSharedTemplates(sharedListWrapper, onSelectTemplate, currentActiveName);
 }
 
 async function renderSharedTemplates(wrapper, onSelectTemplate, currentActiveName) {
