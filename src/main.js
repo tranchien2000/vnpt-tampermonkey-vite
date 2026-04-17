@@ -88,6 +88,7 @@ async function init() {
     Storage.set('vnpt_last_run_version', APP_VERSION);
 
     // ─── Pre-Update Prompt (F5 Check) ───
+    /* 
     setTimeout(async () => {
       // Kiểm tra xem trong phiên làm việc này (session) đã nhắc chưa
       if (sessionStorage.getItem('vnpt_update_skipped')) return;
@@ -106,6 +107,7 @@ async function init() {
         }
       }
     }, 2000); // Đợi 2s để RemoteConfig hoàn thành fetch ngầm
+    */
 
     // ─── DOM Cache Management ───
     // Xóa cache khi DOM thay đổi lớn (SPA navigation hoặc load form mới)

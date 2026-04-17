@@ -47760,25 +47760,6 @@ ${rawText}`;
         showToast(`🚀 Hợp đồng VNPT đã cập nhật lên v${APP_VERSION}!`, "#1a73e8");
       }
       Storage.set("vnpt_last_run_version", APP_VERSION);
-      setTimeout(async () => {
-        if (sessionStorage.getItem("vnpt_update_skipped")) return;
-        if (RemoteConfig.hasUpdate()) {
-          const confirmed = confirm(`[VNPT PRO] Đã có phiên bản mới v${RemoteConfig.info.latestVersion}.
-
-Lời nhắn: ${RemoteConfig.info.message || "Không có mô tả."}
-
-Bạn có muốn cập nhật ngay không?`);
-          if (confirmed) {
-            if (RemoteConfig.info.updateUrl) {
-              window.open(RemoteConfig.info.updateUrl, "_blank");
-            } else {
-              showToast("Vui lòng click vào badge NEW để cập nhật!", "#ea4335");
-            }
-          } else {
-            sessionStorage.setItem("vnpt_update_skipped", "true");
-          }
-        }
-      }, 2e3);
       const debouncedClearCache = debounce(() => {
         clearDOMCache();
         refreshLabelsCache();
