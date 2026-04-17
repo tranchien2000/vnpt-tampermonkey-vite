@@ -370,14 +370,47 @@
     .vnpt-btn-icon:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); transform: scale(1.05); }
     .vnpt-btn-icon.active { background: var(--vnpt-primary); color: white; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
 
-    .btn-scan { background: #e6f4ea; color: var(--vnpt-success); border: 1px solid rgba(30, 142, 62, 0.1); } 
-    .btn-scan:hover { background: var(--vnpt-success); color: #fff; border-color: transparent; }
-    
-    .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
-    .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
+    .header-center { 
+        display: flex; 
+        gap: 2px; 
+        background: rgba(0,0,0,0.04); 
+        padding: 2px; 
+        border-radius: 8px;
+        align-items: center;
+    }
 
-    .btn-restore { background: #e8f0fe; color: var(--vnpt-primary); border: 1px solid rgba(26, 115, 232, 0.1); }
-    .vnpt-btn-restore:hover { background: var(--vnpt-primary); color: #fff; border-color: transparent; }
+    .vnpt-btn-header {
+        height: 24px;
+        padding: 0 10px;
+        border: none;
+        background: transparent;
+        color: #5f6368;
+        font-size: 10.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+    .vnpt-btn-header:hover {
+        background: #fff;
+        color: var(--vnpt-primary);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .vnpt-btn-header.active {
+        background: var(--vnpt-primary);
+        color: white;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+    }
+
+    /* Đặc trị màu sắc nhẹ cho từng nút khi hover */
+    .vnpt-btn-header.btn-ai:hover { color: #8e24aa; }
+    .vnpt-btn-header.btn-scan:hover { color: var(--vnpt-success); }
+    .vnpt-btn-header.btn-fill:hover { color: #f57c00; }
+    .vnpt-btn-header.btn-id:hover { color: #d81b60; }
     
     /* ═══════════════════════════════════════════
        SECTION: BACKUP HISTORY DROPDOWN
@@ -932,6 +965,103 @@
         to   { opacity: 1; transform: translateX(-50%) translateY(0)      scale(1); }
     }
 `;
+  const templateStyles = `
+    /* ═══════════════════════════════════════════
+       SECTION: TEMPLATE MANAGER
+       ═══════════════════════════════════════════ */
+    .vnpt-template-manager-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tmpl-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        border-top: 1px solid #eee;
+        padding-top: 5px;
+    }
+
+    .vnpt-title-main {
+        font-size: 11px;
+        font-weight: 700;
+        color: #444;
+    }
+
+    .vnpt-btn-wrap {
+        display: flex;
+        gap: 4px;
+    }
+
+    .vnpt-local-list-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .tmpl-row-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 15px;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .tmpl-row-item:hover {
+        background: #fff;
+        border-color: var(--vnpt-primary-light);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .tmpl-row-item.active {
+        border-color: var(--vnpt-primary);
+        background: var(--vnpt-primary-light);
+    }
+
+    .tmpl-badge-cloud {
+        font-size: 8px;
+        padding: 1px 5px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        font-weight: bold;
+        background: #1976d2;
+        color: #fff;
+    }
+
+    .tmpl-name-text {
+        font-size: 11px;
+        font-weight: 600;
+        color: #212529;
+        white-space: nowrap;
+    }
+    .tmpl-row-item.active .tmpl-name-text {
+        color: var(--vnpt-primary);
+    }
+
+    .tmpl-btn-rename {
+        font-size: 10px;
+        padding: 1px 4px;
+        border: none;
+        background: none;
+        color: #555;
+        cursor: pointer;
+        margin-left: auto;
+    }
+    .tmpl-btn-del {
+        font-size: 10px;
+        padding: 1px 4px;
+        border: none;
+        background: none;
+        color: #d32f2f;
+        cursor: pointer;
+        margin-left: 2px;
+    }
+`;
   const allStyles = `
     ${themeStyles}
     ${panelStyles}
@@ -940,6 +1070,7 @@
     ${calculatorStyles}
     ${scannerStyles}
     ${linkerStyles}
+    ${templateStyles}
 `;
   function injectStyles$1() {
     const styleId = "vnpt-styles";
@@ -1057,7 +1188,7 @@
       return true;
     }
   });
-  const version$4 = "1.6.33";
+  const version$4 = "1.6.34";
   const pkg = {
     version: version$4
   };
@@ -16268,19 +16399,16 @@ ${this.customData.serverResponse}`;
       mainWrap = document.createElement("div");
       mainWrap.className = "vnpt-template-manager-inner";
       const headerRow = document.createElement("div");
-      headerRow.style.cssText = "display:flex;align-items:center;justify-content:space-between;margin-bottom:5px; border-top: 1px solid #eee; padding-top: 5px;";
+      headerRow.className = "tmpl-header-row";
       const title = document.createElement("span");
       title.className = "vnpt-title-main";
-      title.style.cssText = "font-size:11px;font-weight:700;color:#444;";
       btnWrap = document.createElement("div");
       btnWrap.className = "vnpt-btn-wrap";
-      btnWrap.style.cssText = "display:flex;gap:4px;";
       headerRow.appendChild(title);
       headerRow.appendChild(btnWrap);
       mainWrap.appendChild(headerRow);
       localListWrapper = document.createElement("div");
       localListWrapper.className = "vnpt-local-list-container";
-      localListWrapper.style.cssText = "display:flex;flex-wrap:wrap;gap:4px;";
       mainWrap.appendChild(localListWrapper);
       container.appendChild(mainWrap);
     } else {
@@ -16293,7 +16421,7 @@ ${this.customData.serverResponse}`;
   }
   function renderLocalTemplates(wrapper, titleEl, onSelectTemplate, currentActiveName, container) {
     const templates = loadTemplates();
-    titleEl.innerHTML = "Templates local" + (currentActiveName ? ` <span style="color:#2e7d32;">(Dang dung: ${currentActiveName})</span>` : "");
+    titleEl.innerHTML = "Mẫu văn bản" + (currentActiveName ? ` <span style="color:#2e7d32;">(Đang dùng: ${currentActiveName})</span>` : "");
     if (templates.length === 0) {
       wrapper.innerHTML = '<div style="font-size:10px;color:#999;font-style:italic;padding:12px;text-align:center;width:100%;">Chua co mau nao. Hay chon file .docx tu may tinh de luu vao day.</div>';
       return;
@@ -16306,34 +16434,23 @@ ${this.customData.serverResponse}`;
   }
   function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, container) {
     const row = document.createElement("div");
-    row.style.cssText = "display:flex;align-items:center;gap:4px;padding:3px 8px;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:15px;cursor:pointer;outline:none;transition:all 0.2s;";
+    row.className = "tmpl-row-item";
     if (tpl.name === currentActiveName) {
-      row.style.borderColor = "var(--vnpt-primary)";
-      row.style.background = "var(--vnpt-primary-light)";
+      row.classList.add("active");
     }
     row.title = tpl.fileName || tpl.name;
     row.tabIndex = 0;
-    row.onfocus = () => {
-      row.style.boxShadow = "0 0 0 2px var(--vnpt-primary)";
-    };
-    row.onblur = () => {
-      row.style.boxShadow = "none";
-    };
     row.onclick = () => {
       row.focus();
       selectTemplate(tpl, onSelectTemplate, container);
     };
-    const badge = document.createElement("span");
-    badge.textContent = "LOCAL";
-    badge.style.cssText = "font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:#6c757d;color:#fff;";
     const nameEl = document.createElement("span");
     nameEl.textContent = tpl.name;
-    nameEl.style.cssText = "font-size:11px;font-weight:600;color:#212529;white-space:nowrap;";
-    row.appendChild(badge);
+    nameEl.className = "tmpl-name-text";
     row.appendChild(nameEl);
     const renameBtn = document.createElement("button");
     renameBtn.innerHTML = "✎";
-    renameBtn.style.cssText = "font-size:10px;padding:1px 4px;border:none;background:none;color:#555;cursor:pointer;margin-left:auto;";
+    renameBtn.className = "tmpl-btn-rename";
     renameBtn.onclick = (e) => {
       e.stopPropagation();
       const newName = prompt("Doi ten template:", tpl.name);
@@ -16349,7 +16466,7 @@ ${this.customData.serverResponse}`;
     row.appendChild(renameBtn);
     const delBtn = document.createElement("button");
     delBtn.innerHTML = "✕";
-    delBtn.style.cssText = "font-size:10px;padding:1px 4px;border:none;background:none;color:#d32f2f;cursor:pointer;margin-left:2px;";
+    delBtn.className = "tmpl-btn-del";
     delBtn.onclick = async (e) => {
       e.stopPropagation();
       if (!confirm(`Xoa bieu mau "${tpl.name}"?`)) return;
@@ -17623,7 +17740,7 @@ ${this.customData.serverResponse}`;
     "SCAN": { key: "s", altKey: true, ctrlKey: false, shiftKey: false, label: "Quét dữ liệu" },
     "FILL": { key: "f", altKey: true, ctrlKey: false, shiftKey: false, label: "Điền Web" },
     "SCAN_PDF": { key: "p", altKey: true, ctrlKey: false, shiftKey: false, label: "Scan PDF (AI)" },
-    "TOGGLE": { key: "`", altKey: true, ctrlKey: false, shiftKey: false, label: "Đóng/Mở Widget" },
+    "TOGGLE": { key: "`", altKey: false, ctrlKey: false, shiftKey: false, label: "Đóng/Mở Widget" },
     "CLEAN": { key: "d", altKey: true, ctrlKey: false, shiftKey: false, label: "Dọn dẹp & Reset" },
     "SIZE_S": { key: "1", altKey: true, ctrlKey: false, shiftKey: false, label: "Cỡ UI: S" },
     "SIZE_M": { key: "2", altKey: true, ctrlKey: false, shiftKey: false, label: "Cỡ UI: M" },
@@ -18864,10 +18981,10 @@ ${b2.name}?`)) {
       if (user) {
         cloudSection.innerHTML = `
         <div class="util-submenu-title">☁️ Tài khoản Cloud</div>
-        <div class="cloud-user-info" style="padding: 6px 12px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; background: rgba(26, 115, 232, 0.02);">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 8px; height: 8px; background: #34a853; border-radius: 50%; box-shadow: 0 0 8px #34a853;"></div>
-            <span style="font-weight: 700; color: #3c4043; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${user.email}</span>
+        <div class="cloud-user-info">
+          <div class="user-status-wrapper">
+            <div class="user-status-dot"></div>
+            <span class="user-email-text">${user.email}</span>
           </div>
           <button class="util-btn-logout-mini" id="vnpt-btn-cloud-logout" title="Đăng xuất">Đăng xuất</button>
         </div>
@@ -18886,6 +19003,37 @@ ${b2.name}?`)) {
         </div>
 
         <style>
+          .cloud-user-info {
+            padding: 6px 12px; 
+            font-size: 11px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            background: rgba(26, 115, 232, 0.02);
+          }
+          .user-status-wrapper {
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            overflow: hidden;
+          }
+          .user-status-dot {
+            width: 8px; 
+            height: 8px; 
+            background: #34a853; 
+            border-radius: 50%; 
+            box-shadow: 0 0 8px #34a853;
+            flex-shrink: 0;
+          }
+          .user-email-text {
+            font-weight: 700; 
+            color: #3c4043; 
+            max-width: 140px; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap;
+          }
+
           .cloud-action-grid {
             display: flex;
             gap: 6px;
@@ -19104,10 +19252,15 @@ ${b2.name}?`)) {
       } else {
         cloudSection.innerHTML = `
         <div class="util-submenu-title">☁️ Tài khoản Cloud</div>
-        <div style="padding: 8px; text-align: center;">
-          <p style="font-size: 10px; color: #666; margin-bottom: 8px;">Đăng nhập để đồng bộ Profile & API Key giữa các máy tính.</p>
-          <button class="vnpt-btn-confirm" id="vnpt-btn-cloud-login-trigger" style="width: 100%; font-size: 12px;">Đăng nhập / Đăng ký</button>
+        <div class="cloud-login-prompt">
+          <p class="login-prompt-text">Đăng nhập để đồng bộ Profile & API Key giữa các máy tính.</p>
+          <button class="vnpt-btn-confirm full-width" id="vnpt-btn-cloud-login-trigger">Đăng nhập / Đăng ký</button>
         </div>
+        <style>
+          .cloud-login-prompt { padding: 8px; text-align: center; }
+          .login-prompt-text { font-size: 10px; color: #666; margin-bottom: 8px; }
+          .full-width { width: 100%; font-size: 12px; }
+        </style>
       `;
         document.getElementById("vnpt-btn-cloud-login-trigger").onclick = () => {
           showLoginModal();
@@ -19121,20 +19274,28 @@ ${b2.name}?`)) {
     const overlay = document.createElement("div");
     overlay.className = "vnpt-pdf-overlay";
     overlay.innerHTML = `
-    <div class="vnpt-pdf-dialog-box" style="width: 320px;">
+    <div class="vnpt-pdf-dialog-box login-modal-box">
       <div class="pdf-dlg-header">
-        <h3 style="text-align: center;">🔥 Firebase Sync</h3>
+        <h3 class="centered-text">🔥 Firebase Sync</h3>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-        <input type="email" id="cloud-email" placeholder="Email" class="cw-map-input" style="height: 36px; font-size: 13px;" autocomplete="new-password">
-        <input type="text" id="cloud-password" placeholder="Mật khẩu" class="cw-map-input sensitive-mask" style="height: 36px; font-size: 13px;" autocomplete="new-password">
+      <div class="login-form-container">
+        <input type="email" id="cloud-email" placeholder="Email" class="cw-map-input login-input" autocomplete="new-password">
+        <input type="text" id="cloud-password" placeholder="Mật khẩu" class="cw-map-input login-input sensitive-mask" autocomplete="new-password">
       </div>
-      <div class="vnpt-pdf-actions" style="flex-direction: column; gap: 8px;">
-        <button id="btn-do-login" class="vnpt-btn-confirm" style="width: 100%;">Đăng nhập</button>
-        <button id="btn-do-signup" class="util-item-small" style="width: 100%; border: none; font-size: 11px;">Chưa có tài khoản? Đăng ký ngay</button>
-        <button id="btn-close-cloud" class="pdf-btn-cancel" style="width: 100%;">Đóng</button>
+      <div class="vnpt-pdf-actions column-layout">
+        <button id="btn-do-login" class="vnpt-btn-confirm full-width">Đăng nhập</button>
+        <button id="btn-do-signup" class="util-item-small signup-link">Chưa có tài khoản? Đăng ký ngay</button>
+        <button id="btn-close-cloud" class="pdf-btn-cancel full-width">Đóng</button>
       </div>
     </div>
+    <style>
+      .login-modal-box { width: 320px; }
+      .centered-text { text-align: center; }
+      .login-form-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+      .login-input { height: 36px; font-size: 13px; }
+      .column-layout { flex-direction: column; gap: 8px; }
+      .signup-link { width: 100%; border: none; font-size: 11px; }
+    </style>
   `;
     document.body.appendChild(overlay);
     const emailInp = overlay.querySelector("#cloud-email");
@@ -19339,10 +19500,10 @@ ${b2.name}?`)) {
                     <span id="vnpt-update-badge-container"></span>
                 </div>
                 <div class="header-center">
-                    <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
-                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">ID</button>
+                    <button class="vnpt-btn-header btn-ai" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">✨ AI</button>
+                    <button class="vnpt-btn-header btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">🔍 Quét</button>
+                    <button class="vnpt-btn-header btn-fill" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">📝 Điền</button>
+                    <button class="vnpt-btn-header btn-id" id="vnpt-btn-toggle-id" title="Ẩn hiện key đồng bộ">🆔 ID</button>
                     <input type="file" id="vnpt-pdf-input" accept=".pdf,image/*" style="display:none;" />
                 </div>
                 <div class="header-right">
@@ -19752,6 +19913,33 @@ ${b2.name}?`)) {
     if (cloudContainer) {
       initCloudSyncUI(cloudContainer);
     }
+    AppState.panel;
+    const handleMouseEnter = () => {
+      if (AppState.panel.classList.contains("vnpt-pinned") && AppState.panel.style.display === "none") {
+        AppState.panel.style.display = "flex";
+        AppState.toggleBtn.className = "btn-opened";
+        AppState.toggleBtn.innerHTML = "✖";
+      }
+    };
+    const handleMouseLeave = () => {
+      if (!AppState.panel.classList.contains("vnpt-pinned")) return;
+      const isFocusingInput = AppState.panel.contains(document.activeElement) && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA");
+      if (isFocusingInput) return;
+      AppState.panel.style.display = "none";
+      AppState.toggleBtn.className = "btn-closed";
+      AppState.toggleBtn.innerHTML = "📄";
+    };
+    AppState.widget.addEventListener("mouseenter", handleMouseEnter);
+    AppState.widget.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("focusin", (e) => {
+      if (AppState.panel.classList.contains("vnpt-pinned") && !AppState.panel.contains(e.target)) {
+        if (!AppState.widget.matches(":hover")) {
+          AppState.panel.style.display = "none";
+          AppState.toggleBtn.className = "btn-closed";
+          AppState.toggleBtn.innerHTML = "📄";
+        }
+      }
+    });
     function checkUpdateUI() {
       const container = document.getElementById("vnpt-update-badge-container");
       if (!container) return;
