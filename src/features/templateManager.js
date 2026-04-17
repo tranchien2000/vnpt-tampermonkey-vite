@@ -81,15 +81,13 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
         mainWrap.className = 'vnpt-template-manager-inner';
 
         const headerRow = document.createElement('div');
-        headerRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:5px; border-top: 1px solid #eee; padding-top: 5px;';
+        headerRow.className = 'tmpl-header-row';
 
         const title = document.createElement('span');
         title.className = 'vnpt-title-main';
-        title.style.cssText = 'font-size:11px;font-weight:700;color:#444;';
 
         btnWrap = document.createElement('div');
         btnWrap.className = 'vnpt-btn-wrap';
-        btnWrap.style.cssText = 'display:flex;gap:4px;';
 
         headerRow.appendChild(title);
         headerRow.appendChild(btnWrap);
@@ -97,7 +95,6 @@ export function renderTemplateManager(container, onSelectTemplate, currentActive
 
         localListWrapper = document.createElement('div');
         localListWrapper.className = 'vnpt-local-list-container';
-        localListWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
         mainWrap.appendChild(localListWrapper);
 
         container.appendChild(mainWrap);
@@ -130,10 +127,9 @@ async function renderSharedTemplates(wrapper, onSelectTemplate, currentActiveNam
 
 function createSharedTemplateRow(tpl, onSelectTemplate, currentActiveName) {
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:3px 8px;background:#e3f2fd;border:1px solid #bbdefb;border-radius:15px;cursor:pointer;outline:none;transition:all 0.2s;';
+    row.className = 'tmpl-row-item';
     if (tpl.name === currentActiveName) {
-        row.style.borderColor = 'var(--vnpt-primary)';
-        row.style.background = 'var(--vnpt-primary-light)';
+        row.classList.add('active');
     }
 
     row.title = tpl.description || tpl.name;
@@ -143,7 +139,6 @@ function createSharedTemplateRow(tpl, onSelectTemplate, currentActiveName) {
             const arrayBuffer = await storageManager.download('firebase', tpl.path, { type: 'arraybuffer' });
             if (onSelectTemplate) onSelectTemplate(arrayBuffer, tpl.name);
             showToast(`✅ Đã tải xong: ${tpl.name}`);
-            // Force re-render to update active state
             const container = document.getElementById('vnpt-template-manager');
             renderTemplateManager(container, onSelectTemplate, tpl.name);
         } catch (err) {
@@ -153,11 +148,11 @@ function createSharedTemplateRow(tpl, onSelectTemplate, currentActiveName) {
 
     const badge = document.createElement('span');
     badge.textContent = 'CLOUD';
-    badge.style.cssText = 'font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:#1976d2;color:#fff;';
+    badge.className = 'tmpl-badge-cloud';
 
     const nameEl = document.createElement('span');
     nameEl.textContent = tpl.name;
-    nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#0d47a1;white-space:nowrap;';
+    nameEl.className = 'tmpl-name-text';
 
     row.appendChild(badge);
     row.appendChild(nameEl);
@@ -166,7 +161,7 @@ function createSharedTemplateRow(tpl, onSelectTemplate, currentActiveName) {
 
 function renderLocalTemplates(wrapper, titleEl, onSelectTemplate, currentActiveName, container) {
     const templates = loadTemplates();
-    titleEl.innerHTML = 'Templates local' + (currentActiveName ? ` <span style="color:#2e7d32;">(Dang dung: ${currentActiveName})</span>` : '');
+    titleEl.innerHTML = 'Mẫu văn bản' + (currentActiveName ? ` <span style="color:#2e7d32;">(Đang dùng: ${currentActiveName})</span>` : '');
 
     if (templates.length === 0) {
         wrapper.innerHTML = '<div style="font-size:10px;color:#999;font-style:italic;padding:12px;text-align:center;width:100%;">Chua co mau nao. Hay chon file .docx tu may tinh de luu vao day.</div>';
@@ -182,35 +177,27 @@ function renderLocalTemplates(wrapper, titleEl, onSelectTemplate, currentActiveN
 
 function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, container) {
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:3px 8px;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:15px;cursor:pointer;outline:none;transition:all 0.2s;';
+    row.className = 'tmpl-row-item';
     if (tpl.name === currentActiveName) {
-        row.style.borderColor = 'var(--vnpt-primary)';
-        row.style.background = 'var(--vnpt-primary-light)';
+        row.classList.add('active');
     }
 
     row.title = tpl.fileName || tpl.name;
     row.tabIndex = 0;
-    row.onfocus = () => { row.style.boxShadow = '0 0 0 2px var(--vnpt-primary)'; };
-    row.onblur = () => { row.style.boxShadow = 'none'; };
     row.onclick = () => {
         row.focus();
         selectTemplate(tpl, onSelectTemplate, container);
     };
 
-    const badge = document.createElement('span');
-    badge.textContent = 'LOCAL';
-    badge.style.cssText = 'font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:#6c757d;color:#fff;';
-
     const nameEl = document.createElement('span');
     nameEl.textContent = tpl.name;
-    nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#212529;white-space:nowrap;';
+    nameEl.className = 'tmpl-name-text';
 
-    row.appendChild(badge);
     row.appendChild(nameEl);
 
     const renameBtn = document.createElement('button');
     renameBtn.innerHTML = '✎';
-    renameBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#555;cursor:pointer;margin-left:auto;';
+    renameBtn.className = 'tmpl-btn-rename';
     renameBtn.onclick = e => {
         e.stopPropagation();
         const newName = prompt('Doi ten template:', tpl.name);
@@ -228,7 +215,7 @@ function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, contai
 
     const delBtn = document.createElement('button');
     delBtn.innerHTML = '✕';
-    delBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#d32f2f;cursor:pointer;margin-left:2px;';
+    delBtn.className = 'tmpl-btn-del';
     delBtn.onclick = async e => {
         e.stopPropagation();
         if (!confirm(`Xoa bieu mau "${tpl.name}"?`)) return;

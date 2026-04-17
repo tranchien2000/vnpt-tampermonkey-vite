@@ -62,7 +62,7 @@ export const DEFAULT_HOTKEYS = {
     'SCAN': { key: 's', altKey: true, ctrlKey: false, shiftKey: false, label: 'Quét dữ liệu' },
     'FILL': { key: 'f', altKey: true, ctrlKey: false, shiftKey: false, label: 'Điền Web' },
     'SCAN_PDF': { key: 'p', altKey: true, ctrlKey: false, shiftKey: false, label: 'Scan PDF (AI)' },
-    'TOGGLE': { key: '`', altKey: true, ctrlKey: false, shiftKey: false, label: 'Đóng/Mở Widget' },
+    'TOGGLE': { key: '`', altKey: false, ctrlKey: false, shiftKey: false, label: 'Đóng/Mở Widget' },
     'CLEAN': { key: 'd', altKey: true, ctrlKey: false, shiftKey: false, label: 'Dọn dẹp & Reset' },
     'SIZE_S': { key: '1', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: S' },
     'SIZE_M': { key: '2', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: M' },

@@ -21,7 +21,7 @@ const MODULES = {
     },
     code_summary: {
         file: 'brain_code.md',
-        dirs: ['src/core', 'src/features', 'src/api', 'src/utils']
+        dirs: ['src/core', 'src/features', 'src/api', 'src/utils', 'src/ui']
     },
     workflows: {
         file: 'brain_flows.md',
@@ -105,16 +105,25 @@ function generate() {
     for (const dir of MODULES.code_summary.dirs) {
         const fullDirPath = path.join(ROOT_DIR, dir);
         if (fs.existsSync(fullDirPath)) {
-            codeContent += `## Thư mục: ${dir}\n\n| File | Mô tả |\n| :--- | :--- |\n`;
-            const files = fs.readdirSync(fullDirPath);
-            for (const file of files) {
-                const relativeFile = path.join(dir, file);
-                const fullFilePath = path.join(ROOT_DIR, relativeFile);
-                if (fs.statSync(fullFilePath).isFile() && (file.endsWith('.js') || file.endsWith('.ts'))) {
-                    const summary = (getFileSummary(relativeFile) || '').replace(/\n/g, '<br>');
-                    codeContent += `| ${file} | ${summary} |\n`;
+            codeContent += `## Thư mục: ${dir}\n\n`;
+            
+            // Hàm quét đệ quy các file trong thư mục
+            const scanFiles = (currentDir, relativePath) => {
+                const items = fs.readdirSync(currentDir);
+                for (const item of items) {
+                    const fullPath = path.join(currentDir, item);
+                    const relPath = path.join(relativePath, item);
+                    
+                    if (fs.statSync(fullPath).isDirectory()) {
+                        scanFiles(fullPath, relPath);
+                    } else if (item.endsWith('.js') || item.endsWith('.ts') || item.endsWith('.cjs')) {
+                        const content = fs.readFileSync(fullPath, 'utf8');
+                        codeContent += `### File: ${relPath}\n\n\`\`\`javascript\n${content}\n\`\`\`\n\n---\n\n`;
+                    }
                 }
-            }
+            };
+            
+            scanFiles(fullDirPath, dir);
             codeContent += '\n';
         }
     }

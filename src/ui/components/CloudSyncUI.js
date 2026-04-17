@@ -11,10 +11,10 @@ export function initCloudSyncUI(container) {
     if (user) {
       cloudSection.innerHTML = `
         <div class="util-submenu-title">☁️ Tài khoản Cloud</div>
-        <div class="cloud-user-info" style="padding: 6px 12px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; background: rgba(26, 115, 232, 0.02);">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 8px; height: 8px; background: #34a853; border-radius: 50%; box-shadow: 0 0 8px #34a853;"></div>
-            <span style="font-weight: 700; color: #3c4043; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${user.email}</span>
+        <div class="cloud-user-info">
+          <div class="user-status-wrapper">
+            <div class="user-status-dot"></div>
+            <span class="user-email-text">${user.email}</span>
           </div>
           <button class="util-btn-logout-mini" id="vnpt-btn-cloud-logout" title="Đăng xuất">Đăng xuất</button>
         </div>
@@ -33,6 +33,37 @@ export function initCloudSyncUI(container) {
         </div>
 
         <style>
+          .cloud-user-info {
+            padding: 6px 12px; 
+            font-size: 11px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            background: rgba(26, 115, 232, 0.02);
+          }
+          .user-status-wrapper {
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            overflow: hidden;
+          }
+          .user-status-dot {
+            width: 8px; 
+            height: 8px; 
+            background: #34a853; 
+            border-radius: 50%; 
+            box-shadow: 0 0 8px #34a853;
+            flex-shrink: 0;
+          }
+          .user-email-text {
+            font-weight: 700; 
+            color: #3c4043; 
+            max-width: 140px; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap;
+          }
+
           .cloud-action-grid {
             display: flex;
             gap: 6px;
@@ -200,10 +231,15 @@ export function initCloudSyncUI(container) {
     } else {
       cloudSection.innerHTML = `
         <div class="util-submenu-title">☁️ Tài khoản Cloud</div>
-        <div style="padding: 8px; text-align: center;">
-          <p style="font-size: 10px; color: #666; margin-bottom: 8px;">Đăng nhập để đồng bộ Profile & API Key giữa các máy tính.</p>
-          <button class="vnpt-btn-confirm" id="vnpt-btn-cloud-login-trigger" style="width: 100%; font-size: 12px;">Đăng nhập / Đăng ký</button>
+        <div class="cloud-login-prompt">
+          <p class="login-prompt-text">Đăng nhập để đồng bộ Profile & API Key giữa các máy tính.</p>
+          <button class="vnpt-btn-confirm full-width" id="vnpt-btn-cloud-login-trigger">Đăng nhập / Đăng ký</button>
         </div>
+        <style>
+          .cloud-login-prompt { padding: 8px; text-align: center; }
+          .login-prompt-text { font-size: 10px; color: #666; margin-bottom: 8px; }
+          .full-width { width: 100%; font-size: 12px; }
+        </style>
       `;
       
       document.getElementById('vnpt-btn-cloud-login-trigger').onclick = () => {
@@ -220,20 +256,28 @@ function showLoginModal() {
   const overlay = document.createElement('div');
   overlay.className = 'vnpt-pdf-overlay'; // Reusing modal styles
   overlay.innerHTML = `
-    <div class="vnpt-pdf-dialog-box" style="width: 320px;">
+    <div class="vnpt-pdf-dialog-box login-modal-box">
       <div class="pdf-dlg-header">
-        <h3 style="text-align: center;">🔥 Firebase Sync</h3>
+        <h3 class="centered-text">🔥 Firebase Sync</h3>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-        <input type="email" id="cloud-email" placeholder="Email" class="cw-map-input" style="height: 36px; font-size: 13px;" autocomplete="new-password">
-        <input type="text" id="cloud-password" placeholder="Mật khẩu" class="cw-map-input sensitive-mask" style="height: 36px; font-size: 13px;" autocomplete="new-password">
+      <div class="login-form-container">
+        <input type="email" id="cloud-email" placeholder="Email" class="cw-map-input login-input" autocomplete="new-password">
+        <input type="text" id="cloud-password" placeholder="Mật khẩu" class="cw-map-input login-input sensitive-mask" autocomplete="new-password">
       </div>
-      <div class="vnpt-pdf-actions" style="flex-direction: column; gap: 8px;">
-        <button id="btn-do-login" class="vnpt-btn-confirm" style="width: 100%;">Đăng nhập</button>
-        <button id="btn-do-signup" class="util-item-small" style="width: 100%; border: none; font-size: 11px;">Chưa có tài khoản? Đăng ký ngay</button>
-        <button id="btn-close-cloud" class="pdf-btn-cancel" style="width: 100%;">Đóng</button>
+      <div class="vnpt-pdf-actions column-layout">
+        <button id="btn-do-login" class="vnpt-btn-confirm full-width">Đăng nhập</button>
+        <button id="btn-do-signup" class="util-item-small signup-link">Chưa có tài khoản? Đăng ký ngay</button>
+        <button id="btn-close-cloud" class="pdf-btn-cancel full-width">Đóng</button>
       </div>
     </div>
+    <style>
+      .login-modal-box { width: 320px; }
+      .centered-text { text-align: center; }
+      .login-form-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+      .login-input { height: 36px; font-size: 13px; }
+      .column-layout { flex-direction: column; gap: 8px; }
+      .signup-link { width: 100%; border: none; font-size: 11px; }
+    </style>
   `;
   document.body.appendChild(overlay);
 

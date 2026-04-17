@@ -1,5 +1,5 @@
 # Project Rules
-*Cập nhật: 18:11:45 15/4/2026*
+*Cập nhật: 18:44:19 17/4/2026*
 
 ## Rules from docs/RULES.md
 
@@ -37,6 +37,7 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 - **Concise Response & No Fluff**: Phản hồi ở mức tối giản (Ultra-Minimalist). Trả lời báo cáo kết quả cực ngắn (1-2 câu). Tuyệt đối KHÔNG chào hỏi rườm rà, KHÔNG lặp lại phân tích tư duy.
 - **Language Mandate**: Toàn bộ phản hồi, tài liệu, và **code comments** phải dùng **Tiếng Việt**.
 - **Trace-First / Error-First**: Giải quyết lỗi dựa trên Line Number. Không Dump Code ra cửa sổ chat.
+- **Context-Aware Scanning**: Trước khi sửa logic scanner, AI **PHẢI** kiểm tra `src/core/constants.js` để tránh trùng lặp Labels.
 
 ---
 
@@ -50,20 +51,28 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
   - Hằng số: `UPPER_SNAKE`.
   - ID DOM: Prefix `vnpt-` (ví dụ: `vnpt-btn-submit`).
 - **Comment Phân Đoạn**: Khi file lớn, ghi `/* Section: Tên Phần */` trên đầu khu vực để AI dễ dàng Grep_Search.
-- **Error Handling**: Mọi thao tác DOM và API ảo dễ gãy phải bọc `try-catch` và dùng logging tại `src/utils/logger.js`.
-- **Lint**: Tôn trọng cấu hình ESlint và Hook Pre-commit.
+- **Error Handling**: Mọi thao tác DOM và API ảo dễ gãy phải bọc `try-catch` và dùng logging tại `src/utils/logger.js`. Luôn đính kèm tên hàm trong log lỗi.
+- **Data Validation**: Dữ liệu từ Web Scanner/Input phải được kiểm tra qua `VALIDATION_REGEX` (`src/core/constants.js`) trước khi lưu.
 
 ---
 
 ## 🦍 3. Chuyên sâu Tampermonkey (Tampermonkey Specs)
 
-- **Module Hóa**: Không viết toàn bộ logic vào file duy nhất. Biên dịch qua Vite/Rollup.
+- **Module Hóa**: Không viết toàn bộ logic vào file duy nhất. Biên dịch qua Vite/Rollup. Cần export đủ `init()` và `cleanup()`.
+- **Hot Reload Friendly**: Hàm `cleanup()` phải gỡ bỏ tất cả DOM, Listeners, Observers và Timers.
 - **Quyền hạn `@grant` (Least Privilege)**: Cấp phát quyền thật mỏng và vừa đủ cho ứng dụng. Khai báo rõ `@connect` đối với API. Không nhúng thư viện lớn mà dùng định dạng CDN `@require`.
+- **Tối ưu dung lượng (Bundle Size)**: 
+    - Bắt buộc dùng bản Lite của các thư viện nếu có thể (ví dụ: `firebase/firestore/lite`).
+    - Các thư viện nặng (>100KB) phải được cấu hình `external` trong `vite.config.js` và load qua `@require`.
+    - Cấu hình build phải luôn bật `drop: ['console', 'debugger']` và `legalComments: 'none'`.
 - **Shadow DOM**: Xóa bỏ xung đột bằng cách giới hạn widget trong Shadow DOM. Không dùng ID thông tục bừa bãi.
-- **Đợi Web Load Dữ Liệu**: Gỡ dần `window.onload`. Bắt logic với các hàm WaitForElement hoặc xử lý quan sát qua `MutationObserver` kết hợp cơ chế `Debounce / Throttle` cẩn trọng.
+- **Đợi Web Load Dữ Liệu**: Gỡ dần `window.onload`. Bắt logic với các hàm WaitForElement hoặc xử lý quan sát qua `MutationObserver` kết hợp cơ chế `Debounce` (500-1500ms).
 - **Giao Tiếp Cross-Domain**: Sử dụng `GM_xmlhttpRequest` để bypass CORS khi gọi backend riêng biệt.
 - **Xử lý File/Mảng Nặng**: Ưu tiên Blob Object kết hợp `URL.createObjectURL(blob)`, và bắt buộc gọi **`URL.revokeObjectURL()`** để chống Memory Leak khi xuất file PDF/WORD.
-- **Trạng thái cấu hình**: Không dùng `GM_setValue` cục bộ, dùng màng bọc `Storage` (trong src/api/storage) để có caching. Dùng Singleton `AppState` (trong src/core/state.js).
+- **Trạng thái cấu hình**: Không dùng `GM_setValue` cục bộ, dùng màng bọc `Storage` (trong `src/utils/storage.js`) để có caching. Dùng Singleton `AppState` (trong `src/core/state.js`).
+- **Quản lý Lịch sử (Backup)**: Hệ thống duy trì tối đa **20 bản ghi** lịch sử cục bộ (Auto-backup).
+- **Z-Index Management**: UI components phải có `z-index` trong khoảng `9999 - 2147483647`.
+- **Centralized Selectors**: Không hard-code selector trong logic. Dùng `src/core/scannerFallbacks.js` hoặc `RemoteConfig`.
 
 ---
 
@@ -88,21 +97,29 @@ Tài liệu này định nghĩa tất cả các quy tắc bắt buộc cho mọi
 
 ## Rules from .cursorrules
 
-AI **PHẢI** tuân thủ bộ quy tắc trung tâm dự án tại: [docs/RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md)
+# AI Instructions for VNPT Project
 
-### 🚀 Quy tắc Ưu tiên (Quick Reference):
-1. **Intelligence First**: AI **PHẢI** đọc toàn bộ nội dung trong thư mục [.notebooklm/](file:///c:/Users/Chien/vnpt-tampermonkey-vite/.notebooklm/) (hoặc chạy qua lệnh GKG) để nắm vững:
-   - `brain_identity.md`: Mục tiêu & Trí nhớ dự án.
-   - `brain_architecture.md`: **Cấu trúc hệ thống & Báo cáo Graphify**.
-   - `brain_code.md`: Tóm tắt logic mã nguồn.
-   - `brain_flows.md`: Danh mục quy trình (Workflows).
-   - `brain_rules.md`: Tích hợp tự động quy tắc dự án.
-2. **Planning First**: Luôn lập `implementation_plan.md` dưới dạng artifact (file). **KHÔNG** trả lời kế hoạch trực tiếp bằng văn bản. Chờ xác nhận trước khi code.
-3. **Execution**: Chỉ code sau khi người dùng gõ "ok", "trien khai" hoặc "y".
-4. **Graphify Strategy**: Ưu tiên sử dụng `brain_architecture.md`. Nếu cần chi tiết hơn, dùng `graphify query` cho các vấn đề liên kết chéo phức tạp.
-5. **Language**: Toàn bộ phản hồi và code comments là **Tiếng Việt**.
-6. **Slash Commands**: Dùng phím `/` để mở menu gợi ý và chọn các workflow từ `.agents/workflows/`.
+## Project Structure
+- `src/`: Source code chính (JS modules).
+- `dist/`: File build đầu ra (Bỏ qua khi phân tích logic).
+- `node_modules/`: Thư viện (Bỏ qua hoàn toàn).
+- `scripts/`: Build & Release scripts.
 
-*(Tham khảo bảng cẩm nang [docs/RULES.md](file:///c:/Users/Chien/vnpt-tampermonkey-vite/docs/RULES.md) để biết thêm về tiêu chuẩn JSDoc, Error Handling, Design System, ...)*
+## Rules for Agent
+1. **Always read PROJECT_MEMORY.md and .pi_session_sync.md** at the start of a session.
+2. **Sync Context**: Before ending a session, update `.pi_session_sync.md` with current progress.
+3. **Do not read `dist/` or `node_modules/`** unless specifically asked.
+3. **Use modular edits**: When modifying UI or Fields, check `src/ui/styles/` or `src/features/fields/` instead of looking for large monolithic files.
+4. **Be concise**: Vietnamese is preferred for communication, but keep technical explanations brief.
+5. **Keep Names**: When suggesting build changes, always ensure `keepNames: true` in esbuild config.
+
+## Ignore Patterns
+- `*.log`
+- `*.txt`
+- `dist/**`
+- `node_modules/**`
+- `.git/**`
+- `scratch/**`
+- `graphify-out/**`
 
 
