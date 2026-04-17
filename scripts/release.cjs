@@ -105,23 +105,30 @@ run(`git commit -m "${commitMsg}"`);
 run(`git tag -f v${newVersion} -m "${userMsg}"`); // Thêm -f (force) để ghi đè tag nếu trùng
 
 console.log(`\n🚀 Đang đẩy code và tag lên GitHub...`);
-// Cố gắng pull rebase, nếu có xung đột thì ưu tiên bản cục bộ
+// Cố gắng fetch và rebase trước khi push
 try {
-    execSync('git pull --rebase origin main', { stdio: 'inherit' });
+    console.log(`> Đang đồng bộ với GitHub (git pull --rebase)...`);
+    execSync('git pull origin main --rebase', { stdio: 'inherit' });
 } catch (e) {
-    console.log('⚠️ Phát hiện xung đột khi Pull, đang tự động xử lý...');
-    // Ưu tiên bản của mình cho các file build và config version
+    console.log('⚠️ Phát hiện xung đột hoặc lỗi đồng bộ. Đang thử giải quyết...');
     try {
-        execSync('git checkout --ours dist/* version.json package.json', { stdio: 'inherit' });
-        execSync('git add dist/* version.json package.json', { stdio: 'inherit' });
-        // Chạy tiếp rebase
+        // Ưu tiên bản local cho các file config quan trọng
+        execSync('git checkout --ours package.json version.json dist/*', { stdio: 'inherit' });
+        execSync('git add .', { stdio: 'inherit' });
         process.env.GIT_EDITOR = 'true';
         execSync('git rebase --continue', { stdio: 'inherit' });
     } catch (rebaseError) {
-        console.error('❌ Không thể tự động xử lý rebase. Vui lòng kiểm tra git status.');
+        console.error('❌ Không thể tự động rebase. Vui lòng chạy "git pull origin main --rebase" thủ công.');
     }
 }
-run('git push origin main --follow-tags');
+
+// Push code và tags
+try {
+    run('git push origin main --follow-tags');
+} catch (pushError) {
+    console.log('⚠️ Push bị từ chối. Đang thử ép buộc (Force Push) để đồng bộ...');
+    run('git push origin main --force --follow-tags');
+}
 
 console.log(`\n🎉 HOÀN TẤT RELEASE v${newVersion}!`);
 console.log(`----------------------------------------`);

@@ -1,7 +1,7 @@
 {
-  "version": "1.6.37",
-  "latestVersion": "1.6.37",
+  "version": "1.6.38",
+  "latestVersion": "1.6.38",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "updateTime": "2026-04-17T11:57:16.078Z",
+  "updateTime": "2026-04-17T12:23:10.412Z",
   "message": "chore: release v1.6.37 - Cập nhật: defaults.js, templateManager.js, CloudSyncUI.js, controls.js, index.js, template.js, widget.js"
 }
