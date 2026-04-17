@@ -7,7 +7,7 @@
 export { startFieldLinker } from './fields/linker.js';
 export { validateField, refreshRowValidation } from './fields/validation.js';
 export { addOrUpdateFieldRow, updateSyncDirIcon } from './fields/row.js';
-export { saveFieldsToLocal, loadSavedData, getBackupName, getExportFileName } from './fields/store.js';
+export { saveFieldsToLocal, loadSavedData, getBackupName, getExportFileName, restorePosition } from './fields/store.js';
 export { syncAllFields } from './fields/sync.js';
 export { updateUIForDefaultMode, renderCalcMappingInBanner } from './fields/mode.js';
 export { initFieldsManager, initColSplitter } from './fields/ui.js';

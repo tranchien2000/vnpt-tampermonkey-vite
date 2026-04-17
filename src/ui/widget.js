@@ -153,9 +153,7 @@ export function initWidget() {
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
-                    <div id="vnpt-fields-list">
-                        <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
-                    </div>
+                    <div id="vnpt-fields-list"></div>
                 </div>
 
 

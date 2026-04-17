@@ -10,7 +10,7 @@ import { logger } from './utils/logger.js';
 import { injectStyles } from './ui/styles.js';
 import { initWidget } from './ui/widget.js';
 import { initDragDrop } from './ui/dragDrop.js';
-import { initFieldsManager, loadSavedData, initReverseSync, cleanupReverseSync } from './features/fieldsManager.js';
+import { initFieldsManager, loadSavedData, initReverseSync, cleanupReverseSync, restorePosition } from './features/fieldsManager.js';
 import { initWebScanner } from './features/webScanner.js';
 import { initDocExport } from './features/docExport.js';
 import { setupAutoFillForm } from './features/autoFillForm.js';
@@ -47,20 +47,30 @@ async function init() {
   if (window.__vnptInited) return;
   window.__vnptInited = true;
 
-  logger.info('Initializing VNPT Userscript...');
+    logger.info('Initializing VNPT Userscript...');
+    console.log('[VNPT-Debug] 1. Starting Init...');
 
-  // Khởi chạy Smart Merge/Dev Sync cho Local Storage trước khi chốt Data
-  initStorageMerge();
+    // Khởi chạy Smart Merge/Dev Sync cho Local Storage trước khi chốt Data
+    initStorageMerge();
 
-  try {
-    RemoteConfig.init(); // Tải Selectors từ Cloud (Asynchronous)
-    injectStyles();
-    initWidget();        // Docx Export Widget
-    initCalcWidget();    // Calculator UI (will attach to #vnpt-inline-calc)
-    initDragDrop();      // Make Docx widget draggable
-    initFieldsManager();
-    initReverseSync();
-    loadSavedData();
+    try {
+        RemoteConfig.init(); // Tải Selectors từ Cloud (Asynchronous)
+        injectStyles();
+        console.log('[VNPT-Debug] 2. Styles injected.');
+        initWidget();        // Docx Export Widget
+        console.log('[VNPT-Debug] 3. Widget created.');
+        restorePosition();   // Khôi phục vị trí widget
+        initCalcWidget();    // Calculator UI
+        initDragDrop();
+        initFieldsManager();
+        console.log('[VNPT-Debug] 4. FieldsManager initialized.');
+        initReverseSync();
+        
+        // Để một chút thời gian cho Widget render HTML xong
+        setTimeout(() => {
+            loadSavedData();
+            console.log('[VNPT-Debug] 5. Data loaded.');
+        }, 100);
     initWebScanner();
     initDocExport();
     setupAutoFillForm();

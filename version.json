@@ -1,5 +1,7 @@
 {
-  "version": "1.6.30",
+  "version": "1.6.31",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.30 - Tối ưu hiệu năng xác định bộ địa chỉ và dọn dẹp log dư thừa"
+  "message": "v1.6.30 - Tối ưu hiệu năng xác định bộ địa chỉ và dọn dẹp log dư thừa",
+  "latestVersion": "1.6.31",
+  "updateTime": "2026-04-17T00:10:09.295Z"
 }
