@@ -1,0 +1,1 @@
+{"nodes": [{"id": "vite_ext_sw_config", "label": "vite.ext.sw.config.js", "file_type": "code", "source_file": "vite.ext.sw.config.js", "source_location": "L1"}], "edges": [{"source": "vite_ext_sw_config", "target": "vite", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "vite.ext.sw.config.js", "source_location": "L1", "weight": 1.0}]}
