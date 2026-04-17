@@ -26,7 +26,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.js-loader-DX8x5FiU.js"
+        "assets/content.js-loader-D4B242xR.js"
       ],
       "matches": [
         "*://hopdong.vnpt.vn/*",
@@ -48,8 +48,8 @@
         "*://outlook.office365.com/*"
       ],
       "resources": [
-        "assets/profileManager-BgBz3QKp.js",
-        "assets/content.js-Hq_SQ9zS.js"
+        "assets/profileManager-DB5QytVR.js",
+        "assets/content.js-BVQUr_z1.js"
       ],
       "use_dynamic_url": false
     }
