@@ -1,0 +1,37 @@
+{
+  "../../../@crx/manifest": {
+    "file": "assets/crx-manifest.js-Bn4E8F-p.js",
+    "name": "crx-manifest.js",
+    "src": "../../../@crx/manifest",
+    "isEntry": true
+  },
+  "content.js-loader.js": {
+    "file": "assets/content.js-loader-BmNu3S_H.js",
+    "src": "content.js-loader.js"
+  },
+  "src/extension/content.js": {
+    "file": "assets/content.js-DOxMT9LJ.js",
+    "name": "content.js",
+    "src": "src/extension/content.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "src/features/profileManager.js",
+      "src/features/profileManager.js"
+    ]
+  },
+  "src/extension/sw.js": {
+    "file": "assets/sw.js-DR6WdE52.js",
+    "name": "sw.js",
+    "src": "src/extension/sw.js",
+    "isEntry": true
+  },
+  "src/features/profileManager.js": {
+    "file": "assets/profileManager-DvmzRl5t.js",
+    "name": "profileManager",
+    "src": "src/features/profileManager.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/extension/content.js"
+    ]
+  }
+}

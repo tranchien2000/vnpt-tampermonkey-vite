@@ -3,7 +3,9 @@
   "name": "VNPT Automation Tool (Local)",
   "version": "1.6.24",
   "description": "Local build - VNPT automation content scripts",
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": [
     "*://hopdong.vnpt.vn/*",
     "*://mail.google.com/*",
@@ -18,10 +20,25 @@
     "http://localhost/*"
   ],
   "background": {
-    "service_worker": "sw.js",
+    "service_worker": "service-worker-loader.js",
     "type": "module"
   },
   "content_scripts": [
+    {
+      "js": [
+        "assets/content.js-loader-BmNu3S_H.js"
+      ],
+      "matches": [
+        "*://hopdong.vnpt.vn/*",
+        "*://mail.google.com/*",
+        "*://outlook.live.com/*",
+        "*://outlook.office.com/*",
+        "*://outlook.office365.com/*"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
     {
       "matches": [
         "*://hopdong.vnpt.vn/*",
@@ -30,8 +47,11 @@
         "*://outlook.office.com/*",
         "*://outlook.office365.com/*"
       ],
-      "js": ["content.js"],
-      "run_at": "document_idle"
+      "resources": [
+        "assets/profileManager-DvmzRl5t.js",
+        "assets/content.js-DOxMT9LJ.js"
+      ],
+      "use_dynamic_url": false
     }
   ]
 }

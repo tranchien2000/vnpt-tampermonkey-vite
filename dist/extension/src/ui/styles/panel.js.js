@@ -60,10 +60,7 @@ export const panelStyles = `
     #vnpt-panel-header:hover { background: rgba(255, 255, 255, 0.6); }
     
     .header-left { display: flex; align-items: center; min-width: 40px; flex-shrink: 0; }
-    .header-center { 
-        display: flex; gap: 2px; flex: 1; justify-content: center; min-width: 0; overflow: hidden; 
-        background: white; border-radius: 6px; padding: 2px; margin: 0 4px;
-    }
+    .header-center { display: flex; gap: 2px; flex: 1; justify-content: center; min-width: 0; overflow: hidden; }
     .header-right { 
         display: flex; gap: 2px; align-items: center; 
         margin-right: 34px; flex-shrink: 0;

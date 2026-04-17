@@ -6,31 +6,29 @@
  * @exports init  — Khởi tạo toàn bộ ứng dụng
  * @seeAlso ui/styles.js, ui/widget.js, features/calcWidgetFeature.js
  */
-import './utils/polyfills.js';
-import { logger } from './utils/logger.js';
-import { injectStyles } from './ui/styles.js';
-import { initWidget } from './ui/widget.js';
-import { Storage } from './utils/storage.js';
-import { initDragDrop } from './ui/dragDrop.js';
-import { initFieldsManager, loadSavedData, initReverseSync, cleanupReverseSync, restorePosition } from './features/fieldsManager.js';
-import { initWebScanner } from './features/webScanner.js';
-import { initDocExport } from './features/docExport.js';
-import { setupAutoFillForm } from './features/autoFillForm.js';
-import { initPdfScan } from './features/pdfScan/index.js';
-import { initRawScan } from './features/rawScan/index.js';
-import { initSyncEngine } from './features/dataFill/syncEngine.js';
-import { initCalcWidget } from './features/calc/index.js';
-import { clearDOMCache, refreshLabelsCache } from './utils/domHelper.js';
-import { debounce } from './utils/common.js';
-import { initHotkeys, cleanupHotkeys } from './features/hotkeys.js';
-import { cleanupSyncEngine } from './features/dataFill/syncEngine.js';
-import { cleanupWebScanner } from './features/webScanner.js';
-import { initStorageMerge } from './utils/migrationHelper.js';
-import { RemoteConfig } from './api/remoteConfig.js';
-import { injectMailBridge } from './features/mailScan/mailScanner.js';
-import { APP_VERSION } from './core/constants.js';
-import { showToast } from './ui/toast.js';
-
+import { logger } from "/src/utils/logger.js.js";
+import { injectStyles } from "/src/ui/styles.js.js";
+import { initWidget } from "/src/ui/widget.js.js";
+import { initDragDrop } from "/src/ui/dragDrop.js.js";
+import { initFieldsManager, loadSavedData, initReverseSync, cleanupReverseSync, restorePosition } from "/src/features/fieldsManager.js.js";
+import { initWebScanner } from "/src/features/webScanner.js.js";
+import { initDocExport } from "/src/features/docExport.js.js";
+import { setupAutoFillForm } from "/src/features/autoFillForm.js.js";
+import { initPdfScan } from "/src/features/pdfScan/index.js.js";
+import { initRawScan } from "/src/features/rawScan/index.js.js";
+import { initSyncEngine } from "/src/features/dataFill/syncEngine.js.js";
+import { initCalcWidget } from "/src/features/calc/index.js.js";
+import { clearDOMCache, refreshLabelsCache } from "/src/utils/domHelper.js.js";
+import { debounce } from "/src/utils/common.js.js";
+import { initHotkeys, cleanupHotkeys } from "/src/features/hotkeys.js.js";
+import { cleanupSyncEngine } from "/src/features/dataFill/syncEngine.js.js";
+import { cleanupWebScanner } from "/src/features/webScanner.js.js";
+import { initStorageMerge } from "/src/utils/migrationHelper.js.js";
+import { RemoteConfig } from "/src/api/remoteConfig.js.js";
+import { injectMailBridge } from "/src/features/mailScan/mailScanner.js.js";
+import { APP_VERSION } from "/src/core/constants.js.js";
+import { Storage } from "/src/utils/storage.js.js";
+import { showToast } from "/src/ui/toast.js.js";
 
 /** Danh sách domain của các dịch vụ mail được hỗ trợ */
 const MAIL_DOMAINS = [
@@ -48,9 +46,6 @@ async function init() {
   // Chống chạy 2 lần
   if (window.__vnptInited) return;
   window.__vnptInited = true;
-
-  // Khởi chạy Storage Cache (Extension Storage là Async)
-  await Storage.init();
 
     logger.info('Initializing VNPT Userscript...');
     console.log('[VNPT-Debug] 1. Starting Init...');

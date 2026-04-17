@@ -1,5 +1,5 @@
 # VNPT PRO PROJECT FULL BRAIN
-*Snapshot: 19:25:48 17/4/2026*
+*Snapshot: 19:37:25 17/4/2026*
 
 ## 📚 PHẦN 1: TÀI LIỆU & QUY TẮC
 
