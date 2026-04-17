@@ -78,10 +78,12 @@ function generate() {
         if (!NOTEBOOK_ID) {
             throw new Error("Vui lòng điền NOTEBOOK_ID vào script generate_brain.cjs (Dùng lệnh 'nlm list' để lấy ID)");
         }
-        const command = `nlm source add ${NOTEBOOK_ID} --file "${OUTPUT_FILE}"`;
+        // Chuyển sang đường dẫn tương đối để tránh lỗi shell trên Windows
+        const relativeOutputFile = path.relative(ROOT_DIR, OUTPUT_FILE);
+        const command = `nlm source add ${NOTEBOOK_ID} --file "${relativeOutputFile}"`;
         console.log(`> Chạy lệnh: ${command}`);
         
-        execSync(command, { stdio: 'inherit' });
+        execSync(command, { stdio: 'inherit', cwd: ROOT_DIR });
         console.log(`\n✨ Đã cập nhật bộ não lên NotebookLM thành công!`);
     } catch (err) {
         console.log(`\n⚠️  Lỗi khi đẩy lên NotebookLM: ${err.message}`);

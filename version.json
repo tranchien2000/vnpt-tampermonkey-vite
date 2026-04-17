@@ -1,7 +1,7 @@
 {
-  "version": "1.6.43",
-  "latestVersion": "1.6.42",
+  "version": "1.6.44",
+  "latestVersion": "1.6.44",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "updateTime": "2026-04-17T12:36:14.422Z",
+  "updateTime": "2026-04-17T15:07:59.702Z",
   "message": "chore: release v1.6.43 - Cập nhật: main.js, panel.js, storage.js"
 }
