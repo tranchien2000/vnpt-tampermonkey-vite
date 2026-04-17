@@ -6,6 +6,7 @@
  * @exports init  — Khởi tạo toàn bộ ứng dụng
  * @seeAlso ui/styles.js, ui/widget.js, features/calcWidgetFeature.js
  */
+import './utils/polyfills.js';
 import { logger } from './utils/logger.js';
 import { injectStyles } from './ui/styles.js';
 import { initWidget } from './ui/widget.js';
@@ -51,6 +52,7 @@ async function init() {
     console.log('[VNPT-Debug] 1. Starting Init...');
 
     // Khởi chạy Smart Merge/Dev Sync cho Local Storage trước khi chốt Data
+    await Storage.init();
     initStorageMerge();
 
     try {

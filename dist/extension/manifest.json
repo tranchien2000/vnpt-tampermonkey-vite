@@ -1,37 +1,47 @@
 {
   "manifest_version": 3,
-  "name": "VNPT Automation Tool (Local)",
-  "version": "1.6.24",
-  "description": "Local build - VNPT automation content scripts",
-  "permissions": ["storage"],
-  "host_permissions": [
-    "*://hopdong.vnpt.vn/*",
-    "*://mail.google.com/*",
-    "*://outlook.live.com/*",
-    "*://outlook.office.com/*",
-    "*://outlook.office365.com/*",
-    "https://generativelanguage.googleapis.com/*",
-    "https://raw.githubusercontent.com/*",
-    "https://*.googleapis.com/*",
-    "https://*.firebaseio.com/*",
-    "https://firebasestorage.googleapis.com/*",
-    "http://localhost/*"
+  "name": "VNPT Word Automation PRO",
+  "version": "1.6.32",
+  "description": "Tối ưu hóa quy trình làm việc trên VNPT",
+  "permissions": [
+    "storage",
+    "activeTab"
   ],
   "background": {
-    "service_worker": "sw.js",
+    "service_worker": "service-worker-loader.js",
     "type": "module"
   },
   "content_scripts": [
     {
       "matches": [
-        "*://hopdong.vnpt.vn/*",
-        "*://mail.google.com/*",
-        "*://outlook.live.com/*",
-        "*://outlook.office.com/*",
-        "*://outlook.office365.com/*"
+        "https://*.vnpt.vn/*",
+        "http://localhost/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "src/main.js-loader.js"
+      ],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/ui/assets/*",
+        "*.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "**/*",
+        "*"
+      ],
+      "use_dynamic_url": false
     }
   ]
 }

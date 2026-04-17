@@ -108,7 +108,8 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     tabs.default.onclick = () => { currentDataTab = 'default'; sv(SK_DATATAB, 'default'); applyStyles(); renderFields(); };
     tabs.sync.onclick = () => { currentDataTab = 'sync'; sv(SK_DATATAB, 'sync'); applyStyles(); renderFields(); };
 
-    // JSON Import/Export logic
+    /* JSON Import/Export logic - Đã xóa */
+    /*
     const expBtn = document.createElement('button'); expBtn.innerText = '📤'; expBtn.className = 'cw-icon-btn';
     expBtn.title = "Sao lưu toàn bộ dữ liệu ra JSON";
     expBtn.onclick = () => exportFullBackup();
@@ -125,6 +126,7 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
         }
     };
     impBtn.onclick = () => fileInp.click();
+    */
 
     dataWrap.appendChild(tabHeader); tabHeader.appendChild(tabs.custom); tabHeader.appendChild(tabs.default); tabHeader.appendChild(tabs.sync);
     dataWrap.appendChild(dataBody); widget.appendChild(dataHeader); widget.appendChild(dataWrap);
@@ -145,10 +147,12 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     };
     
     renderFields();
+    /*
     const right = dataHeader.querySelector('.cw-right-wrap') || document.createElement('div');
     right.className = 'cw-right-wrap'; 
     right.prepend(expBtn); 
     right.prepend(impBtn); 
     right.appendChild(fileInp); // Thêm file input vào DOM
     dataHeader.appendChild(right);
+    */
 }

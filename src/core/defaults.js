@@ -32,10 +32,15 @@ export const DEFAULT_DATA = {
     diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 ", syncDir: "both" },
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     emailB: { label: "Email B", value: "", syncDir: "both" },
-    dvtGoi: { label: "Đơn vị gói", value: "Gói", syncDir: "both" },
-    soLuongGoi: { label: "Số Lượng Gói", value: "1", syncDir: "both" },
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
-    "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh", syncDir: "both" }
+    "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh", syncDir: "both" },
+    
+    // --- DỮ LIỆU TÍNH TOÁN & GÓI CƯỚC (CALC) ---
+    dvtGoi: { label: "Đơn vị gói", value: "Gói", syncDir: "both" },
+    soLuongGoi: { label: "Số lượng gói", value: "1", syncDir: "both" },
+    congGoi: { label: "Cộng gói (Trước thuế)", value: "0", syncDir: "both" },
+    thueGTGTgoi: { label: "Thuế GTGT gói", value: "0", syncDir: "both" },
+    thanhTienGoi: { label: "Thành tiền gói (Sau thuế)", value: "0", syncDir: "both" }
 };
 
 /**

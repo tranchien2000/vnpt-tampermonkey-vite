@@ -69,10 +69,7 @@ export function initWidget() {
                                 <div class="util-section-mini">
                                     <div class="util-action-row">
                                         <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
-                                        <button class="util-item-mini" id="vnpt-btn-import-json" title="Nhập JSON">📥 Nhập</button>
-                                        <button class="util-item-mini" id="vnpt-btn-export-json" title="Xuất JSON">📤 Xuất</button>
                                         <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
-                                        <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>
                                 </div>
 
@@ -331,7 +328,7 @@ export function initWidget() {
         });
     }
 
-    document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup();
+    /* document.getElementById('vnpt-btn-export-json').onclick = () => exportFullBackup(); */
 
     const btnMockData = document.getElementById('vnpt-btn-mock-data');
     if (btnMockData) {
@@ -343,6 +340,7 @@ export function initWidget() {
 
 
 
+    /*
     const btnImport = document.getElementById('vnpt-btn-import-json');
     const fileImport = document.getElementById('vnpt-file-import-json');
 
@@ -353,6 +351,7 @@ export function initWidget() {
             if (success) setTimeout(() => location.reload(), 1500);
         }
     };
+    */
 
     moreBtn.addEventListener('click', (e) => {
         e.stopPropagation();

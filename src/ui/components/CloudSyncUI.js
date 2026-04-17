@@ -21,33 +21,13 @@ export function initCloudSyncUI(container) {
         <div class="util-separator"></div>
         <div class="util-submenu-title">Đồng bộ cá nhân</div>
         <div class="cloud-action-grid">
-          <div class="cloud-action-item" id="vnpt-btn-cloud-push">
-            <div class="cloud-action-icon">📤</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Đẩy dữ liệu</div>
-              <div class="cloud-action-desc">Lên Cloud</div>
-            </div>
+          <div class="cloud-action-item" id="vnpt-btn-cloud-push-all" title="Đẩy Dữ liệu & Keys lên Cloud">
+            <span class="cloud-action-icon-small">🚀</span>
+            <span class="cloud-action-label-small">Đẩy lên</span>
           </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-pull">
-            <div class="cloud-action-icon">📥</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Kéo dữ liệu</div>
-              <div class="cloud-action-desc">Về máy này</div>
-            </div>
-          </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-push">
-            <div class="cloud-action-icon">🔑</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Sao lưu Keys</div>
-              <div class="cloud-action-desc">Gemini Key</div>
-            </div>
-          </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-pull">
-            <div class="cloud-action-icon">🔄</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Khôi phục Keys</div>
-              <div class="cloud-action-desc">Từ Cloud</div>
-            </div>
+          <div class="cloud-action-item" id="vnpt-btn-cloud-pull-all" title="Kéo Dữ liệu & Keys từ Cloud">
+            <span class="cloud-action-icon-small">🛬</span>
+            <span class="cloud-action-label-small">Kéo về</span>
           </div>
         </div>
 
@@ -56,77 +36,41 @@ export function initCloudSyncUI(container) {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 6px;
-            padding: 8px 12px;
+            padding: 4px 12px 8px 12px;
           }
           .cloud-action-item {
             background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 6px 4px;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 4px 0;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: flex-start;
-            text-align: left;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-            gap: 8px;
-          }
-          .cloud-action-item:hover {
-            border-color: var(--vnpt-primary);
-            background: var(--vnpt-primary-light);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.1);
-          }
-          .cloud-action-item:active {
-            transform: translateY(0);
-          }
-          .cloud-action-icon {
-            font-size: 14px;
-            margin-bottom: 0;
-            width: 24px;
-            height: 24px;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8f9fa;
-            border-radius: 6px;
-            flex-shrink: 0;
+            gap: 6px;
           }
-          .cloud-action-content {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+          .cloud-action-item:hover {
+            border-color: var(--vnpt-primary);
+            background: #f8fbff;
           }
-          .cloud-action-label {
+          .cloud-action-icon-small {
+            font-size: 13px;
+          }
+          .cloud-action-label-small {
             font-size: 10px;
             font-weight: 700;
             color: #3c4043;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          .cloud-action-desc {
-            font-size: 8px;
-            color: #70757a;
-            margin-top: 0px;
-            white-space: nowrap;
           }
           .util-btn-logout-mini {
-            background: #f8f9fa;
-            border: 1px solid #dadce0;
-            border-radius: 6px;
+            background: #fdf2f2;
+            border: 1px solid #f8d7da;
+            border-radius: 4px;
             padding: 2px 8px;
             font-size: 9px;
             font-weight: 700;
             color: #d93025;
             cursor: pointer;
-            transition: all 0.2s;
-          }
-          .util-btn-logout-mini:hover {
-            background: #fdf2f2;
-            border-color: #d93025;
           }
         </style>
       `;
@@ -137,28 +81,27 @@ export function initCloudSyncUI(container) {
         showToast("👋 Đã đăng xuất!");
       };
       
-      document.getElementById('vnpt-btn-cloud-push').onclick = async () => {
+      document.getElementById('vnpt-btn-cloud-push-all').onclick = async () => {
         try {
-          showToast("⏳ Đang đẩy dữ liệu...");
+          showToast("⏳ Đang đồng bộ hóa toàn bộ...");
           
-          // 1. Đẩy Profiles
           const { getProfiles } = await import('../../features/profileManager.js');
+          const { Storage } = await import('../../utils/storage.js');
+          const { 
+              SK_CALC_MAP, SK_HOTKEYS, SK_GEMINI_KEY,
+              LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
+              SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
+              SK_ADDRESS_LEARNING
+          } = await import('../../core/constants.js');
+          const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
+
+          // 1. Đẩy Profiles
           const profiles = getProfiles();
           for (const p of profiles) {
             await FirebaseService.pushProfile(p);
           }
 
-          // 2. Đẩy Cấu hình (Mapping, Hotkeys, Text Template, Data mặc định...)
-          const { 
-              SK_CALC_MAP, SK_HOTKEYS, 
-              LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-              SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-              SK_ADDRESS_LEARNING
-          } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
-          
-          // Dùng DEFAULT_CALC_MAP làm fallback nếu user chưa lưu mapping thủ công
+          // 2. Đẩy Cấu hình toàn cục
           const globalConfig = {
               calcMap: Storage.get(SK_CALC_MAP) ?? DEFAULT_CALC_MAP,
               hotkeys: Storage.get(SK_HOTKEYS),
@@ -171,40 +114,48 @@ export function initCloudSyncUI(container) {
           };
           await FirebaseService.pushGlobalConfig(globalConfig);
 
-          showToast("✅ Đã đồng bộ lên Cloud!");
+          // 3. Đẩy API Keys
+          const geminiKey = Storage.get(SK_GEMINI_KEY);
+          if (geminiKey) {
+            await FirebaseService.backupKeys({ gemini_key: geminiKey });
+          }
+
+          showToast("🚀 Đã đồng bộ Dữ liệu & Keys lên Cloud!");
         } catch (err) {
           showToast("❌ Lỗi: " + err.message, "#ea4335");
         }
       };
       
-      document.getElementById('vnpt-btn-cloud-pull').onclick = async () => {
+      document.getElementById('vnpt-btn-cloud-pull-all').onclick = async () => {
         try {
-          showToast("⏳ Đang kéo dữ liệu...");
+          showToast("⏳ Đang tải toàn bộ dữ liệu...");
           const cloudProfiles = await FirebaseService.pullProfiles();
           const cloudConfig = await FirebaseService.pullGlobalConfig();
+          const cloudKeys = await FirebaseService.restoreKeys();
 
-          if (cloudProfiles.length === 0 && !cloudConfig) {
+          if (cloudProfiles.length === 0 && !cloudConfig && !cloudKeys) {
             showToast("ℹ️ Không tìm thấy dữ liệu trên Cloud");
             return;
           }
           
-          if (confirm(`Tìm thấy ${cloudProfiles.length} bản ghi dữ liệu. Bạn có muốn ghi đè bộ cài đặt Local không?`)) {
-             // 1. Áp dụng Profiles
-             const { importProfiles } = await import('../../features/profileManager.js');
-             importProfiles(cloudProfiles);
+          if (confirm(`Tìm thấy dữ liệu đồng bộ. Bạn có muốn ghi đè bộ cài đặt Local hiện tại không?`)) {
+             const { Storage } = await import('../../utils/storage.js');
+             const { 
+                 SK_CALC_MAP, SK_HOTKEYS, SK_GEMINI_KEY,
+                 LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
+                 SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
+                 SK_ADDRESS_LEARNING
+             } = await import('../../core/constants.js');
 
-             // 2. Áp dụng Cấu hình (Nếu có)
+             // 1. Áp dụng Profiles
+             if (cloudProfiles.length > 0) {
+                const { importProfiles } = await import('../../features/profileManager.js');
+                importProfiles(cloudProfiles);
+             }
+
+             // 2. Áp dụng Cấu hình
              if (cloudConfig) {
-                 const { 
-                     SK_CALC_MAP, SK_HOTKEYS, 
-                     LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-                     SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-                     SK_ADDRESS_LEARNING
-                 } = await import('../../core/constants.js');
-                 const { Storage } = await import('../../utils/storage.js');
                  const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
-                 
-                 // Lưu config vào Storage (dùng DEFAULT nếu cloud không có)
                  Storage.set(SK_CALC_MAP, cloudConfig.calcMap ?? DEFAULT_CALC_MAP);
                  if (cloudConfig.hotkeys) Storage.set(SK_HOTKEYS, cloudConfig.hotkeys);
                  if (cloudConfig.fields) Storage.set(LOCAL_KEY_FIELDS, cloudConfig.fields);
@@ -215,47 +166,34 @@ export function initCloudSyncUI(container) {
                  if (cloudConfig.addressLearning) Storage.set(SK_ADDRESS_LEARNING, cloudConfig.addressLearning);
              }
 
-             showToast("✅ Đã khôi phục toàn bộ cấu hình!");
-             setTimeout(() => location.reload(), 1000);
-          }
-        } catch (err) {
-          showToast("❌ Lỗi: " + err.message, "#ea4335");
-        }
-      };
+             // 3. Áp dụng API Keys
+             if (cloudKeys && cloudKeys.gemini_key) {
+                Storage.set(SK_GEMINI_KEY, cloudKeys.gemini_key);
+             }
 
-      document.getElementById('vnpt-btn-cloud-keys-push').onclick = async () => {
-        try {
-          const { SK_GEMINI_KEY } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          const geminiKey = Storage.get(SK_GEMINI_KEY);
-          
-          if (!geminiKey) {
-            showToast("ℹ️ Không tìm thấy Gemini Key để sao lưu");
-            return;
+             showToast("✅ Đã khôi phục Dữ liệu & Keys thành công!");
+             
+             // --- TỐI ƯU: CẬP NHẬT NÓNG KHÔNG REFRESH TRANG ---
+             try {
+                // Xóa cache để ép buộc đọc dữ liệu mới vừa lưu
+                Storage.clearCache();
+                
+                // Nạp lại dữ liệu vào bảng Fields (Giao diện chính)
+                const { loadSavedData } = await import('../../features/fieldsManager.js');
+                loadSavedData(); 
+                
+                // Nạp lại các biến mặc định cho Data Fill (Nếu đang mở tab này)
+                const { initSyncEngine } = await import('../../features/dataFill/syncEngine.js');
+                initSyncEngine(); 
+
+                console.log("[CloudSync] Hot-swapped data successfully without reload.");
+             } catch (refreshErr) {
+                console.warn("[CloudSync] Could not hot-swap all data, suggesting reload.", refreshErr);
+                if (confirm("Dữ liệu đã về máy, bạn có muốn tải lại trang để áp dụng hoàn toàn không?")) {
+                    location.reload();
+                }
+             }
           }
-          
-          showToast("⏳ Đang sao lưu Keys...");
-          await FirebaseService.backupKeys({ gemini_key: geminiKey });
-          showToast("✅ Đã sao lưu API Keys lên Cloud!");
-        } catch (err) {
-          showToast("❌ Lỗ: " + err.message, "#ea4335");
-        }
-      };
-      
-      document.getElementById('vnpt-btn-cloud-keys-pull').onclick = async () => {
-        try {
-          showToast("⏳ Đang khôi phục Keys...");
-          const keys = await FirebaseService.restoreKeys();
-          if (!keys || !keys.gemini_key) {
-            showToast("ℹ️ Không tìm thấy Keys trên Cloud");
-            return;
-          }
-          
-          const { SK_GEMINI_KEY } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          Storage.set(SK_GEMINI_KEY, keys.gemini_key);
-          showToast("✅ Đã khôi phục API Keys từ Cloud!");
-          setTimeout(() => location.reload(), 1000);
         } catch (err) {
           showToast("❌ Lỗi: " + err.message, "#ea4335");
         }

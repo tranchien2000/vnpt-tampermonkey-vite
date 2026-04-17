@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "VNPT Word Automation PRO",
+  "version": "1.6.32",
+  "description": "Tối ưu hóa quy trình làm việc trên VNPT",
+  "permissions": ["storage", "activeTab"],
+  "background": {
+    "service_worker": "src/extension/sw.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.vnpt.vn/*", "http://localhost/*"],
+      "js": ["src/main.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/ui/assets/*", "*.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
