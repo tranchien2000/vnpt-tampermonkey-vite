@@ -127,12 +127,22 @@ export const controlStyles = `
     }
     .util-section-mini:last-child { border-bottom: none; }
 
-    .util-action-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+    .util-action-row { display: flex; gap: 4px; align-items: center; width: 100%; box-sizing: border-box; }
     
     .util-item-mini {
+        flex: 1;
+        min-width: 0; /* Cho phép co lại nhỏ hơn text nếu cần */
         background: #f8f9fa; border: 1px solid #eee; border-radius: 6px;
-        padding: 4px 6px; font-size: 10px; font-weight: 700; color: #3c4043;
+        padding: 4px 2px; font-size: 10px; font-weight: 700; color: #3c4043;
         cursor: pointer; transition: all 0.2s; text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .util-item-mini.btn-json-icon {
+        flex: 0 0 24px; /* Thu nhỏ thêm một chút */
+        font-size: 11px;
+        padding: 4px 0;
     }
     .util-item-mini:hover { background: var(--vnpt-primary-light); border-color: var(--vnpt-primary); color: var(--vnpt-primary); }
     .util-item-mini.danger:hover { background: #fdf2f2; border-color: #d93025; color: #d93025; }

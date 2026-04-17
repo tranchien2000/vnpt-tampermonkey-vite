@@ -66,7 +66,7 @@ export function startFieldLinker(row, fKey) {
             : '';
         banner.innerHTML = `
             🔗 <b>Liên kết đa điểm</b> ${badge}
-            &nbsp;·&nbsp; <span style="font-size:10px;opacity:0.85;">🔵 Click = link &nbsp; 🔴 Click lại = bỏ link</span>
+            &nbsp;·&nbsp; <span style="font-size:10px;opacity:0.85;">🔵 Trái = Link &nbsp; 🔴 Phải = Bỏ Link</span>
             &nbsp;·&nbsp; <button class="vnpt-link-done-btn">✅ Xong</button>
             &nbsp; <kbd>Esc</kbd>
         `;
@@ -180,8 +180,8 @@ export function startFieldLinker(row, fKey) {
         lastHoverEl = el;
     };
 
-    // ── Click để toggle link/unlink ──
-    const onClick = (e) => {
+    // ── Click (Trái = Link, Phải = Unlink) ──
+    const handleMouseInteraction = (e) => {
         const el = e.target;
         if (widget.contains(el) || banner.contains(el)) return;
 
@@ -190,34 +190,39 @@ export function startFieldLinker(row, fKey) {
 
         const selector = getBestSelector(el);
         const currentParts = fKey.value.split(',').map(s => s.trim()).filter(s => s);
+        const isLeftClick = e.button === 0;
+        const isRightClick = e.button === 2 || e.type === 'contextmenu';
 
-        if (currentParts.includes(selector)) {
-            // ── UNLINK: bỏ selector khỏi danh sách ──
-            const newParts = currentParts.filter(p => p !== selector);
-            fKey.value = newParts.join(', ');
+        if (isRightClick) {
+            // ── UNLINK: chuột phải ──
+            if (currentParts.includes(selector)) {
+                const newParts = currentParts.filter(p => p !== selector);
+                fKey.value = newParts.join(', ');
 
-            el.classList.remove('vnpt-link-existing');
-            el.classList.remove('vnpt-unlink-hover');
-            // Sau unlink, khôi phục highlight xanh (vẫn đang hover)
-            el.classList.add('vnpt-link-highlight');
-            const idx = existingEls.indexOf(el);
-            if (idx !== -1) existingEls.splice(idx, 1);
+                el.classList.remove('vnpt-link-existing');
+                el.classList.remove('vnpt-unlink-hover');
+                el.classList.add('vnpt-link-highlight'); // Chuyển về trạng thái chuẩn bị link
+                
+                const idx = existingEls.indexOf(el);
+                if (idx !== -1) existingEls.splice(idx, 1);
 
-            fKey.dispatchEvent(new Event('input', { bubbles: true }));
-            updateBanner();
-            showToast(`🔓 Đã bỏ "${selector}"`, '#ea4335');
-        } else {
-            // ── LINK: thêm selector vào danh sách (giữ TOÀN BỘ các phần hiện có) ──
-            fKey.value = [...currentParts, selector].join(', ');
+                fKey.dispatchEvent(new Event('input', { bubbles: true }));
+                updateBanner();
+                showToast(`🔓 Đã bỏ "${selector}"`, '#ea4335');
+            }
+        } else if (isLeftClick) {
+            // ── LINK: chuột trái ──
+            if (!currentParts.includes(selector)) {
+                fKey.value = [...currentParts, selector].join(', ');
 
-            el.classList.remove('vnpt-link-highlight');
-            el.classList.add('vnpt-link-existing');
-            if (!existingEls.includes(el)) existingEls.push(el);
-            if (lastHoverEl === el) lastHoverEl = null;
-
-            fKey.dispatchEvent(new Event('input', { bubbles: true }));
-            updateBanner();
-            showToast(`+🔗 "${selector}" — Click lại để bỏ | ✅ Xong`, '#198754');
+                el.classList.remove('vnpt-link-highlight');
+                el.classList.add('vnpt-link-existing');
+                if (!existingEls.includes(el)) existingEls.push(el);
+                
+                fKey.dispatchEvent(new Event('input', { bubbles: true }));
+                updateBanner();
+                showToast(`+🔗 "${selector}" — Phải để bỏ | ✅ Xong`, '#198754');
+            }
         }
     };
 
@@ -251,13 +256,15 @@ export function startFieldLinker(row, fKey) {
         }
 
         document.removeEventListener('mouseover', onMouseOver, true);
-        document.removeEventListener('click', onClick, true);
+        document.removeEventListener('mousedown', handleMouseInteraction, true);
+        document.removeEventListener('contextmenu', handleMouseInteraction, true);
         document.removeEventListener('keydown', onKeydown, true);
         _linkerCleanup = null;
     };
 
     document.addEventListener('mouseover', onMouseOver, true);
-    document.addEventListener('click', onClick, true);
+    document.addEventListener('mousedown', handleMouseInteraction, true);
+    document.addEventListener('contextmenu', handleMouseInteraction, true);
     document.addEventListener('keydown', onKeydown, true);
     _linkerCleanup = cleanup;
 

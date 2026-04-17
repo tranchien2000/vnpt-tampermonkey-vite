@@ -8,7 +8,7 @@ import { Storage } from '../../utils/storage.js';
 import { SK_GEMINI_KEY, SK_GEMINI_MODEL, SK_RAW_SCAN, REQUIRED_KEYS, DEFAULT_LABELS } from '../../core/constants.js';
 import { fileToBase64, extractWithGemini } from './geminiOcr.js';
 import { showPdfConfirmDialog, showPdfLoading, hidePdfLoading } from './pdfScanUI.js';
-import { addOrUpdateFieldRow, saveFieldsToLocal } from '../fieldsManager.js';
+import { addOrUpdateFieldRow, saveFieldsToLocal, syncAllFields } from '../fieldsManager.js';
 import { showToast } from '../../ui/toast.js';
 import { createInternalBackup, generateBackupName } from '../../utils/backupHelper.js';
 import { extractFieldsFromText, extractFieldsLocally } from '../rawScan/rawScan.js';
@@ -141,10 +141,17 @@ export function initPdfScan() {
             e.preventDefault();
             if (AppState.lastPdfResults && AppState.lastPdfResults.length > 0) {
                 showPdfConfirmDialog(AppState.lastPdfResults, AppState.lastPdfRawText || "", (selectedResults) => {
+                    const keysToSync = selectedResults.map(res => res.key);
                     selectedResults.forEach(res => {
                         addOrUpdateFieldRow(res.key, res.value, res.label);
                     });
                     saveFieldsToLocal();
+
+                    // Tự động điền dữ liệu xuống form trang web sau khi lưu
+                    if (keysToSync.length > 0) {
+                        setTimeout(() => syncAllFields(keysToSync), 300);
+                    }
+
                     showToast(`✅ Đã cập nhật ${selectedResults.length} trường.`);
                 }, (newText) => {
                     try {
@@ -357,7 +364,8 @@ export function initPdfScan() {
             const aliases = fullKey.split(',').map(k => k.trim());
             
             // Bỏ qua các nhãn trong danh sách loại trừ HOẶC nếu tất cả bí danh đều trong list loại trừ
-            const shouldExclude = EXCLUDED_LABELS.includes(label.toLowerCase()) || 
+            const labelLower = (label || '').toLowerCase();
+            const shouldExclude = EXCLUDED_LABELS.includes(labelLower) || 
                                 aliases.every(alias => EXCLUDED_KEYS.includes(alias));
 
             if (shouldExclude) {
@@ -405,10 +413,17 @@ export function initPdfScan() {
         AppState.lastPdfRawText = rawText || "";
 
         showPdfConfirmDialog(resultsArray, rawText || "", (selectedResults) => {
+            const keysToSync = selectedResults.map(res => res.key);
             selectedResults.forEach(res => {
                 addOrUpdateFieldRow(res.key, res.value, res.label);
             });
             saveFieldsToLocal();
+
+            // Tự động điền dữ liệu xuống form trang web sau khi lưu
+            if (keysToSync.length > 0) {
+                setTimeout(() => syncAllFields(keysToSync), 300);
+            }
+
             showToast(`✅ Đã quét xong ${selectedResults.length} trường.`);
             
             AppState.lastPdfResults = AppState.lastPdfResults.map(orig => {

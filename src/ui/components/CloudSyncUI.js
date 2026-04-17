@@ -1,6 +1,7 @@
 import { FirebaseService } from '../../api/firebaseService.js';
 import { showToast } from '../toast.js';
 import { AppState } from '../../core/state.js';
+import { loadSavedData } from '../../features/fieldsManager.js';
 
 export function initCloudSyncUI(container) {
   const cloudSection = document.createElement('div');
@@ -19,100 +20,63 @@ export function initCloudSyncUI(container) {
         </div>
 
         <div class="util-separator"></div>
-        <div class="util-submenu-title">Đồng bộ cá nhân</div>
+        <div class="util-submenu-title">Đồng bộ cá nhân (Firebase)</div>
         <div class="cloud-action-grid">
-          <div class="cloud-action-item" id="vnpt-btn-cloud-push">
-            <div class="cloud-action-icon">📤</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Đẩy dữ liệu</div>
-              <div class="cloud-action-desc">Lên Cloud</div>
-            </div>
+          <div class="cloud-action-item push" id="vnpt-btn-cloud-push">
+            <span class="cloud-action-icon">📤</span>
+            <span class="cloud-action-label">Đẩy lên Cloud</span>
           </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-pull">
-            <div class="cloud-action-icon">📥</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Kéo dữ liệu</div>
-              <div class="cloud-action-desc">Về máy này</div>
-            </div>
-          </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-push">
-            <div class="cloud-action-icon">🔑</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Sao lưu Keys</div>
-              <div class="cloud-action-desc">Gemini Key</div>
-            </div>
-          </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-pull">
-            <div class="cloud-action-icon">🔄</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Khôi phục Keys</div>
-              <div class="cloud-action-desc">Từ Cloud</div>
-            </div>
+          <div class="cloud-action-item pull" id="vnpt-btn-cloud-pull">
+            <span class="cloud-action-icon">📥</span>
+            <span class="cloud-action-label">Kéo về máy</span>
           </div>
         </div>
 
         <style>
           .cloud-action-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
             gap: 6px;
             padding: 8px 12px;
           }
           .cloud-action-item {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
+            flex: 1;
+            background: #f8f9fa;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
             padding: 6px 4px;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: flex-start;
-            text-align: left;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-            gap: 8px;
-          }
-          .cloud-action-item:hover {
-            border-color: var(--vnpt-primary);
-            background: var(--vnpt-primary-light);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.1);
-          }
-          .cloud-action-item:active {
-            transform: translateY(0);
-          }
-          .cloud-action-icon {
-            font-size: 14px;
-            margin-bottom: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8f9fa;
-            border-radius: 6px;
-            flex-shrink: 0;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            min-height: 32px;
           }
-          .cloud-action-content {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+          
+          .cloud-action-item:hover {
+            background: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
           }
+          
+          .cloud-action-item.push:hover { border-color: var(--vnpt-primary); color: var(--vnpt-primary); }
+          .cloud-action-item.pull:hover { border-color: var(--vnpt-success); color: var(--vnpt-success); }
+
+          .cloud-action-item:active {
+            transform: translateY(0) scale(0.97);
+          }
+          
+          .cloud-action-icon {
+            font-size: 14px;
+          }
+
           .cloud-action-label {
             font-size: 10px;
             font-weight: 700;
-            color: #3c4043;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          .cloud-action-desc {
-            font-size: 8px;
-            color: #70757a;
-            margin-top: 0px;
             white-space: nowrap;
           }
+
           .util-btn-logout-mini {
             background: #f8f9fa;
             border: 1px solid #dadce0;
@@ -153,7 +117,7 @@ export function initCloudSyncUI(container) {
               SK_CALC_MAP, SK_HOTKEYS, 
               LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
               SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-              SK_ADDRESS_LEARNING
+              SK_ADDRESS_LEARNING, SK_GEMINI_KEY
           } = await import('../../core/constants.js');
           const { Storage } = await import('../../utils/storage.js');
           const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
@@ -167,7 +131,8 @@ export function initCloudSyncUI(container) {
               templates: Storage.get(SK_TEMPLATES),
               defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS),
               dataDefault: Storage.get(SK_DATA_DEF),
-              addressLearning: Storage.get(SK_ADDRESS_LEARNING)
+              addressLearning: Storage.get(SK_ADDRESS_LEARNING),
+              geminiKey: Storage.get(SK_GEMINI_KEY) // Đã gộp API Keys vào đây
           };
           await FirebaseService.pushGlobalConfig(globalConfig);
 
@@ -199,7 +164,7 @@ export function initCloudSyncUI(container) {
                      SK_CALC_MAP, SK_HOTKEYS, 
                      LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
                      SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-                     SK_ADDRESS_LEARNING
+                     SK_ADDRESS_LEARNING, SK_GEMINI_KEY
                  } = await import('../../core/constants.js');
                  const { Storage } = await import('../../utils/storage.js');
                  const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
@@ -213,49 +178,20 @@ export function initCloudSyncUI(container) {
                  if (cloudConfig.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, cloudConfig.defaultFields);
                  if (cloudConfig.dataDefault) Storage.set(SK_DATA_DEF, cloudConfig.dataDefault);
                  if (cloudConfig.addressLearning) Storage.set(SK_ADDRESS_LEARNING, cloudConfig.addressLearning);
+                 
+                 // Khôi phục Gemini Key
+                 if (cloudConfig.geminiKey) {
+                    Storage.set(SK_GEMINI_KEY, cloudConfig.geminiKey);
+                    const keyInput = document.getElementById('vnpt-gemini-key');
+                    if (keyInput) keyInput.value = cloudConfig.geminiKey;
+                 }
              }
 
              showToast("✅ Đã khôi phục toàn bộ cấu hình!");
-             setTimeout(() => location.reload(), 1000);
+             
+             // Nạp lại dữ liệu bảng mà không cần refresh trang
+             loadSavedData();
           }
-        } catch (err) {
-          showToast("❌ Lỗi: " + err.message, "#ea4335");
-        }
-      };
-
-      document.getElementById('vnpt-btn-cloud-keys-push').onclick = async () => {
-        try {
-          const { SK_GEMINI_KEY } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          const geminiKey = Storage.get(SK_GEMINI_KEY);
-          
-          if (!geminiKey) {
-            showToast("ℹ️ Không tìm thấy Gemini Key để sao lưu");
-            return;
-          }
-          
-          showToast("⏳ Đang sao lưu Keys...");
-          await FirebaseService.backupKeys({ gemini_key: geminiKey });
-          showToast("✅ Đã sao lưu API Keys lên Cloud!");
-        } catch (err) {
-          showToast("❌ Lỗ: " + err.message, "#ea4335");
-        }
-      };
-      
-      document.getElementById('vnpt-btn-cloud-keys-pull').onclick = async () => {
-        try {
-          showToast("⏳ Đang khôi phục Keys...");
-          const keys = await FirebaseService.restoreKeys();
-          if (!keys || !keys.gemini_key) {
-            showToast("ℹ️ Không tìm thấy Keys trên Cloud");
-            return;
-          }
-          
-          const { SK_GEMINI_KEY } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          Storage.set(SK_GEMINI_KEY, keys.gemini_key);
-          showToast("✅ Đã khôi phục API Keys từ Cloud!");
-          setTimeout(() => location.reload(), 1000);
         } catch (err) {
           showToast("❌ Lỗi: " + err.message, "#ea4335");
         }

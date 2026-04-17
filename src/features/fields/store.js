@@ -16,21 +16,24 @@ export function saveFieldsToLocal() {
     const rows = container.querySelectorAll('.vnpt-field-row');
     rows.forEach(row => {
         const keyInput = row.querySelector('.f-key');
-        if (!keyInput) return;
+        const labelInput = row.querySelector('.f-label');
+        const valueInput = row.querySelector('.f-val');
+        const syncDirEl = row.querySelector('.btn-sync-dir');
+
+        if (!keyInput || !labelInput || !valueInput) {
+            console.warn('[VNPT] Bỏ qua hàng do thiếu input:', row);
+            return;
+        }
         
         const rawKeyInput = keyInput.value.trim();
         const parts = rawKeyInput.split(',').map(s => s.trim()).filter(s => s);
         const k = parts[0];
         const s = parts.slice(1).join(', ');
         
-        const labelInput = row.querySelector('.f-label');
-        const valueInput = row.querySelector('.f-val');
-        const syncDirEl = row.querySelector('.btn-sync-dir');
-        
         if (k) {
             data[k] = { 
-                label: labelInput ? labelInput.value.trim() : '', 
-                value: valueInput ? valueInput.value : '', 
+                label: labelInput.value.trim(), 
+                value: valueInput.value, 
                 sync: s, 
                 syncDir: syncDirEl ? syncDirEl.getAttribute('data-dir') : 'both' 
             };
@@ -63,6 +66,9 @@ export function loadSavedData() {
 
     // 1. Nạp các trường mặc định (Khung xương)
     defaultEntries.forEach(([keyString, label]) => {
+        // Lọc bỏ các trường Calc dư thừa nếu có trong danh sách mặc định (phòng hờ)
+        if (label.includes('Calc:') || label.includes('🛠️')) return;
+
         const primaryKey = keyString.split(',')[0].trim();
         const saved = savedFields[primaryKey];
         
@@ -80,6 +86,13 @@ export function loadSavedData() {
     Object.keys(savedFields).forEach(primaryKey => {
         if (!defaultPKs.has(primaryKey)) {
             const saved = savedFields[primaryKey];
+            const label = (saved && typeof saved === 'object') ? (saved.label || '') : '';
+            
+            // Xoá bỏ các trường có tiền tố "🛠️ Calc:" hoặc "Calc:" theo yêu cầu
+            if (label.includes('Calc:') || label.includes('🛠️')) {
+                return;
+            }
+
             if (saved && typeof saved === 'object') {
                 addOrUpdateFieldRow(primaryKey, saved.value || '', saved.label || '', saved.sync || '', saved.syncDir || 'both');
             } else if (saved) {

@@ -296,7 +296,7 @@ async function waitForOptions(el, timeout = 3000) {
     return false;
 }
 
-// Tìm input theo id, name, hoặc nhãn thẻ label (Hỗ trợ Fuzzy Search)
+// Tìm input theo id, name, hoặc nhãn thẻ label (Ưu tiên khớp chính xác)
 export function findPageInput(name, labelText = null) {
     if (!name && !labelText) return null;
 
@@ -310,58 +310,44 @@ export function findPageInput(name, labelText = null) {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || el.getAttribute('contenteditable') === 'true') {
             return el;
         }
-        // Nếu không phải input, tìm input con đầu tiên bên trong nó (Smart Proxy)
         return el.querySelector('input, textarea, select, [contenteditable="true"]');
     };
 
-    // 1. Thử tra cứu từ Map (O(1))
+    // 1. THỬ KHỚP CHÍNH XÁC TUYỆT ĐỐI (O(1)) - KHÔNG FUZZY CHO ID/NAME
     if (name) {
-        let el = FullDOMMap.byId.get(name) || FullDOMMap.byName.get(name) || FullDOMMap.byPlaceholder.get(name) || FullDOMMap.byLabel.get(name);
+        // Tra cứu trực tiếp từ Map (Exact Match)
+        let el = FullDOMMap.byId.get(name) || FullDOMMap.byName.get(name) || FullDOMMap.byPlaceholder.get(name);
+        
         if (el && document.contains(el)) return resolveToInput(el);
+
+        // Thử tìm trực tiếp bằng querySelector (Exact Match)
+        const selector = `[id="${name}"], [name="${name}"], [formcontrolname="${name}"], [placeholder="${name}"]`;
+        const directEl = document.querySelector(selector);
+        if (directEl) return resolveToInput(directEl);
     }
 
+    // 2. KHỚP THEO LABEL (Chính xác trước)
     if (labelText) {
         let el = FullDOMMap.byLabel.get(labelText);
         if (el && document.contains(el)) return resolveToInput(el);
     }
 
-    // 1.5. Alias fallback cho xaIdNew (Tương thích dữ liệu cũ)
-    if (name && (name.includes('xaId') || name.includes('quanHuyenId') || name.includes('phuongXaId') || name.includes('xaIdNew'))) {
+    // 2.5. Alias fallback đặc thù cho VNPT
+    if (name && (name.includes('xaIdNew') || name.includes('huyenId'))) {
         const addressGroup = getVNPTAddressGroup();
-        if (addressGroup && addressGroup.xaIdNew) {
-            return resolveToInput(addressGroup.xaIdNew);
-        }
+        if (addressGroup && addressGroup.xaIdNew) return resolveToInput(addressGroup.xaIdNew);
     }
 
-    // 2. Nếu Map chưa có (hoặc hỏng), thử tìm trực tiếp (Fallback)
-    if (name) {
-        const byId = document.getElementById(name);
-        if (byId) {
-            const resolved = resolveToInput(byId);
-            if (resolved) return resolved;
-        }
-
-        const selector = `input[id="${name}"], textarea[id="${name}"], select[id="${name}"], input[name="${name}"], textarea[name="${name}"], [placeholder="${name}"], [formcontrolname="${name}"]`;
-        const byAttr = document.querySelector(selector);
-        if (byAttr) return byAttr;
-
-        // Thử tìm bất cứ element nào có ID/Name đó rồi resolve
-        const generalAttr = document.querySelector(`[id="${name}"], [name="${name}"]`);
-        if (generalAttr) {
-            const resolved = resolveToInput(generalAttr);
-            if (resolved) return resolved;
-        }
-    }
-
-    // 3. Fuzzy Match trên Label (Tốn kém hơn)
+    // 3. FUZZY MATCH TRÊN LABEL (Chỉ dùng làm phương án cuối cùng và với ngưỡng cực cao)
     const targetLabel = labelText || name;
-    if (targetLabel && targetLabel.length > 2) {
+    if (targetLabel && targetLabel.length > 5) { // Chỉ fuzzy với nhãn dài để tránh nhầm ID ngắn
         const labelTexts = Array.from(FullDOMMap.byLabel.keys());
         if (labelTexts.length === 0 && LabelCache.length > 0) {
             labelTexts.push(...LabelCache.map(l => l.innerText.trim()).filter(t => t.length > 0));
         }
 
-        const bestText = findBestMatch(targetLabel, labelTexts, 0.82);
+        // Ngưỡng cực cao (0.95) để đảm bảo "Giấy uỷ quyền số" không bao giờ khớp nhầm với "Giấy uỷ quyền"
+        const bestText = findBestMatch(targetLabel, labelTexts, 0.95);
         if (bestText) {
             return resolveToInput(FullDOMMap.byLabel.get(bestText));
         }

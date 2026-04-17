@@ -1,6 +1,6 @@
 {
   "name": "tampermonkey-vite-userscript",
-  "version": "1.6.32",
+  "version": "1.6.33",
   "description": "A minimal Vite setup for Tampermonkey userscripts",
   "type": "module",
   "scripts": {

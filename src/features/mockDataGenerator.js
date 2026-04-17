@@ -40,7 +40,13 @@ export function generateVNPTMockData() {
     const email = `contact_${randomDigit(4)}@testvnpt.com.vn`;
     
     const dob = `0${Math.floor(Math.random() * 9 + 1)}/0${Math.floor(Math.random() * 9 + 1)}/19${Math.floor(Math.random() * 20 + 70)}`;
-    const issueDate = `1${Math.floor(Math.random() * 9)}/05/202${Math.floor(Math.random() * 4)}`;
+    
+    // Ngày cấp CCCD (Thường là gần đây 2021-2024)
+    const issueDate = `${Math.floor(Math.random() * 20 + 10)}/05/202${Math.floor(Math.random() * 4 + 1)}`;
+    
+    // Ngày cấp ĐKKD (Random nhưng không phải năm nay - Lấy từ 2010 đến 2023)
+    const randomPastYear = Math.floor(Math.random() * 14) + 2010; 
+    const businessIssueDate = `${Math.floor(Math.random() * 28 + 1).toString().padStart(2, '0')}/${Math.floor(Math.random() * 12 + 1).toString().padStart(2, '0')}/${randomPastYear}`;
 
     addOrUpdateFieldRow('tenToChuc', name);
     addOrUpdateFieldRow('soDkdn', mst);
@@ -64,7 +70,7 @@ export function generateVNPTMockData() {
     
     addOrUpdateFieldRow('ngaySinhCustomer', dob);
     addOrUpdateFieldRow('ngayCapCustomer', issueDate);
-    addOrUpdateFieldRow('ngayCapSoDkdnCustomer', issueDate);
+    addOrUpdateFieldRow('ngayCapSoDkdnCustomer', businessIssueDate);
     addOrUpdateFieldRow('ngayCap', issueDate);
     
     addOrUpdateFieldRow('noiCapCustomer', listOffices[2]);

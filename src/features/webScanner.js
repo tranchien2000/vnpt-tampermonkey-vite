@@ -160,8 +160,8 @@ export function initWebScanner() {
     }
 
     btnScan.addEventListener('click', clickHandler = function () {
-        // Tự động tạo bản sao lưu trước khi quét mới (Ghi đè dữ liệu cũ)
-        createInternalBackup(generateBackupName());
+        // Bỏ tính năng backup tự động/clean khi quét theo yêu cầu: quét chỉ + thêm
+        // createInternalBackup(generateBackupName());
 
         if (AppState.isDefaultMode) {
             Object.keys(DEFAULT_DATA).forEach(key => {
@@ -220,7 +220,10 @@ export function initWebScanner() {
                 else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan'].includes(primaryId)) val = normalizeDate(val);
             }
             const sourceContext = ids.includes('duong') ? fullAddressScanned : null;
-            addOrUpdateFieldRow(keyString, val, null, '', null, false, sourceContext); // Nút quét thì xem như lấy từ form lần đầu
+
+            // Chế độ "Quét + Thêm": Chỉ cập nhật nếu giá trị mới không rỗng,
+            // và quan trọng là hàm addOrUpdateFieldRow sẽ được báo hiệu để không ghi đè giá trị cũ nếu đã có dữ liệu.
+            addOrUpdateFieldRow(keyString, val, null, '', null, false, sourceContext, true); 
         });
 
         saveFieldsToLocal();
