@@ -18,7 +18,7 @@
     "http://localhost/*"
   ],
   "background": {
-    "service_worker": "sw.js",
+    "service_worker": "src/extension/sw.js",
     "type": "module"
   },
   "content_scripts": [
@@ -30,7 +30,7 @@
         "*://outlook.office.com/*",
         "*://outlook.office365.com/*"
       ],
-      "js": ["content.js"],
+      "js": ["src/extension/content.js"],
       "run_at": "document_idle"
     }
   ]
