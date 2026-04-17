@@ -50,7 +50,7 @@ export function updateRowConnectionStatus(row) {
     }
 }
 
-export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '', syncDir = null, isFromWebForm = false, sourceContext = null) {
+export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = '', syncDir = null, isFromWebForm = false, sourceContext = null, skipIfNotEmpty = false) {
     const container = AppState.fieldsContainer || document.getElementById('vnpt-fields-list');
     if (!container) {
         console.error('[VNPT-Debug] No container found in addOrUpdateFieldRow for:', keyText);
@@ -64,44 +64,57 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
     let isDuplicate = false;
 
     const incomingPK = keyText.split(',')[0].trim();
+    
+    // Tìm hàng dựa trên data-pk thay vì class f-key để tránh trùng lặp class
+    const existingRow = container.querySelector(`.vnpt-field-row[data-pk="${incomingPK}"]`);
 
-    for (let input of existingInputs) {
-        const currentPK = input.value.split(',')[0].trim();
-        if (currentPK === incomingPK) {
-            const row = input.closest('.vnpt-field-row');
-            const valueInput = row.querySelector('.f-val');
-            const labelInput = row.querySelector('.f-label');
-            const btnSyncDir = row.querySelector('.btn-sync-dir');
-            const currentDir = btnSyncDir ? btnSyncDir.getAttribute('data-dir') : 'both';
+    if (existingRow) {
+        const valueInput = existingRow.querySelector('.f-val');
+        const labelInput = existingRow.querySelector('.f-label');
+        const keyInput = existingRow.querySelector('.f-key');
+        const btnSyncDir = existingRow.querySelector('.btn-sync-dir');
+        const currentDir = btnSyncDir ? btnSyncDir.getAttribute('data-dir') : 'both';
 
-            // Không cập nhật value nếu đây là cập nhật từ form web mà chiều sync bị chặn 'down'
-            if (valueText !== null && valueInput.value !== valueText && document.activeElement !== valueInput) {
-                if (!(isFromWebForm && currentDir === 'down')) {
-                    valueInput.value = valueText;
+        // Không cập nhật value nếu:
+        // 1. Chế độ skipIfNotEmpty đang bật và value hiện tại đã có dữ liệu
+        // 2. Cập nhật từ form web mà chiều sync bị chặn 'down'
+        if (valueText !== null && valueInput.value !== valueText && document.activeElement !== valueInput) {
+            const hasData = valueInput.value && valueInput.value.trim() !== '';
+            if (skipIfNotEmpty && hasData) {
+                // Bỏ qua không ghi đè
+            } else if (!(isFromWebForm && currentDir === 'down')) {
+                const oldVal = valueInput.value;
+                valueInput.value = valueText;
+
+                // Hiệu ứng nháy xanh nếu giá trị thực sự thay đổi và không phải rỗng
+                if (oldVal !== valueText && valueText) {
+                    existingRow.classList.remove('field-flash-success');
+                    void existingRow.offsetWidth; // Trigger reflow
+                    existingRow.classList.add('field-flash-success');
+                    setTimeout(() => existingRow.classList.remove('field-flash-success'), 3000);
                 }
             }
-            if (labelText !== null && labelText !== '' && labelInput.value !== labelText && document.activeElement !== labelInput) {
-                labelInput.value = labelText;
-            }
-            if (syncText !== '' && input.value !== (keyText + ', ' + syncText) && document.activeElement !== input) {
-                input.value = keyText + ', ' + syncText;
-            }
-            if (syncDir && btnSyncDir && btnSyncDir.getAttribute('data-dir') !== syncDir) {
-                updateSyncDirIcon(btnSyncDir, syncDir);
-            }
-
-            // Lưu context (địa chỉ mang tính ngữ cảnh) để hỗ trợ "học máy"
-            if (sourceContext && valueInput) {
-                valueInput.dataset.sourceAddress = sourceContext;
-            }
-
-            // QUAN TRỌNG: Re-validate sau khi cập nhật
-            refreshRowValidation(row);
-            updateRowConnectionStatus(row);
-
-            isDuplicate = true;
-            break;
         }
+        if (labelText !== null && labelText !== '' && labelInput.value !== labelText && document.activeElement !== labelInput) {
+            labelInput.value = labelText;
+        }
+        if (syncText !== '' && keyInput.value !== (keyText + ', ' + syncText) && document.activeElement !== keyInput) {
+            keyInput.value = keyText + ', ' + syncText;
+        }
+        if (syncDir && btnSyncDir && btnSyncDir.getAttribute('data-dir') !== syncDir) {
+            updateSyncDirIcon(btnSyncDir, syncDir);
+        }
+
+        // Lưu context (địa chỉ mang tính ngữ cảnh) để hỗ trợ "học máy"
+        if (sourceContext && valueInput) {
+            valueInput.dataset.sourceAddress = sourceContext;
+        }
+
+        // QUAN TRỌNG: Re-validate sau khi cập nhật
+        refreshRowValidation(existingRow);
+        updateRowConnectionStatus(existingRow);
+
+        isDuplicate = true;
     }
 
     if (!isDuplicate) {
@@ -118,6 +131,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         const row = document.createElement('div');
         row.className = 'vnpt-field-row row-item';
         row.setAttribute('draggable', 'false');
+        row.setAttribute('data-pk', incomingPK); // Gán PK duy nhất cho hàng
 
         let displayKey = keyText;
         if (syncText) displayKey += ', ' + syncText;
@@ -178,7 +192,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             debouncedSyncRow();
         });
         fVal.addEventListener('change', function () {
-            if (primaryKey.toLowerCase().includes('ngay')) {
+            if (primaryKey && primaryKey.toLowerCase().includes('ngay')) {
                 const normalized = normalizeDate(this.value);
                 if (normalized !== this.value) {
                     this.value = normalized;

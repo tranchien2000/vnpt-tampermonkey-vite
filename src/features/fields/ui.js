@@ -190,10 +190,18 @@ export function initFieldsManager() {
                 Storage.remove(SK_TAX);
 
                 if (isDefault) {
-                    updateUIForDefaultMode(true);
+                    // Dọn sạch và nạp lại toàn bộ (bao gồm cả Calc Mapping và Default Fields)
+                    AppState.bannerArea.innerHTML = '';
+                    AppState.fieldsContainer.innerHTML = '';
+                    setTimeout(() => {
+                        updateUIForDefaultMode(true);
+                    }, 50);
                 } else {
                     loadSavedData();
                 }
+
+                // Cập nhật lại thanh Banner Mapping nếu đang ở mode mặc định
+                // (Vì renderCalcMappingInBanner đã được gọi bên trong updateUIForDefaultMode)
             }
         };
     }

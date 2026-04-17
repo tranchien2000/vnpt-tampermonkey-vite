@@ -32,11 +32,16 @@ export function updateUIForDefaultMode(isDefault) {
         // Chèn Mapping Calc lên đầu bảng
         renderCalcMappingInBanner();
 
-        if (overrides === null) {
+        if (!overrides || Object.keys(overrides).length === 0) {
+            // Nạp dữ liệu gốc từ DEFAULT_DATA
             Object.keys(DEFAULT_DATA).forEach(key => {
                 const item = DEFAULT_DATA[key];
                 const val = (item && typeof item === 'object') ? item.value : item;
                 const lbl = (item && typeof item === 'object') ? item.label : (DEFAULT_LABELS[key] || '');
+                
+                // Lọc bỏ Calc
+                if (lbl.includes('Calc:') || lbl.includes('🛠️')) return;
+
                 const s = (item && typeof item === 'object' && item.sync) ? item.sync : '';
                 const dir = (item && typeof item === 'object' && item.syncDir) ? item.syncDir : 'down';
                 addOrUpdateFieldRow(key, val, lbl, s, dir);
@@ -44,6 +49,11 @@ export function updateUIForDefaultMode(isDefault) {
         } else {
             Object.keys(overrides).forEach(key => {
                 const item = overrides[key];
+                const lbl = item.label || '';
+
+                // Lọc bỏ Calc
+                if (lbl.includes('Calc:') || lbl.includes('🛠️')) return;
+
                 addOrUpdateFieldRow(key, item.value, item.label, item.sync || '', item.syncDir || 'both');
             });
         }
@@ -118,20 +128,29 @@ export function renderCalcMappingInBanner() {
             };
         }
 
+        // Lưu cấu hình mapping
         const saveMap = () => {
             const currentMaps = Storage.get(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
             const syncs = inp.value.split(',').map(s => s.trim()).filter(Boolean);
             const dir = btnSyncDir ? btnSyncDir.getAttribute('data-dir') : 'both';
             currentMaps[k] = { sync: syncs, syncDir: dir };
             Storage.set(SK_CALC_MAP, currentMaps);
-            showToast("✅ Đã cập nhật Mapping Calc hệ thống");
+            showToast(`✅ Đã cập nhật mapping cho "${k}"`);
         };
 
-        inp.onchange = saveMap;
+        // Quan trọng: Lắng nghe cả change và input (cho Linker)
+        inp.addEventListener('change', saveMap);
 
         linkBtn.onclick = (e) => {
+            e.preventDefault();
             e.stopPropagation();
+            
+            // Bật Linker để chọn ID trên web
             startFieldLinker(row, inp);
+            
+            // Linker sẽ điền ID vào inp.value. 
+            // Ta cần đảm bảo sau khi điền xong thì gọi saveMap.
+            // Vì Linker của chúng ta gọi dispatchEvent(new Event('change')), nên inp.onchange ở trên sẽ xử lý tốt.
         };
     });
 

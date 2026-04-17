@@ -11,10 +11,6 @@ import { getVNPTDateStrings } from '../utils/dateHelper.js';
 const { ngay, thang, nam } = getVNPTDateStrings();
 
 export const DEFAULT_DATA = {
-    "ngayKy, ngayKy1": { label: "Ngày ký", value: ngay, syncDir: "both" },
-    "thangKy, thangKy1": { label: "Tháng ký", value: thang, syncDir: "both" },
-    "namKy, namKy1": { label: "Năm ký", value: nam, syncDir: "both" },
-    "ngayTiepNhan, ngayThangNamKy": { label: "Ngày ký (full)", value: `${ngay}/${thang}/${nam}`, syncDir: "both" },
     tenDoanhNghiepB: { label: "Tên doanh nghiệp B", value: "VIỄN THÔNG HÀ NỘI – CHI NHÁNH TẬP ĐOÀN BƯU CHÍNH VIỄN THÔNG VIỆT NAM", syncDir: "both" },
     diaChiB: { label: "Địa chỉ B", value: "75 Đinh Tiên Hoàng, Phường Hoàn Kiếm, Thành phố Hà Nội", syncDir: "both" },
     maSoThueB: { label: "Mã số thuế B", value: "0100686223", syncDir: "both" },
@@ -33,8 +29,6 @@ export const DEFAULT_DATA = {
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     emailB: { label: "Email B", value: "", syncDir: "both" },
     dvtGoi: { label: "Đơn vị gói", value: "Gói", syncDir: "both" },
-    soLuongGoi: { label: "Số Lượng Gói", value: "1", syncDir: "both" },
-    noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh", syncDir: "both" }
 };
 
@@ -50,9 +44,9 @@ export const DEFAULT_SYNC_DATA = {
  * DEFAULT_CALC_MAP: Mapping kết quả từ bộ tính toán (Calc Widget) ra các trường trên trang web.
  */
 export const DEFAULT_CALC_MAP = {
-    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong", "thanhTienGoi"],
+    after: ["cuocDV", "tongCong", "tongCongHD", "congCA", "giaTriHopDong", "tongGIaTriHopDong"],
     before: ["donGiaCA", "thanhTienCA", "tongThanhTien", "tongCuocTruocThue", "congGoi"],
-    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT", "thueGTGTgoi"],
+    tax: ["tongThueGTGT", "tongThue", "thueCA", "thueVAT"],
     text: ["soTienThanhToanBangChu", "tongCongBangChu", "tongCongHDbangChu", "ghiChuGiaTriHopDong", "tongGiaTriHopDongBangChu", "ghiChuGiaTriHopDongBangChu"]
 };
 
@@ -74,4 +68,3 @@ export const DEFAULT_HOTKEYS = {
     'SIZE_M': { key: '2', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: M' },
     'SIZE_L': { key: '3', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: L' }
 };
-
