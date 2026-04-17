@@ -75,7 +75,25 @@ try {
 }
 
 // 4. Git actions
-const userMsg = process.argv[2] || "Cập nhật tính năng mới";
+let userMsg = process.argv[2];
+
+if (!userMsg) {
+    try {
+        // Lấy tên các file src thay đổi (không tính dist và các file meta)
+        const diffOutput = execSync('git diff --name-only HEAD').toString().trim();
+        const diffFiles = diffOutput.split('\n').filter(f => f.startsWith('src/'));
+        
+        if (diffFiles.length > 0) {
+            const files = diffFiles.map(f => path.basename(f)).join(', ');
+            userMsg = `Cập nhật: ${files}`;
+        } else {
+            userMsg = "Phát hành phiên bản mới";
+        }
+    } catch (e) {
+        userMsg = "Cập nhật tính năng mới";
+    }
+}
+
 const commitMsg = `chore: release v${newVersion} - ${userMsg}`;
 
 run('git add .');
@@ -83,7 +101,15 @@ run(`git commit -m "${commitMsg}"`);
 run(`git tag -a v${newVersion} -m "${userMsg}"`); // Tạo Tag
 
 console.log(`\n🚀 Đang đẩy code và tag lên GitHub...`);
-run('git pull --rebase origin main');
+// Cố gắng pull rebase, nếu có xung đột ở dist thì ưu tiên file vừa build xong
+try {
+    execSync('git pull --rebase origin main', { stdio: 'inherit' });
+} catch (e) {
+    console.log('⚠️ Phát hiện xung đột khi Pull, đang ưu tiên bản build cục bộ...');
+    run('git checkout --ours dist/*');
+    run('git add dist/*');
+    run('git rebase --continue');
+}
 run('git push origin main --follow-tags');
 
 console.log(`\n🎉 HOÀN TẤT RELEASE v${newVersion}!`);

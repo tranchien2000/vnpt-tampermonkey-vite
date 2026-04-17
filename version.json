@@ -1,7 +1,7 @@
 {
-  "version": "1.6.31",
+  "version": "1.6.32",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
   "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite",
-  "latestVersion": "1.6.31",
-  "updateTime": "2026-04-17T00:10:09.295Z"
+  "latestVersion": "1.6.32",
+  "updateTime": "2026-04-17T03:25:39.398Z"
 }
