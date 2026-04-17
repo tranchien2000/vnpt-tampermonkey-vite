@@ -1,6 +1,6 @@
 {
   "name": "tampermonkey-vite-userscript",
-  "version": "1.6.52",
+  "version": "1.6.53",
   "description": "A minimal Vite setup for Tampermonkey userscripts",
   "type": "module",
   "scripts": {
@@ -8,6 +8,7 @@
     "serve": "serve dist --cors --no-clipboard -p 8788",
     "dev:all": "concurrently \"npm run dev\" \"npm run serve\"",
     "build": "vite build",
+    "build:ext": "vite build --config vite.config.ext.js",
     "release": "node scripts/release.cjs",
     "brain": "node scripts/generate_brain.cjs",
     "pi": "pi"

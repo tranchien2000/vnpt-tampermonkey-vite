@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "VNPT Automation Tool (Extension)",
+  "version": "1.6.51",
+  "description": "Chrome Extension version of VNPT Automation Tool",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "*://hopdong.vnpt.vn/*",
+    "*://mail.google.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://hopdong.vnpt.vn/*",
+        "*://mail.google.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
