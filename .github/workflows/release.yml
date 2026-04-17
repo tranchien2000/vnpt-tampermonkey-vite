@@ -1,0 +1,41 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*' # Chạy khi bạn push tag bắt đầu bằng chữ v, ví dụ v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and Bundle Extension
+        run: npm run release:ext
+
+      - name: Build Userscript
+        run: npm run build:userscript
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            releases/*.zip
+            dist/myscript.user.js
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
