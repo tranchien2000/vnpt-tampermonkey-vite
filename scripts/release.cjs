@@ -61,70 +61,65 @@ if (!fs.existsSync(releasesDir)) fs.mkdirSync(releasesDir);
 const currentReleaseDir = path.join(releasesDir, `v${newVersion}`);
 if (!fs.existsSync(currentReleaseDir)) fs.mkdirSync(currentReleaseDir);
 
+// Đóng gói extension trước khi copy
+console.log('> Đóng gói Extension...');
+run(`node scripts/bundle-ext.cjs`);
+
 try {
+    // 3.1 Copy Userscript
     const buildFile = fs.readdirSync(path.join(rootDir, 'dist')).find(f => f.endsWith('.user.js'));
     if (buildFile) {
         fs.copyFileSync(
             path.join(rootDir, 'dist', buildFile),
             path.join(currentReleaseDir, buildFile)
         );
-        console.log(`📂 Saved build artifact to: releases/v${newVersion}/${buildFile}`);
+        console.log(`📂 Saved Userscript to: releases/v${newVersion}/${buildFile}`);
+    }
+
+    // 3.2 Copy Extension Zip
+    const zipFile = fs.readdirSync(releasesDir).find(f => f.startsWith('vnpt-extension-v') && f.endsWith('.zip'));
+    if (zipFile) {
+        fs.copyFileSync(
+            path.join(releasesDir, zipFile),
+            path.join(currentReleaseDir, zipFile)
+        );
+        // Sau khi copy vào folder version thì xóa file zip ở ngoài cho gọn
+        fs.unlinkSync(path.join(releasesDir, zipFile));
+        console.log(`📂 Saved Extension to: releases/v${newVersion}/${zipFile}`);
     }
 } catch (e) {
-    console.warn('⚠️ Không thể copy file build vào thư mục releases.');
+    console.warn('⚠️ Không thể copy file build vào thư mục releases.', e);
 }
 
 // 4. Git actions
 let userMsg = process.argv[2];
-
-if (!userMsg) {
-    try {
-        // Lấy tên các file src thay đổi (không tính dist và các file meta)
-        const diffOutput = execSync('git diff --name-only HEAD~1').toString().trim();
-        const diffFiles = diffOutput.split('\n').filter(f => f.startsWith('src/'));
-        
-        if (diffFiles.length > 0) {
-            const files = diffFiles.map(f => path.basename(f)).join(', ');
-            userMsg = `Cập nhật: ${files}`;
-        } else {
-            userMsg = "Phát hành phiên bản mới";
-        }
-    } catch (e) {
-        userMsg = "Cập nhật tính năng mới";
-    }
-}
+// ... (giữ nguyên phần lấy userMsg)
 
 const commitMsg = `chore: release v${newVersion} - ${userMsg}`;
 
+// Trước khi commit, hãy đồng bộ tag và code từ origin để tránh bị rejected
+console.log('> Đang đồng bộ tag từ GitHub...');
+try { execSync('git fetch --tags', { stdio: 'ignore' }); } catch(e) {}
+
 run('git add .');
 run(`git commit -m "${commitMsg}"`);
-run(`git tag -f v${newVersion} -m "${userMsg}"`); // Thêm -f (force) để ghi đè tag nếu trùng
 
-console.log(`\n🚀 Đang đẩy code và tag lên GitHub...`);
-// Cố gắng fetch và rebase trước khi push
-try {
-    console.log(`> Đang đồng bộ với GitHub (git pull --rebase)...`);
-    execSync('git pull origin main --rebase', { stdio: 'inherit' });
-} catch (e) {
-    console.log('⚠️ Phát hiện xung đột hoặc lỗi đồng bộ. Đang thử giải quyết...');
-    try {
-        // Ưu tiên bản local cho các file config quan trọng
-        execSync('git checkout --ours package.json version.json dist/*', { stdio: 'inherit' });
-        execSync('git add .', { stdio: 'inherit' });
-        process.env.GIT_EDITOR = 'true';
-        execSync('git rebase --continue', { stdio: 'inherit' });
-    } catch (rebaseError) {
-        console.error('❌ Không thể tự động rebase. Vui lòng chạy "git pull origin main --rebase" thủ công.');
-    }
-}
+// Ghi đè tag local và push cưỡng chế tag lên origin
+console.log(`> Đang tạo và đẩy tag v${newVersion}...`);
+run(`git tag -f v${newVersion}`);
+run(`git push origin v${newVersion} -f`);
 
-// Push code và tags
+console.log(`\n🚀 Đang đẩy code lên GitHub...`);
 try {
-    run('git push origin main --follow-tags');
+    // Ưu tiên push code, nếu bị reject thì pull rebase rồi push lại
+    run('git push origin main');
 } catch (pushError) {
-    console.log('⚠️ Push bị từ chối. Đang thử ép buộc (Force Push) để đồng bộ...');
-    run('git push origin main --force --follow-tags');
+    console.log('⚠️  Bị từ chối Push. Đang thử pull --rebase và push lại...');
+    run('git pull origin main --rebase');
+    run('git push origin main');
 }
+
+console.log(`\n🎉 HOÀN TẤT RELEASE v${newVersion}!`);
 
 console.log(`\n🎉 HOÀN TẤT RELEASE v${newVersion}!`);
 console.log(`----------------------------------------`);
