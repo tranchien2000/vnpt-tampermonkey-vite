@@ -21,8 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Userscript
-        run: npm run build
+      - name: Build All
+        run: |
+          npm run build
+          npm run build:ext
+          node scripts/bundle-ext.cjs
 
       - name: Create GitHub Release
         id: create_release
@@ -30,6 +33,7 @@ jobs:
         with:
           files: |
             dist/*.user.js
+            releases/*.zip
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false

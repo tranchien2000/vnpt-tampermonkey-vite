@@ -155,6 +155,13 @@ export function initWidget() {
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
+                    <div class="fields-header-tools">
+                        <div class="search-wrapper">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="vnpt-fields-search" placeholder="Tìm kiếm trường (Tên, Label, ID)..." />
+                            <button id="vnpt-btn-clear-search" class="btn-clear-search" title="Xóa tìm kiếm" style="display:none;">✕</button>
+                        </div>
+                    </div>
                     <div id="vnpt-fields-list"></div>
                 </div>
 

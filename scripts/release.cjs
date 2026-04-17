@@ -55,23 +55,31 @@ console.log(`✅ Bumped version: ${oldVersion} -> ${newVersion}`);
 // 2. Build code
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 run(`${npmCmd} run build`);
+run(`${npmCmd} run build:ext`);
 
 // 3. Sao lưu bản build vào thư mục releases
 if (!fs.existsSync(releasesDir)) fs.mkdirSync(releasesDir);
 const currentReleaseDir = path.join(releasesDir, `v${newVersion}`);
 if (!fs.existsSync(currentReleaseDir)) fs.mkdirSync(currentReleaseDir);
 
+// Đóng gói extension
+run(`node scripts/bundle-ext.cjs`);
+
 try {
+    // Copy Userscript
     const buildFile = fs.readdirSync(path.join(rootDir, 'dist')).find(f => f.endsWith('.user.js'));
     if (buildFile) {
-        fs.copyFileSync(
-            path.join(rootDir, 'dist', buildFile),
-            path.join(currentReleaseDir, buildFile)
-        );
-        console.log(`📂 Saved build artifact to: releases/v${newVersion}/${buildFile}`);
+        fs.copyFileSync(path.join(rootDir, 'dist', buildFile), path.join(currentReleaseDir, buildFile));
+    }
+
+    // Copy Extension Zip
+    const zipFile = `vnpt-extension-v${newVersion}.zip`;
+    if (fs.existsSync(path.join(releasesDir, zipFile))) {
+        fs.copyFileSync(path.join(releasesDir, zipFile), path.join(currentReleaseDir, zipFile));
+        console.log(`📂 Saved Extension Zip to: releases/v${newVersion}/${zipFile}`);
     }
 } catch (e) {
-    console.warn('⚠️ Không thể copy file build vào thư mục releases.');
+    console.warn('⚠️ Không thể copy file build vào thư mục releases.', e);
 }
 
 // 4. Git actions
