@@ -52,6 +52,10 @@ if (fs.existsSync(verJsonPath)) {
 
 console.log(`✅ Bumped version: ${oldVersion} -> ${newVersion}`);
 
+// 1.5 Tạo tài liệu bộ não dự án cho NotebookLM
+console.log(`🧠 Đang cập nhật bộ não dự án...`);
+run(`node scripts/generate_brain.cjs`);
+
 // 2. Build code
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 run(`${npmCmd} run build`);

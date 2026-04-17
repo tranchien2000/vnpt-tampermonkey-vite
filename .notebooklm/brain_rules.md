@@ -1,5 +1,5 @@
 # Project Rules
-*Cập nhật: 18:44:19 17/4/2026*
+*Cập nhật: 18:57:16 17/4/2026*
 
 ## Rules from docs/RULES.md
 
