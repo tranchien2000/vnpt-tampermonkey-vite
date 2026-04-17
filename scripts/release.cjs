@@ -80,7 +80,7 @@ let userMsg = process.argv[2];
 if (!userMsg) {
     try {
         // Lấy tên các file src thay đổi (không tính dist và các file meta)
-        const diffOutput = execSync('git diff --name-only HEAD').toString().trim();
+        const diffOutput = execSync('git diff --name-only HEAD~1').toString().trim();
         const diffFiles = diffOutput.split('\n').filter(f => f.startsWith('src/'));
         
         if (diffFiles.length > 0) {
@@ -98,17 +98,24 @@ const commitMsg = `chore: release v${newVersion} - ${userMsg}`;
 
 run('git add .');
 run(`git commit -m "${commitMsg}"`);
-run(`git tag -a v${newVersion} -m "${userMsg}"`); // Tạo Tag
+run(`git tag -f v${newVersion} -m "${userMsg}"`); // Thêm -f (force) để ghi đè tag nếu trùng
 
 console.log(`\n🚀 Đang đẩy code và tag lên GitHub...`);
-// Cố gắng pull rebase, nếu có xung đột ở dist thì ưu tiên file vừa build xong
+// Cố gắng pull rebase, nếu có xung đột thì ưu tiên bản cục bộ
 try {
     execSync('git pull --rebase origin main', { stdio: 'inherit' });
 } catch (e) {
-    console.log('⚠️ Phát hiện xung đột khi Pull, đang ưu tiên bản build cục bộ...');
-    run('git checkout --ours dist/*');
-    run('git add dist/*');
-    run('git rebase --continue');
+    console.log('⚠️ Phát hiện xung đột khi Pull, đang tự động xử lý...');
+    // Ưu tiên bản của mình cho các file build và config version
+    try {
+        execSync('git checkout --ours dist/* version.json package.json', { stdio: 'inherit' });
+        execSync('git add dist/* version.json package.json', { stdio: 'inherit' });
+        // Chạy tiếp rebase
+        process.env.GIT_EDITOR = 'true';
+        execSync('git rebase --continue', { stdio: 'inherit' });
+    } catch (rebaseError) {
+        console.error('❌ Không thể tự động xử lý rebase. Vui lòng kiểm tra git status.');
+    }
 }
 run('git push origin main --follow-tags');
 
