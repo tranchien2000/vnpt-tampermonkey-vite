@@ -6,11 +6,11 @@
     "isEntry": true
   },
   "content.js-loader.js": {
-    "file": "assets/content.js-loader-BmNu3S_H.js",
+    "file": "assets/content.js-loader-CJQMLVHL.js",
     "src": "content.js-loader.js"
   },
   "src/extension/content.js": {
-    "file": "assets/content.js-DOxMT9LJ.js",
+    "file": "assets/content.js-B4RKF9YB.js",
     "name": "content.js",
     "src": "src/extension/content.js",
     "isEntry": true,
@@ -26,7 +26,7 @@
     "isEntry": true
   },
   "src/features/profileManager.js": {
-    "file": "assets/profileManager-DvmzRl5t.js",
+    "file": "assets/profileManager-CnLURJI0.js",
     "name": "profileManager",
     "src": "src/features/profileManager.js",
     "isDynamicEntry": true,

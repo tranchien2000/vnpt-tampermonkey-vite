@@ -61,17 +61,34 @@ if (!fs.existsSync(releasesDir)) fs.mkdirSync(releasesDir);
 const currentReleaseDir = path.join(releasesDir, `v${newVersion}`);
 if (!fs.existsSync(currentReleaseDir)) fs.mkdirSync(currentReleaseDir);
 
+// Đóng gói extension trước khi copy
+console.log('> Đóng gói Extension...');
+run(`node scripts/bundle-ext.cjs`);
+
 try {
+    // 3.1 Copy Userscript
     const buildFile = fs.readdirSync(path.join(rootDir, 'dist')).find(f => f.endsWith('.user.js'));
     if (buildFile) {
         fs.copyFileSync(
             path.join(rootDir, 'dist', buildFile),
             path.join(currentReleaseDir, buildFile)
         );
-        console.log(`📂 Saved build artifact to: releases/v${newVersion}/${buildFile}`);
+        console.log(`📂 Saved Userscript to: releases/v${newVersion}/${buildFile}`);
+    }
+
+    // 3.2 Copy Extension Zip
+    const zipFile = fs.readdirSync(releasesDir).find(f => f.startsWith('vnpt-extension-v') && f.endsWith('.zip'));
+    if (zipFile) {
+        fs.copyFileSync(
+            path.join(releasesDir, zipFile),
+            path.join(currentReleaseDir, zipFile)
+        );
+        // Sau khi copy vào folder version thì xóa file zip ở ngoài cho gọn
+        fs.unlinkSync(path.join(releasesDir, zipFile));
+        console.log(`📂 Saved Extension to: releases/v${newVersion}/${zipFile}`);
     }
 } catch (e) {
-    console.warn('⚠️ Không thể copy file build vào thư mục releases.');
+    console.warn('⚠️ Không thể copy file build vào thư mục releases.', e);
 }
 
 // 4. Git actions
