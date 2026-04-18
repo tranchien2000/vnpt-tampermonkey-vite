@@ -2,15 +2,19 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore/lite";
 
-// Your web app's Firebase configuration
+/**
+ * @file firebaseConfig.js
+ * @desc Cấu hình Firebase - Thông tin nhạy cảm được nạp từ biến môi trường (.env)
+ */
+
 const firebaseConfig = {
-  apiKey: "***REMOVED***",
-  authDomain: "vnpt-cloud-sync.firebaseapp.com",
-  projectId: "vnpt-cloud-sync",
-  storageBucket: "vnpt-cloud-sync.firebasestorage.app",
-  messagingSenderId: "1034099532877",
-  appId: "1:1034099532877:web:3bcbe2ab0ea8fae524e804",
-  measurementId: "G-650CYB84PL"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
