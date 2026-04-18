@@ -40,7 +40,20 @@ export const panelStyles = `
     }
     #vnpt-export-panel.vnpt-resizing { transition: none !important; user-select: none !important; }
     
-    #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 4px; border-radius: 12px; }
+    #vnpt-panel-body { 
+        display: flex; 
+        flex-direction: column; 
+        overflow-x: hidden;
+        overflow-y: auto; 
+        flex: 1; 
+        margin-top: 4px; 
+        border-radius: 12px; 
+    }
+    
+    /* Scrollbar cho panel body */
+    #vnpt-panel-body::-webkit-scrollbar { width: 4px; }
+    #vnpt-panel-body::-webkit-scrollbar-track { background: transparent; }
+    #vnpt-panel-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 
     #vnpt-panel-header { 
         margin: -4px -4px 0 -4px; padding: 2px 8px;

@@ -119,7 +119,7 @@ export function initWidget() {
             <!-- Inline Calculator Container -->
             <div id="vnpt-inline-calc"></div>
 
-            <div id="vnpt-panel-body">
+            <div id="vnpt-panel-body" style="overflow-y: auto;">
                 <!-- AI Scanner Section (Hidden by default) -->
                 <div id="vnpt-ai-scanner-section" class="vnpt-ai-scanner-section" style="display: none;">
                     <div class="ai-scanner-header" style="margin-bottom: -2px;">
@@ -141,15 +141,14 @@ export function initWidget() {
                     <div class="raw-scan-actions">
                         <div class="ai-tool-group">
                             <button class="vnpt-btn-icon" id="vnpt-btn-show-pdf" title="Xem lại Kết quả cũ">📝</button>
-                            <button class="vnpt-btn-icon" id="vnpt-btn-clear-queue" title="Xóa hàng đợi & nội dung">🗑️</button>
                             <button class="vnpt-btn-icon" id="vnpt-btn-scan-mail" title="Trích xuất nội dụng Mail (Gmail/Outlook)">📧</button>
                             <button class="vnpt-btn-icon" id="vnpt-btn-export-txt" title="Copy chuỗi thành Text Template">📋</button>
                         </div>
                         <div class="ai-main-group">
                             <button id="vnpt-btn-raw-process-local" class="btn-scan-action btn-local" title="Phân loại nhanh văn bản bằng offline Regex">QR TEXT</button>
                             <button id="vnpt-btn-ai-process" class="btn-scan-action btn-ai-main">QUÉT AI</button>
+                            <span id="vnpt-token-usage" title="Dung lượng AI đã dùng hôm nay (Reset lúc 0h)" style="font-size: 9px; color: #9aa0a6; font-weight: 600; margin-left: 4px; display: flex; align-items: center; white-space: nowrap;">📊 0 req (0 tok)</span>
                         </div>
-                        <span id="vnpt-token-usage" title="Dung lượng AI đã dùng hôm nay" style="display:none;"></span>
                     </div>
                 </div>
 
@@ -157,21 +156,19 @@ export function initWidget() {
                 <div id="vnpt-fields-container">
                     <div id="vnpt-fields-list"></div>
                 </div>
+            </div>
 
+            <div class="bottom-export-area">
+                <div id="vnpt-template-section">
+                    <div id="vnpt-template-manager"></div>
+                </div>
 
-
-                <div class="bottom-export-area">
-                    <div id="vnpt-template-section">
-                        <div id="vnpt-template-manager"></div>
-                    </div>
-
-                    <div class="bottom-export-row">
-                        <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
-                        <div class="vnpt-control-group">
-                            <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
-                            <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
-                            <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
-                        </div>
+                <div class="bottom-export-row">
+                    <input type="file" id="vnpt-template-file" name="vnpt-template-file" accept=".docx" style="display:none;" />
+                    <div class="vnpt-control-group">
+                        <label for="vnpt-template-file" class="btn-upload-local" title="Chọn file DOCX từ máy tính">📁</label>
+                        <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
+                        <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
                     </div>
                 </div>
             </div>

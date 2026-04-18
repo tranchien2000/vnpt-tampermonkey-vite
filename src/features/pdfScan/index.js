@@ -524,7 +524,7 @@ export function initPdfScan() {
         } finally {
             rawInput.classList.remove('ai-scanning-glow');
             btnProcessAI.disabled = false;
-            btnProcessAI.textContent = "✨ BẮT ĐẦU QUÉT AI";
+            btnProcessAI.textContent = "BẮT ĐẦU QUÉT AI";
         }
     });
 

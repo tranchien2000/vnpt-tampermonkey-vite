@@ -4,7 +4,7 @@ export const fieldsStyles = `
        ═══════════════════════════════════════════ */
     #vnpt-fields-container { 
         --label-flex: 0.2;
-        flex: 1; overflow: hidden; background: rgba(255, 255, 255, 0.3); 
+        flex: 1; min-height: 100px; background: rgba(255, 255, 255, 0.3); 
         border: 1px solid var(--vnpt-border); border-radius: 12px; 
         margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
         box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
@@ -15,7 +15,7 @@ export const fieldsStyles = `
         background: rgba(234, 67, 53, 0.05);
         box-shadow: inset 0 0 15px rgba(234, 67, 53, 0.1);
     }
-    #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
+    #vnpt-fields-list { flex: 1; padding: 4px; }
 
     /* Column splitter */
     .fields-col-splitter {
