@@ -1,0 +1,584 @@
+# Instincts generated from https://github.com/tranchien2000/vnpt-tampermonkey-vite
+# Generated: 2026-04-18T02:27:08.541Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: vnpt-tampermonkey-vite-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Commit Length
+
+## Action
+
+Write moderate-length commit messages (~65 characters)
+
+## Evidence
+
+- Average commit message length: 65 chars
+- Based on 100 commits
+
+---
+id: vnpt-tampermonkey-vite-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: vnpt-tampermonkey-vite-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: vnpt-tampermonkey-vite-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: vnpt-tampermonkey-vite-arch-feature-based
+trigger: "when adding a new feature"
+confidence: 0.85
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Arch Feature Based
+
+## Action
+
+Create a new folder in src/features/ with all related code colocated
+
+## Evidence
+
+- Feature-based module organization detected
+- Structure: src/features/[feature-name]/
+
+---
+id: vnpt-tampermonkey-vite-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: vnpt-tampermonkey-vite-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: src/ui/components/*, **/api/**
+
+---
+id: vnpt-tampermonkey-vite-workflow-release-version-bump-and-build
+trigger: "when doing release version bump and build"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Workflow Release Version Bump And Build
+
+## Action
+
+Follow the release-version-bump-and-build workflow:
+1. Update version.json and/or package.json
+2. Build userscript (dist/myscript.user.js)
+3. Update release documentation or scripts if needed
+4. Commit with release or chore message
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~6x per month
+- Files: version.json, package.json, package-lock.json
+
+---
+id: vnpt-tampermonkey-vite-workflow-feature-development-core-ui-utils
+trigger: "when doing feature development core ui utils"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Workflow Feature Development Core Ui Utils
+
+## Action
+
+Follow the feature-development-core-ui-utils workflow:
+1. Edit or add files in src/features/
+2. Update src/core/constants.js or src/core/defaults.js as needed
+3. Update or add UI components/styles in src/ui/
+4. Update or add utility functions in src/utils/
+5. Build userscript (dist/myscript.user.js)
+6. Update documentation if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: src/features/*.js, src/core/constants.js, src/core/defaults.js
+
+---
+id: vnpt-tampermonkey-vite-workflow-update-project-memory-and-brain-context
+trigger: "when doing update project memory and brain context"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Workflow Update Project Memory And Brain Context
+
+## Action
+
+Follow the update-project-memory-and-brain-context workflow:
+1. Edit PROJECT_MEMORY.md
+2. Edit .notebooklm/brain_context.md
+3. Optionally update docs/ or graphify-out/ files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: PROJECT_MEMORY.md, .notebooklm/brain_context.md, docs/*.md
+
+---
+id: vnpt-tampermonkey-vite-workflow-update-workflow-markdown
+trigger: "when doing update workflow markdown"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Workflow Update Workflow Markdown
+
+## Action
+
+Follow the update-workflow-markdown workflow:
+1. Edit or add .agents/workflows/*.md files
+2. Optionally update .agents/workflows/_index.md
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: .agents/workflows/*.md
+
+---
+id: vnpt-tampermonkey-vite-workflow-sync-graphify-knowledge-graph
+trigger: "when doing sync graphify knowledge graph"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Workflow Sync Graphify Knowledge Graph
+
+## Action
+
+Follow the sync-graphify-knowledge-graph workflow:
+1. Run graphify to update graphify-out/graph.json
+2. Update graphify-out/GRAPH_REPORT.md
+3. Update graphify-out/cache/*.json
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: graphify-out/graph.json, graphify-out/GRAPH_REPORT.md, graphify-out/cache/*.json
+
+---
+id: vnpt-tampermonkey-vite-instinct-file-naming
+trigger: "When creating or renaming files in the codebase"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct File Naming
+
+## Action
+
+Use camelCase for file names
+
+## Evidence
+
+- Pattern in srcLayout and namingConventions.files
+
+---
+id: vnpt-tampermonkey-vite-instinct-function-naming
+trigger: "When defining functions"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Function Naming
+
+## Action
+
+Use camelCase for function names
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: vnpt-tampermonkey-vite-instinct-class-naming
+trigger: "When defining classes"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Class Naming
+
+## Action
+
+Use PascalCase for class names
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: vnpt-tampermonkey-vite-instinct-constant-naming
+trigger: "When defining constants"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Constant Naming
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constants
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: vnpt-tampermonkey-vite-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in importStyle
+
+---
+id: vnpt-tampermonkey-vite-instinct-export-style
+trigger: "When exporting from modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle
+
+---
+id: vnpt-tampermonkey-vite-instinct-try-catch
+trigger: "When handling errors in code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Try Catch
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- Pattern in errorHandling.style
+
+---
+id: vnpt-tampermonkey-vite-instinct-test-location
+trigger: "When adding or updating tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Test Location
+
+## Action
+
+Place test files in a separate location from source files
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: vnpt-tampermonkey-vite-instinct-test-feature-sequence
+trigger: "When developing a new feature"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Test Feature Sequence
+
+## Action
+
+Add or update tests after implementing the feature
+
+## Evidence
+
+- Commit sequence in feature-development workflow
+
+---
+id: vnpt-tampermonkey-vite-instinct-commit-prefix
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Commit Prefix
+
+## Action
+
+Start commit messages with a prefix such as feat, chore, release, or docs
+
+## Evidence
+
+- Pattern in commits.prefixes
+- Examples in commit messages
+
+---
+id: vnpt-tampermonkey-vite-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Commit Length
+
+## Action
+
+Keep commit messages concise, averaging around 65 characters
+
+## Evidence
+
+- Pattern in commits.averageLength
+
+---
+id: vnpt-tampermonkey-vite-instinct-release-workflow
+trigger: "When releasing a new version or hotfix"
+confidence: 0.98
+domain: workflow
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Release Workflow
+
+## Action
+
+Update version.json and/or package.json, build userscript, update release docs/scripts if needed, and commit with release or chore message
+
+## Evidence
+
+- release-version-bump-and-build workflow
+- Commits: chore: update version.json and dist to 1.6.0 [skip ci]
+- release: v1.6.1 - Tính năng: Tự động hóa thông báo và quy trình Release
+
+---
+id: vnpt-tampermonkey-vite-instinct-feature-workflow
+trigger: "When adding a new feature or optimizing an existing one"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Feature Workflow
+
+## Action
+
+Edit/add files in src/features/, update core/constants/defaults, update/add UI and utils, build userscript, and update docs if needed
+
+## Evidence
+
+- feature-development-core-ui-utils workflow
+- Commits: feat: hợp nhất giao diện Mapping Calc và tối ưu hóa quy trình phát triển
+
+---
+id: vnpt-tampermonkey-vite-instinct-update-memory-workflow
+trigger: "When project knowledge, architecture, or memory needs to be updated"
+confidence: 0.88
+domain: workflow
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Update Memory Workflow
+
+## Action
+
+Edit PROJECT_MEMORY.md and .notebooklm/brain_context.md, optionally update docs/ or graphify-out/
+
+## Evidence
+
+- update-project-memory-and-brain-context workflow
+- Commits: docs: initialize notebooklm brain context and update project memory documentation
+
+---
+id: vnpt-tampermonkey-vite-instinct-workflow-doc-markdown
+trigger: "When a new workflow is created or an existing one is updated"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Workflow Doc Markdown
+
+## Action
+
+Edit or add .agents/workflows/*.md files, optionally update .agents/workflows/_index.md
+
+## Evidence
+
+- update-workflow-markdown workflow
+- Pattern in files: .agents/workflows/*.md
+
+---
+id: vnpt-tampermonkey-vite-instinct-graphify-sync
+trigger: "When codebase or documentation changes require knowledge graph to be refreshed"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: tranchien2000/vnpt-tampermonkey-vite
+---
+
+# Vnpt Tampermonkey Vite Instinct Graphify Sync
+
+## Action
+
+Run graphify to update graphify-out/graph.json, update graphify-out/GRAPH_REPORT.md, update graphify-out/cache/*.json
+
+## Evidence
+
+- sync-graphify-knowledge-graph workflow
+- Pattern in files: graphify-out/graph.json, graphify-out/GRAPH_REPORT.md
+
