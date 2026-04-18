@@ -22,7 +22,6 @@ export function initCloudSyncUI(container) {
         <div class="util-separator"></div>
         <div class="util-submenu-title">Đồng bộ cá nhân (Firebase)</div>
         <div class="cloud-action-grid">
-<<<<<<< HEAD
           <div class="cloud-action-item" id="vnpt-btn-cloud-push-all" title="Đẩy Dữ liệu & Keys lên Cloud">
             <span class="cloud-action-icon-small">🚀</span>
             <span class="cloud-action-label-small">Đẩy lên</span>
@@ -30,15 +29,6 @@ export function initCloudSyncUI(container) {
           <div class="cloud-action-item" id="vnpt-btn-cloud-pull-all" title="Kéo Dữ liệu & Keys từ Cloud">
             <span class="cloud-action-icon-small">🛬</span>
             <span class="cloud-action-label-small">Kéo về</span>
-=======
-          <div class="cloud-action-item push" id="vnpt-btn-cloud-push">
-            <span class="cloud-action-icon">📤</span>
-            <span class="cloud-action-label">Đẩy lên Cloud</span>
-          </div>
-          <div class="cloud-action-item pull" id="vnpt-btn-cloud-pull">
-            <span class="cloud-action-icon">📥</span>
-            <span class="cloud-action-label">Kéo về máy</span>
->>>>>>> origin/main
           </div>
         </div>
 
@@ -80,27 +70,16 @@ export function initCloudSyncUI(container) {
             padding: 4px 12px 8px 12px;
           }
           .cloud-action-item {
-<<<<<<< HEAD
             background: #fff;
             border: 1px solid #e8eaed;
             border-radius: 8px;
             padding: 4px 0;
             cursor: pointer;
             transition: all 0.2s;
-=======
-            flex: 1;
-            background: #f8f9fa;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            padding: 6px 4px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
->>>>>>> origin/main
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-<<<<<<< HEAD
           }
           .cloud-action-item:hover {
             border-color: var(--vnpt-primary);
@@ -113,33 +92,6 @@ export function initCloudSyncUI(container) {
             font-size: 10px;
             font-weight: 700;
             color: #3c4043;
-=======
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-            min-height: 32px;
-          }
-          
-          .cloud-action-item:hover {
-            background: #fff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-          }
-          
-          .cloud-action-item.push:hover { border-color: var(--vnpt-primary); color: var(--vnpt-primary); }
-          .cloud-action-item.pull:hover { border-color: var(--vnpt-success); color: var(--vnpt-success); }
-
-          .cloud-action-item:active {
-            transform: translateY(0) scale(0.97);
-          }
-          
-          .cloud-action-icon {
-            font-size: 14px;
-          }
-
-          .cloud-action-label {
-            font-size: 10px;
-            font-weight: 700;
-            white-space: nowrap;
->>>>>>> origin/main
           }
 
           .util-btn-logout-mini {
@@ -181,21 +133,7 @@ export function initCloudSyncUI(container) {
             await FirebaseService.pushProfile(p);
           }
 
-<<<<<<< HEAD
           // 2. Đẩy Cấu hình toàn cục
-=======
-          // 2. Đẩy Cấu hình (Mapping, Hotkeys, Text Template, Data mặc định...)
-          const { 
-              SK_CALC_MAP, SK_HOTKEYS, 
-              LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-              SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-              SK_ADDRESS_LEARNING, SK_GEMINI_KEY
-          } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
-          
-          // Dùng DEFAULT_CALC_MAP làm fallback nếu user chưa lưu mapping thủ công
->>>>>>> origin/main
           const globalConfig = {
               calcMap: Storage.get(SK_CALC_MAP) ?? DEFAULT_CALC_MAP,
               hotkeys: Storage.get(SK_HOTKEYS),
@@ -250,16 +188,6 @@ export function initCloudSyncUI(container) {
 
              // 2. Áp dụng Cấu hình
              if (cloudConfig) {
-<<<<<<< HEAD
-=======
-                 const { 
-                     SK_CALC_MAP, SK_HOTKEYS, 
-                     LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-                     SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-                     SK_ADDRESS_LEARNING, SK_GEMINI_KEY
-                 } = await import('../../core/constants.js');
-                 const { Storage } = await import('../../utils/storage.js');
->>>>>>> origin/main
                  const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
                  Storage.set(SK_CALC_MAP, cloudConfig.calcMap ?? DEFAULT_CALC_MAP);
                  if (cloudConfig.hotkeys) Storage.set(SK_HOTKEYS, cloudConfig.hotkeys);
@@ -278,7 +206,6 @@ export function initCloudSyncUI(container) {
                  }
              }
 
-<<<<<<< HEAD
              // 3. Áp dụng API Keys
              if (cloudKeys && cloudKeys.gemini_key) {
                 Storage.set(SK_GEMINI_KEY, cloudKeys.gemini_key);
@@ -312,18 +239,6 @@ export function initCloudSyncUI(container) {
         }
       };
 
-=======
-             showToast("✅ Đã khôi phục toàn bộ cấu hình!");
-             
-             // Nạp lại dữ liệu bảng mà không cần refresh trang
-             loadSavedData();
-          }
-        } catch (err) {
-          showToast("❌ Lỗi: " + err.message, "#ea4335");
-        }
-      };
-
->>>>>>> origin/main
     } else {
       cloudSection.innerHTML = `
         <div class="util-submenu-title">☁️ Tài khoản Cloud</div>

@@ -1,6 +1,5 @@
 {
   "manifest_version": 3,
-<<<<<<< HEAD
   "name": "VNPT Word Automation PRO",
   "version": "1.6.32",
   "description": "Tối ưu hóa quy trình làm việc trên VNPT",
@@ -21,32 +20,5 @@
       "resources": ["src/ui/assets/*", "*.css"],
       "matches": ["<all_urls>"]
     }
-=======
-  "name": "VNPT Automation Tool (Dev)",
-  "version": "1.6.52",
-  "action": {
-    "default_title": "VNPT Tool"
-  },
-  "permissions": ["storage"],
-  "host_permissions": [
-    "*://hopdong.vnpt.vn/*",
-    "*://mail.google.com/*",
-    "*://outlook.live.com/*",
-    "*://outlook.office.com/*",
-    "*://outlook.office365.com/*"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "*://hopdong.vnpt.vn/*",
-        "*://mail.google.com/*",
-        "*://outlook.live.com/*",
-        "*://outlook.office.com/*",
-        "*://outlook.office365.com/*"
-      ],
-      "js": ["src/main.js"],
-      "run_at": "document_idle"
-    }
->>>>>>> origin/main
   ]
 }

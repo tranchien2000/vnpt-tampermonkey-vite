@@ -70,14 +70,6 @@ export function initWidget() {
                                     <div class="util-action-row">
                                         <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
                                         <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
-<<<<<<< HEAD
-=======
-                                        <div class="util-json-group" style="display: flex; gap: 2px; flex-shrink: 0;">
-                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-import-json" title="Nhập JSON">📥</button>
-                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-export-json" title="Xuất JSON">📤</button>
-                                        </div>
-                                        <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
->>>>>>> origin/main
                                     </div>
                                 </div>
 

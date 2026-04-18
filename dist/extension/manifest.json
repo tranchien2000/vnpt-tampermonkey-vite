@@ -13,33 +13,35 @@
   },
   "content_scripts": [
     {
+      "js": [
+        "assets/main.js-loader-DoLqLUSi.js"
+      ],
       "matches": [
         "https://*.vnpt.vn/*",
         "http://localhost/*"
-      ],
-      "js": [
-        "src/main.js-loader.js"
       ],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
+      "matches": [
+        "<all_urls>"
+      ],
       "resources": [
         "src/ui/assets/*",
         "*.css"
       ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "use_dynamic_url": false
     },
     {
       "matches": [
-        "<all_urls>"
+        "http://localhost/*",
+        "https://*.vnpt.vn/*"
       ],
       "resources": [
-        "**/*",
-        "*"
+        "assets/profileManager-DxE3wSGf.js",
+        "assets/main.js-DMQu_1e8.js"
       ],
       "use_dynamic_url": false
     }
