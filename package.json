@@ -1,6 +1,6 @@
 {
   "name": "tampermonkey-vite-userscript",
-  "version": "1.6.53",
+  "version": "1.6.55",
   "description": "A minimal Vite setup for Tampermonkey userscripts",
   "type": "module",
   "scripts": {
@@ -16,6 +16,7 @@
     "pi": "pi"
   },
   "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.33",
     "@mariozechner/pi-coding-agent": "^0.67.2",
     "archiver": "^7.0.1",
     "concurrently": "^9.2.1",
