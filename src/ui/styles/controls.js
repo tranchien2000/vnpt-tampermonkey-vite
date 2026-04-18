@@ -24,14 +24,47 @@ export const controlStyles = `
     .vnpt-btn-icon:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); transform: scale(1.05); }
     .vnpt-btn-icon.active { background: var(--vnpt-primary); color: white; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
 
-    .btn-scan { background: #e6f4ea; color: var(--vnpt-success); border: 1px solid rgba(30, 142, 62, 0.1); } 
-    .btn-scan:hover { background: var(--vnpt-success); color: #fff; border-color: transparent; }
-    
-    .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
-    .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
+    .header-center { 
+        display: flex; 
+        gap: 2px; 
+        background: rgba(0,0,0,0.04); 
+        padding: 2px; 
+        border-radius: 8px;
+        align-items: center;
+    }
 
-    .btn-restore { background: #e8f0fe; color: var(--vnpt-primary); border: 1px solid rgba(26, 115, 232, 0.1); }
-    .vnpt-btn-restore:hover { background: var(--vnpt-primary); color: #fff; border-color: transparent; }
+    .vnpt-btn-header {
+        height: 24px;
+        padding: 0 10px;
+        border: none;
+        background: transparent;
+        color: #5f6368;
+        font-size: 10.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+    .vnpt-btn-header:hover {
+        background: #fff;
+        color: var(--vnpt-primary);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .vnpt-btn-header.active {
+        background: var(--vnpt-primary);
+        color: white;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+    }
+
+    /* Đặc trị màu sắc nhẹ cho từng nút khi hover */
+    .vnpt-btn-header.btn-ai:hover { color: #8e24aa; }
+    .vnpt-btn-header.btn-scan:hover { color: var(--vnpt-success); }
+    .vnpt-btn-header.btn-fill:hover { color: #f57c00; }
+    .vnpt-btn-header.btn-id:hover { color: #d81b60; }
     
     /* ═══════════════════════════════════════════
        SECTION: BACKUP HISTORY DROPDOWN
@@ -127,12 +160,22 @@ export const controlStyles = `
     }
     .util-section-mini:last-child { border-bottom: none; }
 
-    .util-action-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+    .util-action-row { display: flex; gap: 4px; align-items: center; width: 100%; box-sizing: border-box; }
     
     .util-item-mini {
+        flex: 1;
+        min-width: 0; /* Cho phép co lại nhỏ hơn text nếu cần */
         background: #f8f9fa; border: 1px solid #eee; border-radius: 6px;
-        padding: 4px 6px; font-size: 10px; font-weight: 700; color: #3c4043;
+        padding: 4px 2px; font-size: 10px; font-weight: 700; color: #3c4043;
         cursor: pointer; transition: all 0.2s; text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .util-item-mini.btn-json-icon {
+        flex: 0 0 24px; /* Thu nhỏ thêm một chút */
+        font-size: 11px;
+        padding: 4px 0;
     }
     .util-item-mini:hover { background: var(--vnpt-primary-light); border-color: var(--vnpt-primary); color: var(--vnpt-primary); }
     .util-item-mini.danger:hover { background: #fdf2f2; border-color: #d93025; color: #d93025; }

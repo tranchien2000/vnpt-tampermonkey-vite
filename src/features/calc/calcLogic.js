@@ -48,8 +48,27 @@ export function calculateValues(type, value, taxRate) {
 }
 
 export function syncToPage(data, calcMaps) {
-    if (calcMaps.before) calcMaps.before.forEach(n => setPageField(n, data.beforeStr));
-    if (calcMaps.tax) calcMaps.tax.forEach(n => setPageField(n, data.taxStr));
-    if (calcMaps.after) calcMaps.after.forEach(n => setPageField(n, data.afterStr));
-    if (calcMaps.text) calcMaps.text.forEach(n => setPageField(n, data.textStr));
+    const keys = ['before', 'tax', 'after', 'text'];
+    const dataMap = {
+        before: data.beforeStr,
+        tax: data.taxStr,
+        after: data.afterStr,
+        text: data.textStr
+    };
+
+    keys.forEach(k => {
+        const mapInfo = calcMaps[k];
+        if (!mapInfo) return;
+
+        // Hỗ trợ cả format cũ (Array) và format mới (Object {sync, syncDir})
+        const targets = Array.isArray(mapInfo) ? mapInfo : (mapInfo.sync || []);
+        const dir = Array.isArray(mapInfo) ? 'both' : (mapInfo.syncDir || 'both');
+
+        // Chỉ sync xuống nếu hướng là 'both' hoặc 'down'
+        if (dir === 'both' || dir === 'down') {
+            targets.forEach(targetId => {
+                setPageField(targetId, dataMap[k]);
+            });
+        }
+    });
 }

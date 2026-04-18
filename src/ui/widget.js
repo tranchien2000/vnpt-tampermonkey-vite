@@ -47,10 +47,10 @@ export function initWidget() {
                     <span id="vnpt-update-badge-container"></span>
                 </div>
                 <div class="header-center">
-                    <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
-                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">ID</button>
+                    <button class="vnpt-btn-header btn-ai" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">✨ AI</button>
+                    <button class="vnpt-btn-header btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">🔍 Quét</button>
+                    <button class="vnpt-btn-header btn-fill" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">📝 Điền</button>
+                    <button class="vnpt-btn-header btn-id" id="vnpt-btn-toggle-id" title="Ẩn hiện key đồng bộ">🆔 ID</button>
                     <input type="file" id="vnpt-pdf-input" accept=".pdf,image/*" style="display:none;" />
                 </div>
                 <div class="header-right">
@@ -70,6 +70,14 @@ export function initWidget() {
                                     <div class="util-action-row">
                                         <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
                                         <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
+<<<<<<< HEAD
+=======
+                                        <div class="util-json-group" style="display: flex; gap: 2px; flex-shrink: 0;">
+                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-import-json" title="Nhập JSON">📥</button>
+                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-export-json" title="Xuất JSON">📤</button>
+                                        </div>
+                                        <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
+>>>>>>> origin/main
                                     </div>
                                 </div>
 
@@ -312,7 +320,7 @@ export function initWidget() {
                     }
 
                     btnTest.disabled = true;
-                    btnTest.textContent = "⏳ Đang thử...";
+                    // btnTest.textContent = "⏳ Đang thử..."; // Bỏ theo yêu cầu
 
                     try {
                         await testGeminiConnection(key, model);
@@ -321,7 +329,7 @@ export function initWidget() {
                         showToast("❌ Kết nối thất bại: " + err, "#ea4335");
                     } finally {
                         btnTest.disabled = false;
-                        btnTest.textContent = "⚡ Kiểm tra kết nối";
+                        // btnTest.textContent = "⚡ Kiểm tra kết nối"; // Bỏ theo yêu cầu
                     }
                 };
             }
@@ -516,6 +524,49 @@ export function initWidget() {
     if (cloudContainer) {
         initCloudSyncUI(cloudContainer);
     }
+
+    // --- Pin & Hover Logic ---
+    const panel = AppState.panel;
+    
+    const handleMouseEnter = () => {
+        if (AppState.panel.classList.contains('vnpt-pinned') && AppState.panel.style.display === 'none') {
+            AppState.panel.style.display = 'flex';
+            AppState.toggleBtn.className = 'btn-opened';
+            AppState.toggleBtn.innerHTML = '✖';
+        }
+    };
+
+    const handleMouseLeave = () => {
+        if (!AppState.panel.classList.contains('vnpt-pinned')) return;
+        
+        // Kiểm tra xem có đang focus vào input nào bên trong panel không
+        const isFocusingInput = AppState.panel.contains(document.activeElement) && 
+                                (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA');
+        
+        // Nếu đang gõ hoặc chọn gợi ý (focus), không tự động đóng
+        if (isFocusingInput) return;
+
+        AppState.panel.style.display = 'none';
+        AppState.toggleBtn.className = 'btn-closed';
+        AppState.toggleBtn.innerHTML = '📄';
+    };
+
+    // Gán sự kiện cho cả nút toggle và panel để đảm bảo mượt mà
+    AppState.widget.addEventListener('mouseenter', handleMouseEnter);
+    AppState.widget.addEventListener('mouseleave', handleMouseLeave);
+
+    // Lắng nghe khi kết thúc focus (ví dụ chọn xong gợi ý hoặc click ra ngoài)
+    document.addEventListener('focusin', (e) => {
+        // Nếu focus ra ngoài panel mà chuột cũng đang ở ngoài -> đóng panel (nếu đang ghim)
+        if (AppState.panel.classList.contains('vnpt-pinned') && !AppState.panel.contains(e.target)) {
+            // Kiểm tra chuột thực tế có đang nằm trong widget ko (dùng :hover selector ảo)
+            if (!AppState.widget.matches(':hover')) {
+                AppState.panel.style.display = 'none';
+                AppState.toggleBtn.className = 'btn-closed';
+                AppState.toggleBtn.innerHTML = '📄';
+            }
+        }
+    });
 
     // --- Update Notification Logic ---
     function checkUpdateUI() {

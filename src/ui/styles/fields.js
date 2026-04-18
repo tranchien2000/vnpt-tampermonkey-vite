@@ -171,6 +171,15 @@ export const fieldsStyles = `
         background: rgba(234, 67, 53, 0.05) !important;
     }
 
+    @keyframes field-flash-success {
+        0% { background-color: rgba(40, 167, 69, 0.5); box-shadow: 0 0 12px rgba(40, 167, 69, 0.4); }
+        30% { background-color: rgba(40, 167, 69, 0.3); }
+        100% { background-color: rgba(255, 255, 255, 0.6); box-shadow: none; }
+    }
+    .field-flash-success {
+        animation: field-flash-success 3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     @keyframes spin-small { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     #vnpt-fields-list::-webkit-scrollbar { width: 6px; }

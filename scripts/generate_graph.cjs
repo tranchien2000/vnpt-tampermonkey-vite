@@ -45,8 +45,28 @@ function scanDir(dir, graph) {
     });
 }
 
+function resolveImport(currentFile, importPath, nodes) {
+    // 1. Thử đường dẫn chính xác
+    if (nodes.includes(importPath)) return importPath;
+    
+    // 2. Thử thêm .js
+    if (nodes.includes(importPath + '.js')) return importPath + '.js';
+    
+    // 3. Thử thêm /index.js (cho folder import)
+    if (nodes.includes(importPath + '/index.js')) return importPath + '/index.js';
+
+    return null;
+}
+
 function generate() {
     console.log('--- Đang tạo Đồ thị kiến trúc dự án ---');
+    
+    // Dọn dẹp folder graphify-out nếu có (nếu bạn dùng tool khác)
+    const extraCache = path.join(__dirname, '..', 'graphify-out');
+    if (fs.existsSync(extraCache)) {
+        fs.rmSync(extraCache, { recursive: true, force: true });
+    }
+
     const graph = {};
     DIRS.forEach(dir => scanDir(dir, graph));
 
@@ -63,7 +83,7 @@ function generate() {
     
     // Tạo Node
     nodes.forEach(node => {
-        const id = node.replace(/\//g, '_').replace(/\.js$/, '');
+        const id = node.replace(/[\/\.-]/g, '_').replace(/^_/, '');
         const label = node.split('/').pop();
         let style = '';
         if (node.startsWith('core/')) style = ':::core';
@@ -79,14 +99,15 @@ function generate() {
 
     // Tạo liên kết
     nodes.forEach(node => {
-        const fromId = node.replace(/\//g, '_').replace(/\.js$/, '');
+        const fromId = node.replace(/[\/\.-]/g, '_').replace(/^_/, '');
         const imports = graph[node];
         imports.forEach(imp => {
-            // Tìm node đích phù hợp nhất (vì import có thể không có .js)
-            const target = nodes.find(n => n === imp || n === imp + '.js' || n === imp + '/index.js');
-            if (target) {
-                const toId = target.replace(/\//g, '_').replace(/\.js$/, '');
-                mermaid += `    ${fromId} --> ${toId}\n`;
+            const resolvedTarget = resolveImport(node, imp, nodes);
+            if (resolvedTarget) {
+                const toId = resolvedTarget.replace(/[\/\.-]/g, '_').replace(/^_/, '');
+                if (fromId !== toId) {
+                    mermaid += `    ${fromId} --> ${toId}\n`;
+                }
             }
         });
     });

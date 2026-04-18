@@ -7,8 +7,9 @@
 - `scripts/`: Build & Release scripts.
 
 ## Rules for Agent
-1. **Always read PROJECT_MEMORY.md** at the start of a session to understand current state and avoid repeating mistakes.
-2. **Do not read `dist/` or `node_modules/`** unless specifically asked. These are large and waste tokens.
+1. **Always read PROJECT_MEMORY.md and .pi_session_sync.md** at the start of a session.
+2. **Sync Context**: Before ending a session, update `.pi_session_sync.md` with current progress.
+3. **Do not read `dist/` or `node_modules/`** unless specifically asked.
 3. **Use modular edits**: When modifying UI or Fields, check `src/ui/styles/` or `src/features/fields/` instead of looking for large monolithic files.
 4. **Be concise**: Vietnamese is preferred for communication, but keep technical explanations brief.
 5. **Keep Names**: When suggesting build changes, always ensure `keepNames: true` in esbuild config.

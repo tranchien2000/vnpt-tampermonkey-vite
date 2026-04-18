@@ -11,10 +11,6 @@ import { getVNPTDateStrings } from '../utils/dateHelper.js';
 const { ngay, thang, nam } = getVNPTDateStrings();
 
 export const DEFAULT_DATA = {
-    "ngayKy, ngayKy1": { label: "Ngày ký", value: ngay, syncDir: "both" },
-    "thangKy, thangKy1": { label: "Tháng ký", value: thang, syncDir: "both" },
-    "namKy, namKy1": { label: "Năm ký", value: nam, syncDir: "both" },
-    "ngayTiepNhan, ngayThangNamKy": { label: "Ngày ký (full)", value: `${ngay}/${thang}/${nam}`, syncDir: "both" },
     tenDoanhNghiepB: { label: "Tên doanh nghiệp B", value: "VIỄN THÔNG HÀ NỘI – CHI NHÁNH TẬP ĐOÀN BƯU CHÍNH VIỄN THÔNG VIỆT NAM", syncDir: "both" },
     diaChiB: { label: "Địa chỉ B", value: "75 Đinh Tiên Hoàng, Phường Hoàn Kiếm, Thành phố Hà Nội", syncDir: "both" },
     maSoThueB: { label: "Mã số thuế B", value: "0100686223", syncDir: "both" },
@@ -32,7 +28,6 @@ export const DEFAULT_DATA = {
     diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 ", syncDir: "both" },
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     emailB: { label: "Email B", value: "", syncDir: "both" },
-    noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
     "lienheHopDongB, lienheTuVanB, lienheHoaDonB, sucoCap1B, sucoCap2B, sucoCap3B, sucoCap4B": { label: "Liên hệ B (AM)", value: "AM Bùi Anh", syncDir: "both" },
     
     // --- DỮ LIỆU TÍNH TOÁN & GÓI CƯỚC (CALC) ---
@@ -73,10 +68,9 @@ export const DEFAULT_HOTKEYS = {
     'SCAN': { key: 's', altKey: true, ctrlKey: false, shiftKey: false, label: 'Quét dữ liệu' },
     'FILL': { key: 'f', altKey: true, ctrlKey: false, shiftKey: false, label: 'Điền Web' },
     'SCAN_PDF': { key: 'p', altKey: true, ctrlKey: false, shiftKey: false, label: 'Scan PDF (AI)' },
-    'TOGGLE': { key: '`', altKey: true, ctrlKey: false, shiftKey: false, label: 'Đóng/Mở Widget' },
+    'TOGGLE': { key: '`', altKey: false, ctrlKey: false, shiftKey: false, label: 'Đóng/Mở Widget' },
     'CLEAN': { key: 'd', altKey: true, ctrlKey: false, shiftKey: false, label: 'Dọn dẹp & Reset' },
     'SIZE_S': { key: '1', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: S' },
     'SIZE_M': { key: '2', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: M' },
     'SIZE_L': { key: '3', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: L' }
 };
-

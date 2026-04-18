@@ -5,6 +5,7 @@ import { controlStyles } from './controls.js';
 import { calculatorStyles } from './calculator.js';
 import { scannerStyles } from './scanner.js';
 import { linkerStyles } from './linker.js';
+import { templateStyles } from './template.js';
 
 export const allStyles = `
     ${themeStyles}
@@ -14,6 +15,7 @@ export const allStyles = `
     ${calculatorStyles}
     ${scannerStyles}
     ${linkerStyles}
+    ${templateStyles}
 `;
 
 export function injectStyles() {

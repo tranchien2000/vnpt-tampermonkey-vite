@@ -1,150 +1,94 @@
 /**
  * generate_brain.cjs
- * Script này tổng hợp tài liệu và cấu trúc dự án thành các module nhỏ để tối ưu hóa context cho AI và NotebookLM.
+ * Tối ưu hóa cho NotebookLM MCP CLI: Gom toàn bộ bộ não dự án vào một file duy nhất.
  */
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const ROOT_DIR = path.join(__dirname, '..');
-const OUTPUT_DIR = path.join(ROOT_DIR, '.notebooklm');
+const OUTPUT_FILE = path.join(ROOT_DIR, '.notebooklm', 'PROJECT_FULL_BRAIN.md');
 
-// Định nghĩa các module và file cần bao gồm
-const MODULES = {
-    identity: {
-        file: 'brain_identity.md',
-        docs: ['PROJECT_MEMORY.md', 'README.md']
-    },
-    architecture: {
-        file: 'brain_architecture.md',
-        docs: ['graphify-out/GRAPH_REPORT.md', 'docs/ARCHITECTURE.md']
-    },
-    code_summary: {
-        file: 'brain_code.md',
-        dirs: ['src/core', 'src/features', 'src/api', 'src/utils']
-    },
-    workflows: {
-        file: 'brain_flows.md',
-        dir: '.agents/workflows'
-    },
-    rules: {
-        file: 'brain_rules.md',
-        files: ['docs/RULES.md', '.cursorrules']
-    }
+// --- CẤU HÌNH NOTEBOOKLM ---
+const NOTEBOOK_ID = "6mE9pD-z_N7NfA"; // Đã cập nhật từ kết quả nlm list
+// ---------------------------
+
+// Cấu hình các thành phần dữ liệu
+const CONFIG = {
+    docs: ['PROJECT_MEMORY.md', 'README.md', 'docs/ARCHITECTURE.md', 'docs/RULES.md', '.cursorrules'],
+    codeDirs: ['src/core', 'src/features', 'src/api', 'src/utils', 'src/ui']
 };
 
 function ensureDirectoryExistence(filePath) {
     const dirname = path.dirname(filePath);
-    if (!fs.existsSync(dirname)) {
-        fs.mkdirSync(dirname, { recursive: true });
-    }
-}
-
-function getFileSummary(relativeRef) {
-    const fullPath = path.join(ROOT_DIR, relativeRef);
-    if (!fs.existsSync(fullPath)) return null;
-
-    const content = fs.readFileSync(fullPath, 'utf8');
-    const lines = content.split('\n');
-
-    let summary = '';
-    let inComment = false;
-    let lineCount = 0;
-
-    for (let i = 0; i < Math.min(lines.length, 50); i++) {
-        const line = lines[i].trim();
-        if (line.startsWith('/**') || line.startsWith('/*')) {
-            inComment = true;
-            summary += line + '\n';
-            if (line.endsWith('*/')) inComment = false;
-        } else if (inComment) {
-            summary += line + '\n';
-            if (line.endsWith('*/')) inComment = false;
-        } else if (line.startsWith('//')) {
-            summary += line + '\n';
-        } else if (line !== '' && !inComment) {
-            break;
-        }
-        lineCount++;
-        if (lineCount > 15) break; 
-    }
-
-    return summary.trim() || 'No description available.';
+    if (!fs.existsSync(dirname)) fs.mkdirSync(dirname, { recursive: true });
 }
 
 function generate() {
-    console.log('--- Đang khởi tạo Bộ não dự án (Multi-module) ---');
+    console.log('--- 🧠 Đang khởi tạo FULL BRAIN cho NotebookLM MCP ---');
     const timestamp = new Date().toLocaleString('vi-VN');
+    let fullContent = `# VNPT PRO PROJECT FULL BRAIN\n*Snapshot: ${timestamp}*\n\n`;
 
-    // 1. Module Identity (Dưới 50 dòng README)
-    let identityContent = `# Project Identity & Memory\n*Cập nhật: ${timestamp}*\n\n`;
-    for (const doc of MODULES.identity.docs) {
+    // 1. Gộp các file tài liệu quan trọng
+    fullContent += `## 📚 PHẦN 1: TÀI LIỆU & QUY TẮC\n\n`;
+    CONFIG.docs.forEach(doc => {
         const p = path.join(ROOT_DIR, doc);
         if (fs.existsSync(p)) {
-            console.log(`Đang đọc Identity: ${doc}`);
-            let content = fs.readFileSync(p, 'utf8');
-            if (doc === 'README.md') content = content.split('\n').slice(0, 100).join('\n') + '\n\n... (lược bỏ) ...';
-            identityContent += `## ${doc}\n\n${content}\n\n---\n\n`;
+            console.log(`- Đang nạp tài liệu: ${doc}`);
+            fullContent += `### 📄 File: ${doc}\n\n${fs.readFileSync(p, 'utf8')}\n\n---\n\n`;
         }
-    }
-    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.identity.file), identityContent);
+    });
 
-    // 2. Module Architecture (Graphify + Architecture Docs)
-    let archContent = `# Project Architecture (Graphify Optimized)\n*Cập nhật: ${timestamp}*\n\n`;
-    for (const doc of MODULES.architecture.docs) {
-        const p = path.join(ROOT_DIR, doc);
-        if (fs.existsSync(p)) {
-            console.log(`Đang đọc Arch: ${doc}`);
-            archContent += `## ${doc}\n\n${fs.readFileSync(p, 'utf8')}\n\n---\n\n`;
-        }
-    }
-    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.architecture.file), archContent);
-
-    // 3. Module Code Summary
-    let codeContent = `# Source Code Logic Map\n*Cập nhật: ${timestamp}*\n\n`;
-    for (const dir of MODULES.code_summary.dirs) {
+    // 2. Gộp toàn bộ Source Code
+    fullContent += `## 💻 PHẦN 2: LOGIC SOURCE CODE\n\n`;
+    CONFIG.codeDirs.forEach(dir => {
         const fullDirPath = path.join(ROOT_DIR, dir);
         if (fs.existsSync(fullDirPath)) {
-            codeContent += `## Thư mục: ${dir}\n\n| File | Mô tả |\n| :--- | :--- |\n`;
-            const files = fs.readdirSync(fullDirPath);
-            for (const file of files) {
-                const relativeFile = path.join(dir, file);
-                const fullFilePath = path.join(ROOT_DIR, relativeFile);
-                if (fs.statSync(fullFilePath).isFile() && (file.endsWith('.js') || file.endsWith('.ts'))) {
-                    const summary = (getFileSummary(relativeFile) || '').replace(/\n/g, '<br>');
-                    codeContent += `| ${file} | ${summary} |\n`;
+            console.log(`- Đang quét thư mục: ${dir}`);
+            
+            const scanFiles = (currentDir, relativePath) => {
+                const items = fs.readdirSync(currentDir);
+                for (const item of items) {
+                    const fullPath = path.join(currentDir, item);
+                    const relPath = path.join(relativePath, item);
+                    
+                    if (fs.statSync(fullPath).isDirectory()) {
+                        scanFiles(fullPath, relPath);
+                    } else if (item.endsWith('.js') || item.endsWith('.ts') || item.endsWith('.cjs')) {
+                        const content = fs.readFileSync(fullPath, 'utf8');
+                        fullContent += `#### 🛠️ Code: ${relPath}\n\n\`\`\`javascript\n${content}\n\`\`\`\n\n`;
+                    }
                 }
-            }
-            codeContent += '\n';
+            };
+            scanFiles(fullDirPath, dir);
         }
-    }
-    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.code_summary.file), codeContent);
+    });
 
-    // 4. Module Workflows
-    let wfContent = `# Workflow Catalog\n*Cập nhật: ${timestamp}*\n\n`;
-    const wfDirPath = path.join(ROOT_DIR, MODULES.workflows.dir);
-    if (fs.existsSync(wfDirPath)) {
-        const wfFiles = fs.readdirSync(wfDirPath).filter(f => f.endsWith('.md'));
-        for (const wf of wfFiles) {
-            const content = fs.readFileSync(path.join(wfDirPath, wf), 'utf8');
-            const descMatch = content.match(/description:\s*(.*)/);
-            wfContent += `- **/${wf.replace('.md', '')}**: ${descMatch ? descMatch[1] : 'Không có mô tả.'}\n`;
+    ensureDirectoryExistence(OUTPUT_FILE);
+    fs.writeFileSync(OUTPUT_FILE, fullContent);
+
+    console.log(`\n✅ HOÀN TẤT! Đã tạo bộ não tổng hợp tại: ${OUTPUT_FILE}`);
+
+    // --- TỰ ĐỘNG ĐẨY LÊN NOTEBOOKLM QUA CLI ---
+    try {
+        console.log(`🚀 Đang tự động đẩy lên NotebookLM qua CLI (nlm)...`);
+        
+        // Lệnh đẩy source lên NotebookLM bằng nlm
+        if (!NOTEBOOK_ID) {
+            throw new Error("Vui lòng điền NOTEBOOK_ID vào script generate_brain.cjs (Dùng lệnh 'nlm list' để lấy ID)");
         }
+        // Chuyển sang đường dẫn tương đối để tránh lỗi shell trên Windows
+        const relativeOutputFile = path.relative(ROOT_DIR, OUTPUT_FILE);
+        const command = `nlm source add ${NOTEBOOK_ID} --file "${relativeOutputFile}"`;
+        console.log(`> Chạy lệnh: ${command}`);
+        
+        execSync(command, { stdio: 'inherit', cwd: ROOT_DIR });
+        console.log(`\n✨ Đã cập nhật bộ não lên NotebookLM thành công!`);
+    } catch (err) {
+        console.log(`\n⚠️  Lỗi khi đẩy lên NotebookLM: ${err.message}`);
+        console.log(`👉 Đảm bảo bạn đã đăng nhập nlm và đã chọn đúng notebook.`);
     }
-    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.workflows.file), wfContent);
-
-    // 5. Module Rules
-    let rulesContent = `# Project Rules\n*Cập nhật: ${timestamp}*\n\n`;
-    for (const file of MODULES.rules.files) {
-        const p = path.join(ROOT_DIR, file);
-        if (fs.existsSync(p)) {
-            rulesContent += `## Rules from ${file}\n\n${fs.readFileSync(p, 'utf8')}\n\n`;
-        }
-    }
-    fs.writeFileSync(path.join(OUTPUT_DIR, MODULES.rules.file), rulesContent);
-
-    console.log(`==> Đã tạo xong 5 module não bộ tại: ${OUTPUT_DIR}`);
 }
 
-ensureDirectoryExistence(path.join(OUTPUT_DIR, 'dummy.txt'));
 generate();

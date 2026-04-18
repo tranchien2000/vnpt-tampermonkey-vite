@@ -1,7 +1,7 @@
 {
-  "version": "1.6.32",
+  "version": "1.6.55",
+  "latestVersion": "1.6.55",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "chore: release v1.6.32 - Phát hành phiên bản mới",
-  "latestVersion": "1.6.31",
-  "updateTime": "2026-04-17T00:10:09.295Z"
+  "updateTime": "2026-04-18T00:37:27.246Z",
+  "message": "Phát hành phiên bản v1.6.45"
 }

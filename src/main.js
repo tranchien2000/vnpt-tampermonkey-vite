@@ -10,6 +10,7 @@ import './utils/polyfills.js';
 import { logger } from './utils/logger.js';
 import { injectStyles } from './ui/styles.js';
 import { initWidget } from './ui/widget.js';
+import { Storage } from './utils/storage.js';
 import { initDragDrop } from './ui/dragDrop.js';
 import { initFieldsManager, loadSavedData, initReverseSync, cleanupReverseSync, restorePosition } from './features/fieldsManager.js';
 import { initWebScanner } from './features/webScanner.js';
@@ -28,8 +29,8 @@ import { initStorageMerge } from './utils/migrationHelper.js';
 import { RemoteConfig } from './api/remoteConfig.js';
 import { injectMailBridge } from './features/mailScan/mailScanner.js';
 import { APP_VERSION } from './core/constants.js';
-import { Storage } from './utils/storage.js';
 import { showToast } from './ui/toast.js';
+
 
 /** Danh sách domain của các dịch vụ mail được hỗ trợ */
 const MAIL_DOMAINS = [
@@ -47,6 +48,9 @@ async function init() {
   // Chống chạy 2 lần
   if (window.__vnptInited) return;
   window.__vnptInited = true;
+
+  // Khởi chạy Storage Cache (Extension Storage là Async)
+  await Storage.init();
 
     logger.info('Initializing VNPT Userscript...');
     console.log('[VNPT-Debug] 1. Starting Init...');

@@ -1,6 +1,14 @@
 node_modules/
+dist/
+releases/
+.notebooklm/
+.graphify-cache/
+graphify-out/
 temp_vnpt*.js
 source.js
 original_script.js
 .env
 .DS_Store
+*.log
+# implementation_plan.ini
+pi-session-*.html

@@ -30,6 +30,8 @@ export const DEFAULT_LABELS = {
     'duong': 'Số nhà, tên đường',
     'xaIdNew, diaChiTruSoXaIdNew': 'Quận/Huyện - Xã/Phường',
     'tinhIdNew, tinhId, diaChiTruSoTinhIdNew': 'Tỉnh/Thành phố',
+    'dvtGoi': 'Đơn vị gói',
+    'soLuongGoi': 'Số lượng gói',
 };
 
 export const REQUIRED_KEYS = ['soHopDong', 'tenDaiDienn', 'cmnd', 'sdt', 'diaChi', 'tenToChuc', 'ngayCapCustomer', 'emailDaiDien', 'soDkdn', 'goiDV'];

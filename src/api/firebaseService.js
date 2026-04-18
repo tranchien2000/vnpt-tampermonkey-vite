@@ -202,12 +202,17 @@ export const FirebaseService = {
    */
   async getRemoteConfigs() {
     try {
+      // Khi chạy trong môi trường Extension, đôi khi Firebase bị chặn bởi CSP của trang web
+      // Chúng ta sẽ kiểm tra xem db có tồn tại không trước khi gọi
+      if (!db) return null;
+
       const configRef = doc(db, "settings", "remote_configs");
       const snap = await getDoc(configRef);
       if (snap.exists()) return snap.data();
       return null;
     } catch (err) {
-      console.error("FirebaseService.getRemoteConfigs error:", err);
+      // Không in error ra console.error để tránh làm đỏ console của user nếu chỉ là lỗi permission
+      console.warn("[FirebaseService] Remote config not available (likely permissions or CSP):", err.message);
       return null;
     }
   }

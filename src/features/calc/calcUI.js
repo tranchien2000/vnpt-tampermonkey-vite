@@ -109,7 +109,9 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     renderHist(SK_HIST_B, 'wg-before-list');
     renderHist(SK_HIST_A, 'wg-after-list');
 
-    function updateLocal(type, val) {
+    function updateLocal(type, val, skipFormatting = false) {
+        if (!els.before || !els.tax || !els.after || !els.text) return { beforeStr: '', taxStr: '', afterStr: '', textStr: '' };
+        
         if (val === '') {
             els.before.value = '';
             els.tax.value = '';
@@ -118,34 +120,64 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
             return { beforeStr: '', taxStr: '', afterStr: '', textStr: '' };
         }
         const res = calculateValues(type, val, TAX_RATE);
-        els.before.value = res.beforeStr;
-        els.tax.value = res.taxStr;
-        els.after.value = res.afterStr;
+        
+        // Khi đang gõ (oninput), nếu skipFormatting=true thì không đè value vào chính ô đang gõ 
+        // để tránh nhảy con trỏ chuột.
+        if (type !== 'before' || !skipFormatting) els.before.value = res.beforeStr;
+        if (type !== 'tax' || !skipFormatting) els.tax.value = res.taxStr;
+        if (type !== 'after' || !skipFormatting) els.after.value = res.afterStr;
         els.text.value = res.textStr;
+        
         return res;
     }
 
     function doSync(type, val) {
-        if (val === '') return; // Không sync khi giá trị rỗng (để tránh xóa form khi chưa nhập xong)
-        buildFullDOMMap(); // Đảm bảo map mới nhất trước khi điền
+        const rawVal = parseNum(val);
+        if (isNaN(rawVal) || rawVal === 0) return; 
+        
+        buildFullDOMMap(); 
         const res = calculateValues(type, val, TAX_RATE);
         const currentMaps = ld(SK_CALC_MAP) || { ...DEFAULT_CALC_MAP };
         syncToPage(res, currentMaps);
     }
 
-    const debouncedSync = debounce((type, val) => doSync(type, val), 400);
+    const debouncedSync = debounce((type, val) => doSync(type, val), 500);
 
-    els.taxRate.oninput = () => { TAX_RATE = Number(els.taxRate.value) / 100 || 0; sv(SK_TAX, TAX_RATE); updateLocal('before', els.before.value); debouncedSync('before', els.before.value); };
-    els.taxRate.onchange = () => { doSync('before', els.before.value); };
+    els.taxRate.oninput = () => { 
+        TAX_RATE = Number(els.taxRate.value) / 100 || 0; 
+        sv(SK_TAX, TAX_RATE); 
+        updateLocal('before', els.before.value); 
+        debouncedSync('before', els.before.value); 
+    };
 
-    els.before.oninput = () => { updateLocal('before', els.before.value); debouncedSync('before', els.before.value); };
-    els.before.onchange = () => { doSync('before', els.before.value); saveHist(SK_HIST_B, els.before.value); renderHist(SK_HIST_B, 'wg-before-list'); };
+    els.before.oninput = (e) => { 
+        // Lưu vị trí con trỏ
+        const start = e.target.selectionStart;
+        const oldLen = e.target.value.length;
+        
+        const res = updateLocal('before', e.target.value, true); 
+        
+        // Chỉ định dạng lại nếu không phải đang xóa hoặc gõ dở dang
+        // Để việc sửa ở giữa chuỗi không bị nhảy con trỏ
+        debouncedSync('before', e.target.value); 
+    };
+    els.before.onchange = () => { 
+        updateLocal('before', els.before.value); // Định dạng chuẩn khi rời ô
+        doSync('before', els.before.value); 
+        saveHist(SK_HIST_B, els.before.value); 
+        renderHist(SK_HIST_B, 'wg-before-list'); 
+    };
     
-    els.tax.oninput = () => { updateLocal('tax', els.tax.value); debouncedSync('tax', els.tax.value); };
-    els.tax.onchange = () => { doSync('tax', els.tax.value); };
+    els.tax.oninput = () => { updateLocal('tax', els.tax.value, true); debouncedSync('tax', els.tax.value); };
+    els.tax.onchange = () => { updateLocal('tax', els.tax.value); doSync('tax', els.tax.value); };
 
-    els.after.oninput = () => { updateLocal('after', els.after.value); debouncedSync('after', els.after.value); };
-    els.after.onchange = () => { doSync('after', els.after.value); saveHist(SK_HIST_A, els.after.value); renderHist(SK_HIST_A, 'wg-after-list'); };
+    els.after.oninput = () => { updateLocal('after', els.after.value, true); debouncedSync('after', els.after.value); };
+    els.after.onchange = () => { 
+        updateLocal('after', els.after.value);
+        doSync('after', els.after.value); 
+        saveHist(SK_HIST_A, els.after.value); 
+        renderHist(SK_HIST_A, 'wg-after-list'); 
+    };
 
     const syncManualBtn = document.getElementById('wg-sync-manual');
     if (syncManualBtn) {
