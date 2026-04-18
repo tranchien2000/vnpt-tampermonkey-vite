@@ -181,22 +181,22 @@ export const controlStyles = `
         flex: 1;
         min-width: 0; 
         background: #f8f9fa; border: 1px solid #eee; border-radius: 6px;
-        padding: 5px 2px; font-size: 10px; font-weight: 700; color: #3c4043;
+        padding: 5px 1px; font-size: 9px; font-weight: 700; color: #3c4043;
         cursor: pointer; transition: all 0.2s; text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        display: flex; align-items: center; justify-content: center; gap: 2px;
+        display: flex; align-items: center; justify-content: center; gap: 1px;
     }
     .util-json-group {
         display: flex;
         gap: 2px;
-        flex-shrink: 0;
+        flex: 0 0 52px;
     }
     .util-item-mini.btn-json-icon {
-        flex: 0 0 26px; 
-        width: 26px;
-        height: 26px;
+        flex: 1;
+        width: 24px;
+        height: 24px;
         font-size: 11px;
         padding: 0;
         border-color: #dadce0;

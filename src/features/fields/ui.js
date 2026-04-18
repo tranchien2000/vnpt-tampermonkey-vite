@@ -204,6 +204,35 @@ export function initFieldsManager() {
 
     document.getElementById('vnpt-btn-default').onclick = () => { AppState.isDefaultMode = !AppState.isDefaultMode; };
 
+    const btnToggleTools = document.getElementById('vnpt-btn-toggle-tools');
+    if (btnToggleTools) {
+        btnToggleTools.onclick = () => {
+            AppState.showFieldTools = !AppState.showFieldTools;
+        };
+    }
+
+    AppState.on('showFieldTools', (val) => {
+        const wrapper = document.getElementById('vnpt-fields-container');
+        if (wrapper) wrapper.classList.toggle('show-field-tools', val);
+        const btn = document.getElementById('vnpt-btn-toggle-tools');
+        if (btn) btn.classList.toggle('active', val);
+        showToast(val ? "🛠️ Đã bật chế độ chỉnh sửa nâng cao" : "🔒 Đã ẩn các công cụ bổ trợ", val ? "#1a73e8" : "#5f6368");
+    });
+
+    // --- Tính năng: Shift + Cuộn chuột để chuyển Mode ---
+    const widget = document.getElementById('vnpt-docx-widget');
+    if (widget) {
+        widget.addEventListener('wheel', (e) => {
+            if (e.shiftKey) {
+                e.preventDefault();
+                // Sử dụng deltaY để nhận diện 1 lần lăn (thường là > 0 hoặc < 0)
+                // Chúng ta chỉ chuyển 1 lần cho mỗi sự kiện wheel
+                AppState.isDefaultMode = !AppState.isDefaultMode;
+                showToast(`🔄 Chế độ: ${AppState.isDefaultMode ? '🏢 Dữ liệu VNPT' : '📝 Dữ liệu Cá nhân'}`, "#1a73e8");
+            }
+        }, { passive: false });
+    }
+
     AppState.on('isDefaultMode', (newVal) => updateUIForDefaultMode(newVal));
 
     document.getElementById('vnpt-btn-batch-del').onclick = (e) => {

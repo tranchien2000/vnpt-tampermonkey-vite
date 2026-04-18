@@ -3,7 +3,7 @@ export const fieldsStyles = `
        SECTION 3: FIELDS CONTAINER & FIELD ROWS
        ═══════════════════════════════════════════ */
     #vnpt-fields-container { 
-        --label-flex: 0.2;
+        --label-flex: 0.35;
         flex: 1; min-height: 100px; background: rgba(255, 255, 255, 0.4); 
         border: 1px solid var(--vnpt-border); border-radius: 12px; 
         margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
@@ -11,9 +11,26 @@ export const fieldsStyles = `
     }
 
     #vnpt-fields-container.vnpt-mode-default {
-        border: 2px dashed var(--vnpt-danger);
-        background: rgba(234, 67, 53, 0.03);
+        background: rgba(255, 21, 0, 0.02) !important;
+        border-color: transparent !important;
     }
+    
+    .vnpt-mode-default #vnpt-fields-list {
+        animation: vnpt-list-pulse 2s infinite;
+        border-radius: 8px;
+    }
+    
+    @keyframes vnpt-list-pulse {
+        0% { outline: 2px dashed var(--vnpt-danger); outline-offset: -2px; }
+        50% { outline: 2px dashed #ff9800; outline-offset: -2px; }
+        100% { outline: 2px dashed var(--vnpt-danger); outline-offset: -2px; }
+    }
+
+    .vnpt-mode-default .vnpt-field-row {
+        background: #fff5f5;
+        border-color: rgba(234, 67, 53, 0.1);
+    }
+
     #vnpt-fields-list { flex: 1; padding: 6px 4px; }
 
     .vnpt-field-row { 
@@ -28,20 +45,26 @@ export const fieldsStyles = `
         z-index: 2;
     }
 
-    .btn-sync-dir, .btn-sync-dir-calc {
-        cursor: pointer; padding: 0; user-select: none;
-        flex: 0 0 16px; height: 16px; display: flex; align-items: center; justify-content: center;
-        border: none; background: transparent; color: #bdc1c6;
-        transition: 0.2s;
+    /* Quản lý ẩn hiện công cụ bổ trợ (Link, Sync, Checkbox) */
+    .vnpt-field-row input.row-chk,
+    .btn-sync-dir, 
+    .btn-field-link { 
+        display: none !important; 
     }
-    .btn-sync-dir:hover { color: var(--vnpt-primary); transform: scale(1.2); }
-    
-    .btn-sync-dir[data-dir="both"] { color: var(--vnpt-primary); }
-    .btn-sync-dir[data-dir="up"] { color: #f57c00; }
-    .btn-sync-dir[data-dir="down"] { color: var(--vnpt-success); }
 
+    /* Hiển thị khi bật Tools Mode */
+    .show-field-tools .vnpt-field-row input.row-chk,
+    .show-field-tools .btn-sync-dir, 
+    .show-field-tools .btn-field-link { 
+        display: flex !important; 
+        opacity: 1 !important;
+    }
+
+    .vnpt-field-row input.row-chk { flex: 0 0 16px; width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--vnpt-primary); }
+
+    /* Inputs */
     .vnpt-field-row input { 
-        flex: 1; padding: 2px 4px; border: 1px solid #e8eaed; border-radius: 6px; 
+        padding: 2px 6px; border: 1px solid #e8eaed; border-radius: 6px; 
         font-size: 10.5px; height: 24px; transition: all 0.2s; background: #fdfdfd;
         color: #3c4043; font-family: inherit;
     }
@@ -51,17 +74,22 @@ export const fieldsStyles = `
         outline: none; background: #fff;
     }
     
-    .vnpt-field-row input.row-chk { flex: 0 0 16px; width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--vnpt-primary); }
     .vnpt-field-row input.f-label { flex: var(--label-flex); color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.02); }
+    .vnpt-field-row input.f-val { flex: 1; }
     .vnpt-field-row input.f-key { display: none; width: 60px; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.02); }
     .show-ids .vnpt-field-row input.f-key { display: block; }
 
-    .btn-field-link {
+    .btn-sync-dir, .btn-sync-dir-calc, .btn-field-link {
         cursor: pointer; padding: 0; user-select: none;
         flex: 0 0 20px; height: 20px; display: flex; align-items: center; justify-content: center;
-        border: none; background: transparent; color: #bdc1c6; transition: 0.2s; font-size: 11px;
+        border: none; background: transparent; color: #bdc1c6;
+        font-size: 11px;
     }
-    .btn-field-link:hover { color: var(--vnpt-primary); transform: scale(1.1); }
+    .btn-sync-dir:hover, .btn-field-link:hover { color: var(--vnpt-primary); transform: scale(1.1); }
+    
+    .btn-sync-dir[data-dir="both"] { color: var(--vnpt-primary); }
+    .btn-sync-dir[data-dir="up"] { color: #f57c00; }
+    .btn-sync-dir[data-dir="down"] { color: var(--vnpt-success); }
 
     /* MST Lookup */
     .mst-lookup-wrapper { position: relative; display: flex; align-items: center; flex: 1; }
@@ -73,7 +101,7 @@ export const fieldsStyles = `
     }
     .btn-mst-lookup:hover { background: var(--vnpt-primary); color: white; }
 
-    /* Validation & Effects */
+    /* Effects */
     @keyframes field-flash-success {
         0% { background-color: rgba(40, 167, 69, 0.3); }
         100% { background-color: #fff; }

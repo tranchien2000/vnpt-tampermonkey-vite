@@ -14,25 +14,25 @@ export function saveFieldsToLocal() {
 
     const rows = container.querySelectorAll('.vnpt-field-row');
     rows.forEach(row => {
+        // Lọc bỏ các hàng mapping của Calculator (không có class f-val hoặc f-key chuẩn)
         const keyInput = row.querySelector('.f-key');
         const labelInput = row.querySelector('.f-label');
         const valueInput = row.querySelector('.f-val');
         const syncDirEl = row.querySelector('.btn-sync-dir');
 
-        if (!keyInput || !labelInput || !valueInput) {
-            console.warn('[VNPT] Bỏ qua hàng do thiếu input:', row);
-            return;
-        }
+        if (!keyInput || !labelInput || !valueInput) return;
         
-        const rawKeyInput = keyInput.value.trim();
+        const rawKeyInput = keyInput.value ? keyInput.value.trim() : '';
+        if (!rawKeyInput) return;
+        
         const parts = rawKeyInput.split(',').map(s => s.trim()).filter(s => s);
         const k = parts[0];
         const s = parts.slice(1).join(', ');
         
         if (k) {
             data[k] = { 
-                label: labelInput.value.trim(), 
-                value: valueInput.value, 
+                label: labelInput.value ? labelInput.value.trim() : '', 
+                value: valueInput.value || '', 
                 sync: s, 
                 syncDir: syncDirEl ? syncDirEl.getAttribute('data-dir') : 'both' 
             };
@@ -60,7 +60,8 @@ export function loadSavedData() {
 
     // 1. Nạp các trường mặc định
     defaultEntries.forEach(([keyString, label]) => {
-        if (label.includes('Calc:') || label.includes('🛠️')) return;
+        const lbl = label || '';
+        if (lbl.includes('Calc:') || lbl.includes('🛠️')) return;
 
         const primaryKey = keyString.split(',')[0].trim();
         const saved = savedFields[primaryKey];
@@ -80,13 +81,13 @@ export function loadSavedData() {
     Object.keys(savedFields).forEach(primaryKey => {
         if (!defaultPKs.has(primaryKey)) {
             const saved = savedFields[primaryKey];
-            const label = (saved && typeof saved === 'object') ? (saved.label || '') : '';
-            if (label.includes('Calc:') || label.includes('🛠️')) return;
+            const lbl = (saved && typeof saved === 'object') ? (saved.label || '') : '';
+            if (lbl.includes('Calc:') || lbl.includes('🛠️')) return;
 
             const row = createRowDOM(
                 primaryKey, 
                 (typeof saved === 'object' ? saved.value : (saved || '')), 
-                label, 
+                lbl, 
                 (typeof saved === 'object' ? saved.sync : ''), 
                 (typeof saved === 'object' ? (saved.syncDir || 'both') : 'both')
             );

@@ -68,10 +68,11 @@ export function createRowDOM(keyText, valueText, labelText = null, syncText = ''
 
     row.innerHTML = `
         <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" />
-        <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
-        <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
         <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ" data-dir="${syncDir}">↔</button>
         <button class="btn-field-link" title="Liên kết">🔗</button>
+        <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
+        <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
+        
         ${primaryKey === 'soDkdn' ? `
             <div class="mst-lookup-wrapper" style="flex: 1; display: flex; position: relative;">
                 <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val f-value" value="${valueText}" placeholder="Mã số thuế..." />
@@ -80,6 +81,8 @@ export function createRowDOM(keyText, valueText, labelText = null, syncText = ''
         ` : `
             <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val f-value" value="${valueText}" />
         `}
+
+
     `;
 
     const fVal = row.querySelector('.f-val');
@@ -216,7 +219,9 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
     if (!container) return;
     
     const incomingPK = keyText.split(',')[0].trim();
-    const existingRow = container.querySelector(`.vnpt-field-row[data-pk="${incomingPK}"]`);
+    // TÌM KIẾM TRIỆT ĐỂ: Chỉ tìm trong hàng con trực tiếp của container hiện tại
+    const existingRow = Array.from(container.querySelectorAll('.vnpt-field-row'))
+                             .find(row => row.getAttribute('data-pk') === incomingPK);
 
     if (existingRow) {
         const valueInput = existingRow.querySelector('.f-val');
