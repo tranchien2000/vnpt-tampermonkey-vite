@@ -7,8 +7,10 @@
     "dev": "set VITE_DEV=true && vite build --watch",
     "serve": "serve dist --cors --no-clipboard -p 8788",
     "dev:all": "concurrently \"npm run dev\" \"npm run serve\"",
-    "build": "vite build",
+    "build": "npm run build:userscript && npm run build:ext",
+    "build:userscript": "vite build",
     "build:ext": "vite build --config vite.config.ext.js",
+    "dev:ext": "vite --config vite.config.ext.js",
     "release": "node scripts/release.cjs",
     "brain": "node scripts/generate_brain.cjs",
     "pi": "pi"

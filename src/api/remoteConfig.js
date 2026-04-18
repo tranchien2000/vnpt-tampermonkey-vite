@@ -46,10 +46,15 @@ export const RemoteConfig = {
   async refresh() {
     try {
       // 1. Lấy Selectors từ Firebase (đã có sẵn)
-      const config = await FirebaseService.getRemoteConfigs();
-      if (config && config.selectors) {
-        this.activeLabels = { ...DEFAULT_LABELS, ...config.selectors };
-        Storage.set(KEY_REMOTE_LABELS, config.selectors);
+      // Bọc trong try-catch riêng để nếu Firebase lỗi thì vẫn fetch được GitHub
+      try {
+        const config = await FirebaseService.getRemoteConfigs();
+        if (config && config.selectors) {
+          this.activeLabels = { ...DEFAULT_LABELS, ...config.selectors };
+          Storage.set(KEY_REMOTE_LABELS, config.selectors);
+        }
+      } catch (fError) {
+        console.warn("[RemoteConfig] Firebase fetch skipped.");
       }
 
       // 2. Lấy Thông tin Update từ GitHub

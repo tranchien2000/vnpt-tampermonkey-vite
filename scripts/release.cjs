@@ -52,34 +52,39 @@ if (fs.existsSync(verJsonPath)) {
 
 console.log(`✅ Bumped version: ${oldVersion} -> ${newVersion}`);
 
-// 2. Build code
+// 2. Build code (Cả Userscript và Extension)
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+console.log('> Đang build toàn bộ dự án...');
 run(`${npmCmd} run build`);
-run(`${npmCmd} run build:ext`);
 
 // 3. Sao lưu bản build vào thư mục releases
 if (!fs.existsSync(releasesDir)) fs.mkdirSync(releasesDir);
 const currentReleaseDir = path.join(releasesDir, `v${newVersion}`);
 if (!fs.existsSync(currentReleaseDir)) fs.mkdirSync(currentReleaseDir);
 
-// Đóng gói extension
+// Đóng gói Extension thành ZIP
+console.log('> Đang đóng gói Extension ZIP...');
 run(`node scripts/bundle-ext.cjs`);
 
 try {
-    // Copy Userscript
+    // 3.1 Lưu Userscript (.user.js)
     const buildFile = fs.readdirSync(path.join(rootDir, 'dist')).find(f => f.endsWith('.user.js'));
     if (buildFile) {
         fs.copyFileSync(path.join(rootDir, 'dist', buildFile), path.join(currentReleaseDir, buildFile));
+        console.log(`📂 Đã lưu Userscript: ${buildFile}`);
     }
 
-    // Copy Extension Zip
+    // 3.2 Lưu Extension (.zip)
     const zipFile = `vnpt-extension-v${newVersion}.zip`;
-    if (fs.existsSync(path.join(releasesDir, zipFile))) {
-        fs.copyFileSync(path.join(releasesDir, zipFile), path.join(currentReleaseDir, zipFile));
-        console.log(`📂 Saved Extension Zip to: releases/v${newVersion}/${zipFile}`);
+    const zipPath = path.join(releasesDir, zipFile);
+    if (fs.existsSync(zipPath)) {
+        fs.copyFileSync(zipPath, path.join(currentReleaseDir, zipFile));
+        // Xóa file zip ở ngoài root sau khi đã copy vào folder version
+        fs.unlinkSync(zipPath);
+        console.log(`📂 Đã lưu Extension: ${zipFile}`);
     }
 } catch (e) {
-    console.warn('⚠️ Không thể copy file build vào thư mục releases.', e);
+    console.warn('⚠️ Lỗi khi sao lưu bản build:', e.message);
 }
 
 // 4. Git actions

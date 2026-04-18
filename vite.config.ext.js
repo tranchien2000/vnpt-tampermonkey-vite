@@ -1,32 +1,25 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
+import { crx } from '@crxjs/vite-plugin';
+import manifest from './manifest.json';
 
 export default defineConfig({
+  plugins: [
+    crx({ manifest }),
+  ],
   build: {
     outDir: 'dist/extension',
-    emptyOutDir: true,
     rollupOptions: {
-      input: {
-        content: resolve(__dirname, 'src/features/autoFillForm.js'), // Điểm đầu vào chính cho extension
-        sw: resolve(__dirname, 'src/api/gemini.js'), // Ví dụ Service Worker
-      },
       output: {
-        entryFileNames: '[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
+        // Đảm bảo các thư viện được gộp chung vào, không bị tách file assets quá nhiều
+        manualChunks: undefined, 
       }
     }
   },
-  plugins: [
-    {
-      name: 'copy-manifest',
-      closeBundle() {
-        if (fs.existsSync('manifest.json')) {
-            fs.copyFileSync('manifest.json', 'dist/extension/manifest.json');
-            console.log('✅ Copied manifest.json to dist/extension');
-        }
-      }
+  resolve: {
+    alias: {
+      // Nếu có dùng alias thì định nghĩa ở đây
     }
-  ]
+  }
 });
