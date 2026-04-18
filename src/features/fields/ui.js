@@ -15,56 +15,10 @@ import { syncAllFields } from './sync.js';
 import { updateUIForDefaultMode } from './mode.js';
 
 /**
- * Khởi tạo thanh kéo chia cột (Label / Value) trong Fields List.
+ * Khởi tạo thanh kéo chia cột (Vô hiệu hóa)
  */
 export function initColSplitter() {
-    const splitter = document.getElementById('vnpt-col-splitter');
-    const container = document.getElementById('vnpt-fields-container');
-    if (!splitter || !container) return;
-
-    const savedRatio = parseFloat(Storage.get(SK_COL_RATIO)) || 0.2;
-    container.style.setProperty('--label-flex', savedRatio);
-
-    splitter.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        splitter.classList.add('dragging');
-        document.body.style.cursor = 'col-resize';
-        document.body.style.userSelect = 'none';
-
-        const containerRect = container.getBoundingClientRect();
-        const startX = e.clientX;
-        const startRatio = parseFloat(container.style.getPropertyValue('--label-flex')) || 0.2;
-
-        const onMouseMove = (moveEvt) => {
-            const dx = moveEvt.clientX - startX;
-            const totalWidth = containerRect.width;
-            const deltaRatio = dx / totalWidth;
-            const newRatio = Math.min(COL_RATIO_MAX, Math.max(COL_RATIO_MIN, startRatio + deltaRatio));
-            container.style.setProperty('--label-flex', newRatio.toFixed(3));
-        };
-
-        const onMouseUp = () => {
-            window.removeEventListener('mousemove', onMouseMove);
-            window.removeEventListener('mouseup', onMouseUp);
-            splitter.classList.remove('dragging');
-            document.body.style.cursor = '';
-            document.body.style.userSelect = '';
-
-            const finalRatio = container.style.getPropertyValue('--label-flex');
-            Storage.set(SK_COL_RATIO, parseFloat(finalRatio));
-        };
-
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
-    });
-
-    splitter.addEventListener('dblclick', () => {
-        container.style.setProperty('--label-flex', '0.2');
-        Storage.set(SK_COL_RATIO, 0.2);
-        showToast('↔ Đã reset tỉ lệ cột về mặc định', '#5f6368');
-    });
+    // Tính năng này đã được gỡ bỏ theo yêu cầu.
 }
 
 function renderBackupHistory(container) {

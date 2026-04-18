@@ -97,11 +97,6 @@ export function loadSavedData() {
     container.innerHTML = '';
     container.appendChild(fragment);
 
-    // Cập nhật trạng thái kết nối cho tất cả hàng sau khi đã vào DOM
-    container.querySelectorAll('.vnpt-field-row').forEach(row => {
-        updateRowConnectionStatus(row);
-    });
-
     if (container.querySelectorAll('.vnpt-field-row').length === 0) {
         container.innerHTML = '<div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>';
     }

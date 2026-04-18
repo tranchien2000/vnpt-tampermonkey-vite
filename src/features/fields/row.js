@@ -68,7 +68,6 @@ export function createRowDOM(keyText, valueText, labelText = null, syncText = ''
 
     row.innerHTML = `
         <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" />
-        <span class="connection-badge disconnected" title="Đang kiểm tra kết nối...">○</span>
         <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
         <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
         <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ" data-dir="${syncDir}">↔</button>

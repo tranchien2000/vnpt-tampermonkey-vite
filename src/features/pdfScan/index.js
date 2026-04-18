@@ -22,8 +22,11 @@ import { parseAddressComponents } from '../../utils/stringHelper.js';
 let fileQueue = [];
 
 function renderQueue(queueList, placeholder) {
-    queueList.innerHTML = '';
+    // Tối ưu: Dùng DocumentFragment để tránh reflow liên tục
+    const fragment = document.createDocumentFragment();
+    
     if (fileQueue.length === 0) {
+        queueList.innerHTML = '';
         placeholder.style.display = 'flex';
         return;
     }
@@ -35,12 +38,14 @@ function renderQueue(queueList, placeholder) {
         
         if (item.mimeType && item.mimeType.startsWith('image/')) {
             const img = document.createElement('img');
-            img.src = `data:${item.mimeType};base64,${item.base64}`;
+            // Tối ưu: Ưu tiên dùng previewUrl (Blob) thay vì chuỗi Base64 khổng lồ
+            img.src = item.previewUrl || `data:${item.mimeType};base64,${item.base64}`;
+            img.loading = "lazy"; // Tiết kiệm tài nguyên
             el.appendChild(img);
         } else {
             const span = document.createElement('span');
             span.className = 'file-icon';
-            span.textContent = '📄';
+            span.textContent = item.mimeType === 'application/pdf' ? '📕' : '📄';
             el.appendChild(span);
         }
 
@@ -49,12 +54,16 @@ function renderQueue(queueList, placeholder) {
         rmBtn.innerHTML = '✖';
         rmBtn.onclick = (e) => {
             e.stopPropagation();
+            if (item.previewUrl) URL.revokeObjectURL(item.previewUrl); // Giải phóng bộ nhớ
             fileQueue.splice(index, 1);
             renderQueue(queueList, placeholder);
         };
         el.appendChild(rmBtn);
-        queueList.appendChild(el);
+        fragment.appendChild(el);
     });
+
+    queueList.innerHTML = '';
+    queueList.appendChild(fragment);
 }
 
 function clearQueue(queueList, placeholder, rawInput) {
@@ -283,17 +292,25 @@ export function initPdfScan() {
         e.preventDefault();
         queueContainer.classList.remove('drag-over');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            showToast("⏳ Đang xử lý tệp...", "#1a73e8");
             for(let file of e.dataTransfer.files) {
-                const qrText = await extractQRCodeFromImage(file);
+                const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+                
+                // Xử lý song song QR và Base64
+                const qrPromise = extractQRCodeFromImage(file);
+                const b64Promise = fileToBase64(file);
+                
+                const [qrText, b64] = await Promise.all([qrPromise, b64Promise]);
+
                 if (qrText) {
                     const parsed = parseCCCD_QR(qrText);
                     if (parsed) {
                         applyQRDataToFields(parsed, file.name);
+                        if (previewUrl) URL.revokeObjectURL(previewUrl);
                         continue;
                     }
                 }
-                const b64 = await fileToBase64(file);
-                fileQueue.push({ file, ...b64 });
+                fileQueue.push({ file, ...b64, previewUrl });
             }
             renderQueue(queueList, placeholder);
         }
@@ -301,17 +318,20 @@ export function initPdfScan() {
 
     inputPdf.addEventListener('change', async (e) => {
         if (!e.target.files) return;
+        showToast("⏳ Đang nạp tệp...", "#1a73e8");
         for(let file of e.target.files) {
+            const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
             const qrText = await extractQRCodeFromImage(file);
             if (qrText) {
                 const parsed = parseCCCD_QR(qrText);
                 if (parsed) {
                     applyQRDataToFields(parsed, file.name);
+                    if (previewUrl) URL.revokeObjectURL(previewUrl);
                     continue;
                 }
             }
             const b64 = await fileToBase64(file);
-            fileQueue.push({ file, ...b64 });
+            fileQueue.push({ file, ...b64, previewUrl });
         }
         e.target.value = '';
         renderQueue(queueList, placeholder);
@@ -322,31 +342,27 @@ export function initPdfScan() {
 
         const items = (e.clipboardData || e.originalEvent.clipboardData).items;
         let hasFile = false;
+        let filesToProcess = [];
 
         for (let item of items) {
             if (item.type.indexOf('image') !== -1 || item.type.indexOf('pdf') !== -1) {
                 hasFile = true;
                 const file = item.getAsFile();
-                if (file) {
-                    const qrText = await extractQRCodeFromImage(file);
-                    if (qrText) {
-                        const parsed = parseCCCD_QR(qrText);
-                        if (parsed) {
-                            applyQRDataToFields(parsed, "Clipboard Image");
-                            continue;
-                        }
-                    }
-                    const b64 = await fileToBase64(file);
-                    fileQueue.push({ file, ...b64 });
-                    renderQueue(queueList, placeholder);
-                    showToast("📋 Đã thêm vào hàng đợi ảnh/file.");
-                }
+                if (file) filesToProcess.push(file);
             }
         }
 
+        if (filesToProcess.length > 0) {
+            showToast(`📋 Đang nạp ${filesToProcess.length} ảnh...`, "#1a73e8");
+            for (const file of filesToProcess) {
+                const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+                const b64 = await fileToBase64(file);
+                fileQueue.push({ file, ...b64, previewUrl });
+            }
+            renderQueue(queueList, placeholder);
+        }
+
         const target = e.target;
-        // Nếu người dùng paste ảnh/file vào Textarea (như ô nhập text) -> chặn sự kiện kép (vừa text vừa ảnh), 
-        // để code phía trên đảm nhận thêm vào Queue. Ngược lại nếu paste text tĩnh thì bỏ qua để gõ bình thường.
         if (hasFile && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
             e.preventDefault();
         }

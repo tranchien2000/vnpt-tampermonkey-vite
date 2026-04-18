@@ -55,22 +55,19 @@ export function showPdfConfirmDialog(results, rawText, onConfirm, onReparse) {
     `).join('');
 
     dialog.innerHTML = `
-        <div class="vnpt-pdf-dialog-box" style="width: 1000px; height: 85vh;">
+        <div class="vnpt-pdf-dialog-box">
             <div class="pdf-dlg-header">
-                <h3>🔍 KIỂM TRA & XÁC NHẬN KẾT QUẢ AI</h3>
+                <h3>🔍 KIỂM TRA & XÁC NHẬN KẾT QUẢ QUÉT</h3>
             </div>
             
-            <div class="pdf-dlg-cols" style="gap: 16px;">
+            <div class="pdf-dlg-cols">
                 <!-- Cột trái: Nội dung gốc (Cho phép Edit) -->
-                <div class="pdf-col-left" style="display: flex; flex-direction: column; padding: 0; background: #fff;">
-                    <div style="font-weight: 800; color: #1a73e8; margin-bottom: 0; border-bottom: 2px solid var(--vnpt-primary-light); padding: 12px 14px; background: rgba(26, 115, 232, 0.05); border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
-                        <span>VĂN BẢN GỐC (CÓ THỂ SỬA)</span>
-                        <span style="font-size: 10px; opacity: 0.7; font-weight: 600;">EDITOR</span>
-                    </div>
-                    <textarea id="pdf-raw-text-edit" style="flex: 1; border: none; background: #fcfdfe; padding: 15px; resize: none; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 12.5px; line-height: 1.6; color: #2c3e50; outline: none; border-bottom: 1px solid #eee;">${rawText || ""}</textarea>
-                    
-
+                <div class="pdf-col-left" id="pdf-col-left-resizable">
+                    <textarea id="pdf-raw-text-edit" spellcheck="false" title="Bạn có thể sửa văn bản thô rồi nhấn 'CẬP NHẬT'">${rawText || ""}</textarea>
                 </div>
+
+                <!-- Thanh kéo chia cột -->
+                <div class="pdf-dlg-splitter" id="pdf-dlg-splitter"></div>
 
                 <!-- Cột phải: Các trường nhận diện được -->
                 <div class="pdf-col-right">
@@ -78,8 +75,8 @@ export function showPdfConfirmDialog(results, rawText, onConfirm, onReparse) {
                         <table class="pdf-result-table">
                             <thead>
                                 <tr>
-                                    <th width="40"><input type="checkbox" id="pdf-check-all" checked title="Chọn tất cả"></th>
-                                    <th width="120">Trường</th>
+                                    <th width="34"><input type="checkbox" id="pdf-check-all" checked title="Chọn tất cả"></th>
+                                    <th width="110">Trường</th>
                                     <th>Giá trị AI trích xuất (Có thể sửa)</th>
                                 </tr>
                             </thead>
@@ -90,17 +87,46 @@ export function showPdfConfirmDialog(results, rawText, onConfirm, onReparse) {
             </div>
 
             <div class="vnpt-pdf-actions">
-                <div style="flex:1; font-size:11px; color:#5f6368;">
-                    <strong>Mẹo:</strong> Bạn có thể sửa nội dung bên trái rồi nhấn "Cập nhật" để AI/Regex nhận diện lại nếu dữ liệu thô bị sai/thiếu.
-                </div>
-                <button class="pdf-btn-cancel" id="pdf-btn-cancel">Hủy bỏ(Esc)</button>
-                <button class="pdf-btn-confirm" id="pdf-btn-confirm">Lưu vào bảng(Enter)</button>
-                <button class="pdf-btn-reparse" id="pdf-btn-reparse">CẬP NHẬT</button>
+                <button class="pdf-btn-cancel" id="pdf-btn-cancel">Hủy bỏ (Esc)</button>
+                <button class="pdf-btn-reparse" id="pdf-btn-reparse" title="Áp dụng Regex bóc tách lại từ văn bản bên trái">CẬP NHẬT</button>
+                <button class="pdf-btn-confirm" id="pdf-btn-confirm">Lưu vào bảng (Enter)</button>
             </div>
         </div>
     `;
 
     document.body.appendChild(dialog);
+
+    // --- Logic kéo chia cột ---
+    const splitter = dialog.querySelector('#pdf-dlg-splitter');
+    const colLeft = dialog.querySelector('#pdf-col-left-resizable');
+    
+    if (splitter && colLeft) {
+        splitter.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const startX = e.clientX;
+            const startWidth = colLeft.offsetWidth;
+            
+            splitter.classList.add('dragging');
+            document.body.style.cursor = 'col-resize';
+
+            const onMouseMove = (moveEvt) => {
+                const deltaX = moveEvt.clientX - startX;
+                const newWidth = Math.max(100, Math.min(450, startWidth + deltaX));
+                colLeft.style.width = newWidth + 'px';
+                colLeft.style.flex = '0 0 ' + newWidth + 'px';
+            };
+
+            const onMouseUp = () => {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                splitter.classList.remove('dragging');
+                document.body.style.cursor = '';
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    }
 
     // Bắt event
     const btnCancel = dialog.querySelector('#pdf-btn-cancel');

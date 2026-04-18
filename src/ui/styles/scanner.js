@@ -25,60 +25,98 @@ export const scannerStyles = `
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     .vnpt-pdf-dialog-box { 
-        background: #fff; border-radius: 20px; padding: 20px;
-        width: 560px; max-width: 92vw; max-height: 80vh; 
+        background: #fff; border-radius: 12px; padding: 0;
+        width: 640px; max-width: 95vw; max-height: 80vh; 
         display: flex; flex-direction: column;
-        box-shadow: 0 24px 80px rgba(0,0,0,0.2); animation: pdfFadeIn 0.3s ease; 
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: pdfFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        overflow: hidden;
     }
     @keyframes pdfFadeIn { 
-        from { opacity:0; transform: scale(0.92) translateY(20px); }
+        from { opacity:0; transform: scale(0.97) translateY(5px); }
         to { opacity:1; transform: scale(1) translateY(0); } 
     }
 
-    .pdf-dlg-header h3 { margin: 0 0 16px 0; color: #3c4043; font-size: 15px; }
+    .pdf-dlg-header {
+        padding: 10px 16px;
+        border-bottom: 1px solid #f1f3f4;
+        display: flex; align-items: center; justify-content: space-between;
+        background: #fafafa;
+    }
+    .pdf-dlg-header h3 { margin: 0; color: #1a73e8; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
     
     .pdf-dlg-cols {
-        display: flex; gap: 12px; flex: 1; overflow: hidden; margin-bottom: 16px;
+        display: flex; gap: 0; flex: 1; overflow: hidden; position: relative;
     }
     
     .pdf-col-left {
-        flex: 1; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 12px;
-        padding: 12px; overflow-y: auto; font-family: 'Courier New', monospace;
-        font-size: 12px; line-height: 1.6; color: #3c4043; white-space: pre-wrap;
+        width: 200px; min-width: 100px; max-width: 450px; background: #fff; 
+        border-right: none;
+        padding: 0; overflow: hidden; display: flex; flex-direction: column;
+    }
+    
+    #pdf-raw-text-edit {
+        flex: 1; width: 100%; border: none; background: #fcfcfc;
+        padding: 12px; color: #3c4043; font-family: inherit; font-size: 10.5px;
+        line-height: 1.5; resize: none; outline: none;
+    }
+
+    /* Thanh kéo chia cột */
+    .pdf-dlg-splitter {
+        width: 4px;
+        background: #f1f3f4;
+        cursor: col-resize;
+        transition: background 0.2s;
+        z-index: 10;
+        display: flex; align-items: center; justify-content: center;
+        border-left: 1px solid #e8eaed;
+        border-right: 1px solid #e8eaed;
+    }
+    .pdf-dlg-splitter:hover, .pdf-dlg-splitter.dragging {
+        background: var(--vnpt-primary);
+    }
+    .pdf-dlg-splitter::after {
+        content: ''; width: 1px; height: 30px; background: rgba(255,255,255,0.2);
     }
     
     .pdf-col-right {
-        flex: 1.2; display: flex; flex-direction: column; overflow: hidden;
-        border: 1px solid #e0e0e0; border-radius: 12px;
+        flex: 1; display: flex; flex-direction: column; overflow: hidden;
+        background: #fff;
     }
 
-    .pdf-dlg-body { flex: 1; overflow-y: auto; }
+    .pdf-dlg-body { flex: 1; overflow-y: auto; padding: 8px; }
 
-    .pdf-result-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
-    .pdf-result-table th { background: #f8f9fa; padding: 10px; text-align: left; font-weight: 800; color: #5f6368; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #e0e0e0; }
-    .pdf-result-table td { padding: 8px; border-bottom: 1px solid #f1f3f4; vertical-align: middle; }
-    .pdf-row-auto td { background: #fff; }
-    .pdf-row-auto:hover td { background: #f8f9fa; }
+    .pdf-result-table { width: 100%; border-collapse: separate; border-spacing: 0 2px; font-size: 10.5px; }
+    .pdf-result-table th { 
+        background: #fff; padding: 6px 8px; text-align: left; font-weight: 800; 
+        color: #5f6368; position: sticky; top: 0; z-index: 2; 
+        border-bottom: 1px solid #f1f3f4; text-transform: uppercase; font-size: 9px;
+    }
+    .pdf-result-table td { padding: 4px 8px; vertical-align: middle; border-bottom: 1px solid #f8f9fa; }
+    .pdf-row-auto:hover td { background: #f8faff; }
 
     .pdf-val-input {
-        width: 100%; padding: 6px 10px; border: 1px solid #dadce0; border-radius: 6px;
-        font-size: 12px; font-weight: 600; color: #1a73e8; transition: all 0.2s;
-        box-sizing: border-box;
+        width: 100%; padding: 4px 8px; border: 1px solid #dadce0; border-radius: 4px;
+        font-size: 10.5px; font-weight: 600; color: #1a73e8; transition: all 0.2s;
+        box-sizing: border-box; background: #fff; height: 26px;
     }
-    .pdf-val-input:focus { border-color: var(--vnpt-primary); outline: none; box-shadow: 0 0 0 3px var(--vnpt-primary-light); }
+    .pdf-val-input:focus { border-color: var(--vnpt-primary); outline: none; box-shadow: 0 0 0 2px var(--vnpt-primary-light); }
 
-    .vnpt-pdf-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; border-top: 1px solid #f1f3f4; padding-top: 12px; }
+    .vnpt-pdf-actions { 
+        display: flex; gap: 8px; justify-content: flex-end; align-items: center; 
+        padding: 10px 16px; background: #fafafa; border-top: 1px solid #f1f3f4;
+    }
     
     .pdf-btn-cancel {
-        padding: 8px 16px; background: #f1f3f4; border: none; border-radius: 8px;
-        color: #3c4043; font-weight: 700; cursor: pointer; transition: 0.2s;
+        padding: 6px 16px; background: #fff; border: 1px solid #dadce0; border-radius: 6px;
+        color: #5f6368; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 10.5px;
     }
-    .pdf-btn-cancel:hover { background: #e8eaed; }
+    
     .pdf-btn-confirm {
-        padding: 8px 16px; background: var(--vnpt-primary); border: none; border-radius: 8px;
-        color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s;
+        padding: 6px 20px; background: var(--vnpt-primary-grad); border: none; border-radius: 6px;
+        color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 10.5px;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+        text-transform: uppercase;
     }
-    .pdf-btn-confirm:hover { background: var(--vnpt-primary-hover); box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3); }
 
     /* ═══════════════════════════════════════════
        SECTION 8: AI SCANNER UI

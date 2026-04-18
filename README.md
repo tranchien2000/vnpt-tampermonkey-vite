@@ -85,20 +85,6 @@ npm run build
 
 ---
 
-## 🚢 Quy trình Release
-Để thực hiện release một phiên bản mới, chỉ cần chạy lệnh:
-```bash
-node scripts/release.cjs "Nội dung cập nhật"
-```
-Hệ thống sẽ tự động:
-1. Tăng số phiên bản.
-2. Build code mới nhất.
-3. Đóng gói Extension Zip.
-4. Ghi nhận lịch sử thay đổi từ Git commit.
-5. Tạo Tag và Push lên GitHub.
-
----
-
 ## 📄 Giấy phép
 Dự án được phát triển nội bộ cho mục đích hỗ trợ công việc tại VNPT. 
 
