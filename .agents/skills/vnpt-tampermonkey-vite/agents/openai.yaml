@@ -1,0 +1,6 @@
+interface:
+  display_name: "Vnpt Tampermonkey Vite"
+  short_description: "Repo-specific patterns and workflows for vnpt-tampermonkey-vite"
+  default_prompt: "Use the vnpt-tampermonkey-vite repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
