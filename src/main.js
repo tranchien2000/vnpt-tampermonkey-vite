@@ -71,11 +71,9 @@ async function init() {
         console.log('[VNPT-Debug] 4. FieldsManager initialized.');
         initReverseSync();
         
-        // Để một chút thời gian cho Widget render HTML xong
-        setTimeout(() => {
-            loadSavedData();
-            console.log('[VNPT-Debug] 5. Data loaded.');
-        }, 100);
+        loadSavedData();
+        console.log('[VNPT-Debug] 5. Data loaded.');
+
     initWebScanner();
     initDocExport();
     setupAutoFillForm();

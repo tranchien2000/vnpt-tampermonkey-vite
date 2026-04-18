@@ -135,7 +135,19 @@ export function initCloudSyncUI(container) {
       document.getElementById('vnpt-btn-cloud-push').onclick = async () => {
         try {
           showToast("⏳ Đang đẩy dữ liệu...");
+          const { encrypt } = await import('../../utils/crypto.js');
+          const coreConstants = await import('../../core/constants.js');
+          const { Storage: storageUtils } = await import('../../utils/storage.js');
           
+          // Cập nhật giá trị mới nhất từ UI vào Storage trước khi Push
+          const geminiKeyInput = document.getElementById('vnpt-gemini-key');
+          
+          let geminiKey = storageUtils.get(coreConstants.SK_GEMINI_KEY);
+          if (geminiKeyInput && geminiKeyInput.value.trim() !== geminiKey) {
+              geminiKey = geminiKeyInput.value.trim();
+              storageUtils.set(coreConstants.SK_GEMINI_KEY, geminiKey);
+          }
+
           // 1. Đẩy Profiles
           const { getProfiles } = await import('../../features/profileManager.js');
           const profiles = getProfiles();
@@ -144,26 +156,21 @@ export function initCloudSyncUI(container) {
           }
 
           // 2. Đẩy Cấu hình (Mapping, Hotkeys, Text Template, Data mặc định...)
-          const { 
-              SK_CALC_MAP, SK_HOTKEYS, 
-              LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-              SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-              SK_ADDRESS_LEARNING, SK_GEMINI_KEY
-          } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
           const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
           
           // Dùng DEFAULT_CALC_MAP làm fallback nếu user chưa lưu mapping thủ công
+          const currentGeminiKey = storageUtils.get(coreConstants.SK_GEMINI_KEY);
+          
           const globalConfig = {
-              calcMap: Storage.get(SK_CALC_MAP) ?? DEFAULT_CALC_MAP,
-              hotkeys: Storage.get(SK_HOTKEYS),
-              fields: Storage.get(LOCAL_KEY_FIELDS),
-              taxRate: Storage.get(SK_TAX),
-              templates: Storage.get(SK_TEMPLATES),
-              defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS),
-              dataDefault: Storage.get(SK_DATA_DEF),
-              addressLearning: Storage.get(SK_ADDRESS_LEARNING),
-              geminiKey: Storage.get(SK_GEMINI_KEY) // Đã gộp API Keys vào đây
+              calcMap: storageUtils.get(coreConstants.SK_CALC_MAP) ?? DEFAULT_CALC_MAP,
+              hotkeys: storageUtils.get(coreConstants.SK_HOTKEYS),
+              fields: storageUtils.get(coreConstants.LOCAL_KEY_FIELDS),
+              taxRate: storageUtils.get(coreConstants.SK_TAX),
+              templates: storageUtils.get(coreConstants.SK_TEMPLATES),
+              defaultFields: storageUtils.get(coreConstants.LOCAL_KEY_DEFAULT_FIELDS),
+              dataDefault: storageUtils.get(coreConstants.SK_DATA_DEF),
+              addressLearning: storageUtils.get(coreConstants.SK_ADDRESS_LEARNING),
+              geminiKey: currentGeminiKey ? encrypt(currentGeminiKey) : null
           };
           await FirebaseService.pushGlobalConfig(globalConfig);
 
@@ -191,30 +198,31 @@ export function initCloudSyncUI(container) {
 
              // 2. Áp dụng Cấu hình (Nếu có)
              if (cloudConfig) {
-                 const { 
-                     SK_CALC_MAP, SK_HOTKEYS, 
-                     LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
-                     SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-                     SK_ADDRESS_LEARNING, SK_GEMINI_KEY
-                 } = await import('../../core/constants.js');
-                 const { Storage } = await import('../../utils/storage.js');
+                 const coreConstantsPull = await import('../../core/constants.js');
+                 const { Storage: storageUtilsPull } = await import('../../utils/storage.js');
                  const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
+                 const { decrypt } = await import('../../utils/crypto.js');
                  
                  // Lưu config vào Storage (dùng DEFAULT nếu cloud không có)
-                 Storage.set(SK_CALC_MAP, cloudConfig.calcMap ?? DEFAULT_CALC_MAP);
-                 if (cloudConfig.hotkeys) Storage.set(SK_HOTKEYS, cloudConfig.hotkeys);
-                 if (cloudConfig.fields) Storage.set(LOCAL_KEY_FIELDS, cloudConfig.fields);
-                 if (cloudConfig.taxRate !== undefined) Storage.set(SK_TAX, cloudConfig.taxRate);
-                 if (cloudConfig.templates) Storage.set(SK_TEMPLATES, cloudConfig.templates);
-                 if (cloudConfig.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, cloudConfig.defaultFields);
-                 if (cloudConfig.dataDefault) Storage.set(SK_DATA_DEF, cloudConfig.dataDefault);
-                 if (cloudConfig.addressLearning) Storage.set(SK_ADDRESS_LEARNING, cloudConfig.addressLearning);
+                 storageUtilsPull.set(coreConstantsPull.SK_CALC_MAP, cloudConfig.calcMap ?? DEFAULT_CALC_MAP);
+                 if (cloudConfig.hotkeys) storageUtilsPull.set(coreConstantsPull.SK_HOTKEYS, cloudConfig.hotkeys);
+                 if (cloudConfig.fields) storageUtilsPull.set(coreConstantsPull.LOCAL_KEY_FIELDS, cloudConfig.fields);
+                 if (cloudConfig.taxRate !== undefined) storageUtilsPull.set(coreConstantsPull.SK_TAX, cloudConfig.taxRate);
+                 if (cloudConfig.templates) storageUtilsPull.set(coreConstantsPull.SK_TEMPLATES, cloudConfig.templates);
+                 if (cloudConfig.defaultFields) storageUtilsPull.set(coreConstantsPull.LOCAL_KEY_DEFAULT_FIELDS, cloudConfig.defaultFields);
+                 if (cloudConfig.dataDefault) storageUtilsPull.set(coreConstantsPull.SK_DATA_DEF, cloudConfig.dataDefault);
+                 if (cloudConfig.addressLearning) storageUtilsPull.set(coreConstantsPull.SK_ADDRESS_LEARNING, cloudConfig.addressLearning);
                  
                  // Khôi phục Gemini Key
                  if (cloudConfig.geminiKey) {
-                    Storage.set(SK_GEMINI_KEY, cloudConfig.geminiKey);
-                    const keyInput = document.getElementById('vnpt-gemini-key');
-                    if (keyInput) keyInput.value = cloudConfig.geminiKey;
+                    try {
+                        const decryptedKey = decrypt(cloudConfig.geminiKey);
+                        storageUtilsPull.set(coreConstantsPull.SK_GEMINI_KEY, decryptedKey);
+                        const keyInput = document.getElementById('vnpt-gemini-key');
+                        if (keyInput) keyInput.value = decryptedKey;
+                    } catch (e) {
+                        console.error("Lỗi giải mã Gemini Key từ Cloud:", e);
+                    }
                  }
              }
 

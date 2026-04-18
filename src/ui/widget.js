@@ -25,9 +25,8 @@ import { generateVNPTMockData } from '../features/mockDataGenerator.js';
 export function initWidget() {
     const widget = document.getElementById('vnpt-docx-widget') || document.createElement('div');
     widget.id = 'vnpt-docx-widget'; // Widget bọc ngoài cùng
-    // Khôi phục trạng thái mở/đóng và ghim
+    // Khôi phục trạng thái mở/đóng
     const isOpened = Storage.get(LOCAL_KEY_OPENED) === true;
-    const isPinned = Storage.get(LOCAL_KEY_PINNED) === true;
 
     widget.innerHTML = `
         <button id="vnpt-toggle-btn" title="Mở/Đóng UI Hợp đồng" class="${isOpened ? 'btn-opened' : 'btn-closed'}">${isOpened ? '✖' : '📄'}</button>
@@ -41,16 +40,15 @@ export function initWidget() {
 
             <div id="vnpt-panel-header" title="Kẹp chuột vào đây để di chuyển">
                 <div class="header-left">
-                    <button class="vnpt-btn-icon" id="vnpt-btn-pin" title="Ghim thu gọn UI (Tự mở khi di chuột)" style="margin-right:4px; font-size:12px; width:24px; height:24px; border:none; background:transparent;">${isPinned ? '📌' : '📎'}</button>
                     <span id="vnpt-panel-title">VNPT PRO</span>
                     <span class="vnpt-version">v${APP_VERSION}</span>
                     <span id="vnpt-update-badge-container"></span>
                 </div>
                 <div class="header-center">
-                    <button class="vnpt-btn-header btn-ai" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">✨ AI</button>
-                    <button class="vnpt-btn-header btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">🔍 Quét</button>
-                    <button class="vnpt-btn-header btn-fill" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">📝 Điền</button>
-                    <button class="vnpt-btn-header btn-id" id="vnpt-btn-toggle-id" title="Ẩn hiện key đồng bộ">🆔 ID</button>
+                    <button class="vnpt-btn-header btn-ai" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
+                    <button class="vnpt-btn-header btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
+                    <button class="vnpt-btn-header btn-fill" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền</button>
+                    <button class="vnpt-btn-header btn-id" id="vnpt-btn-toggle-id" title="Ẩn hiện key đồng bộ">ID</button>
                     <input type="file" id="vnpt-pdf-input" accept=".pdf,image/*" style="display:none;" />
                 </div>
                 <div class="header-right">
@@ -68,9 +66,9 @@ export function initWidget() {
                                 <!-- Nhóm 1: Hệ thống -->
                                 <div class="util-section-mini">
                                     <div class="util-action-row">
-                                        <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
-                                        <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
-                                        <div class="util-json-group" style="display: flex; gap: 2px; flex-shrink: 0;">
+                                        <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">Data Mặc định</button>
+                                        <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">Reset</button>
+                                        <div class="util-json-group">
                                             <button class="util-item-mini btn-json-icon" id="vnpt-btn-import-json" title="Nhập JSON">📥</button>
                                             <button class="util-item-mini btn-json-icon" id="vnpt-btn-export-json" title="Xuất JSON">📤</button>
                                         </div>
@@ -94,12 +92,10 @@ export function initWidget() {
                                 <!-- Nhóm 3: Cloud & AI -->
                                 <div class="util-section-mini">
                                     <div id="vnpt-cloud-sync-container"></div>
-                                    <div class="gemini-config-mini">
-                                        <div class="cw-row-mini">
-                                            <input id="vnpt-gemini-key" type="text" placeholder="Gemini Key..." class="cw-input-mini sensitive-mask">
-                                            <button class="util-btn-test-tiny" id="vnpt-btn-test-gemini">⚡</button>
-                                        </div>
-                                        <select id="vnpt-gemini-model" class="cw-input-mini" style="margin-top:4px;">
+                                    <div class="gemini-config-mini-row">
+                                        <input id="vnpt-gemini-key" type="text" placeholder="Gemini Key..." class="cw-input-mini sensitive-mask" title="Google AI Key">
+                                        <button class="util-btn-test-tiny" id="vnpt-btn-test-gemini" title="Kiểm tra kết nối">⚡</button>
+                                        <select id="vnpt-gemini-model" class="cw-input-mini model-select" title="Chọn Model">
                                             <option value="gemini-2.5-flash">2.5 Flash</option>
                                             <option value="gemini-2.5-flash-lite">2.5 Lite</option>
                                             <option value="gemini-3.1-flash-lite-preview">3.1 Lite</option>
@@ -143,25 +139,22 @@ export function initWidget() {
                     </div>
                     
                     <div class="raw-scan-actions">
-                        <button class="vnpt-btn-icon" id="vnpt-btn-show-pdf" title="Xem lại Kết quả cũ">📝</button>
-                        <button class="vnpt-btn-icon" id="vnpt-btn-clear-queue" title="Xóa hàng đợi & nội dung">🗑️</button>
-                        <button class="vnpt-btn-icon" id="vnpt-btn-scan-mail" title="Trích xuất nội dụng Mail (Gmail/Outlook)">📧</button>
-                        <button class="vnpt-btn-icon" id="vnpt-btn-export-txt" title="Copy chuỗi thành Text Template">📋</button>
-                        <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex">QR Text</button>
-                        <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process">QUÉT AI</button>
-                        <span id="vnpt-token-usage" title="Dung lượng AI đã dùng hôm nay (Reset lúc 0h)" style="font-size: 11px; color: #5f6368; font-weight: 500; margin-left: auto; display: flex; align-items: center; white-space: nowrap;">📊 0 req (0 tok)</span>
+                        <div class="ai-tool-group">
+                            <button class="vnpt-btn-icon" id="vnpt-btn-show-pdf" title="Xem lại Kết quả cũ">📝</button>
+                            <button class="vnpt-btn-icon" id="vnpt-btn-clear-queue" title="Xóa hàng đợi & nội dung">🗑️</button>
+                            <button class="vnpt-btn-icon" id="vnpt-btn-scan-mail" title="Trích xuất nội dụng Mail (Gmail/Outlook)">📧</button>
+                            <button class="vnpt-btn-icon" id="vnpt-btn-export-txt" title="Copy chuỗi thành Text Template">📋</button>
+                        </div>
+                        <div class="ai-main-group">
+                            <button id="vnpt-btn-raw-process-local" class="btn-scan-action btn-local" title="Phân loại nhanh văn bản bằng offline Regex">QR TEXT</button>
+                            <button id="vnpt-btn-ai-process" class="btn-scan-action btn-ai-main">QUÉT AI</button>
+                        </div>
+                        <span id="vnpt-token-usage" title="Dung lượng AI đã dùng hôm nay" style="display:none;"></span>
                     </div>
                 </div>
 
                 <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
-                    <div class="fields-header-tools">
-                        <div class="search-wrapper">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" id="vnpt-fields-search" placeholder="Tìm kiếm trường (Tên, Label, ID)..." />
-                            <button id="vnpt-btn-clear-search" class="btn-clear-search" title="Xóa tìm kiếm" style="display:none;">✕</button>
-                        </div>
-                    </div>
                     <div id="vnpt-fields-list"></div>
                 </div>
 
@@ -258,26 +251,6 @@ export function initWidget() {
             AppState.toggleBtn.className = 'btn-closed';
             AppState.toggleBtn.innerHTML = '📄';
             Storage.set(LOCAL_KEY_OPENED, false);
-        }
-    });
-
-    // Pin/Unpin Logic
-    const pinBtn = document.getElementById('vnpt-btn-pin');
-    if (isPinned) AppState.panel.classList.add('vnpt-pinned');
-    
-    pinBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const currentlyPinned = AppState.panel.classList.contains('vnpt-pinned');
-        if (currentlyPinned) {
-            AppState.panel.classList.remove('vnpt-pinned');
-            Storage.set(LOCAL_KEY_PINNED, false);
-            pinBtn.innerHTML = '📎';
-            pinBtn.title = 'Ghim thu gọn UI (Tự mở khi di chuột)';
-        } else {
-            AppState.panel.classList.add('vnpt-pinned');
-            Storage.set(LOCAL_KEY_PINNED, true);
-            pinBtn.innerHTML = '📌';
-            pinBtn.title = 'Bỏ ghim UI';
         }
     });
 
@@ -408,7 +381,10 @@ export function initWidget() {
         const hotkeyList = document.getElementById('vnpt-hotkey-list');
         if (!hotkeyList) return;
 
-        const hotkeys = Storage.get(SK_HOTKEYS, DEFAULT_HOTKEYS);
+        // Gộp config từ Storage với Default để đảm bảo luôn hiện đủ các Action mới thêm
+        const savedHotkeys = Storage.get(SK_HOTKEYS) || {};
+        const hotkeys = { ...DEFAULT_HOTKEYS, ...savedHotkeys };
+        
         hotkeyList.innerHTML = '';
 
         Object.entries(hotkeys).forEach(([action, config]) => {
@@ -437,6 +413,18 @@ export function initWidget() {
         });
     }
     renderHotkeys();
+
+    // Khởi tạo các ô input từ Storage sau khi UI đã render
+    import('../core/constants.js').then(({ SK_GEMINI_KEY, SK_GEMINI_MODEL }) => {
+        const gKeyInp = document.getElementById('vnpt-gemini-key');
+        const gModelSel = document.getElementById('vnpt-gemini-model');
+        
+        if (gKeyInp) gKeyInp.value = Storage.get(SK_GEMINI_KEY) || '';
+        if (gModelSel) {
+            const savedModel = Storage.get(SK_GEMINI_MODEL) || 'gemini-2.5-flash';
+            gModelSel.value = Array.from(gModelSel.options).some(opt => opt.value === savedModel) ? savedModel : 'gemini-2.5-flash';
+        }
+    });
 
     // Custom Resizing 4 Corners
     const resizers = AppState.panel.querySelectorAll('.vnpt-resizer');
@@ -526,49 +514,6 @@ export function initWidget() {
     if (cloudContainer) {
         initCloudSyncUI(cloudContainer);
     }
-
-    // --- Pin & Hover Logic ---
-    const panel = AppState.panel;
-    
-    const handleMouseEnter = () => {
-        if (AppState.panel.classList.contains('vnpt-pinned') && AppState.panel.style.display === 'none') {
-            AppState.panel.style.display = 'flex';
-            AppState.toggleBtn.className = 'btn-opened';
-            AppState.toggleBtn.innerHTML = '✖';
-        }
-    };
-
-    const handleMouseLeave = () => {
-        if (!AppState.panel.classList.contains('vnpt-pinned')) return;
-        
-        // Kiểm tra xem có đang focus vào input nào bên trong panel không
-        const isFocusingInput = AppState.panel.contains(document.activeElement) && 
-                                (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA');
-        
-        // Nếu đang gõ hoặc chọn gợi ý (focus), không tự động đóng
-        if (isFocusingInput) return;
-
-        AppState.panel.style.display = 'none';
-        AppState.toggleBtn.className = 'btn-closed';
-        AppState.toggleBtn.innerHTML = '📄';
-    };
-
-    // Gán sự kiện cho cả nút toggle và panel để đảm bảo mượt mà
-    AppState.widget.addEventListener('mouseenter', handleMouseEnter);
-    AppState.widget.addEventListener('mouseleave', handleMouseLeave);
-
-    // Lắng nghe khi kết thúc focus (ví dụ chọn xong gợi ý hoặc click ra ngoài)
-    document.addEventListener('focusin', (e) => {
-        // Nếu focus ra ngoài panel mà chuột cũng đang ở ngoài -> đóng panel (nếu đang ghim)
-        if (AppState.panel.classList.contains('vnpt-pinned') && !AppState.panel.contains(e.target)) {
-            // Kiểm tra chuột thực tế có đang nằm trong widget ko (dùng :hover selector ảo)
-            if (!AppState.widget.matches(':hover')) {
-                AppState.panel.style.display = 'none';
-                AppState.toggleBtn.className = 'btn-closed';
-                AppState.toggleBtn.innerHTML = '📄';
-            }
-        }
-    });
 
     // --- Update Notification Logic ---
     function checkUpdateUI() {

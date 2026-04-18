@@ -107,25 +107,4 @@ export const panelStyles = `
     .vnpt-resizer:active { background: var(--vnpt-primary); transform: scale(1.2); }
 
     body.vnpt-resizing-global * { user-select: none !important; cursor: inherit !important; }
-
-    /* Pinned state */
-    #vnpt-export-panel.vnpt-pinned {
-        transition: none !important;
-    }
-
-    #vnpt-export-panel.vnpt-pinned:not(:hover) {
-        min-height: unset !important;
-        height: 64px !important;
-        width: 460px;
-        overflow: hidden;
-        padding-bottom: 0 !important;
-    }
-    
-    #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-panel-body {
-        display: none !important;
-    }
-
-    #vnpt-export-panel.vnpt-pinned:hover #vnpt-panel-body {
-        display: flex !important;
-    }
 `;

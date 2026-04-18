@@ -84,7 +84,10 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         <input id="wg-tax" name="wg-tax" class="cw-input-inline" placeholder="Tiền thuế" title="Tiền thuế">
         <input id="wg-after" name="wg-after" class="cw-input-inline" placeholder="Sau thuế" list="wg-after-list" title="Sau thuế">
         <datalist id="wg-after-list"></datalist>
-        <input id="wg-text" name="wg-text" class="cw-input-inline cw-input-readonly-inline" placeholder="Bằng chữ" readonly title="Bằng chữ">
+        <div class="cw-text-copy-wrapper" style="display: flex; flex: 0.8; position: relative; min-width: 0; background: #fff; border: 1px solid #1f5bd2ff; border-radius: 6px; overflow: hidden; height: 24px;">
+            <input id="wg-text" name="wg-text" class="cw-input-inline cw-input-readonly-inline" placeholder="Bằng chữ" readonly title="Bằng chữ" style="flex: 1; min-width: 30px; border: none; padding: 2px 4px; font-size: 9px; height: 100%;">
+            <button id="wg-copy-text" title="Copy bằng chữ" style="width: 22px; height: 100%; border: none; background: rgba(0,0,0,0.03); color: #5f6368; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; border-left: 1px solid #eee; flex-shrink: 0;">📋</button>
+        </div>
         <button id="wg-sync-manual" class="cw-map-btn-inline" title="Đồng bộ kết quả lên trang web (🔄)">🔄</button>
     </div>`;
 
@@ -151,27 +154,21 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     };
 
     els.before.oninput = (e) => { 
-        // Lưu vị trí con trỏ
-        const start = e.target.selectionStart;
-        const oldLen = e.target.value.length;
-        
-        const res = updateLocal('before', e.target.value, true); 
-        
-        // Chỉ định dạng lại nếu không phải đang xóa hoặc gõ dở dang
-        // Để việc sửa ở giữa chuỗi không bị nhảy con trỏ
+        // Xử lý như ô text bình thường, chỉ tính toán ngầm
+        updateLocal('before', e.target.value, true); 
         debouncedSync('before', e.target.value); 
     };
     els.before.onchange = () => { 
-        updateLocal('before', els.before.value); // Định dạng chuẩn khi rời ô
+        updateLocal('before', els.before.value); // Chỉ định dạng khi rời ô hoặc Enter
         doSync('before', els.before.value); 
         saveHist(SK_HIST_B, els.before.value); 
         renderHist(SK_HIST_B, 'wg-before-list'); 
     };
     
-    els.tax.oninput = () => { updateLocal('tax', els.tax.value, true); debouncedSync('tax', els.tax.value); };
+    els.tax.oninput = (e) => { updateLocal('tax', e.target.value, true); debouncedSync('tax', e.target.value); };
     els.tax.onchange = () => { updateLocal('tax', els.tax.value); doSync('tax', els.tax.value); };
 
-    els.after.oninput = () => { updateLocal('after', els.after.value, true); debouncedSync('after', els.after.value); };
+    els.after.oninput = (e) => { updateLocal('after', e.target.value, true); debouncedSync('after', e.target.value); };
     els.after.onchange = () => { 
         updateLocal('after', els.after.value);
         doSync('after', els.after.value); 
@@ -180,6 +177,19 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     };
 
     const syncManualBtn = document.getElementById('wg-sync-manual');
+    const copyTextBtn = document.getElementById('wg-copy-text');
+
+    if (copyTextBtn) {
+        copyTextBtn.onclick = () => {
+            if (!els.text.value) return;
+            navigator.clipboard.writeText(els.text.value);
+            showToast("📋 Đã copy số tiền bằng chữ", "#1a73e8");
+            
+            copyTextBtn.style.backgroundColor = '#e8f0fe';
+            setTimeout(() => copyTextBtn.style.backgroundColor = '', 300);
+        };
+    }
+
     if (syncManualBtn) {
         syncManualBtn.onclick = () => {
             const res = updateLocal('before', els.before.value);
@@ -194,14 +204,15 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         };
     }
 
-    // Copy on click/focus
+    // Copy on click/focus - Chỉ cho phép khi click đúp để tránh nhiễu khi dán
     [els.before, els.tax, els.after, els.text].forEach(el => {
-        ['click', 'focus'].forEach(evt => el.addEventListener(evt, () => {
+        el.addEventListener('dblclick', () => {
             if (!el.value) return;
             navigator.clipboard.writeText(el.value);
             const old = el.style.backgroundColor; el.style.backgroundColor = '#d1e7dd';
             setTimeout(() => el.style.backgroundColor = old, 300);
-        }));
+            showToast("📋 Đã copy giá trị", "#198754");
+        });
     });
 
     // ─── Drag & Dock (Only if NOT embedded) ───

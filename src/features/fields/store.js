@@ -1,11 +1,10 @@
 import { AppState } from '../../core/state.js';
 import { Storage } from '../../utils/storage.js';
-import { logger } from '../../utils/logger.js';
 import {
     LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_POS,
     DEFAULT_LABELS, SK_DATA_DEF
 } from '../../core/constants.js';
-import { addOrUpdateFieldRow } from './row.js';
+import { createRowDOM, updateRowConnectionStatus } from './row.js';
 
 export function saveFieldsToLocal() {
     const key = AppState.isDefaultMode ? LOCAL_KEY_DEFAULT_FIELDS : LOCAL_KEY_FIELDS;
@@ -47,61 +46,61 @@ export function saveFieldsToLocal() {
 }
 
 export function loadSavedData() {
-    console.log('[VNPT-Debug] loadSavedData START');
-    
     const container = document.getElementById('vnpt-fields-list');
     if (!container) {
-        console.warn('[VNPT-Debug] Container not found, retrying...');
-        setTimeout(loadSavedData, 150);
+        setTimeout(loadSavedData, 50);
         return;
     }
 
     AppState.fieldsContainer = container;
-    container.innerHTML = ''; // Làm sạch bảng
-    
     const savedFields = Storage.get(LOCAL_KEY_FIELDS) || {};
     const defaultEntries = Object.entries(DEFAULT_LABELS);
     
-    console.log('[VNPT-Debug] Data from Storage:', Object.keys(savedFields).length, 'keys');
+    const fragment = document.createDocumentFragment();
 
-    // 1. Nạp các trường mặc định (Khung xương)
+    // 1. Nạp các trường mặc định
     defaultEntries.forEach(([keyString, label]) => {
-        // Lọc bỏ các trường Calc dư thừa nếu có trong danh sách mặc định (phòng hờ)
         if (label.includes('Calc:') || label.includes('🛠️')) return;
 
         const primaryKey = keyString.split(',')[0].trim();
         const saved = savedFields[primaryKey];
         
-        if (saved && typeof saved === 'object') {
-            addOrUpdateFieldRow(keyString, saved.value || '', saved.label || label, saved.sync || '', saved.syncDir || 'both');
-        } else if (saved && typeof saved === 'string') {
-            addOrUpdateFieldRow(keyString, saved, label, '', 'both');
-        } else {
-            addOrUpdateFieldRow(keyString, '', label, '', 'both');
-        }
+        const row = createRowDOM(
+            keyString, 
+            (typeof saved === 'object' ? saved.value : (saved || '')), 
+            (typeof saved === 'object' ? saved.label : (label || '')), 
+            (typeof saved === 'object' ? saved.sync : ''), 
+            (typeof saved === 'object' ? (saved.syncDir || 'both') : 'both')
+        );
+        fragment.appendChild(row);
     });
 
-    // 2. Nạp các trường tùy biến (Người dùng tự thêm)
+    // 2. Nạp các trường tùy biến
     const defaultPKs = new Set(defaultEntries.map(([keyString]) => keyString.split(',')[0].trim()));
     Object.keys(savedFields).forEach(primaryKey => {
         if (!defaultPKs.has(primaryKey)) {
             const saved = savedFields[primaryKey];
             const label = (saved && typeof saved === 'object') ? (saved.label || '') : '';
-            
-            // Xoá bỏ các trường có tiền tố "🛠️ Calc:" hoặc "Calc:" theo yêu cầu
-            if (label.includes('Calc:') || label.includes('🛠️')) {
-                return;
-            }
+            if (label.includes('Calc:') || label.includes('🛠️')) return;
 
-            if (saved && typeof saved === 'object') {
-                addOrUpdateFieldRow(primaryKey, saved.value || '', saved.label || '', saved.sync || '', saved.syncDir || 'both');
-            } else if (saved) {
-                addOrUpdateFieldRow(primaryKey, saved, '', '', 'both');
-            }
+            const row = createRowDOM(
+                primaryKey, 
+                (typeof saved === 'object' ? saved.value : (saved || '')), 
+                label, 
+                (typeof saved === 'object' ? saved.sync : ''), 
+                (typeof saved === 'object' ? (saved.syncDir || 'both') : 'both')
+            );
+            fragment.appendChild(row);
         }
     });
 
-    console.log('[VNPT-Debug] Render completed. Rows in DOM:', container.querySelectorAll('.vnpt-field-row').length);
+    container.innerHTML = '';
+    container.appendChild(fragment);
+
+    // Cập nhật trạng thái kết nối cho tất cả hàng sau khi đã vào DOM
+    container.querySelectorAll('.vnpt-field-row').forEach(row => {
+        updateRowConnectionStatus(row);
+    });
 
     if (container.querySelectorAll('.vnpt-field-row').length === 0) {
         container.innerHTML = '<div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>';

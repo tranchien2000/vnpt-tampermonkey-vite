@@ -86,47 +86,47 @@ export const scannerStyles = `
     #vnpt-btn-ai-mode.active { background: var(--vnpt-primary); color: #fff; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
 
     .vnpt-ai-scanner-section {
-        padding: 8px; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid var(--vnpt-border);
-        display: flex; flex-direction: column; gap: 6px;
+        padding: 6px; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid var(--vnpt-border);
+        display: flex; flex-direction: column; gap: 4px;
     }
 
     .ai-scanner-header { display: flex; align-items: center; justify-content: space-between; }
-    .ai-title { font-size: 11px; font-weight: 800; color: #1a73e8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ai-title { font-size: 10px; font-weight: 800; color: #1a73e8; text-transform: uppercase; letter-spacing: 0.3px; }
     
-    .ai-scan-row { display: flex; flex-direction: row; gap: 6px; align-items: stretch; }
+    .ai-scan-row { display: flex; flex-direction: row; gap: 4px; align-items: stretch; }
 
     .ai-queue-container {
-        flex: 0 0 110px;
-        border: 2px dashed #dadce0; border-radius: 12px; min-height: 100px; background: rgba(255,255,255,0.7);
-        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-        padding: 4px; gap: 4px; transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden;
+        flex: 0 0 90px;
+        border: 2px dashed #dadce0; border-radius: 10px; min-height: 70px; background: rgba(255,255,255,0.7);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 2px; gap: 2px; transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden;
     }
     .ai-queue-container:hover, .ai-queue-container.drag-over { border-color: var(--vnpt-primary); background: var(--vnpt-primary-light); }
-    .ai-queue-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; gap: 2px; }
-    .ai-queue-placeholder span:first-child { font-size: 20px; pointer-events: none; }
-    .ai-queue-placeholder span:last-child { font-size: 9px; color: #9aa0a6; font-weight: 600; pointer-events: none; white-space: nowrap; line-height: 1.3; }
+    .ai-queue-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; gap: 0; }
+    .ai-queue-placeholder span:first-child { font-size: 16px; pointer-events: none; }
+    .ai-queue-placeholder span:last-child { font-size: 8px; color: #9aa0a6; font-weight: 600; pointer-events: none; white-space: nowrap; line-height: 1.2; }
     
-    .ai-queue-list { display: flex; flex-wrap: wrap; gap: 4px; overflow-y: auto; width: 100%; }
+    .ai-queue-list { display: flex; flex-wrap: wrap; gap: 2px; overflow-y: auto; width: 100%; }
     .ai-queue-list::-webkit-scrollbar { width: 3px; }
     .ai-queue-list::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
     
     .ai-queue-item {
-        flex: 0 0 auto; width: 40px; height: 40px; border-radius: 6px; position: relative; border: 1px solid #e0e0e0;
+        flex: 0 0 auto; width: 32px; height: 32px; border-radius: 4px; position: relative; border: 1px solid #e0e0e0;
         background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
     .ai-queue-item img { width: 100%; height: 100%; object-fit: cover; }
-    .ai-queue-item .file-icon { font-size: 20px; }
+    .ai-queue-item .file-icon { font-size: 16px; }
     .ai-queue-item .btn-remove-item {
         position: absolute; top: 0; right: 0; background: rgba(234,67,53,0.9); color: #fff;
-        width: 14px; height: 14px; font-size: 9px; display: flex; align-items: center; justify-content: center;
+        width: 12px; height: 12px; font-size: 8px; display: flex; align-items: center; justify-content: center;
         border: none; cursor: pointer; border-bottom-left-radius: 4px; opacity: 0; transition: opacity 0.2s;
     }
     .ai-queue-item:hover .btn-remove-item { opacity: 1; }
 
     #vnpt-raw-scan-input {
-        flex: 1; min-width: 0; min-height: 100px; padding: 8px; border-radius: 12px; box-sizing: border-box;
+        flex: 1; min-width: 0; min-height: 70px; padding: 6px; border-radius: 10px; box-sizing: border-box;
         border: 1px solid #1f5bd2ff; background: rgba(255, 255, 255, 0.8);
-        font-size: 11px; font-family: inherit; resize: none; line-height: 1.5;
+        font-size: 10px; font-family: inherit; resize: none; line-height: 1.4;
         transition: all 0.2s;
     }
     #vnpt-raw-scan-input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 3px var(--vnpt-primary-light); outline: none; }
@@ -140,11 +140,71 @@ export const scannerStyles = `
         to { box-shadow: 0 0 0 6px rgba(245, 127, 23, 0.5); border-color: #ffb300; }
     }
     
-    .raw-scan-actions { display: flex; justify-content: space-between; gap: 6px; margin-top: 4px; }
-    .raw-scan-actions .vnpt-btn-confirm { padding: 6px 12px; font-size: 11px; height: auto; flex: 1; text-align: center; }
-    .btn-local-process { background: var(--vnpt-success) !important; box-shadow: 0 4px 12px rgba(30, 142, 62, 0.2) !important; flex: 1; }
-    .btn-local-process:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-ai-process { background: var(--vnpt-primary-grad) !important; box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2) !important; font-weight: 800; flex: 1.3;}
+    .raw-scan-actions { 
+        display: flex; 
+        justify-content: space-between; 
+        gap: 6px; 
+        margin-top: 4px; 
+        align-items: center;
+    }
+
+    .ai-tool-group {
+        display: flex;
+        gap: 2px;
+        flex-shrink: 0;
+    }
+    
+    .ai-main-group {
+        display: flex;
+        gap: 4px;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .btn-scan-action {
+        padding: 0 12px;
+        height: 26px;
+        border-radius: 6px;
+        border: none;
+        font-size: 10px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: white;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-scan-action.btn-local {
+        background: var(--vnpt-success);
+        box-shadow: 0 2px 6px rgba(30, 142, 62, 0.2);
+    }
+    .btn-scan-action.btn-ai-main {
+        background: var(--vnpt-primary-grad);
+        box-shadow: 0 2px 6px rgba(26, 115, 232, 0.2);
+        flex: 1;
+        max-width: 120px;
+    }
+
+    .btn-scan-action:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .btn-scan-action:active {
+        transform: translateY(0);
+    }
+
+    #vnpt-token-usage {
+        font-size: 9px;
+        color: #9aa0a6;
+        font-weight: 600;
+        white-space: nowrap;
+    }
 
     /* ═══════════════════════════════════════════
        SECTION 5: TEMPLATE MANAGER & BOTTOM ROW
@@ -153,7 +213,7 @@ export const scannerStyles = `
         display: flex; flex-direction: column;
         border-top: 1px solid var(--vnpt-border);
         background: rgba(255, 255, 255, 0.1);
-        padding-top: 2px;
+        padding-top: 0px;
     }
 
     #vnpt-template-section {
@@ -164,30 +224,64 @@ export const scannerStyles = `
 
     .bottom-export-area:hover #vnpt-template-section {
         display: block;
-        max-height: 400px;
-        margin-bottom: 8px;
-        padding-top: 4px;
+        max-height: 350px;
+        margin-bottom: 4px;
+        padding-top: 2px;
     }
 
-    .bottom-export-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0 4px; }
-    .bottom-export-row .vnpt-control-group { margin-bottom: 0; flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; }
-    .bottom-export-row .vnpt-control-group input[type="text"] { height: 24px; padding: 2px 8px; border-radius: 6px; border: 1px solid #1f5bd2ff; flex: 1; min-width: 0; font-size: 11px; }
+    .bottom-export-row { 
+        display: flex; 
+        align-items: center; 
+        gap: 3px; 
+        margin-top: 2px; 
+        padding: 1px 4px 3px 4px; 
+    }
+    .bottom-export-row .vnpt-control-group { 
+        margin-bottom: 0; 
+        flex: 1; 
+        min-width: 0; 
+        display: flex; 
+        align-items: center; 
+        gap: 3px; 
+    }
+    .bottom-export-row .vnpt-control-group input[type="text"] { 
+        height: 24px; 
+        padding: 0 6px; 
+        border-radius: 4px; 
+        border: 1px solid rgba(31, 91, 210, 0.4); 
+        flex: 1; 
+        min-width: 0; 
+        font-size: 10px;
+        box-sizing: border-box;
+        background: rgba(255, 255, 255, 0.8);
+    }
     
     .btn-upload-local {
-        display: inline-flex; align-items: center; justify-content: center;
-        width: 24px; height: 24px; border-radius: 6px;
-        background: rgba(0,0,0,0.04); border: 1px solid #dadce0;
-        font-size: 12px; cursor: pointer; transition: all 0.2s;
-        color: #5f6368; box-sizing: border-box;
-        flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        width: 24px; height: 24px; border-radius: 4px;
+        background: #f8f9fa; border: 1px solid #dadce0;
+        font-size: 11px; cursor: pointer; transition: all 0.2s;
+        color: #5f6368; flex-shrink: 0;
+        margin: 0; padding: 0;
+        box-sizing: border-box;
     }
     .btn-upload-local:hover { 
-        background: var(--vnpt-primary-light); border-color: var(--vnpt-primary);
-        color: var(--vnpt-primary); transform: scale(1.05);
+        background: #fff; border-color: var(--vnpt-primary);
+        color: var(--vnpt-primary);
     }
     
-    .vnpt-control-group .btn-export { flex: 0 0 auto; height: 24px; margin: 0; border-radius: 6px; background: var(--vnpt-primary-grad); color: white; border: none; font-weight: 800; font-size: 11px; padding: 0 12px; cursor: pointer; }
-    .vnpt-control-group .btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
+    .vnpt-control-group .btn-export { 
+        flex: 0 0 auto; 
+        height: 24px; 
+        margin: 0; 
+        border-radius: 4px; 
+        background: var(--vnpt-primary-grad); 
+        color: white; border: none; 
+        font-weight: 800; font-size: 10px; 
+        padding: 0 10px; cursor: pointer; 
+        display: flex; align-items: center; justify-content: center;
+        text-transform: uppercase;
+    }
 
     #vnpt-btn-export-txt { color: #00695c; border-color: rgba(0, 105, 92, 0.3); }
     #vnpt-btn-export-txt:hover { background: #00695c; color: white; border-color: transparent; }

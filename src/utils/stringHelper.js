@@ -167,7 +167,7 @@ export function normalizeDate(dateStr) {
 /**
  * Bóc tách địa chỉ Việt Nam thành các phần: Tỉnh, Quận/Huyện, Phường/Xã.
  * @param {string} address 
- * @returns {{province: string, district: string, ward: string}}
+ * @returns {{province: string, district: string, ward: string, street: string}}
  */
 export function parseAddressComponents(address) {
     if (!address) return { province: '', district: '', ward: '', street: '' };
@@ -177,35 +177,12 @@ export function parseAddressComponents(address) {
     
     let province = '', district = '', ward = '', street = '';
 
-    if (n === 0) return { province, district, ward, street };
+    if (n >= 1) province = parts[n - 1];
+    if (n >= 2) district = parts[n - 2];
+    if (n >= 2) ward = parts[n - 2]; // Mặc định xã huyện giống nhau để dropdown tự khớp
 
-    // Quy tắc cực kỳ đơn giản: đếm ngược từ phải sang
-    // 1. Tỉnh: phần cuối cùng
-    province = parts[n - 1] || '';
-    
-    // 2. Huyện/Xã: phần thứ 2 từ phải sang
-    if (n >= 2) {
-        district = parts[n - 2];
-        ward = parts[n - 2];
-    }
-
-    // 3. Đường (Street): Mọi thứ đứng trước dấu phẩy thứ 2 từ phải sang
-    // CHỈ THỰC HIỆN nếu chuỗi có dấu hiệu của địa chỉ đầy đủ (có Tỉnh/TP/Quận/Huyện/Xã/Phường ở cuối)
-    const adminRegex = /(Tỉnh|Thành phố|Thành Phố|TP|T\.|Hà Nội|Hồ Chí Minh|Đà Nẵng|Cần Thơ|Hải Phòng|Quận|Huyện|Q\.|H\.|Phường|Xã|P\.|X\.)$/i;
-    const isFullAddress = adminRegex.test(province);
-
-    if (isFullAddress) {
-        if (n >= 3) {
-            street = parts.slice(0, n - 2).join(', ');
-        } else if (n === 2) {
-            street = parts[0];
-        } else {
-            street = address;
-        }
-    } else {
-        // Nếu không phải địa chỉ đầy đủ (đã bóc tách rồi), giữ nguyên để tránh lặp
-        street = address;
-    }
+    // Dùng logic chuẩn đã thống nhất để lấy phần còn lại cho ô "duong"
+    street = getStreetPart(address);
 
     return {
         province: cleanProvinceName(province),
@@ -230,8 +207,8 @@ import { AddressLearning } from './addressLearning.js';
 
 /**
  * Trích xuất phần địa chỉ nhà / đường từ một chuỗi địa chỉ đầy đủ.
- * @param {string} address 
- * @returns {string}
+ * Logic: Loại bỏ Phần (3) - Tỉnh và Phần (2) - Huyện/Xã từ phải sang trái.
+ * Kết quả thu được là "Phần còn lại" (Phần 1) bao gồm Số nhà, Ngõ, Ngách, Tên đường...
  */
 export function getStreetPart(address) {
     if (!address) return '';
@@ -241,19 +218,20 @@ export function getStreetPart(address) {
     if (learned) return learned;
 
     if (!address.includes(',')) return address;
+    
+    // Tách mảng theo dấu phẩy
     const parts = address.split(',').map(p => p.trim()).filter(Boolean);
+    const n = parts.length;
 
-    // Tìm index của phần Xã/Phường
-    const wardIndex = parts.findIndex(p => /Xã|Phường|Thị trấn|TT\.|P\.|X\./i.test(p));
-
-    if (wardIndex > 0) {
-        // Nếu tìm thấy Xã/Phường, phần đường sẽ là từ đầu đến trước Xã
-        return parts.slice(0, wardIndex).join(', ');
-    } else if (parts.length >= 4) {
-        // Nếu không tìm thấy bằng regex, nhưng có từ 4 phần trở lên, giả định 3 phần cuối là Tỉnh, Huyện, Xã
-        return parts.slice(0, parts.length - 3).join(', ');
-    } else if (parts.length > 1) {
-        // Nếu chỉ có 2-3 phần mà không nhận diện được, lấy phần đầu tiên
+    // Nếu địa chỉ có cấu trúc đầy đủ (thường >= 3 phần tử)
+    // Ví dụ: "Số 12A/3, Ngõ 191, Lạc Long Quân, P. Nghĩa Đô, Q. Cầu Giấy, Hà Nội"
+    // Ta loại bỏ 2 phần cuối (Hà Nội, Q. Cầu Giấy) để lấy phần còn lại.
+    if (n >= 3) {
+        return parts.slice(0, n - 2).join(', ').trim();
+    } 
+    
+    // Nếu chỉ có 2 phần (Đường, Tỉnh), lấy phần đầu
+    if (n === 2) {
         return parts[0];
     }
 

@@ -66,5 +66,7 @@ export const DEFAULT_HOTKEYS = {
     'CLEAN': { key: 'd', altKey: true, ctrlKey: false, shiftKey: false, label: 'Dọn dẹp & Reset' },
     'SIZE_S': { key: '1', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: S' },
     'SIZE_M': { key: '2', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: M' },
-    'SIZE_L': { key: '3', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: L' }
+    'SIZE_L': { key: '3', altKey: true, ctrlKey: false, shiftKey: false, label: 'Cỡ UI: L' },
+    'EXPORT': { key: 'e', altKey: true, ctrlKey: false, shiftKey: false, label: 'Xuất file Word' },
+    'CALC_SYNC': { key: 'r', altKey: true, ctrlKey: false, shiftKey: false, label: 'Đồng bộ Calc' }
 };

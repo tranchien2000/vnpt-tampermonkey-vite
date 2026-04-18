@@ -136,10 +136,10 @@ function renderBackupHistory(container) {
             }
         };
 
-        item.querySelector('.btn-restore-action').onclick = (e) => {
+        item.querySelector('.btn-restore-action').onclick = async (e) => {
             e.stopPropagation();
             if (confirm(`Khôi phục dữ liệu từ bản: \n${b.name}?`)) {
-                if (restoreInternalBackup(b.id)) {
+                if (await restoreInternalBackup(b.id)) {
                     container.classList.remove('show');
                     if (AppState.isDefaultMode) AppState.isDefaultMode = false;
                     else loadSavedData();
@@ -222,7 +222,7 @@ export function initFieldsManager() {
             }
         };
 
-        btnRestore.oncontextmenu = (e) => {
+        btnRestore.oncontextmenu = async (e) => {
             e.preventDefault();
             e.stopPropagation();
 
@@ -230,7 +230,7 @@ export function initFieldsManager() {
             if (backups.length > 0) {
                 const latest = backups[0];
                 if (confirm(`Khôi phục nhanh bản gần nhất?\n"${latest.name}"`)) {
-                    if (restoreInternalBackup(latest.id)) {
+                    if (await restoreInternalBackup(latest.id)) {
                         if (AppState.isDefaultMode) AppState.isDefaultMode = false;
                         else loadSavedData();
                         backupHistory.classList.remove('show');

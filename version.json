@@ -1,7 +1,7 @@
 {
-  "version": "1.6.53",
-  "latestVersion": "1.6.53",
+  "version": "1.7.0",
+  "latestVersion": "1.7.0",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "updateTime": "2026-04-17T16:35:00.071Z",
-  "message": "Phát hành phiên bản v1.6.45"
+  "updateTime": "2026-04-18T15:07:50.634Z",
+  "message": "Major update 1.7: Optimized Storage, AI Scanner UI, Address Splitting & Bug fixes"
 }

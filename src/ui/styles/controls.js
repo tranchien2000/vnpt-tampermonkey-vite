@@ -27,7 +27,7 @@ export const controlStyles = `
     .header-center { 
         display: flex; 
         gap: 2px; 
-        background: rgba(0,0,0,0.04); 
+        background: rgba(255, 255, 255, 0.04); 
         padding: 2px; 
         border-radius: 8px;
         align-items: center;
@@ -50,21 +50,28 @@ export const controlStyles = `
         white-space: nowrap;
     }
     .vnpt-btn-header:hover {
-        background: #fff;
-        color: var(--vnpt-primary);
+        background: #ffffffff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+    
+    /* Đặc trị màu sắc cho từng nút */
+    .vnpt-btn-header.btn-ai { color: #8e24aa; background: rgba(142, 36, 170, 0.05); }
+    .vnpt-btn-header.btn-ai:hover { background: #8e24aa; color: white; }
+    
+    .vnpt-btn-header.btn-scan { color: #1e8e3e; background: rgba(30, 142, 62, 0.05); }
+    .vnpt-btn-header.btn-scan:hover { background: #1e8e3e; color: white; }
+    
+    .vnpt-btn-header.btn-fill { color: #f57c00; background: rgba(245, 124, 0, 0.05); }
+    .vnpt-btn-header.btn-fill:hover { background: #f57c00; color: white; }
+    
+    .vnpt-btn-header.btn-id { color: #d81b60; background: rgba(216, 27, 96, 0.05); }
+    .vnpt-btn-header.btn-id:hover { background: #d81b60; color: white; }
+
     .vnpt-btn-header.active {
         background: var(--vnpt-primary);
         color: white;
         box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
     }
-
-    /* Đặc trị màu sắc nhẹ cho từng nút khi hover */
-    .vnpt-btn-header.btn-ai:hover { color: #8e24aa; }
-    .vnpt-btn-header.btn-scan:hover { color: var(--vnpt-success); }
-    .vnpt-btn-header.btn-fill:hover { color: #f57c00; }
-    .vnpt-btn-header.btn-id:hover { color: #d81b60; }
     
     /* ═══════════════════════════════════════════
        SECTION: BACKUP HISTORY DROPDOWN
@@ -147,8 +154,8 @@ export const controlStyles = `
         position: absolute; top: calc(100% + 8px); right: 0;
         background: #fff; border: 1px solid var(--vnpt-border); border-radius: 12px;
         box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100000;
-        display: none; flex-direction: column; width: 260px;
-        padding: 4px;
+        display: none; flex-direction: column; width: 320px;
+        padding: 6px;
         transform-origin: top right;
     }
     .vnpt-util-menu.show { display: flex; }
@@ -160,22 +167,39 @@ export const controlStyles = `
     }
     .util-section-mini:last-child { border-bottom: none; }
 
-    .util-action-row { display: flex; gap: 4px; align-items: center; width: 100%; box-sizing: border-box; }
+    .util-action-row { 
+        display: flex; 
+        gap: 4px; 
+        align-items: center; 
+        width: 100%; 
+        box-sizing: border-box; 
+        flex-wrap: nowrap;
+        padding: 2px 0;
+    }
     
     .util-item-mini {
         flex: 1;
-        min-width: 0; /* Cho phép co lại nhỏ hơn text nếu cần */
+        min-width: 0; 
         background: #f8f9fa; border: 1px solid #eee; border-radius: 6px;
-        padding: 4px 2px; font-size: 10px; font-weight: 700; color: #3c4043;
+        padding: 5px 2px; font-size: 10px; font-weight: 700; color: #3c4043;
         cursor: pointer; transition: all 0.2s; text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: flex; align-items: center; justify-content: center; gap: 2px;
+    }
+    .util-json-group {
+        display: flex;
+        gap: 2px;
+        flex-shrink: 0;
     }
     .util-item-mini.btn-json-icon {
-        flex: 0 0 24px; /* Thu nhỏ thêm một chút */
+        flex: 0 0 26px; 
+        width: 26px;
+        height: 26px;
         font-size: 11px;
-        padding: 4px 0;
+        padding: 0;
+        border-color: #dadce0;
     }
     .util-item-mini:hover { background: var(--vnpt-primary-light); border-color: var(--vnpt-primary); color: var(--vnpt-primary); }
     .util-item-mini.danger:hover { background: #fdf2f2; border-color: #d93025; color: #d93025; }
@@ -200,6 +224,21 @@ export const controlStyles = `
     .util-btn-test-tiny {
         background: #f0f4ff; color: var(--vnpt-primary); border: none;
         border-radius: 6px; width: 24px; cursor: pointer; font-size: 10px;
+    }
+
+    .gemini-config-mini-row {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        margin-top: 6px;
+    }
+    .gemini-config-mini-row .model-select {
+        flex: 0 0 90px;
+        padding: 4px 2px;
+    }
+    .gemini-config-mini-row .util-btn-test-tiny {
+        height: 24px;
+        flex: 0 0 24px;
     }
 
     .vnpt-hotkey-list-mini { display: flex; flex-direction: column; gap: 3px; max-height: 120px; overflow-y: auto; }

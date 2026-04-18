@@ -240,15 +240,6 @@ export function syncSetValue(el, value) {
 
     } else {
         // --- Xử lý cho INPUT/TEXTAREA thông thường ---
-        const addressGroup = getVNPTAddressGroup();
-        const idLower = (el.id || el.name || el.getAttribute('formcontrolname') || '').toLowerCase();
-        
-        const isDuongField = (addressGroup && el === addressGroup.duong) || idLower.includes('duong') || idLower.includes('diachichitiet');
-
-        if (isDuongField && typeof value === 'string' && value.includes(',')) {
-            value = parseAddressComponents(value).street;
-        }
-
         const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
         const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
         
@@ -326,31 +317,10 @@ export function findPageInput(name, labelText = null) {
         if (directEl) return resolveToInput(directEl);
     }
 
-    // 2. KHỚP THEO LABEL (Chính xác trước)
+    // 2. KHỚP THEO LABEL (Chính xác 100%)
     if (labelText) {
         let el = FullDOMMap.byLabel.get(labelText);
         if (el && document.contains(el)) return resolveToInput(el);
-    }
-
-    // 2.5. Alias fallback đặc thù cho VNPT
-    if (name && (name.includes('xaIdNew') || name.includes('huyenId'))) {
-        const addressGroup = getVNPTAddressGroup();
-        if (addressGroup && addressGroup.xaIdNew) return resolveToInput(addressGroup.xaIdNew);
-    }
-
-    // 3. FUZZY MATCH TRÊN LABEL (Chỉ dùng làm phương án cuối cùng và với ngưỡng cực cao)
-    const targetLabel = labelText || name;
-    if (targetLabel && targetLabel.length > 5) { // Chỉ fuzzy với nhãn dài để tránh nhầm ID ngắn
-        const labelTexts = Array.from(FullDOMMap.byLabel.keys());
-        if (labelTexts.length === 0 && LabelCache.length > 0) {
-            labelTexts.push(...LabelCache.map(l => l.innerText.trim()).filter(t => t.length > 0));
-        }
-
-        // Ngưỡng cực cao (0.95) để đảm bảo "Giấy uỷ quyền số" không bao giờ khớp nhầm với "Giấy uỷ quyền"
-        const bestText = findBestMatch(targetLabel, labelTexts, 0.95);
-        if (bestText) {
-            return resolveToInput(FullDOMMap.byLabel.get(bestText));
-        }
     }
 
     return null;

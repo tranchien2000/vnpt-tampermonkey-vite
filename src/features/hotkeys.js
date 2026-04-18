@@ -80,11 +80,11 @@ function executeAction(action) {
         case 'SCAN_PDF':
             document.getElementById('vnpt-btn-scan-pdf')?.click();
             break;
-        case 'EXPORT_DOCX':
+        case 'EXPORT':
             document.getElementById('vnpt-btn-export')?.click();
             break;
-        case 'COPY_TXT':
-            document.getElementById('vnpt-btn-export-txt')?.click();
+        case 'CALC_SYNC':
+            document.getElementById('wg-sync-manual')?.click();
             break;
         case 'TOGGLE':
             document.getElementById('vnpt-toggle-btn')?.click();

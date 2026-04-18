@@ -111,13 +111,15 @@ export function createInternalBackup(name = '') {
     let backups = Storage.get(LOCAL_KEY_AUTO_BACKUP);
     if (!Array.isArray(backups)) backups = [];
     
+    const rawScanInput = document.getElementById('vnpt-raw-scan-input');
     const newEntry = {
         id: Date.now().toString(),
         name: name || `Bản sao lưu ${new Date().toLocaleString()}`,
         timestamp: new Date().toISOString(),
         data: {
             fields: Storage.get(LOCAL_KEY_FIELDS),
-            defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS)
+            defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS),
+            rawScan: rawScanInput ? rawScanInput.value : ''
         }
     };
 
@@ -160,9 +162,9 @@ export function getInternalBackups() {
 /**
  * Khôi phục dữ liệu từ một bản sao lưu nội bộ cụ thể.
  * @param {string} backupId - ID của bản sao lưu cần khôi phục
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
-export function restoreInternalBackup(backupId) {
+export async function restoreInternalBackup(backupId) {
     const backups = getInternalBackups();
     const entry = backups.find(b => b.id === backupId);
     
@@ -175,7 +177,18 @@ export function restoreInternalBackup(backupId) {
     if (data.fields) Storage.set(LOCAL_KEY_FIELDS, data.fields);
     if (data.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, data.defaultFields);
 
-    showToast(`✅ Đã khôi phục các trường: ${entry.name}`, "#1e8e3e");
+    // Khôi phục nội dung AI Scanner nếu có
+    if (data.rawScan !== undefined) {
+        const rawScanInput = document.getElementById('vnpt-raw-scan-input');
+        if (rawScanInput) {
+            rawScanInput.value = data.rawScan;
+            // Lưu vào storage cho tính năng rawScan persistent
+            const { SK_RAW_SCAN } = await import('../core/constants.js');
+            Storage.set(SK_RAW_SCAN, data.rawScan);
+        }
+    }
+
+    showToast(`✅ Đã khôi phục dữ liệu: ${entry.name}`, "#1e8e3e");
     return true;
 }
 

@@ -1,90 +1,85 @@
 /**
  * @file storage.js
- * @desc Hệ thống lưu trữ đồng nhất cho Tampermonkey và Chrome Extension.
- * Hỗ trợ Cache để truy cập đồng bộ nhanh trong UI.
+ * @desc Hệ thống lưu trữ trực tiếp cho Tampermonkey Userscript.
+ * Luôn đọc/ghi trực tiếp từ GM_getValue/GM_setValue để tránh lỗi đồng bộ khi F5.
  */
 
-const cache = new Map();
-
 export const Storage = {
-    isGM: typeof GM_setValue !== 'undefined',
-    isExt: typeof chrome !== 'undefined' && !!chrome.storage && !!chrome.storage.local,
-
     /**
-     * Lấy dữ liệu từ Cache (Đồng bộ)
+     * Lấy dữ liệu TRỰC TIẾP từ bộ nhớ thực tế (Không dùng Cache)
      */
     get(key, defaultValue = null) {
-        if (cache.has(key)) return cache.get(key);
-        return defaultValue;
-    },
-
-    /**
-     * Lấy dữ liệu bất đồng bộ (Đảm bảo đọc từ đĩa)
-     */
-    async getAsync(key, defaultValue = null) {
         try {
             let data;
-            if (this.isExt) {
-                const result = await chrome.storage.local.get(key);
-                data = result[key];
-            } else if (this.isGM) {
+            if (typeof GM_getValue !== 'undefined') {
                 data = GM_getValue(key, null);
             } else {
                 data = localStorage.getItem(key);
             }
 
             if (data === null || data === undefined) return defaultValue;
-            const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-            cache.set(key, parsed);
-            return parsed;
+            
+            // Tự động Parse nếu là dữ liệu có cấu trúc (JSON), ngược lại trả về chuỗi thuần (API Key)
+            if (typeof data === 'string' && (data.startsWith('{') || data.startsWith('['))) {
+                try {
+                    return JSON.parse(data);
+                } catch (e) {
+                    return data;
+                }
+            }
+            return data;
         } catch (e) {
             return defaultValue;
         }
     },
 
     /**
-     * Lưu dữ liệu
+     * Lưu dữ liệu trực tiếp vào bộ nhớ vĩnh viễn
      */
     set(key, value) {
-        cache.set(key, value);
-        const stringified = JSON.stringify(value);
         try {
-            if (this.isExt) {
-                chrome.storage.local.set({ [key]: stringified });
-            } else if (this.isGM) {
+            const stringified = (typeof value === 'object') ? JSON.stringify(value) : value;
+            if (typeof GM_setValue !== 'undefined') {
                 GM_setValue(key, stringified);
             } else {
                 localStorage.setItem(key, stringified);
             }
             return true;
         } catch (e) {
+            console.error(`[Storage] Set error for ${key}:`, e);
             return false;
         }
     },
 
     /**
-     * Khởi tạo: Nạp trước toàn bộ dữ liệu vào Cache
+     * Lưu dữ liệu có độ trễ để bảo vệ ổ đĩa
      */
-    async init() {
-        if (this.isExt) {
-            try {
-                const allData = await chrome.storage.local.get(null);
-                Object.keys(allData).forEach(key => {
-                    try {
-                        const val = allData[key];
-                        cache.set(key, typeof val === 'string' ? JSON.parse(val) : val);
-                    } catch (e) {
-                        cache.set(key, allData[key]);
-                    }
-                });
-                console.log(`[Storage] Pre-loaded ${cache.size} keys.`);
-            } catch (e) {
-                console.error("[Storage] Init failed:", e);
-            }
+    _timers: new Map(),
+    setDebounced(key, value, delay = 1000) {
+        if (this._timers.has(key)) clearTimeout(this._timers.get(key));
+        
+        const timer = setTimeout(() => {
+            this.set(key, value);
+            this._timers.delete(key);
+        }, delay);
+        this._timers.set(key, timer);
+    },
+
+    /**
+     * Xóa dữ liệu
+     */
+    remove(key) {
+        if (typeof GM_deleteValue !== 'undefined') {
+            GM_deleteValue(key);
+        } else {
+            localStorage.removeItem(key);
         }
     },
 
-    clearCache() {
-        cache.clear();
+    /** 
+     * Tương thích với các lệnh gọi cũ trong main.js 
+     */
+    async init() {
+        return Promise.resolve();
     }
 };
