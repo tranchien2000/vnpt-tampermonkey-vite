@@ -198,17 +198,34 @@ function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, contai
     const renameBtn = document.createElement('button');
     renameBtn.innerHTML = '✎';
     renameBtn.className = 'tmpl-btn-rename';
-    renameBtn.onclick = e => {
+    renameBtn.onclick = async e => {
         e.stopPropagation();
-        const newName = prompt('Doi ten template:', tpl.name);
-        if (!newName || !newName.trim() || newName.trim() === tpl.name) return;
+        const oldName = tpl.name;
+        const newName = prompt('Doi ten template:', oldName);
+        if (!newName || !newName.trim() || newName.trim() === oldName) return;
 
-        const list = loadTemplates();
-        const itemIdx = list.findIndex(t => t.name === tpl.name);
-        if (itemIdx >= 0) {
-            list[itemIdx].name = newName.trim();
-            saveTemplates(list);
-            renderTemplateManager(container, onSelectTemplate, currentActiveName === tpl.name ? newName.trim() : currentActiveName);
+        const cleanNewName = newName.trim();
+        
+        try {
+            // Nếu là type local_idb, ta phải đổi tên khóa trong IndexedDB
+            if (tpl.type === 'local_idb') {
+                const buffer = await idbLoad(oldName);
+                if (buffer) {
+                    await idbSave(cleanNewName, buffer);
+                    await idbDelete(oldName);
+                }
+            }
+
+            const list = loadTemplates();
+            const itemIdx = list.findIndex(t => t.name === oldName);
+            if (itemIdx >= 0) {
+                list[itemIdx].name = cleanNewName;
+                saveTemplates(list);
+                renderTemplateManager(container, onSelectTemplate, currentActiveName === oldName ? cleanNewName : currentActiveName);
+                showToast(`✅ Đã đổi tên thành: ${cleanNewName}`);
+            }
+        } catch (err) {
+            showToast(`❌ Lỗi đổi tên: ${err.message}`, '#dc3545');
         }
     };
     row.appendChild(renameBtn);

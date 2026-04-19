@@ -20,6 +20,7 @@ import { testGeminiConnection } from '../api/gemini.js';
 import { initCloudSyncUI } from './components/CloudSyncUI.js';
 import { RemoteConfig } from '../api/remoteConfig.js';
 import { generateVNPTMockData } from '../features/mockDataGenerator.js';
+import { SessionManager } from '../features/sessionManager.js';
 
 
 export function initWidget() {
@@ -53,11 +54,7 @@ export function initWidget() {
                 </div>
                 <div class="header-right">
                     <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
-                    <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Dọn dẹp & Lưu vào History (Shift+Click để Xóa hàng)">🗑</button>
-                    <div class="vnpt-restore-dropdown" style="position: relative; display: flex;">
-                        <button class="vnpt-btn-icon btn-restore" id="vnpt-btn-restore-last" title="Khôi phục bản gần nhất">⏪</button>
-                        <div id="vnpt-backup-history" class="vnpt-backup-history"></div>
-                    </div>
+                    <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Dọn dẹp & Tạo hồ sơ mới (Shift+Click để Xóa hàng)">🗑</button>
                     
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
@@ -119,6 +116,8 @@ export function initWidget() {
 
             <!-- Inline Calculator Container -->
             <div id="vnpt-inline-calc"></div>
+
+            <div id="vnpt-session-bar" class="vnpt-session-bar"></div>
 
             <div id="vnpt-panel-body" style="overflow-y: auto;">
                 <!-- AI Scanner Section (Hidden by default) -->
@@ -512,6 +511,9 @@ export function initWidget() {
     if (cloudContainer) {
         initCloudSyncUI(cloudContainer);
     }
+
+    // --- Session Manager Logic ---
+    SessionManager.renderTabs();
 
     // --- Update Notification Logic ---
     function checkUpdateUI() {

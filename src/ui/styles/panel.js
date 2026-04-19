@@ -120,4 +120,63 @@ export const panelStyles = `
     .vnpt-resizer:active { background: var(--vnpt-primary); transform: scale(1.2); }
 
     body.vnpt-resizing-global * { user-select: none !important; cursor: inherit !important; }
+    /* ═══════════════════════════════════════════
+       SECTION: SESSION MANAGER 2.0 (TABS)
+       ═══════════════════════════════════════════ */
+    .vnpt-session-bar {
+        display: flex; gap: 6px; padding: 4px 8px; background: rgba(0,0,0,0.03);
+        border-bottom: 1px solid var(--vnpt-border); align-items: center;
+        min-height: 32px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .session-tabs-list {
+        display: flex; gap: 4px; overflow-x: auto; flex: 1;
+        padding-bottom: 2px; /* Khoảng trống cho thanh cuộn */
+    }
+    .session-tabs-list::-webkit-scrollbar { height: 3px; }
+    .session-tabs-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+    .session-tabs-list::-webkit-scrollbar-track { background: transparent; }
+
+    .vnpt-session-tab {
+        flex: 0 0 auto; min-width: 60px; max-width: 130px; height: 24px; padding: 0 8px;
+        background: #fff; border: 1px solid #e0e0e0; border-radius: 6px;
+        display: flex; align-items: center; gap: 4px; cursor: pointer;
+        font-size: 9.5px; font-weight: 700; color: #5f6368; transition: all 0.2s;
+    }
+    .vnpt-session-tab:hover { background: #f8f9fa; border-color: #ccc; }
+    .vnpt-session-tab.active {
+        background: #e8f0fe; border-color: var(--vnpt-primary);
+        color: var(--vnpt-primary); box-shadow: 0 2px 4px rgba(26, 115, 232, 0.1);
+    }
+    
+    .session-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .session-close { font-size: 14px; opacity: 0.3; padding: 0 2px; }
+    .session-tab:hover .session-close { opacity: 0.7; }
+    .session-close:hover { opacity: 1; color: var(--vnpt-danger); }
+    
+    .btn-add-session {
+        flex: 0 0 24px; height: 24px; border-radius: 6px; border: 1px solid #e0e0e0;
+        background: #fff; color: #5f6368; cursor: pointer; font-size: 14px;
+        display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .btn-add-session:hover { color: var(--vnpt-primary); border-color: var(--vnpt-primary); }
+
+    .btn-session-pin {
+        background: transparent; border: none; cursor: pointer; font-size: 11px;
+        color: #bdc1c6; padding: 0 4px; transition: 0.2s; flex-shrink: 0;
+    }
+    .btn-session-pin.active { color: var(--vnpt-primary); }
+
+    /* Khi không ghim: ẩn đi, hiện khi hover */
+    .session-unpinned .vnpt-session-bar {
+        height: 0; min-height: 0; padding: 0; overflow: hidden; border: none; opacity: 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition-delay: 0.6s; /* Độ trễ khi chuột RỜI RA */
+    }
+    .session-unpinned #vnpt-panel-header:hover ~ .vnpt-session-bar,
+    .session-unpinned #vnpt-inline-calc:hover ~ .vnpt-session-bar,
+    .session-unpinned .vnpt-session-bar:hover {
+        height: 32px; min-height: 32px; padding: 4px 8px; opacity: 1; border-bottom: 1px solid var(--vnpt-border);
+        transition-delay: 0.2s; /* Độ trễ khi chuột ĐƯA VÀO */
+    }
 `;

@@ -32,7 +32,12 @@ export const templateStyles = `
         display: flex;
         flex-wrap: wrap;
         gap: 4px;
+        max-height: 240px;
+        overflow-y: auto;
+        padding-right: 4px;
     }
+    .vnpt-local-list-container::-webkit-scrollbar { width: 3px; }
+    .vnpt-local-list-container::-webkit-scrollbar-thumb { background: #eee; border-radius: 4px; }
 
     .tmpl-row-item {
         display: flex;

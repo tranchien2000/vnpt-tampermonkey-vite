@@ -1,9 +1,10 @@
 /**
  * @file backupHelper.js
  * @desc Hỗ trợ xuất/nhập toàn bộ cấu hình dự án ra file JSON.
+ *       (Đã lược bỏ hệ thống Internal Backup cũ để chuyển sang Session Manager 2.0)
  */
 import { 
-    LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS, LOCAL_KEY_AUTO_BACKUP,
+    LOCAL_KEY_FIELDS, LOCAL_KEY_DEFAULT_FIELDS,
     SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC, 
     SK_TAX, SK_CALC_MAP, SK_TEMPLATES 
 } from '../core/constants.js';
@@ -11,9 +12,7 @@ import { Storage } from './storage.js';
 import { showToast } from '../ui/toast.js';
 
 /**
- * Trải phẳng dữ liệu: Biến các key gộp "A, B" thành các key riêng lẻ "A", "B".
- * @param {Object} obj 
- * @returns {Object}
+ * Trải phẳng dữ liệu cho việc xuất file.
  */
 function flattenData(obj) {
     if (!obj) return obj;
@@ -22,8 +21,6 @@ function flattenData(obj) {
         const val = obj[key];
         const parts = key.split(',').map(s => s.trim()).filter(s => s);
         parts.forEach(p => {
-            // Nếu giá trị là object (label, value), giữ nguyên hoặc chỉ lấy value tùy nhu cầu
-            // Ở đây giữ nguyên object để đảm bảo cấu hình đầy đủ
             result[p] = val;
         });
     });
@@ -31,12 +28,11 @@ function flattenData(obj) {
 }
 
 /**
- * Xuất toàn bộ dữ liệu ra file JSON.
- * @param {string} customFileName - Tên file tùy chỉnh (không bắt buộc)
+ * Xuất toàn bộ dữ liệu ra file JSON để người dùng sao lưu thủ công.
  */
 export function exportFullBackup(customFileName = '') {
     const data = {
-        version: '1.0',
+        version: '2.0',
         timestamp: new Date().toISOString(),
         backup: {
             fields: Storage.get(LOCAL_KEY_FIELDS),
@@ -55,24 +51,17 @@ export function exportFullBackup(customFileName = '') {
     const a = document.createElement('a');
     a.href = url;
     
-    let fileName = customFileName;
-    if (!fileName) {
-        fileName = `vnpt_full_backup_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
-    } else {
-        // Đảm bảo có đuôi .json
-        if (!fileName.toLowerCase().endsWith('.json')) fileName += '.json';
-    }
+    let fileName = customFileName || `vnpt_pro_backup_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+    if (!fileName.toLowerCase().endsWith('.json')) fileName += '.json';
 
     a.download = fileName;
     a.click();
     URL.revokeObjectURL(url);
-    showToast(`✅ Đã xuất file: ${fileName}`);
+    showToast(`✅ Đã xuất file sao lưu hệ thống`);
 }
 
 /**
  * Nhập dữ liệu từ file JSON.
- * @param {File} file 
- * @returns {Promise<boolean>}
  */
 export async function importFullBackup(file) {
     return new Promise((resolve) => {
@@ -80,7 +69,7 @@ export async function importFullBackup(file) {
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                if (!data.backup) throw new Error("File không đúng định dạng backup.");
+                if (!data.backup) throw new Error("File không đúng định dạng.");
 
                 const b = data.backup;
                 if (b.fields) Storage.set(LOCAL_KEY_FIELDS, b.fields);
@@ -92,10 +81,10 @@ export async function importFullBackup(file) {
                 if (b.calcMap) Storage.set(SK_CALC_MAP, b.calcMap);
                 if (b.templates) Storage.set(SK_TEMPLATES, b.templates);
 
-                showToast("✅ Đã nhập dữ liệu thành công! Vui lòng tải lại trang hoặc widget.", "#1e8e3e");
+                showToast("✅ Đã nhập dữ liệu thành công!", "#1e8e3e");
                 resolve(true);
             } catch (err) {
-                showToast("❌ Lỗi: File sao lưu không hợp lệ.", "#ff5252");
+                showToast("❌ Lỗi: File không hợp lệ.", "#ff5252");
                 resolve(false);
             }
         };
@@ -104,107 +93,10 @@ export async function importFullBackup(file) {
 }
 
 /**
- * Tạo bản sao lưu nội bộ vào localStorage (Lưu 10 bản gần nhất).
- * @param {string} name - Tên định danh bản sao lưu
+ * Các hàm Mock để tránh lỗi ở các module chưa kịp cập nhật
  */
-export function createInternalBackup(name = '') {
-    let backups = Storage.get(LOCAL_KEY_AUTO_BACKUP);
-    if (!Array.isArray(backups)) backups = [];
-    
-    const rawScanInput = document.getElementById('vnpt-raw-scan-input');
-    const newEntry = {
-        id: Date.now().toString(),
-        name: name || `Bản sao lưu ${new Date().toLocaleString()}`,
-        timestamp: new Date().toISOString(),
-        data: {
-            fields: Storage.get(LOCAL_KEY_FIELDS),
-            defaultFields: Storage.get(LOCAL_KEY_DEFAULT_FIELDS),
-            rawScan: rawScanInput ? rawScanInput.value : ''
-        }
-    };
-
-    // Đưa lên đầu mảng
-    backups.unshift(newEntry);
-    
-    // Giới hạn 20 bản theo yêu cầu người dùng
-    const limitedBackups = backups.slice(0, 20);
-    
-    Storage.set(LOCAL_KEY_AUTO_BACKUP, limitedBackups);
-    console.log(`✅ Field backup created: ${newEntry.name}`);
-}
-
-/**
- * Lấy tên gợi ý cho bản sao lưu: [Tên Đại Diện] - [Số HĐ]
- * Thêm helper này vào đây để dùng chung.
- */
-export function generateBackupName() {
-    const data = Storage.get(LOCAL_KEY_FIELDS) || {};
-    const name = data['tenDaiDienn']?.value || '';
-    const contract = data['soHopDong']?.value || '';
-    if (!name && !contract) return `Quét dữ liệu - ${new Date().toLocaleTimeString()}`;
-    return `${name} - ${contract}`;
-}
-
-/**
- * Lấy danh sách các bản sao lưu nội bộ.
- * @returns {Array}
- */
-export function getInternalBackups() {
-    const backups = Storage.get(LOCAL_KEY_AUTO_BACKUP);
-    if (backups && !Array.isArray(backups)) {
-        // Nếu là dữ liệu cũ kiểu object, xóa đi để khởi tạo lại mảng
-        Storage.remove(LOCAL_KEY_AUTO_BACKUP);
-        return [];
-    }
-    return Array.isArray(backups) ? backups : [];
-}
-
-/**
- * Khôi phục dữ liệu từ một bản sao lưu nội bộ cụ thể.
- * @param {string} backupId - ID của bản sao lưu cần khôi phục
- * @returns {Promise<boolean>}
- */
-export async function restoreInternalBackup(backupId) {
-    const backups = getInternalBackups();
-    const entry = backups.find(b => b.id === backupId);
-    
-    if (!entry || !entry.data) {
-        showToast("⚠️ Không tìm thấy bản sao lưu hợp lệ!", "#ffc107");
-        return false;
-    }
-
-    const data = entry.data;
-    if (data.fields) Storage.set(LOCAL_KEY_FIELDS, data.fields);
-    if (data.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, data.defaultFields);
-
-    // Khôi phục nội dung AI Scanner nếu có
-    if (data.rawScan !== undefined) {
-        const rawScanInput = document.getElementById('vnpt-raw-scan-input');
-        if (rawScanInput) {
-            rawScanInput.value = data.rawScan;
-            // Lưu vào storage cho tính năng rawScan persistent
-            const { SK_RAW_SCAN } = await import('../core/constants.js');
-            Storage.set(SK_RAW_SCAN, data.rawScan);
-        }
-    }
-
-    showToast(`✅ Đã khôi phục dữ liệu: ${entry.name}`, "#1e8e3e");
-    return true;
-}
-
-/**
- * Xoá một bản sao lưu nội bộ cụ thể.
- * @param {string} backupId 
- * @returns {boolean}
- */
-export function deleteInternalBackup(backupId) {
-    let backups = getInternalBackups();
-    const originalLength = backups.length;
-    backups = backups.filter(b => b.id !== backupId);
-    
-    if (backups.length !== originalLength) {
-        Storage.set(LOCAL_KEY_AUTO_BACKUP, backups);
-        return true;
-    }
-    return false;
-}
+export function createInternalBackup() {}
+export function getInternalBackups() { return []; }
+export function restoreInternalBackup() { return Promise.resolve(false); }
+export function deleteInternalBackup() {}
+export function generateBackupName() { return ""; }

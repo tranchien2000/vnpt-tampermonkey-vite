@@ -78,7 +78,7 @@ export const controlStyles = `
        ═══════════════════════════════════════════ */
     .vnpt-backup-history {
         position: absolute;
-        top: calc(100% + 8px);
+        top: calc(100% + 4px);
         right: 0;
         background: rgba(255, 255, 255, 0.98);
         backdrop-filter: blur(20px); 
@@ -86,13 +86,12 @@ export const controlStyles = `
         border-radius: 12px; 
         box-shadow: 0 10px 40px rgba(0,0,0,0.25);
         width: 320px; 
-        max-height: 420px; 
+        max-height: 400px; 
         overflow-y: auto;
         display: none; 
         flex-direction: column; 
         z-index: 1000000;
         padding: 8px; 
-        animation: menuFadeIn 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
         transform-origin: top right;
     }
     .vnpt-backup-history.show { display: flex; }

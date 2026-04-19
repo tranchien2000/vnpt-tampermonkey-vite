@@ -110,4 +110,9 @@ export const fieldsStyles = `
 
     #vnpt-fields-list::-webkit-scrollbar { width: 4px; }
     #vnpt-fields-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+    @keyframes menuFadeIn {
+        from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
 `;

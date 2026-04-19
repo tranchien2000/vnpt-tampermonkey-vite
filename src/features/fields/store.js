@@ -43,6 +43,11 @@ export function saveFieldsToLocal() {
     if (AppState.isDefaultMode) {
         Storage.setDebounced(SK_DATA_DEF, data, 1000);
     }
+
+    // Tự động cập nhật tên Tab hồ sơ (nếu không phải mode mặc định)
+    if (!AppState.isDefaultMode) {
+        import('../sessionManager.js').then(m => m.SessionManager.updateActiveName());
+    }
 }
 
 export function loadSavedData() {

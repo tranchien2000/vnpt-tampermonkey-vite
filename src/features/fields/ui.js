@@ -21,8 +21,11 @@ export function initColSplitter() {
     // Tính năng này đã được gỡ bỏ theo yêu cầu.
 }
 
-function renderBackupHistory(container) {
+export function renderBackupHistory(container) {
     const backups = getInternalBackups();
+    if (!container) container = document.getElementById('vnpt-backup-history');
+    if (!container) return;
+
     container.innerHTML = `<div class="backup-history-header">📋 Local History (Max 20)</div>`;
 
     if (backups.length === 0) {

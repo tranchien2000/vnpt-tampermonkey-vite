@@ -42,6 +42,7 @@ export const LOCAL_KEY_POS = 'vnpt_docx_position';
 export const LOCAL_KEY_SIZE = 'vnpt_docx_size';
 export const LOCAL_KEY_OPENED = 'vnpt_docx_opened';
 export const LOCAL_KEY_PINNED = 'vnpt_docx_pinned';
+export const LOCAL_KEY_SESSION_BAR_PINNED = 'vnpt_session_bar_pinned';
 export const LOCAL_KEY_AUTO_BACKUP = 'vnpt_docx_auto_backup';
 
 // VNPT Calc & AutoFill Widget Keys

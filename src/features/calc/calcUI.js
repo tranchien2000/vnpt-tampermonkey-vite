@@ -12,6 +12,7 @@ import { makeDraggable } from '../../ui/dragDrop.js';
 import { DEFAULT_CALC_MAP, DEFAULT_TAX_RATE } from '../../core/defaults.js';
 import { buildFullDOMMap } from '../../utils/domHelper.js';
 import { debounce } from '../../utils/common.js';
+import { showToast } from '../../ui/toast.js';
 
 export function createCalcUI(widget, container, SK_POS_CALC) {
     let TAX_RATE = Number(localStorage.getItem(SK_TAX)) || DEFAULT_TAX_RATE;
@@ -154,12 +155,11 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
     };
 
     els.before.oninput = (e) => { 
-        // Xử lý như ô text bình thường, chỉ tính toán ngầm
         updateLocal('before', e.target.value, true); 
         debouncedSync('before', e.target.value); 
     };
     els.before.onchange = () => { 
-        updateLocal('before', els.before.value); // Chỉ định dạng khi rời ô hoặc Enter
+        updateLocal('before', els.before.value); 
         doSync('before', els.before.value); 
         saveHist(SK_HIST_B, els.before.value); 
         renderHist(SK_HIST_B, 'wg-before-list'); 
@@ -184,7 +184,6 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
             if (!els.text.value) return;
             navigator.clipboard.writeText(els.text.value);
             showToast("📋 Đã copy số tiền bằng chữ", "#1a73e8");
-            
             copyTextBtn.style.backgroundColor = '#e8f0fe';
             setTimeout(() => copyTextBtn.style.backgroundColor = '', 300);
         };
@@ -194,13 +193,9 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         syncManualBtn.onclick = () => {
             const res = updateLocal('before', els.before.value);
             doSync('before', res.beforeStr);
-            
-            // Hiệu ứng nháy xanh khi thành công
             syncManualBtn.style.transform = 'scale(1.2) rotate(360deg)';
             syncManualBtn.style.transition = 'all 0.4s';
-            setTimeout(() => {
-                syncManualBtn.style.transform = '';
-            }, 400);
+            setTimeout(() => { syncManualBtn.style.transform = ''; }, 400);
         };
     }
 
