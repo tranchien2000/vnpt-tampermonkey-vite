@@ -173,8 +173,9 @@ export function showPdfConfirmDialog(results, rawText, onConfirm, onReparse) {
         }
     };
 
-    btnConfirm.onclick = () => {
+    btnConfirm.onclick = async () => {
         try {
+            const { PatternLearning } = await import('../../utils/patternLearning.js');
             const selected = [];
             const rows = dialog.querySelectorAll('.pdf-row-auto');
             rows.forEach(row => {
@@ -182,10 +183,16 @@ export function showPdfConfirmDialog(results, rawText, onConfirm, onReparse) {
                 const valInput = row.querySelector('.pdf-val-input');
                 if (chk && chk.checked && valInput) {
                     const idx = parseInt(chk.getAttribute('data-index'));
-                    if (results[idx]) {
+                    const resultItem = results[idx];
+                    if (resultItem) {
+                        const finalValue = valInput.value.trim();
+                        // HỌC MÁY: Nếu giá trị người dùng nhập khác với giá trị ban đầu (Regex tìm được)
+                        if (finalValue && finalValue !== resultItem.value && rawText) {
+                            PatternLearning.learn(rawText, resultItem.key, finalValue);
+                        }
                         selected.push({
-                            ...results[idx],
-                            value: valInput.value
+                            ...resultItem,
+                            value: finalValue
                         });
                     }
                 }

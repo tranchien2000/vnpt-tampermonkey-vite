@@ -84,8 +84,6 @@ export function extractWithGemini(base64Data, apiKey, modelName = 'gemini-2.0-fl
 
 /**
  * Nén và resize ảnh để tối ưu Token và tốc độ API.
- * @param {File} file 
- * @returns {Promise<string>} Base64 đã nén
  */
 async function compressImage(file) {
     return new Promise((resolve) => {
@@ -97,7 +95,6 @@ async function compressImage(file) {
             let width = img.width;
             let height = img.height;
 
-            // Resize về tối đa 1200px (đủ để AI đọc chữ rõ nét)
             const MAX_SIZE = 1200;
             if (width > height) {
                 if (width > MAX_SIZE) {
@@ -114,41 +111,24 @@ async function compressImage(file) {
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
-            
-            // Vẽ lại ảnh lên canvas
             ctx.drawImage(img, 0, 0, width, height);
-
-            // Xuất ra base64 với chất lượng nén 0.7 (70%)
-            // Định dạng JPEG thường nhẹ hơn PNG rất nhiều cho ảnh chụp tài liệu
+            
+            // Chất lượng 0.7 là đủ cho AI đọc
             const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
             resolve(base64);
         };
+        img.onerror = () => resolve(null);
     });
 }
 
 /**
- * Helper biến File thành thẻ Base64 (Có nén nếu là ảnh)
- * @returns {Promise<{base64: string, mimeType: string}>}
+ * Helper biến File thành thẻ Base64
+ * Tối ưu: Không nén ở đây nữa để tránh lag khi nạp tệp
  */
 export async function fileToBase64(file) {
-    const mimeType = file.type || 'application/octet-stream';
-
-    // Nếu là ảnh (PNG, JPG, WEBP), tiến hành nén trước
-    if (mimeType.startsWith('image/')) {
-        try {
-            const compressedB64 = await compressImage(file);
-            return {
-                base64: compressedB64,
-                mimeType: 'image/jpeg' // Ép về JPEG cho nhẹ
-            };
-        } catch (e) {
-            console.warn("[OCR] Lỗi nén ảnh, sử dụng ảnh gốc:", e);
-        }
-    }
-
-    // Nếu là PDF hoặc nén lỗi, trả về base64 thông thường
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
+        const mimeType = file.type || 'application/octet-stream';
         reader.onload = () => {
             const b64 = reader.result.split(',')[1];
             resolve({ base64: b64, mimeType });
@@ -157,3 +137,6 @@ export async function fileToBase64(file) {
         reader.readAsDataURL(file);
     });
 }
+
+// Export thêm hàm nén để dùng khi bấm nút Quét AI
+export { compressImage };

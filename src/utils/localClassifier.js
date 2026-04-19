@@ -32,6 +32,8 @@ function findFirstMatch(text, patterns) {
     return null;
 }
 
+import { PatternLearning } from './patternLearning.js';
+
 /**
  * Phân loại văn bản thô dựa trên các mẫu Regex phổ biến.
  * @param {string} text - Nội dung văn bản thô cần phân loại.
@@ -59,19 +61,21 @@ export function classifyTextLocally(text) {
                 results.ngayCapCustomer = normalize.date(rawIssue.slice(0, 2), rawIssue.slice(2, 4), rawIssue.slice(4));
             }
             results.noiCap = "Cục Cảnh sát quản lý hành chính về trật tự xã hội";
+            // Đối với CCCD QR, trả về luôn vì đây là định dạng chuẩn tuyệt đối
             return results;
         }
     }
 
+    // --- 2. BÓC TÁCH DỰA TRÊN REGEX ---
     // 1. Mã số doanh nghiệp / Mã số thuế / GPKD (Ưu tiên hàng đầu)
     const mstPatterns = [
         /(?:Mã số doanh nghiệp|Mã số thuế|Số GPKD|Mã số|MST|GCNĐKDN):?\s*([\d\s.-]{10,16})/i,
-        /Số:?\s*([\d]{10,14})/i // Bắt các dòng chỉ ghi Số: 0123456789
+        /Số:?\s*([\d]{10,14})/i 
     ];
     const mstRaw = findFirstMatch(cleanText, mstPatterns);
     if (mstRaw) results.soDkdn = normalize.mst(mstRaw);
 
-    // 2. Tên tổ chức/công ty (Nếu có sẽ hỗ trợ tra cứu)
+    // 2. Tên tổ chức/công ty
     const companyPatterns = [
         /(?:Tên công ty viết bằng tiếng Việt|Tên doanh nghiệp|Tên tổ chức|Doanh nghiệp|Công ty):?\s*([\s\S]+?)(?=\n|Tên công ty|Mã số|$)/i
     ];
@@ -118,5 +122,7 @@ export function classifyTextLocally(text) {
     const email = findFirstMatch(cleanText, emailPatterns);
     if (email) results.emailDaiDien = email.replace(/\(a\)/g, '@').replace(/,$/, '').trim();
 
-    return results;
+    // --- 3. SMART LEARNING PREDICTION (MÁY HỌC) ---
+    // Chạy bộ dự đoán để bổ sung hoặc sửa lỗi cho các kết quả Regex phía trên
+    return PatternLearning.predict(cleanText, results);
 }

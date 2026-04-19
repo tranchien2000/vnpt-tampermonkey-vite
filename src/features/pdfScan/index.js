@@ -292,25 +292,15 @@ export function initPdfScan() {
         e.preventDefault();
         queueContainer.classList.remove('drag-over');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            showToast("⏳ Đang xử lý tệp...", "#1a73e8");
             for(let file of e.dataTransfer.files) {
                 const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
-                
-                // Xử lý song song QR và Base64
-                const qrPromise = extractQRCodeFromImage(file);
-                const b64Promise = fileToBase64(file);
-                
-                const [qrText, b64] = await Promise.all([qrPromise, b64Promise]);
-
-                if (qrText) {
-                    const parsed = parseCCCD_QR(qrText);
-                    if (parsed) {
-                        applyQRDataToFields(parsed, file.name);
-                        if (previewUrl) URL.revokeObjectURL(previewUrl);
-                        continue;
-                    }
-                }
-                fileQueue.push({ file, ...b64, previewUrl });
+                // Nạp nhanh vào hàng đợi, không chờ nén hay bóc QR
+                fileQueue.push({ 
+                    file, 
+                    mimeType: file.type, 
+                    previewUrl,
+                    base64: null // Sẽ nạp/nén khi nhấn Quét
+                });
             }
             renderQueue(queueList, placeholder);
         }
@@ -318,20 +308,14 @@ export function initPdfScan() {
 
     inputPdf.addEventListener('change', async (e) => {
         if (!e.target.files) return;
-        showToast("⏳ Đang nạp tệp...", "#1a73e8");
         for(let file of e.target.files) {
             const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
-            const qrText = await extractQRCodeFromImage(file);
-            if (qrText) {
-                const parsed = parseCCCD_QR(qrText);
-                if (parsed) {
-                    applyQRDataToFields(parsed, file.name);
-                    if (previewUrl) URL.revokeObjectURL(previewUrl);
-                    continue;
-                }
-            }
-            const b64 = await fileToBase64(file);
-            fileQueue.push({ file, ...b64, previewUrl });
+            fileQueue.push({ 
+                file, 
+                mimeType: file.type, 
+                previewUrl,
+                base64: null 
+            });
         }
         e.target.value = '';
         renderQueue(queueList, placeholder);
@@ -341,30 +325,21 @@ export function initPdfScan() {
         if (aiSection.style.display === 'none') return;
 
         const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        let hasFile = false;
         let filesToProcess = [];
 
         for (let item of items) {
             if (item.type.indexOf('image') !== -1 || item.type.indexOf('pdf') !== -1) {
-                hasFile = true;
                 const file = item.getAsFile();
                 if (file) filesToProcess.push(file);
             }
         }
 
         if (filesToProcess.length > 0) {
-            showToast(`📋 Đang nạp ${filesToProcess.length} ảnh...`, "#1a73e8");
             for (const file of filesToProcess) {
                 const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
-                const b64 = await fileToBase64(file);
-                fileQueue.push({ file, ...b64, previewUrl });
+                fileQueue.push({ file, mimeType: file.type, previewUrl, base64: null });
             }
             renderQueue(queueList, placeholder);
-        }
-
-        const target = e.target;
-        if (hasFile && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
-            e.preventDefault();
         }
     });
 
@@ -486,20 +461,18 @@ export function initPdfScan() {
 
         if (!apiKey) {
             const wantGuide = confirm("Chưa cài đặt Gemini API Key!\n\nAI Scanner yêu cầu mã Google AI Studio.\n\nNhấn 'OK' để xem hướng dẫn nhé!");
-            if (wantGuide) {
-                window.open('https://github.com/tranchien2000/vnpt-tampermonkey-vite/blob/main/docs/GEMINI_API_GUIDES.md', '_blank');
-            }
+            if (wantGuide) window.open('https://github.com/tranchien2000/vnpt-tampermonkey-vite/blob/main/docs/GEMINI_API_GUIDES.md', '_blank');
             return;
         }
 
         if (fileQueue.length === 0 && !rawInput.value.trim()) {
-            showToast("⚠️ Hàng đợi trống. Vui lòng chọn file hoặc dán nội dung", "#ffc107");
+            showToast("⚠️ Hàng đợi trống", "#ffc107");
             return;
         }
 
         rawInput.classList.add('ai-scanning-glow');
         btnProcessAI.disabled = true;
-        btnProcessAI.textContent = "⏳ ĐANG QUÉT...";
+        btnProcessAI.textContent = "⏳ ĐANG NÉN & QUÉT...";
         
         try {
             createInternalBackup("Trước khi AI Scan: " + generateBackupName());
@@ -507,35 +480,54 @@ export function initPdfScan() {
             let rawText = "";
 
             if (fileQueue.length > 0) {
-                // Multimodal request
-                const ocrResult = await extractWithGemini(null, apiKey, apiModel, null, fileQueue);
-                resultFieldsObj = ocrResult.fields || {};
-                rawText = ocrResult.rawTextSnippet || ocrResult.rawFullText || "";
-                
-                // Hiển thị nội dung vừa quét được vào Input (user kiểm tra chéo)
-                if (rawInput.value.trim()) {
-                    rawInput.value += `\n\n--- KẾT QUẢ ĐỌC FILE ---\n${rawText}`;
-                } else {
-                    rawInput.value = rawText;
+                const { compressImage } = await import('./geminiOcr.js');
+                const { extractQRCodeFromImage, parseCCCD_QR } = await import('../../utils/qrHelper.js');
+
+                // XỬ LÝ TỪNG FILE TRONG HÀNG ĐỢI
+                const processedFiles = [];
+                for (let item of fileQueue) {
+                    // 1. Kiểm tra QR trước (nếu là ảnh)
+                    if (item.mimeType.startsWith('image/')) {
+                        const qrText = await extractQRCodeFromImage(item.file);
+                        if (qrText) {
+                            const parsed = parseCCCD_QR(qrText);
+                            if (parsed) {
+                                applyQRDataToFields(parsed, item.file.name);
+                                continue; // Đã xong, không cần gửi AI nữa
+                            }
+                        }
+                        // 2. Nén ảnh nếu chưa có base64
+                        const b64 = await compressImage(item.file);
+                        processedFiles.push({ mimeType: 'image/jpeg', base64: b64 });
+                    } else {
+                        // File PDF: Chuyển Base64 thông thường
+                        const b64Data = await fileToBase64(item.file);
+                        processedFiles.push(b64Data);
+                    }
                 }
-                Storage.set(SK_RAW_SCAN, rawInput.value); // Lưu nội dung AI vừa đọc được
+
+                if (processedFiles.length === 0) {
+                    showToast("ℹ️ Các tệp đã được xử lý qua mã QR.", "#1e8e3e");
+                } else {
+                    const ocrResult = await extractWithGemini(null, apiKey, apiModel, null, processedFiles);
+                    resultFieldsObj = ocrResult.fields || {};
+                    rawText = ocrResult.rawTextSnippet || ocrResult.rawFullText || "";
+                    if (rawInput.value.trim()) rawInput.value += `\n\n--- KẾT QUẢ ĐỌC FILE ---\n${rawText}`;
+                    else rawInput.value = rawText;
+                    Storage.set(SK_RAW_SCAN, rawInput.value);
+                    handleExtractionResults(resultFieldsObj, rawText, 'PHÂN LOẠI DỮ LIỆU THÔ (AI)');
+                }
             } else {
-                // Thuần text request
                 const text = rawInput.value.trim();
                 resultFieldsObj = await extractFieldsFromText(text, apiKey, apiModel);
-                rawText = text;
+                handleExtractionResults(resultFieldsObj, text, 'PHÂN LOẠI DỮ LIỆU THÔ (AI)');
             }
 
-            handleExtractionResults(resultFieldsObj, rawText, 'PHÂN LOẠI DỮ LIỆU THÔ (AI)');
-
-            // Xoá hàng đợi sau khi quét xong vì đã render raw text ra textbox
             if (fileQueue.length > 0) {
                 fileQueue = [];
                 renderQueue(queueList, placeholder);
             }
-
         } catch (e) {
-            console.error("Lỗi AI Scan Pipeline:", e);
             alert("Lỗi xử lý quét AI:\n" + e);
         } finally {
             rawInput.classList.remove('ai-scanning-glow');
