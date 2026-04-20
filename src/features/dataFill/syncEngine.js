@@ -4,7 +4,7 @@
  *       Đã tối ưu: Debounce 250ms, Focus Guard, DOM Cache.
  */
 import { SK_DATA_DEF, SK_DATA_CUS, SK_DATA_SYNC } from '../../core/constants.js';
-import { setPageField, findPageInput, getInputByLabel, syncSetValue, setPageFieldsSequential } from '../../utils/domHelper.js';
+import { setPageField, findPageInput, getInputByLabel, syncSetValue, setPageFieldsSequential, buildFullDOMMap } from '../../utils/domHelper.js';
 import { showToast } from '../../ui/toast.js';
 import { DEFAULT_DATA as _DEFAULT_DATA, DEFAULT_SYNC_DATA } from '../../core/defaults.js';
 import { Storage } from '../../utils/storage.js';
@@ -36,6 +36,9 @@ export async function doFillData() {
     Storage.clearCache();
     if (isAutoFilling) return;
     isAutoFilling = true;
+
+    // Đảm bảo map DOM được xây dựng chính xác trước khi điền hàng loạt
+    buildFullDOMMap(true);
 
     try {
         const defaultData = loadFreshenedDefaultData();

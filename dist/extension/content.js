@@ -383,7 +383,7 @@
         height: 24px;
         padding: 0 10px;
         border: none;
-        background: transparent;
+        background: rgba(0,0,0,0.03);
         color: #5f6368;
         font-size: 10.5px;
         font-weight: 700;
@@ -18361,6 +18361,22 @@ ${b2.name}?`)) {
     document.getElementById("vnpt-btn-default").onclick = () => {
       AppState.isDefaultMode = !AppState.isDefaultMode;
     };
+    const widget = document.getElementById("vnpt-docx-widget");
+    if (widget) {
+      let lastWheelTime = 0;
+      const WHEEL_COOLDOWN = 500;
+      widget.addEventListener("wheel", (e) => {
+        if (e.shiftKey) {
+          e.preventDefault();
+          const now = Date.now();
+          if (now - lastWheelTime > WHEEL_COOLDOWN) {
+            AppState.isDefaultMode = !AppState.isDefaultMode;
+            showToast(`🔄 Chế độ: ${AppState.isDefaultMode ? "🏢 Dữ liệu VNPT" : "📝 Dữ liệu Cá nhân"}`, "#1a73e8");
+            lastWheelTime = now;
+          }
+        }
+      }, { passive: false });
+    }
     AppState.on("isDefaultMode", (newVal) => updateUIForDefaultMode(newVal));
     document.getElementById("vnpt-btn-batch-del").onclick = (e) => {
       const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");

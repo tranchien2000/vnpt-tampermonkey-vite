@@ -250,6 +250,28 @@ export function initFieldsManager() {
 
     document.getElementById('vnpt-btn-default').onclick = () => { AppState.isDefaultMode = !AppState.isDefaultMode; };
 
+    // --- Tính năng: Shift + Cuộn chuột để chuyển Mode ---
+    const widget = document.getElementById('vnpt-docx-widget');
+    if (widget) {
+        let isHandlingWheel = false;
+
+        widget.addEventListener('wheel', (e) => {
+            if (e.shiftKey) {
+                e.preventDefault();
+                if (!isHandlingWheel) {
+                    isHandlingWheel = true;
+                    AppState.isDefaultMode = !AppState.isDefaultMode;
+                    showToast(`🔄 Chế độ: ${AppState.isDefaultMode ? '🏢 Dữ liệu VNPT' : '📝 Dữ liệu Cá nhân'}`, "#1a73e8");
+                    
+                    // Reset flag sau một khoảng thời gian ngắn để nhận lần cuộn tiếp theo
+                    setTimeout(() => {
+                        isHandlingWheel = false;
+                    }, 600);
+                }
+            }
+        }, { passive: false });
+    }
+
     AppState.on('isDefaultMode', (newVal) => updateUIForDefaultMode(newVal));
 
     document.getElementById('vnpt-btn-batch-del').onclick = (e) => {

@@ -37,7 +37,7 @@ export const controlStyles = `
         height: 24px;
         padding: 0 10px;
         border: none;
-        background: transparent;
+        background: rgba(0,0,0,0.03);
         color: #5f6368;
         font-size: 10.5px;
         font-weight: 700;

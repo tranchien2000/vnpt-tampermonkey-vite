@@ -192,7 +192,7 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             debouncedSyncRow();
         });
         fVal.addEventListener('change', function () {
-            if (primaryKey && primaryKey.toLowerCase().includes('ngay')) {
+            if (primaryKey && primaryKey.toLowerCase().includes('ngay') && !primaryKey.toLowerCase().includes('giayuyquyen')) {
                 const normalized = normalizeDate(this.value);
                 if (normalized !== this.value) {
                     this.value = normalized;
@@ -284,6 +284,11 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
         container.appendChild(row);
         updateRowConnectionStatus(row);
-        container.scrollTop = container.scrollHeight;
+        
+        if (container === AppState.fieldsContainer || container === document.getElementById('vnpt-fields-list')) {
+            container.scrollTop = container.scrollHeight;
+        }
+
+        return row;
     }
 }

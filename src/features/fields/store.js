@@ -57,7 +57,9 @@ export function loadSavedData() {
     }
 
     AppState.fieldsContainer = container;
-    container.innerHTML = ''; // Làm sạch bảng
+    
+    // Sử dụng DocumentFragment để tối ưu hóa render, giảm lag khi chuyển bảng
+    const fragment = document.createDocumentFragment();
     
     const savedFields = Storage.get(LOCAL_KEY_FIELDS) || {};
     const defaultEntries = Object.entries(DEFAULT_LABELS);
@@ -73,11 +75,11 @@ export function loadSavedData() {
         const saved = savedFields[primaryKey];
         
         if (saved && typeof saved === 'object') {
-            addOrUpdateFieldRow(keyString, saved.value || '', saved.label || label, saved.sync || '', saved.syncDir || 'both');
+            addOrUpdateFieldRow(keyString, saved.value || '', saved.label || label, saved.sync || '', saved.syncDir || 'both', false, null, false, fragment);
         } else if (saved && typeof saved === 'string') {
-            addOrUpdateFieldRow(keyString, saved, label, '', 'both');
+            addOrUpdateFieldRow(keyString, saved, label, '', 'both', false, null, false, fragment);
         } else {
-            addOrUpdateFieldRow(keyString, '', label, '', 'both');
+            addOrUpdateFieldRow(keyString, '', label, '', 'both', false, null, false, fragment);
         }
     });
 
@@ -94,12 +96,15 @@ export function loadSavedData() {
             }
 
             if (saved && typeof saved === 'object') {
-                addOrUpdateFieldRow(primaryKey, saved.value || '', saved.label || '', saved.sync || '', saved.syncDir || 'both');
+                addOrUpdateFieldRow(primaryKey, saved.value || '', saved.label || '', saved.sync || '', saved.syncDir || 'both', false, null, false, fragment);
             } else if (saved) {
-                addOrUpdateFieldRow(primaryKey, saved, '', '', 'both');
+                addOrUpdateFieldRow(primaryKey, saved, '', '', 'both', false, null, false, fragment);
             }
         }
     });
+
+    container.innerHTML = ''; // Làm sạch bảng
+    container.appendChild(fragment); // Chèn toàn bộ hàng vào DOM một lần duy nhất
 
     console.log('[VNPT-Debug] Render completed. Rows in DOM:', container.querySelectorAll('.vnpt-field-row').length);
 

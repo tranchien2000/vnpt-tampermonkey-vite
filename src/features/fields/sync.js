@@ -1,5 +1,5 @@
 import { AppState } from '../../core/state.js';
-import { setPageFieldsSequential } from '../../utils/domHelper.js';
+import { setPageFieldsSequential, buildFullDOMMap } from '../../utils/domHelper.js';
 import { showToast } from '../../ui/toast.js';
 import { doFillData } from '../dataFill/syncEngine.js';
 
@@ -7,7 +7,10 @@ import { doFillData } from '../dataFill/syncEngine.js';
  * Đồng bộ toàn bộ bảng dữ liệu lên trang web
  */
 export async function syncAllFields(targetKeys = null) {
-    if (!targetKeys) doFillData(); // Chỉ đồng bộ Tab Calc nếu là full sync
+    if (!targetKeys) await doFillData(); 
+
+    // Luôn build lại map trước khi sync hàng loạt để đảm bảo tìm thấy element
+    buildFullDOMMap(true);
 
     let count = 0;
     const rows = Array.from(AppState.fieldsContainer.querySelectorAll('.vnpt-field-row'));
@@ -23,7 +26,7 @@ export async function syncAllFields(targetKeys = null) {
         if (targetKeys && !targetKeys.includes(primaryKey)) return null;
 
         const val = row.querySelector('.f-val').value;
-        if (val === '') return null;
+        if (val === undefined || val === null || val === '') return null;
 
         const label = row.querySelector('.f-label').value.trim();
         const targets = rawKeyInput.split(',').map(x => x.trim()).filter(Boolean);
