@@ -50,7 +50,6 @@ export function initWidget() {
                     <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
                     <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
                     <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-toggle-id" title="Ẩn hiện key">ID</button>
                     <input type="file" id="vnpt-pdf-input" accept=".pdf,image/*" style="display:none;" />
                 </div>
                 <div class="header-right">
@@ -68,10 +67,10 @@ export function initWidget() {
                                 <!-- Nhóm 1: Hệ thống -->
                                 <div class="util-section-mini">
                                     <div class="util-action-row">
-                                        <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
-                                        <button class="util-item-mini" id="vnpt-btn-import-json" title="Nhập JSON">📥 Nhập</button>
-                                        <button class="util-item-mini" id="vnpt-btn-export-json" title="Xuất JSON">📤 Xuất</button>
-                                        <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
+                                        <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT" style="flex: 1.2;">🏢 VNPT</button>
+                                        <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All" style="flex: 1;">🧹 Reset</button>
+                                        <button class="vnpt-btn-icon" id="vnpt-btn-import-json" title="Nhập JSON" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">📥</button>
+                                        <button class="vnpt-btn-icon" id="vnpt-btn-export-json" title="Xuất JSON" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">📤</button>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>
                                 </div>
@@ -87,21 +86,27 @@ export function initWidget() {
                                             <button data-size="Full">MAX</button>
                                         </div>
                                     </div>
+                                    <div class="util-row-compact" style="margin-top: 6px; flex-direction: column; align-items: flex-start; gap: 6px;">
+                                        <label style="font-size: 10px; display: flex; align-items: center; gap: 4px; cursor: pointer; color: #3c4043; font-weight: 500;">
+                                            <input type="checkbox" id="vnpt-chk-show-tools" style="margin: 0; cursor: pointer;"> Hiện phím chức năng & Checkbox
+                                        </label>
+                                        <label style="font-size: 10px; display: flex; align-items: center; gap: 4px; cursor: pointer; color: #3c4043; font-weight: 500;">
+                                            <input type="checkbox" id="vnpt-chk-show-ids" style="margin: 0; cursor: pointer;"> Hiện cột Key ID (docx)
+                                        </label>
+                                    </div>
                                 </div>
 
                                 <!-- Nhóm 3: Cloud & AI -->
                                 <div class="util-section-mini">
                                     <div id="vnpt-cloud-sync-container"></div>
-                                    <div class="gemini-config-mini">
-                                        <div class="cw-row-mini">
-                                            <input id="vnpt-gemini-key" type="text" placeholder="Gemini Key..." class="cw-input-mini sensitive-mask">
-                                            <button class="util-btn-test-tiny" id="vnpt-btn-test-gemini">⚡</button>
-                                        </div>
-                                        <select id="vnpt-gemini-model" class="cw-input-mini" style="margin-top:4px;">
+                                    <div class="gemini-config-mini cw-row-mini" style="margin-top: 8px;">
+                                        <input id="vnpt-gemini-key" type="text" placeholder="Gemini Key..." class="cw-input-mini sensitive-mask" style="flex: 1;">
+                                        <select id="vnpt-gemini-model" class="cw-input-mini" style="width: 75px; flex-shrink: 0;">
                                             <option value="gemini-2.5-flash">2.5 Flash</option>
                                             <option value="gemini-2.5-flash-lite">2.5 Lite</option>
                                             <option value="gemini-3.1-flash-lite-preview">3.1 Lite</option>
                                         </select>
+                                        <button class="util-btn-test-tiny" id="vnpt-btn-test-gemini" style="flex-shrink: 0; padding: 0 4px;">⚡</button>
                                     </div>
                                 </div>
 
@@ -122,37 +127,42 @@ export function initWidget() {
             <div id="vnpt-inline-calc"></div>
 
             <div id="vnpt-panel-body">
-                <!-- AI Scanner Section (Hidden by default) -->
-                <div id="vnpt-ai-scanner-section" class="vnpt-ai-scanner-section" style="display: none;">
-                    <div class="ai-scanner-header" style="margin-bottom: -2px;">
-                        <span class="ai-title">Xử lý tệp & Nhập văn bản:</span>
-                    </div>
-                    
-                    <div class="ai-scan-row">
-                        <div class="ai-queue-container" id="vnpt-ai-queue-container" title="Bấm để chọn file hoặc dán (Ctrl+V) file/ảnh vào đây">
-                            <div class="ai-queue-placeholder" id="vnpt-ai-queue-placeholder">
-                                <span>📁</span>
-                                <span>Kéo thả / Ctrl+V</span>
-                            </div>
-                            <div class="ai-queue-list" id="vnpt-ai-queue-list"></div>
-                        </div>
-
-                        <textarea id="vnpt-raw-scan-input" placeholder="Nhập rác để quét tự động, HOẶC dùng @key để Copy thành Text Template..."></textarea>
-                    </div>
-                    
-                    <div class="raw-scan-actions">
-                        <button class="vnpt-btn-icon" id="vnpt-btn-show-pdf" title="Xem lại Kết quả cũ">📝</button>
-                        <button class="vnpt-btn-icon" id="vnpt-btn-clear-queue" title="Xóa hàng đợi & nội dung">🗑️</button>
-                        <button class="vnpt-btn-icon" id="vnpt-btn-scan-mail" title="Trích xuất nội dụng Mail (Gmail/Outlook)">📧</button>
-                        <button class="vnpt-btn-icon" id="vnpt-btn-export-txt" title="Copy chuỗi thành Text Template">📋</button>
-                        <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex">QR Text</button>
-                        <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process">QUÉT AI</button>
-                        <span id="vnpt-token-usage" title="Dung lượng AI đã dùng hôm nay (Reset lúc 0h)" style="font-size: 11px; color: #5f6368; font-weight: 500; margin-left: auto; display: flex; align-items: center; white-space: nowrap;">📊 0 req (0 tok)</span>
-                    </div>
-                </div>
-
-                <div id="vnpt-banner-area"></div>
                 <div id="vnpt-fields-container">
+                    <!-- AI Scanner Section (Hidden by default) -->
+                    <div id="vnpt-ai-scanner-section" class="vnpt-ai-scanner-section" style="display: none;">
+                        <div class="ai-scanner-header" style="margin-bottom: -2px;">
+                            <span class="ai-title">Xử lý tệp & Nhập văn bản:</span>
+                        </div>
+                        
+                        <div class="ai-scan-row">
+                            <div class="ai-queue-container" id="vnpt-ai-queue-container" title="Bấm để chọn file hoặc dán (Ctrl+V) file/ảnh vào đây">
+                                <div class="ai-queue-placeholder" id="vnpt-ai-queue-placeholder">
+                                    <span>📁</span>
+                                    <span>Kéo thả / Ctrl+V</span>
+                                </div>
+                                <div class="ai-queue-list" id="vnpt-ai-queue-list"></div>
+                            </div>
+
+                            <textarea id="vnpt-raw-scan-input" placeholder="Nhập rác để quét tự động, HOẶC dùng @key để Copy thành Text Template..."></textarea>
+                        </div>
+                        
+                        <div class="raw-scan-actions" style="display: flex; align-items: center; gap: 6px; padding: 4px; background: rgba(255,255,255,0.4); border-radius: 8px; margin-top: 4px; border: 1px solid rgba(0,0,0,0.03);">
+                            <div style="display: flex; gap: 4px;">
+                                <button class="vnpt-btn-icon" id="vnpt-btn-show-pdf" title="Xem lại Kết quả cũ" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0;">📝</button>
+                                <button class="vnpt-btn-icon" id="vnpt-btn-export-txt" title="Copy chuỗi thành Text Template" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0;">📋</button>
+                            </div>
+                            
+                            <div style="display: flex; gap: 6px; flex: 1;">
+                                <button id="vnpt-btn-raw-process-local" class="vnpt-btn-confirm btn-local-process" title="Phân loại nhanh văn bản bằng offline Regex" style="height: 26px; padding: 0; font-size: 10px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin: 0;">QR TEXT</button>
+                                <button id="vnpt-btn-ai-process" class="vnpt-btn-confirm btn-ai-process" style="height: 26px; padding: 0; font-size: 10px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin: 0;">QUÉT AI</button>
+                            </div>
+                            
+                            <span id="vnpt-token-usage" title="Dung lượng AI đã dùng hôm nay (Reset lúc 0h)" style="font-size: 10px; color: #5f6368; font-weight: 700; white-space: nowrap; background: #f1f3f4; padding: 4px 8px; border-radius: 12px; border: 1px solid #e8eaed;">📊 0 tok</span>
+                        </div>
+                    </div>
+
+                    <div id="vnpt-banner-area"></div>
+                    
                     <div id="vnpt-fields-list">
                         <div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>
                     </div>
@@ -317,7 +327,7 @@ export function initWidget() {
                     }
 
                     btnTest.disabled = true;
-                    btnTest.textContent = "⏳ Đang thử...";
+                    showToast("⏳ Đang thử kết nối...", "#1a73e8");
 
                     try {
                         await testGeminiConnection(key, model);
@@ -326,7 +336,6 @@ export function initWidget() {
                         showToast("❌ Kết nối thất bại: " + err, "#ea4335");
                     } finally {
                         btnTest.disabled = false;
-                        btnTest.textContent = "⚡ Kiểm tra kết nối";
                     }
                 };
             }
@@ -553,11 +562,15 @@ export function initWidget() {
     import('../utils/tokenTracker.js').then(({ TokenTracker }) => {
         const usageEl = document.getElementById('vnpt-token-usage');
         if (usageEl) {
+            const updateUI = (tokens) => {
+                const tokStr = tokens >= 1000 ? (tokens/1000).toFixed(1) + 'k' : tokens;
+                usageEl.textContent = `📊 ${tokStr}`;
+            };
             const usage = TokenTracker.getUsage();
-            usageEl.textContent = `📊 ${usage.requests} req (${usage.tokens.toLocaleString()} tok)`;
+            updateUI(usage.tokens);
             
             document.addEventListener('vnpt_usage_updated', (e) => {
-                usageEl.textContent = `📊 ${e.detail.requests} req (${e.detail.tokens.toLocaleString()} tok)`;
+                updateUI(e.detail.tokens);
             });
         }
     });

@@ -4,7 +4,7 @@ export const fieldsStyles = `
        ═══════════════════════════════════════════ */
     #vnpt-fields-container { 
         --label-flex: 0.2;
-        flex: 1; overflow: hidden; background: rgba(255, 255, 255, 0.3); 
+        flex: 1; overflow-y: auto; overflow-x: hidden; background: rgba(255, 255, 255, 0.3); 
         border: 1px solid var(--vnpt-border); border-radius: 12px; 
         margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
         box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
@@ -15,7 +15,7 @@ export const fieldsStyles = `
         background: rgba(234, 67, 53, 0.05);
         box-shadow: inset 0 0 15px rgba(234, 67, 53, 0.1);
     }
-    #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
+    #vnpt-fields-list { flex: none; overflow: visible; height: auto; padding: 4px; }
 
     /* Column splitter */
     .fields-col-splitter {
@@ -77,6 +77,9 @@ export const fieldsStyles = `
     .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.03); }
     .show-ids .vnpt-field-row input.f-key { display: block; }
 
+    .vnpt-field-row .row-tools { display: none; }
+    .show-row-tools .vnpt-field-row .row-tools { display: flex !important; }
+
     .btn-field-link {
         cursor: pointer; padding: 0; user-select: none;
         flex: 0 0 16px; height: 16px; display: flex; align-items: center; justify-content: center;
@@ -90,19 +93,6 @@ export const fieldsStyles = `
     
     .vnpt-btn-del { background: #fce8e6; color: var(--vnpt-danger); border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
     .vnpt-btn-del:hover { background: #f9d7d1; }
-
-    /* Connection Badge */
-    .connection-badge {
-        font-size: 8px;
-        margin: 0 1px;
-        flex-shrink: 0;
-        cursor: help;
-        opacity: 0.7;
-        width: 10px;
-        text-align: center;
-    }
-    .connection-badge.connected { color: #28a745; filter: drop-shadow(0 0 2px rgba(40, 167, 69, 0.4)); }
-    .connection-badge.disconnected { color: #ccc; }
 
     /* MST Lookup Button */
     .mst-lookup-wrapper {
@@ -173,8 +163,8 @@ export const fieldsStyles = `
 
     @keyframes spin-small { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    #vnpt-fields-list::-webkit-scrollbar { width: 6px; }
-    #vnpt-fields-list::-webkit-scrollbar-track { background: transparent; }
-    #vnpt-fields-list::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 10px; }
-    #vnpt-fields-list::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
+    #vnpt-fields-container::-webkit-scrollbar { width: 6px; }
+    #vnpt-fields-container::-webkit-scrollbar-track { background: transparent; }
+    #vnpt-fields-container::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 10px; }
+    #vnpt-fields-container::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
 `;

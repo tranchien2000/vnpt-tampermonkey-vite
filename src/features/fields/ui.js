@@ -161,10 +161,42 @@ function renderBackupHistory(container) {
 }
 
 export function initFieldsManager() {
-    document.getElementById('vnpt-btn-toggle-id').onclick = () => {
-        const wrapper = document.getElementById('vnpt-fields-container');
-        if (wrapper) wrapper.classList.toggle('show-ids');
-    };
+    const container = document.getElementById('vnpt-fields-container');
+
+    // Toggle Hiện cột IDs
+    const chkShowIds = document.getElementById('vnpt-chk-show-ids');
+    if (chkShowIds && container) {
+        const isShowIds = Storage.get('vnpt_show_ids') === 'true';
+        chkShowIds.checked = isShowIds;
+        if (isShowIds) container.classList.add('show-ids');
+
+        chkShowIds.addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            Storage.set('vnpt_show_ids', checked ? 'true' : 'false');
+            if (checked) container.classList.add('show-ids');
+            else container.classList.remove('show-ids');
+        });
+    }
+
+    // Toggle Hiện phím chức năng
+    const chkShowTools = document.getElementById('vnpt-chk-show-tools');
+    if (chkShowTools && container) {
+        // Load state
+        const isShowTools = Storage.get('vnpt_show_row_tools') === 'true';
+        chkShowTools.checked = isShowTools;
+        if (isShowTools) container.classList.add('show-row-tools');
+
+        // Toggle state
+        chkShowTools.addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            Storage.set('vnpt_show_row_tools', checked ? 'true' : 'false');
+            if (checked) {
+                container.classList.add('show-row-tools');
+            } else {
+                container.classList.remove('show-row-tools');
+            }
+        });
+    }
 
     initColSplitter();
 

@@ -127,7 +127,7 @@ export const controlStyles = `
     }
     .util-section-mini:last-child { border-bottom: none; }
 
-    .util-action-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+    .util-action-row { display: flex; gap: 4px; align-items: center; }
     
     .util-item-mini {
         background: #f8f9fa; border: 1px solid #eee; border-radius: 6px;

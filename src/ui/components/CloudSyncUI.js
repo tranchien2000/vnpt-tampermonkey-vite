@@ -35,20 +35,6 @@ export function initCloudSyncUI(container) {
               <div class="cloud-action-desc">Về máy này</div>
             </div>
           </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-push">
-            <div class="cloud-action-icon">🔑</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Sao lưu Keys</div>
-              <div class="cloud-action-desc">Gemini Key</div>
-            </div>
-          </div>
-          <div class="cloud-action-item" id="vnpt-btn-cloud-keys-pull">
-            <div class="cloud-action-icon">🔄</div>
-            <div class="cloud-action-content">
-              <div class="cloud-action-label">Khôi phục Keys</div>
-              <div class="cloud-action-desc">Từ Cloud</div>
-            </div>
-          </div>
         </div>
 
         <style>
@@ -153,7 +139,7 @@ export function initCloudSyncUI(container) {
               SK_CALC_MAP, SK_HOTKEYS, 
               LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
               SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-              SK_ADDRESS_LEARNING
+              SK_ADDRESS_LEARNING, SK_GEMINI_KEY
           } = await import('../../core/constants.js');
           const { Storage } = await import('../../utils/storage.js');
           const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
@@ -170,6 +156,12 @@ export function initCloudSyncUI(container) {
               addressLearning: Storage.get(SK_ADDRESS_LEARNING)
           };
           await FirebaseService.pushGlobalConfig(globalConfig);
+
+          // 3. Đẩy Keys
+          const geminiKey = Storage.get(SK_GEMINI_KEY);
+          if (geminiKey) {
+            await FirebaseService.backupKeys({ gemini_key: geminiKey });
+          }
 
           showToast("✅ Đã đồng bộ lên Cloud!");
         } catch (err) {
@@ -199,7 +191,7 @@ export function initCloudSyncUI(container) {
                      SK_CALC_MAP, SK_HOTKEYS, 
                      LOCAL_KEY_FIELDS, SK_TEMPLATES, SK_TAX, 
                      SK_DATA_DEF, LOCAL_KEY_DEFAULT_FIELDS,
-                     SK_ADDRESS_LEARNING
+                     SK_ADDRESS_LEARNING, SK_GEMINI_KEY
                  } = await import('../../core/constants.js');
                  const { Storage } = await import('../../utils/storage.js');
                  const { DEFAULT_CALC_MAP } = await import('../../core/defaults.js');
@@ -213,49 +205,24 @@ export function initCloudSyncUI(container) {
                  if (cloudConfig.defaultFields) Storage.set(LOCAL_KEY_DEFAULT_FIELDS, cloudConfig.defaultFields);
                  if (cloudConfig.dataDefault) Storage.set(SK_DATA_DEF, cloudConfig.dataDefault);
                  if (cloudConfig.addressLearning) Storage.set(SK_ADDRESS_LEARNING, cloudConfig.addressLearning);
+
+                 // Khôi phục Keys nếu có
+                 const keys = await FirebaseService.restoreKeys();
+                 if (keys && keys.gemini_key) {
+                   Storage.set(SK_GEMINI_KEY, keys.gemini_key);
+                 }
              }
 
              showToast("✅ Đã khôi phục toàn bộ cấu hình!");
-             setTimeout(() => location.reload(), 1000);
+             setTimeout(() => {
+                if (typeof window.__vnptCleanup === 'function' && typeof window.__vnptInit === 'function') {
+                    window.__vnptCleanup();
+                    setTimeout(window.__vnptInit, 50);
+                } else {
+                    location.reload();
+                }
+             }, 500);
           }
-        } catch (err) {
-          showToast("❌ Lỗi: " + err.message, "#ea4335");
-        }
-      };
-
-      document.getElementById('vnpt-btn-cloud-keys-push').onclick = async () => {
-        try {
-          const { SK_GEMINI_KEY } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          const geminiKey = Storage.get(SK_GEMINI_KEY);
-          
-          if (!geminiKey) {
-            showToast("ℹ️ Không tìm thấy Gemini Key để sao lưu");
-            return;
-          }
-          
-          showToast("⏳ Đang sao lưu Keys...");
-          await FirebaseService.backupKeys({ gemini_key: geminiKey });
-          showToast("✅ Đã sao lưu API Keys lên Cloud!");
-        } catch (err) {
-          showToast("❌ Lỗ: " + err.message, "#ea4335");
-        }
-      };
-      
-      document.getElementById('vnpt-btn-cloud-keys-pull').onclick = async () => {
-        try {
-          showToast("⏳ Đang khôi phục Keys...");
-          const keys = await FirebaseService.restoreKeys();
-          if (!keys || !keys.gemini_key) {
-            showToast("ℹ️ Không tìm thấy Keys trên Cloud");
-            return;
-          }
-          
-          const { SK_GEMINI_KEY } = await import('../../core/constants.js');
-          const { Storage } = await import('../../utils/storage.js');
-          Storage.set(SK_GEMINI_KEY, keys.gemini_key);
-          showToast("✅ Đã khôi phục API Keys từ Cloud!");
-          setTimeout(() => location.reload(), 1000);
         } catch (err) {
           showToast("❌ Lỗi: " + err.message, "#ea4335");
         }

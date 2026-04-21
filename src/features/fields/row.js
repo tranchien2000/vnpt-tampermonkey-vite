@@ -113,12 +113,13 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
         const primaryKey = incomingPK;
 
         row.innerHTML = `
-            <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" style="margin: 0 2px 0 2px;" />
-            <span class="connection-badge disconnected" title="Đang kiểm tra kết nối...">○</span>
+            <div class="row-tools" style="display: none; align-items: center; gap: 2px;">
+                <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" style="margin: 0 2px;" />
+                <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="${syncDir || 'both'}">↔</button>
+                <button class="btn-field-link" title="🔗 Click để liên kết với element trên trang (Esc để hủy)">🔗</button>
+            </div>
             <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
             <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
-            <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ 2 chiều (bảng ↔ form)" data-dir="${syncDir || 'both'}">↔</button>
-            <button class="btn-field-link" title="🔗 Click để liên kết với element trên trang (Esc để hủy)">🔗</button>
             ${primaryKey === 'soDkdn' ? `
                 <div class="mst-lookup-wrapper">
                     <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val" value="${valueText}" placeholder="Mã số thuế..." />

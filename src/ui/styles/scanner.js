@@ -69,14 +69,23 @@ export const scannerStyles = `
 
     .vnpt-pdf-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; border-top: 1px solid #f1f3f4; padding-top: 12px; }
     
+    .pdf-btn-cancel, .pdf-btn-confirm, .pdf-btn-reparse {
+        padding: 8px 16px; border: none; border-radius: 8px;
+        font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 11px;
+    }
+    
     .pdf-btn-cancel {
-        padding: 8px 16px; background: #f1f3f4; border: none; border-radius: 8px;
-        color: #3c4043; font-weight: 700; cursor: pointer; transition: 0.2s;
+        background: #f1f3f4; color: #3c4043;
     }
     .pdf-btn-cancel:hover { background: #e8eaed; }
+    
+    .pdf-btn-reparse {
+        background: var(--vnpt-success); color: #fff;
+    }
+    .pdf-btn-reparse:hover { background: #177a33; box-shadow: 0 4px 12px rgba(30, 142, 62, 0.3); }
+    
     .pdf-btn-confirm {
-        padding: 8px 16px; background: var(--vnpt-primary); border: none; border-radius: 8px;
-        color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s;
+        background: var(--vnpt-primary); color: #fff;
     }
     .pdf-btn-confirm:hover { background: var(--vnpt-primary-hover); box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3); }
 

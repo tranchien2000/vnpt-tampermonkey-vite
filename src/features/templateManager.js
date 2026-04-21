@@ -151,15 +151,10 @@ function createSharedTemplateRow(tpl, onSelectTemplate, currentActiveName) {
         }
     };
 
-    const badge = document.createElement('span');
-    badge.textContent = 'CLOUD';
-    badge.style.cssText = 'font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:#1976d2;color:#fff;';
-
     const nameEl = document.createElement('span');
     nameEl.textContent = tpl.name;
     nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#0d47a1;white-space:nowrap;';
 
-    row.appendChild(badge);
     row.appendChild(nameEl);
     return row;
 }
@@ -197,31 +192,44 @@ function createTemplateRow(tpl, idx, onSelectTemplate, currentActiveName, contai
         selectTemplate(tpl, onSelectTemplate, container);
     };
 
-    const badge = document.createElement('span');
-    badge.textContent = 'LOCAL';
-    badge.style.cssText = 'font-size:8px;padding:1px 5px;border-radius:10px;flex-shrink:0;font-weight:bold;background:#6c757d;color:#fff;';
-
     const nameEl = document.createElement('span');
     nameEl.textContent = tpl.name;
     nameEl.style.cssText = 'font-size:11px;font-weight:600;color:#212529;white-space:nowrap;';
 
-    row.appendChild(badge);
     row.appendChild(nameEl);
 
     const renameBtn = document.createElement('button');
     renameBtn.innerHTML = '✎';
     renameBtn.style.cssText = 'font-size:10px;padding:1px 4px;border:none;background:none;color:#555;cursor:pointer;margin-left:auto;';
-    renameBtn.onclick = e => {
+    renameBtn.onclick = async e => {
         e.stopPropagation();
         const newName = prompt('Doi ten template:', tpl.name);
         if (!newName || !newName.trim() || newName.trim() === tpl.name) return;
 
+        const trimmedNewName = newName.trim();
         const list = loadTemplates();
         const itemIdx = list.findIndex(t => t.name === tpl.name);
         if (itemIdx >= 0) {
-            list[itemIdx].name = newName.trim();
+            const item = list[itemIdx];
+            
+            // Fix lỗi đổi tên: Cập nhật dữ liệu trong IndexedDB nếu là local_idb
+            if (item.type === 'local_idb') {
+                try {
+                    const data = await idbLoad(item.name);
+                    if (data) {
+                        await idbSave(trimmedNewName, data);
+                        await idbDelete(item.name);
+                    }
+                } catch (err) {
+                    console.error("Loi khi cap nhat DB khi doi ten:", err);
+                    showToast("Loi khi doi ten file trong bo nho", "#dc3545");
+                    return;
+                }
+            }
+
+            item.name = trimmedNewName;
             saveTemplates(list);
-            renderTemplateManager(container, onSelectTemplate, currentActiveName === tpl.name ? newName.trim() : currentActiveName);
+            renderTemplateManager(container, onSelectTemplate, currentActiveName === tpl.name ? trimmedNewName : currentActiveName);
         }
     };
     row.appendChild(renameBtn);
