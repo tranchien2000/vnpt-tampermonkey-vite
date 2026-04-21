@@ -1,5 +1,5 @@
 {
-  "version": "1.6.30",
+  "version": "1.8.0",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.6.30 - Tối ưu hiệu năng xác định bộ địa chỉ và dọn dẹp log dư thừa"
+  "message": "v1.8.0 - Đại tu giao diện cực kỳ tối giản, gộp Cloud Sync và nâng cấp AI Scanner"
 }
