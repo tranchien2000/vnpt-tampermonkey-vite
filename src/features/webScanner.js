@@ -217,7 +217,7 @@ export function initWebScanner() {
             if (val && typeof val === 'string') {
                 const primaryId = ids[0];
                 if (['sdt'].includes(primaryId)) val = formatPhoneNumber(val);
-                else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'ngayTiepNhan'].includes(primaryId)) val = normalizeDate(val);
+                else if (['ngaySinhCustomer', 'ngayCapCustomer', 'ngayCapSoDkdnCustomer', 'ngayKy', 'thangKy', 'namKy', 'ngayTiepNhan'].includes(primaryId)) val = normalizeDate(val);
             }
             const sourceContext = ids.includes('duong') ? fullAddressScanned : null;
 

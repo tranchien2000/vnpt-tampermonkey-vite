@@ -122,12 +122,14 @@ function setupRowListeners(row, fKey, fVal, primaryKey) {
         if (primaryKey === 'duong' && this.dataset.sourceAddress) {
             AddressLearning.saveLearning(this.dataset.sourceAddress, this.value);
         }
+        /*
         if (primaryKey === 'soDkdn' && !AppState.isDefaultMode) {
             const mstVal = this.value.trim();
             if (mstVal) {
                 import('../sessionManager.js').then(m => m.SessionManager.checkAndCreateForNewMST(mstVal));
             }
         }
+        */
         syncThisRow();
     });
 
