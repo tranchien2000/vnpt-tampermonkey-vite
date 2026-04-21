@@ -40,7 +40,15 @@ export const panelStyles = `
     }
     #vnpt-export-panel.vnpt-resizing { transition: none !important; user-select: none !important; }
     
-    #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 4px; border-radius: 12px; }
+    #vnpt-panel-body { 
+        display: flex; 
+        flex-direction: column; 
+        overflow: hidden; /* Đóng cửa cuộn ở đây để các flex con tự cuộn */
+        flex: 1; 
+        min-height: 0; 
+        margin-top: 4px; 
+        border-radius: 12px; 
+    }
 
     #vnpt-panel-header { 
         margin: -4px -4px 0 -4px; padding: 2px 8px;

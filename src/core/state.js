@@ -22,6 +22,7 @@ const internalState = {
 
     // VNPT Data display status
     isDefaultMode: false,
+    showFieldTools: false,
     
     // Template status
     templateBuffer: null,

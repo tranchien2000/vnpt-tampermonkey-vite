@@ -9,6 +9,7 @@ import { showToast } from '../../ui/toast.js';
 import { DEFAULT_DATA as _DEFAULT_DATA, DEFAULT_SYNC_DATA } from '../../core/defaults.js';
 import { Storage } from '../../utils/storage.js';
 import { debounce } from '../../utils/common.js';
+import { getVNPTDateStrings } from '../../utils/dateHelper.js';
 
 // Trạng thái khóa để ngăn chặn việc lắng nghe sự kiện khi đang auto-fill hàng loạt
 let isAutoFilling = false;
@@ -19,6 +20,14 @@ function loadFreshenedDefaultData() {
     const cachedRaw = Storage.get(SK_DATA_DEF);
     let cached = cachedRaw ? JSON.parse(JSON.stringify(cachedRaw)) : null;
     let fresh = JSON.parse(JSON.stringify(_DEFAULT_DATA));
+
+    // Đảm bảo các field ngày tháng (dynamic) luôn có mặt trong fresh data
+    const { ngay, thang, nam } = getVNPTDateStrings();
+    fresh["ngayKy, ngayKy1"] = { label: "Ngày ký", value: ngay, syncDir: "both" };
+    fresh["thangKy, thangKy1"] = { label: "Tháng ký", value: thang, syncDir: "both" };
+    fresh["namKy, namKy1"] = { label: "Năm ký", value: nam, syncDir: "both" };
+    fresh["ngayTiepNhan, ngayThangNamKy"] = { label: "Ngày ký (full)", value: `${ngay}/${thang}/${nam}`, syncDir: "both" };
+
     if (!cached) return fresh;
 
     // Overlay fresh dates onto cached default data
@@ -26,6 +35,8 @@ function loadFreshenedDefaultData() {
     dynamicKeys.forEach(k => {
         if (cached[k] && fresh[k]) {
             cached[k].value = fresh[k].value;
+        } else if (!cached[k] && fresh[k]) {
+            cached[k] = fresh[k];
         }
     });
     return cached;

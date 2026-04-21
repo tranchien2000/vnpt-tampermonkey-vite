@@ -68,11 +68,14 @@ export function initWidget() {
                                 <!-- Nhóm 1: Hệ thống -->
                                 <div class="util-section-mini">
                                     <div class="util-action-row">
+                                        <button class="util-item-mini" id="vnpt-btn-toggle-tools" title="Bật/Tắt công cụ hàng (Link, Sync, Checkbox)">🛠️ Tools</button>
                                         <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
                                         <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
-                                        <div class="util-json-group" style="display: flex; gap: 2px; flex-shrink: 0;">
-                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-import-json" title="Nhập JSON">📥</button>
-                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-export-json" title="Xuất JSON">📤</button>
+                                    </div>
+                                    <div class="util-action-row" style="margin-top: 4px;">
+                                        <div class="util-json-group" style="flex: 1;">
+                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-import-json" title="Nhập JSON" style="flex: 1;">📥 Nhập</button>
+                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-export-json" title="Xuất JSON" style="flex: 1;">📤 Xuất</button>
                                         </div>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>

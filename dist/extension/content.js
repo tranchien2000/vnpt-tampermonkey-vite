@@ -69,7 +69,15 @@
     }
     #vnpt-export-panel.vnpt-resizing { transition: none !important; user-select: none !important; }
     
-    #vnpt-panel-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-top: 4px; border-radius: 12px; }
+    #vnpt-panel-body { 
+        display: flex; 
+        flex-direction: column; 
+        overflow: hidden; /* Đóng cửa cuộn ở đây để các flex con tự cuộn */
+        flex: 1; 
+        min-height: 0; 
+        margin-top: 4px; 
+        border-radius: 12px; 
+    }
 
     #vnpt-panel-header { 
         margin: -4px -4px 0 -4px; padding: 2px 8px;
@@ -161,188 +169,115 @@
        ═══════════════════════════════════════════ */
     #vnpt-fields-container { 
         --label-flex: 0.2;
-        flex: 1; overflow: hidden; background: rgba(255, 255, 255, 0.3); 
+        flex: 1; min-height: 0; background: rgba(255, 255, 255, 0.4); 
         border: 1px solid var(--vnpt-border); border-radius: 12px; 
         margin-bottom: 4px; position: relative; display: flex; flex-direction: column; 
         box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
     }
 
     #vnpt-fields-container.vnpt-mode-default {
-        border: 2px dashed var(--vnpt-danger);
-        background: rgba(234, 67, 53, 0.05);
-        box-shadow: inset 0 0 15px rgba(234, 67, 53, 0.1);
+        background: rgba(255, 21, 0, 0.02) !important;
+        border-color: transparent !important;
     }
-    #vnpt-fields-list { flex: 1; overflow-y: auto; padding: 4px; }
+    
+    .vnpt-mode-default #vnpt-fields-list {
+        animation: vnpt-list-pulse 2s infinite;
+        border-radius: 8px;
+    }
+    
+    @keyframes vnpt-list-pulse {
+        0% { outline: 2px dashed var(--vnpt-danger); outline-offset: -2px; }
+        50% { outline: 2px dashed #ff9800; outline-offset: -2px; }
+        100% { outline: 2px dashed var(--vnpt-danger); outline-offset: -2px; }
+    }
 
-    /* Column splitter */
-    .fields-col-splitter {
-        flex: 0 0 6px; cursor: col-resize;
-        display: flex; align-items: center; justify-content: center;
-        background: transparent; border-radius: 3px;
-        opacity: 0; transition: opacity 0.2s, background 0.2s;
-        position: relative; z-index: 2;
+    .vnpt-mode-default .vnpt-field-row {
+        background: #fff5f5;
+        border-color: rgba(234, 67, 53, 0.1);
     }
-    .fields-col-splitter::after {
-        content: ''; display: block;
-        width: 2px; height: 60%; min-height: 10px;
-        background: var(--vnpt-border); border-radius: 2px;
-        transition: background 0.2s;
+    .vnpt-mode-default .vnpt-field-row:hover {
+        background: #ffebeb;
+        border-color: rgba(255, 21, 0, 0.3);
     }
-    #vnpt-fields-container:hover .fields-col-splitter { opacity: 1; }
-    .fields-col-splitter:hover::after,
-    .fields-col-splitter.dragging::after { background: var(--vnpt-primary); }
-    .fields-col-splitter.dragging { opacity: 1; cursor: col-resize; }
+
+    #vnpt-fields-list { 
+        flex: 1; 
+        padding: 6px 4px; 
+        overflow-y: auto; 
+    }
 
     .vnpt-field-row { 
-        display: flex; gap: 2px; margin-bottom: 2px; align-items: center; 
-        padding: 1px 2px; border-radius: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        background: rgba(255, 255, 255, 0.6); border: 1px solid transparent;
+        display: flex; gap: 4px; margin-bottom: 3px; align-items: center; 
+        padding: 2px 4px; border-radius: 8px; transition: all 0.2s;
+        background: #fff; border: 1px solid transparent;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
     .vnpt-field-row:hover { 
-        background: #fff; border-color: var(--vnpt-primary-light); 
-        transform: translateX(2px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+        border-color: var(--vnpt-primary-light); 
+        transform: translateX(2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
+        z-index: 2;
     }
 
-    .btn-sync-dir, .btn-sync-dir-calc {
+    /* --- CƠ CHẾ ẨN/HIỆN CÔNG CỤ --- */
+    .vnpt-field-row input.row-chk,
+    .btn-sync-dir, 
+    .btn-field-link {
+        display: none !important;
+    }
+    
+    .show-field-tools .vnpt-field-row input.row-chk,
+    .show-field-tools .btn-sync-dir, 
+    .show-field-tools .btn-field-link {
+        display: flex !important;
+    }
+
+    .vnpt-field-row input.row-chk { flex: 0 0 16px; width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--vnpt-primary); }
+
+    .btn-sync-dir, .btn-sync-dir-calc, .btn-field-link {
         cursor: pointer; padding: 0; user-select: none;
-        flex: 0 0 16px; height: 16px; display: flex; align-items: center; justify-content: center;
-        border: none; background: transparent; color: #bdc1c6;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        opacity: 0.8;
+        flex: 0 0 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+        border: none; background: transparent; color: #bdc1c6; transition: 0.2s; font-size: 11px;
     }
-    .btn-sync-dir:hover, .btn-sync-dir-calc:hover { 
-        transform: scale(1.15); opacity: 1;
-        background: rgba(0,0,0,0.03); border-radius: 3px;
-    }
-    .btn-sync-dir:active, .btn-sync-dir-calc:active { transform: scale(0.9); }
+    .btn-sync-dir:hover, .btn-field-link:hover { color: var(--vnpt-primary); transform: scale(1.1); }
     
-    .btn-sync-dir[data-dir="both"], .btn-sync-dir-calc[data-dir="both"] { color: var(--vnpt-primary); }
-    .btn-sync-dir[data-dir="up"], .btn-sync-dir-calc[data-dir="up"] { color: #f57c00; }
-    .btn-sync-dir[data-dir="down"], .btn-sync-dir-calc[data-dir="down"] { color: var(--vnpt-success); }
-    
-    .btn-sync-dir svg, .btn-sync-dir-calc svg { transition: transform 0.3s ease; width: 12px; height: 12px; }
-    .btn-sync-dir:active svg, .btn-sync-dir-calc:active svg { transform: rotate(180deg); }
+    .btn-sync-dir[data-dir="both"] { color: var(--vnpt-primary); }
+    .btn-sync-dir[data-dir="up"] { color: #f57c00; }
+    .btn-sync-dir[data-dir="down"] { color: var(--vnpt-success); }
 
     .vnpt-field-row input { 
-        flex: 1; padding: 1px 4px; border: 1px solid #1f5bd2ff; border-radius: 4px; 
-        font-size: 10px; height: 20px; transition: all 0.2s; background: #fff;
+        flex: 1; padding: 2px 6px; border: 1px solid #e8eaed; border-radius: 6px; 
+        font-size: 10.5px; height: 24px; transition: all 0.2s; background: #fdfdfd;
+        color: #3c4043; font-family: inherit;
     }
-    .vnpt-field-row input:focus { border-color: var(--vnpt-primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); outline: none; }
+    .vnpt-field-row input:focus { 
+        border-color: var(--vnpt-primary); 
+        box-shadow: 0 0 0 2px var(--vnpt-primary-light); 
+        outline: none; background: #fff;
+    }
     
-    .vnpt-field-row input.row-chk { flex: 0 0 16px; width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--vnpt-primary); }
-    .vnpt-field-row input.f-label { flex: var(--label-flex); color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.03); }
-    .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.03); }
+    .vnpt-field-row input.f-label { flex: var(--label-flex); color: #1a73e8; font-weight: 700; background: rgba(26,115,232,0.02); }
+    .vnpt-field-row input.f-key { display: none; width: 60px; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.02); }
     .show-ids .vnpt-field-row input.f-key { display: block; }
 
-    .btn-field-link {
-        cursor: pointer; padding: 0; user-select: none;
-        flex: 0 0 16px; height: 16px; display: flex; align-items: center; justify-content: center;
-        border: none; background: transparent; color: #bdc1c6; transition: 0.2s; font-size: 10px;
-    }
-    .btn-field-link:hover { color: var(--vnpt-primary); transform: scale(1.1); }
-
-
-    .vnpt-btn-hide { background: #f1f3f4; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; padding: 2px 6px; color: #5f6368; font-weight: 600; }
-    .vnpt-btn-hide:hover { background: #e8eaed; color: #3c4043; }
-    
-    .vnpt-btn-del { background: #fce8e6; color: var(--vnpt-danger); border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
-    .vnpt-btn-del:hover { background: #f9d7d1; }
-
-    /* Connection Badge */
-    .connection-badge {
-        font-size: 8px;
-        margin: 0 1px;
-        flex-shrink: 0;
-        cursor: help;
-        opacity: 0.7;
-        width: 10px;
-        text-align: center;
-    }
-    .connection-badge.connected { color: #28a745; filter: drop-shadow(0 0 2px rgba(40, 167, 69, 0.4)); }
-    .connection-badge.disconnected { color: #ccc; }
-
-    /* MST Lookup Button */
-    .mst-lookup-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        flex: 1;
-        height: 24px;
-    }
+    /* MST Lookup */
+    .mst-lookup-wrapper { position: relative; display: flex; align-items: center; flex: 1; }
     .btn-mst-lookup {
-        position: absolute;
-        right: 3px;
-        width: 18px;
-        height: 18px;
-        border-radius: 4px;
-        border: none;
-        background: var(--vnpt-primary-light);
-        color: var(--vnpt-primary);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 10px;
-        transition: all 0.2s;
-        z-index: 5;
-        padding: 0;
-        line-height: 1;
+        position: absolute; right: 3px; width: 18px; height: 18px; border-radius: 4px;
+        border: none; background: var(--vnpt-primary-light); color: var(--vnpt-primary);
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        font-size: 10px; transition: 0.2s; z-index: 5;
     }
-    .btn-mst-lookup:hover {
-        background: var(--vnpt-primary);
-        color: white;
-        transform: scale(1.1);
-    }
-    .btn-mst-lookup.loading {
-        pointer-events: none;
-        opacity: 0.8;
-    }
-    .btn-mst-lookup .spinner {
-        display: none;
-        width: 12px;
-        height: 12px;
-        border: 2px solid rgba(255,255,255,0.3);
-        border-top: 2px solid currentColor;
-        border-radius: 50%;
-        animation: spin-small 0.8s linear infinite;
-    }
-    .btn-mst-lookup.loading .spinner { display: block; }
-    .btn-mst-lookup.loading .icon { display: none; }
+    .btn-mst-lookup:hover { background: var(--vnpt-primary); color: white; }
 
-    /* Validation & Error States */
-    @keyframes vnpt-shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-4px); }
-        75% { transform: translateX(4px); }
-    }
-    .vnpt-shake { animation: vnpt-shake 0.3s ease-in-out; }
-    
-    .field-error { 
-        border-color: #ea4335 !important; 
-        background-color: #fff1f0 !important; 
-        color: #ea4335 !important;
-        box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.1) !important;
-    }
-    .field-required-empty {
-        border: 1px dashed var(--vnpt-danger) !important;
-        background: rgba(234, 67, 53, 0.05) !important;
-    }
-
+    /* Validation & Effects */
     @keyframes field-flash-success {
-        0% { background-color: rgba(40, 167, 69, 0.5); box-shadow: 0 0 12px rgba(40, 167, 69, 0.4); }
-        30% { background-color: rgba(40, 167, 69, 0.3); }
-        100% { background-color: rgba(255, 255, 255, 0.6); box-shadow: none; }
+        0% { background-color: rgba(40, 167, 69, 0.3); }
+        100% { background-color: #fff; }
     }
-    .field-flash-success {
-        animation: field-flash-success 3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .field-flash-success { animation: field-flash-success 2s ease; }
 
-    @keyframes spin-small { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    #vnpt-fields-list::-webkit-scrollbar { width: 6px; }
-    #vnpt-fields-list::-webkit-scrollbar-track { background: transparent; }
-    #vnpt-fields-list::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 10px; }
-    #vnpt-fields-list::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
+    #vnpt-fields-list::-webkit-scrollbar { width: 4px; }
+    #vnpt-fields-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 `;
   const controlStyles = `
     /* ═══════════════════════════════════════════
@@ -1162,6 +1097,7 @@
     draggedRowForVNPT: null,
     // VNPT Data display status
     isDefaultMode: false,
+    showFieldTools: false,
     // Template status
     templateBuffer: null,
     templateName: null,
@@ -1188,7 +1124,7 @@
       return true;
     }
   });
-  const version$4 = "1.6.42";
+  const version$4 = "1.6.42.1";
   const pkg = {
     version: version$4
   };
@@ -1226,6 +1162,7 @@
   const LOCAL_KEY_SIZE = "vnpt_docx_size";
   const LOCAL_KEY_OPENED = "vnpt_docx_opened";
   const LOCAL_KEY_PINNED = "vnpt_docx_pinned";
+  const LOCAL_KEY_SESSION_BAR_PINNED = "vnpt_session_bar_pinned";
   const LOCAL_KEY_AUTO_BACKUP = "vnpt_docx_auto_backup";
   const SK_DATA_DEF = "vnpt_autofill_data_default";
   const SK_DATA_CUS = "vnpt_autofill_data_custom";
@@ -1272,6 +1209,7 @@
     LOCAL_KEY_PINNED,
     LOCAL_KEY_POS,
     LOCAL_KEY_PROFILES,
+    LOCAL_KEY_SESSION_BAR_PINNED,
     LOCAL_KEY_SIZE,
     REQUIRED_KEYS,
     SK_ADDRESS_LEARNING,
@@ -17350,42 +17288,156 @@ ${this.customData.serverResponse}`;
     };
     btn.innerHTML = icons[dir] || icons.both;
     btn.setAttribute("data-dir", dir);
-    if (dir === "both") {
-      btn.title = "Đồng bộ 2 chiều (Mọi thay đổi đều được cập nhật giữa Bảng và Trang web)";
-    } else if (dir === "down") {
-      btn.title = "Chỉ đồng bộ XUỐNG: Bảng dữ liệu ➔ Form Trang web";
-    } else if (dir === "up") {
-      btn.title = "Chỉ đồng bộ LÊN: Form Trang web ➔ Bảng dữ liệu";
+  }
+  function createRowDOM(keyText, valueText, labelText = null, syncText = "", syncDir = "both", sourceContext = null) {
+    if (labelText === null || labelText === "") {
+      labelText = DEFAULT_LABELS[keyText] || "";
+    }
+    const incomingPK = keyText.split(",")[0].trim();
+    const row = document.createElement("div");
+    row.className = "vnpt-field-row row-item";
+    row.setAttribute("draggable", "false");
+    row.setAttribute("data-pk", incomingPK);
+    let displayKey = keyText;
+    if (syncText) displayKey += ", " + syncText;
+    const primaryKey = incomingPK;
+    row.innerHTML = `
+        <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" />
+        <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ" data-dir="${syncDir}">↔</button>
+        <button class="btn-field-link" title="Liên kết">🔗</button>
+        <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
+        <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
+        
+        ${primaryKey === "soDkdn" ? `
+            <div class="mst-lookup-wrapper" style="flex: 1; display: flex; position: relative;">
+                <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val f-value" value="${valueText}" placeholder="Mã số thuế..." />
+                <button class="btn-mst-lookup" title="Tra cứu">🔍</button>
+            </div>
+        ` : `
+            <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val f-value" value="${valueText}" />
+        `}
+    `;
+    const fVal = row.querySelector(".f-val");
+    const fKey = row.querySelector(".f-key");
+    const btnSyncDir = row.querySelector(".btn-sync-dir");
+    if (sourceContext && fVal) fVal.dataset.sourceAddress = sourceContext;
+    if (keyText === "tenToChuc") fVal.style.textAlign = "right";
+    if (btnSyncDir) updateSyncDirIcon(btnSyncDir, syncDir);
+    setupRowListeners(row, fKey, fVal, primaryKey);
+    return row;
+  }
+  function setupRowListeners(row, fKey, fVal, primaryKey) {
+    const syncThisRow = async () => {
+      const btnSync = row.querySelector(".btn-sync-dir");
+      const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
+      if (currentDir === "up") return;
+      const targets = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
+      await setPageFieldsSequential(targets, fVal.value);
+    };
+    const debouncedSyncRow = debounce(syncThisRow, 250);
+    fKey.addEventListener("input", function() {
+      saveFieldsToLocal$1();
+      fVal.style.textAlign = this.value.split(",")[0].trim() === "tenToChuc" ? "right" : "";
+    });
+    fKey.addEventListener("change", syncThisRow);
+    row.querySelector(".f-label").addEventListener("input", () => saveFieldsToLocal$1());
+    fVal.addEventListener("input", function(e) {
+      if (primaryKey && primaryKey.toLowerCase().includes("ngay")) {
+        let val = this.value.replace(/\D/g, "");
+        if (val.length > 8) val = val.substring(0, 8);
+        let finalVal = "";
+        if (val.length > 0) {
+          finalVal = val.substring(0, 2);
+          if (val.length > 2) {
+            finalVal += "/" + val.substring(2, 4);
+            if (val.length > 4) finalVal += "/" + val.substring(4, 8);
+          }
+        }
+        if (this.value !== finalVal && e.inputType !== "deleteContentBackward") {
+          this.value = finalVal;
+        }
+      }
+      saveFieldsToLocal$1();
+      refreshRowValidation(row);
+      debouncedSyncRow();
+    });
+    fVal.addEventListener("change", function() {
+      if (primaryKey && primaryKey.toLowerCase().includes("ngay")) {
+        const normalized = normalizeDate(this.value);
+        if (normalized !== this.value) {
+          this.value = normalized;
+          saveFieldsToLocal$1();
+        }
+      }
+      if (primaryKey === "duong" && this.dataset.sourceAddress) {
+        AddressLearning.saveLearning(this.dataset.sourceAddress, this.value);
+      }
+      if (primaryKey === "soDkdn" && !AppState.isDefaultMode) {
+        const mstVal = this.value.trim();
+        if (mstVal) {
+          __vitePreload(() => Promise.resolve().then(() => sessionManager), false ? __VITE_PRELOAD__ : void 0).then((m2) => m2.SessionManager.checkAndCreateForNewMST(mstVal));
+        }
+      }
+      syncThisRow();
+    });
+    if (primaryKey === "soDkdn") {
+      const btnLookup = row.querySelector(".btn-mst-lookup");
+      btnLookup.addEventListener("click", (e) => handleMSTLookup(e, fVal, btnLookup));
+      fVal.addEventListener("keydown", (e) => e.key === "Enter" && handleMSTLookup(e, fVal, btnLookup));
+    }
+    const btnSyncDir = row.querySelector(".btn-sync-dir");
+    if (btnSyncDir) {
+      btnSyncDir.addEventListener("click", (e) => {
+        e.preventDefault();
+        let currentDir = btnSyncDir.getAttribute("data-dir");
+        currentDir = currentDir === "both" ? "down" : currentDir === "down" ? "up" : "both";
+        updateSyncDirIcon(btnSyncDir, currentDir);
+        saveFieldsToLocal$1();
+      });
+    }
+    const linkBtn = row.querySelector(".btn-field-link");
+    if (linkBtn) {
+      linkBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        startFieldLinker(row, fKey);
+      });
     }
   }
-  function updateRowConnectionStatus(row) {
-    const fKey = row.querySelector(".f-key");
-    const badge = row.querySelector(".connection-badge");
-    if (!fKey || !badge) return;
-    const targets = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
-    const isConnected = targets.some((t) => findPageInput(t) !== null);
-    if (isConnected) {
-      badge.innerText = "●";
-      badge.className = "connection-badge connected";
-      badge.title = "Đã tìm thấy ô nhập liệu tương ứng trên trang web";
-    } else {
-      badge.innerText = "○";
-      badge.className = "connection-badge disconnected";
-      badge.title = "Không tìm thấy ô nhập liệu nào khớp trên trang web";
+  async function handleMSTLookup(e, fVal, btnLookup) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const mst = fVal.value.trim();
+    if (!mst || btnLookup.classList.contains("loading")) return;
+    btnLookup.classList.add("loading");
+    try {
+      const info = await mstService.lookupMST(mst);
+      if (info) {
+        fVal.value = mst;
+        addOrUpdateFieldRow("tenToChuc", info.name);
+        addOrUpdateFieldRow("diaChi", info.address);
+        const parsed = parseAddressComponents$1(info.address);
+        addOrUpdateFieldRow("tinhIdNew", parsed.province);
+        addOrUpdateFieldRow("xaIdNew", parsed.ward || parsed.district);
+        addOrUpdateFieldRow("duong", parsed.street, null, "", null, false, info.address);
+        saveFieldsToLocal$1();
+        setTimeout(() => syncAllFields$1(["soDkdn", "tenToChuc", "diaChi", "xaIdNew", "xaHuyen", "duong"]), 300);
+        showToast(`✅ Đã tìm thấy: ${info.name}`, "#1a73e8");
+      } else {
+        showToast("❌ Không tìm thấy MST", "#ea4335");
+      }
+    } catch (err) {
+      showToast("❌ Lỗi tra cứu", "#ea4335");
+    } finally {
+      btnLookup.classList.remove("loading");
     }
   }
   function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = "", syncDir = null, isFromWebForm = false, sourceContext = null, skipIfNotEmpty = false) {
     const container = AppState.fieldsContainer || document.getElementById("vnpt-fields-list");
-    if (!container) {
-      console.error("[VNPT-Debug] No container found in addOrUpdateFieldRow for:", keyText);
-      return;
-    }
-    const hint = container.querySelector(".text-hint");
-    if (hint) hint.remove();
-    container.querySelectorAll(".f-key");
-    let isDuplicate = false;
+    if (!container) return;
     const incomingPK = keyText.split(",")[0].trim();
-    const existingRow = container.querySelector(`.vnpt-field-row[data-pk="${incomingPK}"]`);
+    const existingRow = Array.from(container.querySelectorAll(".vnpt-field-row")).find((row) => row.getAttribute("data-pk") === incomingPK);
     if (existingRow) {
       const valueInput = existingRow.querySelector(".f-val");
       const labelInput = existingRow.querySelector(".f-label");
@@ -17394,177 +17446,24 @@ ${this.customData.serverResponse}`;
       const currentDir = btnSyncDir ? btnSyncDir.getAttribute("data-dir") : "both";
       if (valueText !== null && valueInput.value !== valueText && document.activeElement !== valueInput) {
         const hasData = valueInput.value && valueInput.value.trim() !== "";
-        if (skipIfNotEmpty && hasData) ;
-        else if (!(isFromWebForm && currentDir === "down")) {
+        if (!(skipIfNotEmpty && hasData) && !(isFromWebForm && currentDir === "down")) {
           const oldVal = valueInput.value;
           valueInput.value = valueText;
           if (oldVal !== valueText && valueText) {
-            existingRow.classList.remove("field-flash-success");
-            void existingRow.offsetWidth;
             existingRow.classList.add("field-flash-success");
             setTimeout(() => existingRow.classList.remove("field-flash-success"), 3e3);
           }
         }
       }
-      if (labelText !== null && labelText !== "" && labelInput.value !== labelText && document.activeElement !== labelInput) {
-        labelInput.value = labelText;
-      }
-      if (syncText !== "" && keyInput.value !== keyText + ", " + syncText && document.activeElement !== keyInput) {
-        keyInput.value = keyText + ", " + syncText;
-      }
-      if (syncDir && btnSyncDir && btnSyncDir.getAttribute("data-dir") !== syncDir) {
-        updateSyncDirIcon(btnSyncDir, syncDir);
-      }
-      if (sourceContext && valueInput) {
-        valueInput.dataset.sourceAddress = sourceContext;
-      }
+      if (labelText && labelInput.value !== labelText && document.activeElement !== labelInput) labelInput.value = labelText;
+      if (syncText !== "" && keyInput.value !== keyText + ", " + syncText) keyInput.value = keyText + ", " + syncText;
+      if (syncDir && btnSyncDir && btnSyncDir.getAttribute("data-dir") !== syncDir) updateSyncDirIcon(btnSyncDir, syncDir);
+      if (sourceContext && valueInput) valueInput.dataset.sourceAddress = sourceContext;
       refreshRowValidation(existingRow);
-      updateRowConnectionStatus(existingRow);
-      isDuplicate = true;
-    }
-    if (!isDuplicate) {
-      if (labelText === null || labelText === "") {
-        labelText = DEFAULT_LABELS[keyText] || "";
-      }
-      const container2 = AppState.fieldsContainer || document.getElementById("vnpt-fields-list");
-      if (!container2) {
-        console.error("[VNPT-Debug] Cannot find container in addOrUpdateFieldRow for key:", keyText);
-        return;
-      }
-      const row = document.createElement("div");
-      row.className = "vnpt-field-row row-item";
-      row.setAttribute("draggable", "false");
-      row.setAttribute("data-pk", incomingPK);
-      let displayKey = keyText;
-      if (syncText) displayKey += ", " + syncText;
-      const primaryKey = incomingPK;
-      row.innerHTML = `
-            <input type="checkbox" id="chk-${primaryKey}" name="chk-${primaryKey}" class="row-chk" title="Chọn" />
-            <span class="connection-badge disconnected" title="Đang kiểm tra kết nối...">○</span>
-            <input type="text" id="lbl-${primaryKey}" name="lbl-${primaryKey}" class="f-label" value="${labelText}" />
-            <input type="text" id="key-${primaryKey}" name="key-${primaryKey}" class="f-key" value="${displayKey}" title="Biến DOCX và IDs đồng bộ" />
-            <button tabindex="-1" class="btn-sync-dir" title="Đồng bộ" data-dir="${syncDir || "both"}">↔</button>
-            <button class="btn-field-link" title="Liên kết">🔗</button>
-            ${primaryKey === "soDkdn" ? `
-                <div class="mst-lookup-wrapper" style="flex: 1; display: flex; position: relative;">
-                    <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val f-value" value="${valueText}" placeholder="Mã số thuế..." />
-                    <button class="btn-mst-lookup" title="Tra cứu">🔍</button>
-                </div>
-            ` : `
-                <input type="text" id="val-${primaryKey}" name="val-${primaryKey}" class="f-val f-value" value="${valueText}" />
-            `}
-        `;
-      const fVal = row.querySelector(".f-val");
-      const fKey = row.querySelector(".f-key");
-      if (sourceContext && fVal) {
-        fVal.dataset.sourceAddress = sourceContext;
-      }
-      if (keyText === "tenToChuc") fVal.style.textAlign = "right";
-      const syncThisRow = async () => {
-        const btnSync = row.querySelector(".btn-sync-dir");
-        const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
-        if (currentDir === "up") return;
-        const val = fVal.value;
-        const targets = fKey.value.split(",").map((s) => s.trim()).filter((s) => s);
-        await setPageFieldsSequential(targets, val);
-      };
-      const debouncedSyncRow = debounce(syncThisRow, 250);
-      fKey.addEventListener("input", function() {
-        saveFieldsToLocal$1();
-        updateRowConnectionStatus(row);
-        const firstKey = this.value.split(",")[0].trim();
-        fVal.style.textAlign = firstKey === "tenToChuc" ? "right" : "";
-      });
-      fKey.addEventListener("change", function() {
-        syncThisRow();
-      });
-      row.querySelector(".f-label").addEventListener("input", () => saveFieldsToLocal$1());
-      fVal.addEventListener("input", function() {
-        saveFieldsToLocal$1();
-        refreshRowValidation(row);
-        debouncedSyncRow();
-      });
-      fVal.addEventListener("change", function() {
-        if (primaryKey && primaryKey.toLowerCase().includes("ngay")) {
-          const normalized = normalizeDate(this.value);
-          if (normalized !== this.value) {
-            this.value = normalized;
-            saveFieldsToLocal$1();
-          }
-        }
-        if (primaryKey === "duong" && this.dataset.sourceAddress) {
-          AddressLearning.saveLearning(this.dataset.sourceAddress, this.value);
-        }
-        syncThisRow();
-      });
-      if (primaryKey === "soDkdn") {
-        const btnLookup = row.querySelector(".btn-mst-lookup");
-        const handleLookup = async (e) => {
-          if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-          const mst = fVal.value.trim();
-          if (!mst) {
-            showToast("⚠️ Vui lòng nhập mã số thuế", "#ffc107");
-            return;
-          }
-          if (btnLookup.classList.contains("loading")) return;
-          btnLookup.classList.add("loading");
-          try {
-            const info = await mstService.lookupMST(mst);
-            if (info) {
-              fVal.value = mst;
-              addOrUpdateFieldRow("tenToChuc", info.name);
-              addOrUpdateFieldRow("diaChi", info.address);
-              const parsed = parseAddressComponents$1(info.address);
-              addOrUpdateFieldRow("tinhIdNew", parsed.province);
-              addOrUpdateFieldRow("xaIdNew", parsed.ward || parsed.district);
-              addOrUpdateFieldRow("duong", parsed.street, null, "", null, false, info.address);
-              saveFieldsToLocal$1();
-              setTimeout(() => syncAllFields$1(["soDkdn", "tenToChuc", "diaChi", "xaIdNew", "xaHuyen", "duong"]), 300);
-              showToast(`✅ Đã tìm thấy: ${info.name}`, "#1a73e8");
-            } else {
-              showToast("❌ Không tìm thấy thông tin MST này", "#ea4335");
-            }
-          } catch (err) {
-            console.error("[MST Lookup] Error:", err);
-            showToast("❌ Lỗi khi tra cứu MST", "#ea4335");
-          } finally {
-            btnLookup.classList.remove("loading");
-          }
-        };
-        btnLookup.addEventListener("click", handleLookup);
-        fVal.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") {
-            handleLookup(e);
-          }
-        });
-      }
-      const initDir = syncDir || "both";
-      const btnSyncDir = row.querySelector(".btn-sync-dir");
-      if (btnSyncDir) {
-        updateSyncDirIcon(btnSyncDir, initDir);
-        btnSyncDir.addEventListener("click", (e) => {
-          e.preventDefault();
-          let currentDir = btnSyncDir.getAttribute("data-dir");
-          if (currentDir === "both") currentDir = "down";
-          else if (currentDir === "down") currentDir = "up";
-          else currentDir = "both";
-          updateSyncDirIcon(btnSyncDir, currentDir);
-          saveFieldsToLocal$1();
-        });
-      }
-      const linkBtn = row.querySelector(".btn-field-link");
-      if (linkBtn) {
-        linkBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          startFieldLinker(row, fKey);
-        });
-      }
-      container2.appendChild(row);
-      updateRowConnectionStatus(row);
-      container2.scrollTop = container2.scrollHeight;
+    } else {
+      const row = createRowDOM(keyText, valueText, labelText, syncText, syncDir || "both", sourceContext);
+      container.appendChild(row);
+      container.scrollTop = container.scrollHeight;
     }
   }
   function saveFieldsToLocal() {
@@ -17574,73 +17473,67 @@ ${this.customData.serverResponse}`;
     if (!container) return;
     const rows = container.querySelectorAll(".vnpt-field-row");
     rows.forEach((row) => {
-      const keyInput = row.querySelector(".f-key");
-      const labelInput = row.querySelector(".f-label");
-      const valueInput = row.querySelector(".f-val");
+      const keyInp = row.querySelector(".f-key");
+      const labelInp = row.querySelector(".f-label");
+      const valInp = row.querySelector(".f-val");
       const syncDirEl = row.querySelector(".btn-sync-dir");
-      if (!keyInput || !labelInput || !valueInput) {
-        console.warn("[VNPT] Bỏ qua hàng do thiếu input:", row);
-        return;
-      }
-      const rawKeyInput = keyInput.value.trim();
+      if (!keyInp || !labelInp || !valInp) return;
+      const rawKeyInput = keyInp.value.trim();
       const parts = rawKeyInput.split(",").map((s2) => s2.trim()).filter((s2) => s2);
       const k2 = parts[0];
       const s = parts.slice(1).join(", ");
       if (k2) {
         data[k2] = {
-          label: labelInput.value.trim(),
-          value: valueInput.value,
+          label: labelInp.value.trim(),
+          value: valInp.value,
           sync: s,
           syncDir: syncDirEl ? syncDirEl.getAttribute("data-dir") : "both"
         };
       }
     });
     Storage.setDebounced(key2, data, 1e3);
-    if (AppState.isDefaultMode) {
-      Storage.setDebounced(SK_DATA_DEF, data, 1e3);
-    }
   }
   function loadSavedData() {
-    console.log("[VNPT-Debug] loadSavedData START");
     const container = document.getElementById("vnpt-fields-list");
     if (!container) {
-      console.warn("[VNPT-Debug] Container not found, retrying...");
-      setTimeout(loadSavedData, 150);
+      setTimeout(loadSavedData, 50);
       return;
     }
-    AppState.fieldsContainer = container;
-    container.innerHTML = "";
     const savedFields = Storage.get(LOCAL_KEY_FIELDS) || {};
     const defaultEntries = Object.entries(DEFAULT_LABELS);
-    console.log("[VNPT-Debug] Data from Storage:", Object.keys(savedFields).length, "keys");
+    const fragment = document.createDocumentFragment();
     defaultEntries.forEach(([keyString, label]) => {
-      if (label.includes("Calc:") || label.includes("🛠️")) return;
+      const lbl = label || "";
+      if (lbl.includes("Calc:") || lbl.includes("🛠️")) return;
       const primaryKey = keyString.split(",")[0].trim();
       const saved = savedFields[primaryKey];
-      if (saved && typeof saved === "object") {
-        addOrUpdateFieldRow(keyString, saved.value || "", saved.label || label, saved.sync || "", saved.syncDir || "both");
-      } else if (saved && typeof saved === "string") {
-        addOrUpdateFieldRow(keyString, saved, label, "", "both");
-      } else {
-        addOrUpdateFieldRow(keyString, "", label, "", "both");
-      }
+      const row = createRowDOM(
+        keyString,
+        typeof saved === "object" ? saved.value : saved || "",
+        typeof saved === "object" ? saved.label : lbl,
+        typeof saved === "object" ? saved.sync : "",
+        typeof saved === "object" ? saved.syncDir || "both" : "both"
+      );
+      if (row) fragment.appendChild(row);
     });
     const defaultPKs = new Set(defaultEntries.map(([keyString]) => keyString.split(",")[0].trim()));
     Object.keys(savedFields).forEach((primaryKey) => {
       if (!defaultPKs.has(primaryKey)) {
         const saved = savedFields[primaryKey];
-        const label = saved && typeof saved === "object" ? saved.label || "" : "";
-        if (label.includes("Calc:") || label.includes("🛠️")) {
-          return;
-        }
-        if (saved && typeof saved === "object") {
-          addOrUpdateFieldRow(primaryKey, saved.value || "", saved.label || "", saved.sync || "", saved.syncDir || "both");
-        } else if (saved) {
-          addOrUpdateFieldRow(primaryKey, saved, "", "", "both");
-        }
+        const lbl = saved && typeof saved === "object" ? saved.label || "" : "";
+        if (lbl.includes("Calc:") || lbl.includes("🛠️")) return;
+        const row = createRowDOM(
+          primaryKey,
+          typeof saved === "object" ? saved.value : saved || "",
+          lbl,
+          typeof saved === "object" ? saved.sync : "",
+          typeof saved === "object" ? saved.syncDir || "both" : "both"
+        );
+        if (row) fragment.appendChild(row);
       }
     });
-    console.log("[VNPT-Debug] Render completed. Rows in DOM:", container.querySelectorAll(".vnpt-field-row").length);
+    container.innerHTML = "";
+    container.appendChild(fragment);
     if (container.querySelectorAll(".vnpt-field-row").length === 0) {
       container.innerHTML = '<div class="text-hint">Bảng dữ liệu đang trống... hãy ấn Quét</div>';
     }
@@ -17759,11 +17652,18 @@ ${this.customData.serverResponse}`;
     const cachedRaw = Storage.get(SK_DATA_DEF);
     let cached = cachedRaw ? JSON.parse(JSON.stringify(cachedRaw)) : null;
     let fresh = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    const { ngay, thang, nam } = getVNPTDateStrings();
+    fresh["ngayKy, ngayKy1"] = { label: "Ngày ký", value: ngay, syncDir: "both" };
+    fresh["thangKy, thangKy1"] = { label: "Tháng ký", value: thang, syncDir: "both" };
+    fresh["namKy, namKy1"] = { label: "Năm ký", value: nam, syncDir: "both" };
+    fresh["ngayTiepNhan, ngayThangNamKy"] = { label: "Ngày ký (full)", value: `${ngay}/${thang}/${nam}`, syncDir: "both" };
     if (!cached) return fresh;
     const dynamicKeys = ["ngayKy, ngayKy1", "thangKy, thangKy1", "namKy, namKy1", "ngayTiepNhan, ngayThangNamKy"];
     dynamicKeys.forEach((k2) => {
       if (cached[k2] && fresh[k2]) {
         cached[k2].value = fresh[k2].value;
+      } else if (!cached[k2] && fresh[k2]) {
+        cached[k2] = fresh[k2];
       }
     });
     return cached;
@@ -17772,6 +17672,7 @@ ${this.customData.serverResponse}`;
     Storage.clearCache();
     if (isAutoFilling) return;
     isAutoFilling = true;
+    buildFullDOMMap(true);
     try {
       const defaultData = loadFreshenedDefaultData();
       const customRaw = Storage.get(SK_DATA_CUS) ?? {};
@@ -17903,7 +17804,8 @@ ${this.customData.serverResponse}`;
     targetElementCache.clear();
   }
   async function syncAllFields(targetKeys = null) {
-    if (!targetKeys) doFillData();
+    if (!targetKeys) await doFillData();
+    buildFullDOMMap(true);
     let count = 0;
     const rows = Array.from(AppState.fieldsContainer.querySelectorAll(".vnpt-field-row"));
     const syncTasks = rows.map((row) => {
@@ -17914,7 +17816,7 @@ ${this.customData.serverResponse}`;
       const primaryKey = rawKeyInput.split(",")[0].trim();
       if (targetKeys && !targetKeys.includes(primaryKey)) return null;
       const val = row.querySelector(".f-val").value;
-      if (val === "") return null;
+      if (val === void 0 || val === null || val === "") return null;
       const label = row.querySelector(".f-label").value.trim();
       const targets = rawKeyInput.split(",").map((x2) => x2.trim()).filter(Boolean);
       if (label && !targets.includes(label)) targets.push(label);
@@ -18361,18 +18263,36 @@ ${b2.name}?`)) {
     document.getElementById("vnpt-btn-default").onclick = () => {
       AppState.isDefaultMode = !AppState.isDefaultMode;
     };
+    const btnToggleTools = document.getElementById("vnpt-btn-toggle-tools");
+    if (btnToggleTools) {
+      btnToggleTools.onclick = () => {
+        AppState.showFieldTools = !AppState.showFieldTools;
+      };
+    }
+    AppState.on("showFieldTools", (val) => {
+      const wrapper = document.getElementById("vnpt-fields-container");
+      if (wrapper) wrapper.classList.toggle("show-field-tools", val);
+      if (btnToggleTools) {
+        btnToggleTools.classList.toggle("active", val);
+        btnToggleTools.style.backgroundColor = val ? "var(--vnpt-primary-light)" : "";
+        btnToggleTools.style.color = val ? "var(--vnpt-primary)" : "";
+        btnToggleTools.style.borderColor = val ? "var(--vnpt-primary)" : "";
+      }
+      showToast(val ? "🛠️ Đã bật công cụ chỉnh sửa hàng" : "🔒 Đã ẩn công cụ bổ trợ", val ? "#1a73e8" : "#5f6368");
+    });
     const widget = document.getElementById("vnpt-docx-widget");
     if (widget) {
-      let lastWheelTime = 0;
-      const WHEEL_COOLDOWN = 500;
+      let isHandlingWheel = false;
       widget.addEventListener("wheel", (e) => {
         if (e.shiftKey) {
           e.preventDefault();
-          const now = Date.now();
-          if (now - lastWheelTime > WHEEL_COOLDOWN) {
+          if (!isHandlingWheel) {
+            isHandlingWheel = true;
             AppState.isDefaultMode = !AppState.isDefaultMode;
             showToast(`🔄 Chế độ: ${AppState.isDefaultMode ? "🏢 Dữ liệu VNPT" : "📝 Dữ liệu Cá nhân"}`, "#1a73e8");
-            lastWheelTime = now;
+            setTimeout(() => {
+              isHandlingWheel = false;
+            }, 600);
           }
         }
       }, { passive: false });
@@ -19537,11 +19457,14 @@ ${b2.name}?`)) {
                                 <!-- Nhóm 1: Hệ thống -->
                                 <div class="util-section-mini">
                                     <div class="util-action-row">
+                                        <button class="util-item-mini" id="vnpt-btn-toggle-tools" title="Bật/Tắt công cụ hàng (Link, Sync, Checkbox)">🛠️ Tools</button>
                                         <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT">🏢 VNPT</button>
                                         <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All">🧹 Reset</button>
-                                        <div class="util-json-group" style="display: flex; gap: 2px; flex-shrink: 0;">
-                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-import-json" title="Nhập JSON">📥</button>
-                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-export-json" title="Xuất JSON">📤</button>
+                                    </div>
+                                    <div class="util-action-row" style="margin-top: 4px;">
+                                        <div class="util-json-group" style="flex: 1;">
+                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-import-json" title="Nhập JSON" style="flex: 1;">📥 Nhập</button>
+                                            <button class="util-item-mini btn-json-icon" id="vnpt-btn-export-json" title="Xuất JSON" style="flex: 1;">📤 Xuất</button>
                                         </div>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
                                     </div>
@@ -48104,6 +48027,162 @@ ${rawText}`;
       localStorage.setItem(key2, JSON.stringify(value));
     };
   }
+  const SK_SESSIONS = "VNPT_PRO_SESSIONS_V2";
+  const SK_ACTIVE_ID = "VNPT_PRO_ACTIVE_ID";
+  const SessionManager = {
+    init() {
+      const sessions = this.getAll();
+      if (sessions.length === 0) {
+        this.createNew("Hồ sơ trống");
+      }
+      this.renderTabs();
+    },
+    getAll() {
+      return Storage.get(SK_SESSIONS, []);
+    },
+    getActiveId() {
+      return Storage.get(SK_ACTIVE_ID, null);
+    },
+    isPinned() {
+      return Storage.get(LOCAL_KEY_SESSION_BAR_PINNED, true);
+    },
+    createNew(name2 = "Hồ sơ mới") {
+      const sessions = this.getAll();
+      const newId = "sess_" + Date.now();
+      const newSession = {
+        id: newId,
+        name: name2,
+        data: { fields: {}, rawScan: "", calcMap: null },
+        updatedAt: Date.now()
+      };
+      sessions.push(newSession);
+      const limited = sessions.sort((a, b2) => b2.updatedAt - a.updatedAt).slice(0, 15);
+      Storage.set(SK_SESSIONS, limited);
+      this.switchTo(newId);
+    },
+    switchTo(id) {
+      const currentActiveId = this.getActiveId();
+      if (currentActiveId === id) return;
+      this.saveCurrent(false);
+      const sessions = this.getAll();
+      const target = sessions.find((s) => s.id === id);
+      if (!target) return;
+      Storage.set(SK_ACTIVE_ID, id);
+      Storage.set(LOCAL_KEY_FIELDS, target.data.fields || {});
+      Storage.set(SK_RAW_SCAN, target.data.rawScan || "");
+      if (target.data.calcMap) Storage.set(SK_CALC_MAP, target.data.calcMap);
+      loadSavedData();
+      const rawInput = document.getElementById("vnpt-raw-scan-input");
+      if (rawInput) rawInput.value = target.data.rawScan || "";
+      this.renderTabs();
+    },
+    saveCurrent(updateTime = true) {
+      if (AppState.isDefaultMode) return;
+      const activeId = this.getActiveId();
+      if (!activeId) return;
+      const sessions = this.getAll();
+      const idx = sessions.findIndex((s) => s.id === activeId);
+      if (idx === -1) return;
+      const fields = Storage.get(LOCAL_KEY_FIELDS) || {};
+      const mst = fields.soDkdn?.value || "";
+      const org = fields.tenToChuc?.value || "";
+      const rep = fields.tenDaiDienn?.value || "";
+      sessions[idx].name = mst || org || rep || sessions[idx].name || "Hồ sơ mới";
+      sessions[idx].data = {
+        fields,
+        rawScan: Storage.get(SK_RAW_SCAN, ""),
+        calcMap: Storage.get(SK_CALC_MAP)
+      };
+      if (updateTime) sessions[idx].updatedAt = Date.now();
+      Storage.set(SK_SESSIONS, sessions);
+    },
+    updateActiveName() {
+      this.saveCurrent();
+      this.renderTabs();
+    },
+    checkAndCreateForNewMST(mst) {
+      if (!mst || mst.length < 5) return;
+      const sessions = this.getAll();
+      const activeId = this.getActiveId();
+      const existing = sessions.find((s) => s.name === mst);
+      if (existing) {
+        if (existing.id !== activeId) {
+          if (confirm(`Hồ sơ MST ${mst} đã tồn tại. Chuyển sang đó?`)) this.switchTo(existing.id);
+        }
+        return;
+      }
+      if (confirm(`Tạo hồ sơ mới cho khách hàng MST: ${mst}?`)) {
+        this.saveCurrent();
+        const newId = "sess_" + Date.now();
+        sessions.push({
+          id: newId,
+          name: mst,
+          data: { fields: { soDkdn: { value: mst, label: "Mã số thuế | GPKD" } }, rawScan: "", calcMap: Storage.get(SK_CALC_MAP) },
+          updatedAt: Date.now()
+        });
+        Storage.set(SK_SESSIONS, sessions);
+        this.switchTo(newId);
+      }
+    },
+    remove(id) {
+      let sessions = this.getAll();
+      if (sessions.length <= 1) return;
+      sessions = sessions.filter((s) => s.id !== id);
+      Storage.set(SK_SESSIONS, sessions);
+      if (this.getActiveId() === id) this.switchTo(sessions[0].id);
+      else this.renderTabs();
+    },
+    togglePin() {
+      const newVal = !this.isPinned();
+      Storage.set(LOCAL_KEY_SESSION_BAR_PINNED, newVal);
+      this.renderTabs();
+    },
+    renderTabs() {
+      const container = document.getElementById("vnpt-session-bar");
+      if (!container) return;
+      const sessions = this.getAll().sort((a, b2) => b2.updatedAt - a.updatedAt);
+      const activeId = this.getActiveId();
+      const isPinned = this.isPinned();
+      container.innerHTML = "";
+      const pinBtn = document.createElement("button");
+      pinBtn.className = `btn-session-pin ${isPinned ? "active" : ""}`;
+      pinBtn.innerHTML = isPinned ? "📌" : "📎";
+      pinBtn.onclick = () => this.togglePin();
+      container.appendChild(pinBtn);
+      const listWrapper = document.createElement("div");
+      listWrapper.className = "session-tabs-list";
+      listWrapper.addEventListener("wheel", (e) => {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          listWrapper.scrollBy({ left: e.deltaY * 1.5, behavior: "smooth" });
+        }
+      }, { passive: false });
+      sessions.forEach((s) => {
+        const tab = document.createElement("div");
+        tab.className = `vnpt-session-tab ${s.id === activeId ? "active" : ""}`;
+        const shortName = s.name.length > 15 ? s.name.substring(0, 13) + ".." : s.name;
+        tab.innerHTML = `<span class="session-name" title="${s.name}">${shortName}</span><span class="session-close">×</span>`;
+        tab.onclick = () => this.switchTo(s.id);
+        tab.querySelector(".session-close").onclick = (e) => {
+          e.stopPropagation();
+          if (confirm(`Xóa hồ sơ ${s.name}?`)) this.remove(s.id);
+        };
+        listWrapper.appendChild(tab);
+      });
+      container.appendChild(listWrapper);
+      const addBtn = document.createElement("button");
+      addBtn.className = "btn-add-session";
+      addBtn.innerHTML = "＋";
+      addBtn.onclick = () => this.createNew();
+      container.appendChild(addBtn);
+      const panel = document.getElementById("vnpt-export-panel");
+      if (panel) panel.classList.toggle("session-unpinned", !isPinned);
+    }
+  };
+  const sessionManager = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    SessionManager
+  }, Symbol.toStringTag, { value: "Module" }));
   function initProfiles() {
     const profiles = Storage.get(LOCAL_KEY_PROFILES);
     if (!profiles || profiles.length === 0) {

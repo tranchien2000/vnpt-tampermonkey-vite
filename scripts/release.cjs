@@ -31,10 +31,16 @@ const releasesDir = path.join(rootDir, 'releases');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 const oldVersion = pkg.version;
 
-// 1. Xác định version mới (Patch: 1.6.0 -> 1.6.1)
-const versions = pkg.version.split('.').map(Number);
-versions[2] += 1; 
-const newVersion = versions.join('.');
+// 1. Xác định version mới
+const targetVersion = process.env.TARGET_VERSION;
+let newVersion;
+if (targetVersion) {
+    newVersion = targetVersion;
+} else {
+    const versions = pkg.version.split('.').map(Number);
+    versions[2] += 1; 
+    newVersion = versions.join('.');
+}
 
 // Cập nhật package.json
 pkg.version = newVersion;

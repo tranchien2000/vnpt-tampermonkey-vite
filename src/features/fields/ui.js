@@ -250,6 +250,28 @@ export function initFieldsManager() {
 
     document.getElementById('vnpt-btn-default').onclick = () => { AppState.isDefaultMode = !AppState.isDefaultMode; };
 
+    // --- Tính năng: Bật/Tắt công cụ hiển thị (Tools) ---
+    const btnToggleTools = document.getElementById('vnpt-btn-toggle-tools');
+    if (btnToggleTools) {
+        btnToggleTools.onclick = () => {
+            AppState.showFieldTools = !AppState.showFieldTools;
+        };
+    }
+
+    AppState.on('showFieldTools', (val) => {
+        const wrapper = document.getElementById('vnpt-fields-container');
+        if (wrapper) wrapper.classList.toggle('show-field-tools', val);
+        
+        if (btnToggleTools) {
+            btnToggleTools.classList.toggle('active', val);
+            btnToggleTools.style.backgroundColor = val ? 'var(--vnpt-primary-light)' : '';
+            btnToggleTools.style.color = val ? 'var(--vnpt-primary)' : '';
+            btnToggleTools.style.borderColor = val ? 'var(--vnpt-primary)' : '';
+        }
+        
+        showToast(val ? "🛠️ Đã bật công cụ chỉnh sửa hàng" : "🔒 Đã ẩn công cụ bổ trợ", val ? "#1a73e8" : "#5f6368");
+    });
+
     // --- Tính năng: Shift + Cuộn chuột để chuyển Mode ---
     const widget = document.getElementById('vnpt-docx-widget');
     if (widget) {
