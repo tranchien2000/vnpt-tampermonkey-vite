@@ -351,11 +351,39 @@
     .vnpt-btn-icon:hover { background: var(--vnpt-primary-light); color: var(--vnpt-primary); transform: scale(1.05); }
     .vnpt-btn-icon.active { background: var(--vnpt-primary); color: white; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
 
-    .btn-scan { background: #e6f4ea; color: var(--vnpt-success); border: 1px solid rgba(30, 142, 62, 0.1); } 
-    .btn-scan:hover { background: var(--vnpt-success); color: #fff; border-color: transparent; }
-    
-    .btn-fill-back { background: #f3e5f5; color: #7b1fa2; border: 1px solid rgba(123, 31, 162, 0.1); } 
-    .btn-fill-back:hover { background: #7b1fa2; color: #fff; border-color: transparent; }
+    /* Header Center Action Buttons */
+    .btn-ai {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        font-weight: 800;
+    }
+    .btn-ai:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-scan {
+        background: linear-gradient(135deg, #1e8e3e 0%, #0d7d2d 100%);
+        color: #fff;
+        border: 1px solid rgba(30, 142, 62, 0.2);
+        font-weight: 800;
+    }
+    .btn-scan:hover {
+        background: linear-gradient(135deg, #0d7d2d 0%, #1e8e3e 100%);
+        box-shadow: 0 4px 12px rgba(30, 142, 62, 0.4);
+    }
+
+    .btn-fill-back {
+        background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+        color: #fff;
+        border: 1px solid rgba(26, 115, 232, 0.2);
+        font-weight: 800;
+    }
+    .btn-fill-back:hover {
+        background: linear-gradient(135deg, #1557b0 0%, #1a73e8 100%);
+        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
+    }
 
     .btn-restore { background: #e8f0fe; color: var(--vnpt-primary); border: 1px solid rgba(26, 115, 232, 0.1); }
     .vnpt-btn-restore:hover { background: var(--vnpt-primary); color: #fff; border-color: transparent; }
@@ -912,6 +940,168 @@
         to   { opacity: 1; transform: translateX(-50%) translateY(0)      scale(1); }
     }
 `;
+  const tipsStyles = `
+    /* ═══════════════════════════════════════════
+       TIPS MODAL
+       ═══════════════════════════════════════════ */
+    .vnpt-tips-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 10000000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .vnpt-tips-content {
+        background: white;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .vnpt-tips-header {
+        padding: 20px 24px;
+        border-bottom: 2px solid var(--vnpt-primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, rgba(26, 115, 232, 0.05) 0%, rgba(26, 115, 232, 0.02) 100%);
+        border-radius: 16px 16px 0 0;
+    }
+
+    .vnpt-tips-header h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--vnpt-primary);
+        letter-spacing: 0.3px;
+    }
+
+    .vnpt-tips-close {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        color: #5f6368;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .vnpt-tips-close:hover {
+        background: var(--vnpt-danger);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .vnpt-tips-body {
+        padding: 20px 24px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .vnpt-tips-body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .vnpt-tips-body::-webkit-scrollbar-track {
+        background: #f1f3f4;
+        border-radius: 10px;
+    }
+
+    .vnpt-tips-body::-webkit-scrollbar-thumb {
+        background: #dadce0;
+        border-radius: 10px;
+    }
+
+    .vnpt-tips-body::-webkit-scrollbar-thumb:hover {
+        background: #bdc1c6;
+    }
+
+    .tips-section {
+        margin-bottom: 24px;
+        padding: 16px;
+        background: rgba(26, 115, 232, 0.02);
+        border-radius: 12px;
+        border-left: 4px solid var(--vnpt-primary);
+    }
+
+    .tips-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .tips-section h3 {
+        margin: 0 0 12px 0;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--vnpt-primary);
+        letter-spacing: 0.3px;
+    }
+
+    .tips-section ul {
+        margin: 0;
+        padding-left: 20px;
+        list-style: none;
+    }
+
+    .tips-section li {
+        margin-bottom: 10px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #3c4043;
+        position: relative;
+        padding-left: 8px;
+    }
+
+    .tips-section li:last-child {
+        margin-bottom: 0;
+    }
+
+    .tips-section li::before {
+        content: "▸";
+        position: absolute;
+        left: -12px;
+        color: var(--vnpt-primary);
+        font-weight: bold;
+    }
+
+    .tips-section li strong {
+        color: var(--vnpt-primary);
+        font-weight: 700;
+    }
+`;
   const allStyles = `
     ${themeStyles}
     ${panelStyles}
@@ -920,6 +1110,7 @@
     ${calculatorStyles}
     ${scannerStyles}
     ${linkerStyles}
+    ${tipsStyles}
 `;
   function injectStyles$1() {
     const styleId = "vnpt-styles";
@@ -1037,7 +1228,7 @@
       return true;
     }
   });
-  const version$4 = "1.8.6";
+  const version$4 = "1.8.7";
   const pkg = {
     version: version$4
   };
@@ -19438,19 +19629,18 @@ ${b2.name}?`)) {
                     <span id="vnpt-update-badge-container"></span>
                 </div>
                 <div class="header-center">
-                    <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
-                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
+                    <button class="vnpt-btn-action btn-ai" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">🤖 AI</button>
+                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">📊 Quét</button>
+                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">📝 Điền</button>
                     <input type="file" id="vnpt-pdf-input" accept=".pdf,image/*" style="display:none;" />
                 </div>
                 <div class="header-right">
-                    <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
                     <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Dọn dẹp & Lưu vào History (Shift+Click để Xóa hàng)">🗑</button>
                     <div class="vnpt-restore-dropdown" style="position: relative; display: flex;">
                         <button class="vnpt-btn-icon btn-restore" id="vnpt-btn-restore-last" title="Khôi phục bản gần nhất">⏪</button>
                         <div id="vnpt-backup-history" class="vnpt-backup-history"></div>
                     </div>
-                    
+
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
@@ -19460,6 +19650,7 @@ ${b2.name}?`)) {
                                     <div class="util-action-row">
                                         <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT" style="flex: 1.2;">🏢 VNPT</button>
                                         <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All" style="flex: 1;">🧹 Reset</button>
+                                        <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">✚</button>
                                         <button class="vnpt-btn-icon" id="vnpt-btn-import-json" title="Nhập JSON" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">📥</button>
                                         <button class="vnpt-btn-icon" id="vnpt-btn-export-json" title="Xuất JSON" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">📤</button>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
@@ -19504,6 +19695,13 @@ ${b2.name}?`)) {
                                     <div id="vnpt-hotkey-list" class="vnpt-hotkey-list-mini">
                                         <!-- Replaced by renderHotkeys -->
                                     </div>
+                                </div>
+
+                                <!-- Nhóm 5: Trợ giúp -->
+                                <div class="util-section-mini">
+                                    <button id="vnpt-btn-tips" class="util-btn-tiny" style="width: 100%; font-size: 11px; padding: 8px; background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%); color: white; font-weight: 700;">
+                                        💡 Hướng Dẫn Sử Dụng
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -19570,6 +19768,85 @@ ${b2.name}?`)) {
                             <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
                             <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Modal -->
+        <div id="vnpt-tips-modal" class="vnpt-tips-modal" style="display: none;">
+            <div class="vnpt-tips-content">
+                <div class="vnpt-tips-header">
+                    <h2>💡 Hướng Dẫn Sử Dụng</h2>
+                    <button class="vnpt-tips-close" id="vnpt-tips-close">✕</button>
+                </div>
+                <div class="vnpt-tips-body">
+                    <div class="tips-section">
+                        <h3>🚀 Bắt Đầu Nhanh</h3>
+                        <ul>
+                            <li><strong>📊 Quét (F1):</strong> Lấy dữ liệu từ form web vào bảng</li>
+                            <li><strong>📝 Điền (F2):</strong> Điền dữ liệu từ bảng lên form web</li>
+                            <li><strong>📤 Export (F3):</strong> Xuất file DOCX</li>
+                            <li><strong>🤖 AI (F4):</strong> Quét PDF/Ảnh/Email bằng AI</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>⏪ Khôi Phục Dữ Liệu</h3>
+                        <ul>
+                            <li><strong>Click trái:</strong> Xem 20 bản sao lưu gần nhất</li>
+                            <li><strong>Click phải:</strong> Khôi phục nhanh bản gần nhất</li>
+                            <li>Hệ thống tự động lưu khi Quét/Dọn dẹp</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>✅ Chế Độ Nâng Cao</h3>
+                        <ul>
+                            <li><strong>Checkbox:</strong> Chọn nhiều trường để xử lý hàng loạt</li>
+                            <li><strong>↔ ↓ ↑:</strong> Điều khiển chiều đồng bộ</li>
+                            <li><strong>🔗:</strong> Liên kết thủ công với element (Esc để hủy)</li>
+                            <li><strong>Cột Key:</strong> Hiển thị biến DOCX và ID</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>🔍 Tra Cứu MST</h3>
+                        <ul>
+                            <li>Nhập mã số thuế vào trường <strong>Số ĐKDN</strong></li>
+                            <li>Click nút <strong>🔍</strong> bên phải</li>
+                            <li>Thông tin doanh nghiệp tự động điền</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>🧹 Dọn Dẹp</h3>
+                        <ul>
+                            <li><strong>Click thường:</strong> Xóa giá trị (giữ hàng)</li>
+                            <li><strong>Shift + Click:</strong> Xóa hẳn các hàng</li>
+                            <li>Tự động tạo bản sao lưu trước khi xóa</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>⌨️ Phím Tắt</h3>
+                        <ul>
+                            <li><strong>F1:</strong> Quét dữ liệu</li>
+                            <li><strong>F2:</strong> Điền dữ liệu</li>
+                            <li><strong>F3:</strong> Export DOCX</li>
+                            <li><strong>F4:</strong> AI Scanner</li>
+                            <li><strong>Shift + Scroll:</strong> Toggle Default ↔ Personal</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>💡 Mẹo Hay</h3>
+                        <ul>
+                            <li>Dùng <strong>🎨 Default</strong> để quản lý template mặc định</li>
+                            <li>Dữ liệu Default và Personal lưu riêng biệt</li>
+                            <li>AI Scanner hỗ trợ PDF, ảnh, email</li>
+                            <li>Cloud Sync để đồng bộ nhiều thiết bị</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -19723,6 +20000,32 @@ ${b2.name}?`)) {
         if (success) setTimeout(() => location.reload(), 1500);
       }
     };
+    const btnTips = document.getElementById("vnpt-btn-tips");
+    const tipsModal = document.getElementById("vnpt-tips-modal");
+    const tipsClose = document.getElementById("vnpt-tips-close");
+    if (btnTips && tipsModal && tipsClose) {
+      btnTips.onclick = (e) => {
+        e.stopPropagation();
+        tipsModal.style.display = "flex";
+        if (utilMenu) {
+          utilMenu.classList.remove("show");
+          moreBtn.classList.remove("active");
+        }
+      };
+      tipsClose.onclick = () => {
+        tipsModal.style.display = "none";
+      };
+      tipsModal.onclick = (e) => {
+        if (e.target === tipsModal) {
+          tipsModal.style.display = "none";
+        }
+      };
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && tipsModal.style.display === "flex") {
+          tipsModal.style.display = "none";
+        }
+      });
+    }
     moreBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       const isShow = utilMenu.classList.toggle("show");

@@ -47,19 +47,18 @@ export function initWidget() {
                     <span id="vnpt-update-badge-container"></span>
                 </div>
                 <div class="header-center">
-                    <button class="vnpt-btn-action" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">AI Scanner</button>
-                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">Quét dữ liệu</button>
-                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">Điền web</button>
+                    <button class="vnpt-btn-action btn-ai" id="vnpt-btn-ai-mode" title="Mở bảng điều khiển AI Scanner">🤖 AI</button>
+                    <button class="vnpt-btn-action btn-scan" id="vnpt-btn-scan" title="Lấy data theo biểu mẫu web">📊 Quét</button>
+                    <button class="vnpt-btn-action btn-fill-back" id="vnpt-btn-fill-back" title="Điền dữ liệu ngược lên web">📝 Điền</button>
                     <input type="file" id="vnpt-pdf-input" accept=".pdf,image/*" style="display:none;" />
                 </div>
                 <div class="header-right">
-                    <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống">✚</button>
                     <button class="vnpt-btn-icon btn-clean" id="vnpt-btn-batch-del" title="Dọn dẹp & Lưu vào History (Shift+Click để Xóa hàng)">🗑</button>
                     <div class="vnpt-restore-dropdown" style="position: relative; display: flex;">
                         <button class="vnpt-btn-icon btn-restore" id="vnpt-btn-restore-last" title="Khôi phục bản gần nhất">⏪</button>
                         <div id="vnpt-backup-history" class="vnpt-backup-history"></div>
                     </div>
-                    
+
                     <div class="vnpt-util-dropdown">
                         <button class="vnpt-btn-icon btn-more" id="vnpt-btn-more" title="Thêm công cụ">⚙️</button>
                         <div class="vnpt-util-menu" id="vnpt-util-menu">
@@ -69,6 +68,7 @@ export function initWidget() {
                                     <div class="util-action-row">
                                         <button class="util-item-mini" id="vnpt-btn-default" title="Dữ liệu mặc định VNPT" style="flex: 1.2;">🏢 VNPT</button>
                                         <button class="util-item-mini danger" id="vnpt-btn-clean-data" title="Reset All" style="flex: 1;">🧹 Reset</button>
+                                        <button class="vnpt-btn-icon btn-add" id="vnpt-btn-add" title="Chèn thêm trường trống" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">✚</button>
                                         <button class="vnpt-btn-icon" id="vnpt-btn-import-json" title="Nhập JSON" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">📥</button>
                                         <button class="vnpt-btn-icon" id="vnpt-btn-export-json" title="Xuất JSON" style="width:26px; height:26px; font-size:13px; border-radius:6px; background:#fff; border:1px solid #e0e0e0; flex-shrink: 0;">📤</button>
                                         <input type="file" id="vnpt-file-import-json" name="vnpt-file-import-json" accept=".json" style="display: none;">
@@ -113,6 +113,13 @@ export function initWidget() {
                                     <div id="vnpt-hotkey-list" class="vnpt-hotkey-list-mini">
                                         <!-- Replaced by renderHotkeys -->
                                     </div>
+                                </div>
+
+                                <!-- Nhóm 5: Trợ giúp -->
+                                <div class="util-section-mini">
+                                    <button id="vnpt-btn-tips" class="util-btn-tiny" style="width: 100%; font-size: 11px; padding: 8px; background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%); color: white; font-weight: 700;">
+                                        💡 Hướng Dẫn Sử Dụng
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -179,6 +186,85 @@ export function initWidget() {
                             <input type="text" id="vnpt-export-filename" name="vnpt-export-filename" value="Export_Auto.docx" title="Tên file DOCX khi xuất" />
                             <button class="vnpt-btn-action btn-export" id="vnpt-btn-export" title="Xuất ra file DOCX">🖨️ XUẤT</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Modal -->
+        <div id="vnpt-tips-modal" class="vnpt-tips-modal" style="display: none;">
+            <div class="vnpt-tips-content">
+                <div class="vnpt-tips-header">
+                    <h2>💡 Hướng Dẫn Sử Dụng</h2>
+                    <button class="vnpt-tips-close" id="vnpt-tips-close">✕</button>
+                </div>
+                <div class="vnpt-tips-body">
+                    <div class="tips-section">
+                        <h3>🚀 Bắt Đầu Nhanh</h3>
+                        <ul>
+                            <li><strong>📊 Quét (F1):</strong> Lấy dữ liệu từ form web vào bảng</li>
+                            <li><strong>📝 Điền (F2):</strong> Điền dữ liệu từ bảng lên form web</li>
+                            <li><strong>📤 Export (F3):</strong> Xuất file DOCX</li>
+                            <li><strong>🤖 AI (F4):</strong> Quét PDF/Ảnh/Email bằng AI</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>⏪ Khôi Phục Dữ Liệu</h3>
+                        <ul>
+                            <li><strong>Click trái:</strong> Xem 20 bản sao lưu gần nhất</li>
+                            <li><strong>Click phải:</strong> Khôi phục nhanh bản gần nhất</li>
+                            <li>Hệ thống tự động lưu khi Quét/Dọn dẹp</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>✅ Chế Độ Nâng Cao</h3>
+                        <ul>
+                            <li><strong>Checkbox:</strong> Chọn nhiều trường để xử lý hàng loạt</li>
+                            <li><strong>↔ ↓ ↑:</strong> Điều khiển chiều đồng bộ</li>
+                            <li><strong>🔗:</strong> Liên kết thủ công với element (Esc để hủy)</li>
+                            <li><strong>Cột Key:</strong> Hiển thị biến DOCX và ID</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>🔍 Tra Cứu MST</h3>
+                        <ul>
+                            <li>Nhập mã số thuế vào trường <strong>Số ĐKDN</strong></li>
+                            <li>Click nút <strong>🔍</strong> bên phải</li>
+                            <li>Thông tin doanh nghiệp tự động điền</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>🧹 Dọn Dẹp</h3>
+                        <ul>
+                            <li><strong>Click thường:</strong> Xóa giá trị (giữ hàng)</li>
+                            <li><strong>Shift + Click:</strong> Xóa hẳn các hàng</li>
+                            <li>Tự động tạo bản sao lưu trước khi xóa</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>⌨️ Phím Tắt</h3>
+                        <ul>
+                            <li><strong>F1:</strong> Quét dữ liệu</li>
+                            <li><strong>F2:</strong> Điền dữ liệu</li>
+                            <li><strong>F3:</strong> Export DOCX</li>
+                            <li><strong>F4:</strong> AI Scanner</li>
+                            <li><strong>Shift + Scroll:</strong> Toggle Default ↔ Personal</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>💡 Mẹo Hay</h3>
+                        <ul>
+                            <li>Dùng <strong>🎨 Default</strong> để quản lý template mặc định</li>
+                            <li>Dữ liệu Default và Personal lưu riêng biệt</li>
+                            <li>AI Scanner hỗ trợ PDF, ảnh, email</li>
+                            <li>Cloud Sync để đồng bộ nhiều thiết bị</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -361,6 +447,40 @@ export function initWidget() {
             if (success) setTimeout(() => location.reload(), 1500);
         }
     };
+
+    // Tips Modal
+    const btnTips = document.getElementById('vnpt-btn-tips');
+    const tipsModal = document.getElementById('vnpt-tips-modal');
+    const tipsClose = document.getElementById('vnpt-tips-close');
+
+    if (btnTips && tipsModal && tipsClose) {
+        btnTips.onclick = (e) => {
+            e.stopPropagation();
+            tipsModal.style.display = 'flex';
+            // Đóng menu Settings khi mở Tips
+            if (utilMenu) {
+                utilMenu.classList.remove('show');
+                moreBtn.classList.remove('active');
+            }
+        };
+
+        tipsClose.onclick = () => {
+            tipsModal.style.display = 'none';
+        };
+
+        tipsModal.onclick = (e) => {
+            if (e.target === tipsModal) {
+                tipsModal.style.display = 'none';
+            }
+        };
+
+        // Close on Esc key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && tipsModal.style.display === 'flex') {
+                tipsModal.style.display = 'none';
+            }
+        });
+    }
 
     moreBtn.addEventListener('click', (e) => {
         e.stopPropagation();
