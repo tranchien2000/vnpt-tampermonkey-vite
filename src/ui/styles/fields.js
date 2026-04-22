@@ -77,7 +77,7 @@ export const fieldsStyles = `
     .vnpt-field-row input.f-key { display: none; flex: 0.45; font-weight: 700; color: #d63384; background: rgba(214,51,132,0.03); }
     .show-ids .vnpt-field-row input.f-key { display: block; }
 
-    .vnpt-field-row .row-tools { display: none; }
+    .vnpt-field-row .row-tools { display: none; margin-right: 4px; }
     .show-row-tools .vnpt-field-row .row-tools { display: flex !important; }
 
     .btn-field-link {
