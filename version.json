@@ -1,5 +1,5 @@
 {
-  "version": "1.8.0",
+  "version": "1.8.1",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "chore: release v1.8.1 - Tối ưu logic điền form chính xác và sửa lỗi logger/typeerror"
+  "message": "v1.8.1 - Cập nhật tính năng mới"
 }
