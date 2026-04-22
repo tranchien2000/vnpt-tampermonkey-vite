@@ -120,8 +120,8 @@ export function formatPhoneNumber(phone) {
  * @returns {string}
  */
 export function normalizeDate(dateStr) {
-    if (!dateStr) return '';
-    
+    if (!dateStr || typeof dateStr !== 'string') return '';
+
     // Loại bỏ khoảng trắng thừa
     let s = dateStr.trim();
     if (!s) return '';
@@ -234,7 +234,7 @@ import { AddressLearning } from './addressLearning.js';
  * @returns {string}
  */
 export function getStreetPart(address) {
-    if (!address) return '';
+    if (!address || typeof address !== 'string') return '';
 
     // Ưu tiên 1: Kiểm tra xem đã "học" được gì từ địa chỉ này chưa
     const learned = AddressLearning.getLearnedStreet(address);

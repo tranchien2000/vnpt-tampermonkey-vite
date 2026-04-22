@@ -16762,7 +16762,7 @@ ${this.customData.serverResponse}`;
     return cleaned;
   }
   function normalizeDate(dateStr) {
-    if (!dateStr) return "";
+    if (!dateStr || typeof dateStr !== "string") return "";
     let s = dateStr.trim();
     if (!s) return "";
     if (/^\d{8}$/.test(s)) {
