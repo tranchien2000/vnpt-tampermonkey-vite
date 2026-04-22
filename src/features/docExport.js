@@ -137,9 +137,13 @@ export function initDocExport() {
         if (AppState.fieldsContainer) {
             const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
             rows.forEach(row => {
-                const rawKey = row.querySelector('.f-key').value.trim();
+                const fKeyEl = row.querySelector('.f-key');
+                const fValEl = row.querySelector('.f-val');
+                if (!fKeyEl || !fValEl) return;
+
+                const rawKey = fKeyEl.value.trim();
                 const k = rawKey.split(',')[0].trim();
-                const v = row.querySelector('.f-val').value.trim();
+                const v = fValEl.value.trim();
                 if (k === 'tenToChuc') tenToChuc = v;
             });
         }
@@ -196,9 +200,13 @@ export function initDocExport() {
         const dataToFill = {};
         const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
         rows.forEach(row => {
-            const rawKey = row.querySelector('.f-key').value.trim();
+            const fKeyEl = row.querySelector('.f-key');
+            const fValEl = row.querySelector('.f-val');
+            if (!fKeyEl || !fValEl) return;
+
+            const rawKey = fKeyEl.value.trim();
             const k = rawKey.split(',')[0].trim();
-            const v = row.querySelector('.f-val').value;
+            const v = fValEl.value;
             if (k) dataToFill[k] = v;
         });
 
@@ -253,9 +261,13 @@ export function initDocExport() {
             const dataToFill = {};
             const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
             rows.forEach(row => {
-                const rawKey = row.querySelector('.f-key').value.trim();
+                const fKeyEl = row.querySelector('.f-key');
+                const fValEl = row.querySelector('.f-val');
+                if (!fKeyEl || !fValEl) return;
+
+                const rawKey = fKeyEl.value.trim();
                 const k = rawKey.split(',')[0].trim();
-                const v = row.querySelector('.f-val').value;
+                const v = fValEl.value;
                 if (k) dataToFill[k] = v;
             });
 

@@ -11,12 +11,18 @@ export function saveFieldsToLocal() {
     const data = {};
     const rows = AppState.fieldsContainer.querySelectorAll('.vnpt-field-row');
     rows.forEach(row => {
-        const rawKeyInput = row.querySelector('.f-key').value.trim();
+        const fKeyEl = row.querySelector('.f-key');
+        const fLabelEl = row.querySelector('.f-label');
+        const fValEl = row.querySelector('.f-val');
+
+        if (!fKeyEl || !fLabelEl || !fValEl) return; // Skip invalid rows
+
+        const rawKeyInput = fKeyEl.value.trim();
         const parts = rawKeyInput.split(',').map(s => s.trim()).filter(s => s);
         const k = parts[0];
         const s = parts.slice(1).join(', ');
-        const l = row.querySelector('.f-label').value.trim();
-        const v = row.querySelector('.f-val').value;
+        const l = fLabelEl.value.trim();
+        const v = fValEl.value;
         const syncDirEl = row.querySelector('.btn-sync-dir');
         const syncDir = syncDirEl ? syncDirEl.getAttribute('data-dir') : 'both';
         if (k) data[k] = { label: l, value: v, sync: s, syncDir: syncDir };

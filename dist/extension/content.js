@@ -17514,12 +17514,16 @@ ${this.customData.serverResponse}`;
     const data = {};
     const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
     rows.forEach((row) => {
-      const rawKeyInput = row.querySelector(".f-key").value.trim();
+      const fKeyEl = row.querySelector(".f-key");
+      const fLabelEl = row.querySelector(".f-label");
+      const fValEl = row.querySelector(".f-val");
+      if (!fKeyEl || !fLabelEl || !fValEl) return;
+      const rawKeyInput = fKeyEl.value.trim();
       const parts = rawKeyInput.split(",").map((s2) => s2.trim()).filter((s2) => s2);
       const k2 = parts[0];
       const s = parts.slice(1).join(", ");
-      const l = row.querySelector(".f-label").value.trim();
-      const v2 = row.querySelector(".f-val").value;
+      const l = fLabelEl.value.trim();
+      const v2 = fValEl.value;
       const syncDirEl = row.querySelector(".btn-sync-dir");
       const syncDir = syncDirEl ? syncDirEl.getAttribute("data-dir") : "both";
       if (k2) data[k2] = { label: l, value: v2, sync: s, syncDir };
@@ -17832,12 +17836,16 @@ ${this.customData.serverResponse}`;
       const btnSync = row.querySelector(".btn-sync-dir");
       const currentDir = btnSync ? btnSync.getAttribute("data-dir") : "both";
       if (currentDir === "up") return null;
-      const rawKeyInput = row.querySelector(".f-key").value.trim();
+      const fKeyEl = row.querySelector(".f-key");
+      const fValEl = row.querySelector(".f-val");
+      const fLabelEl = row.querySelector(".f-label");
+      if (!fKeyEl || !fValEl || !fLabelEl) return null;
+      const rawKeyInput = fKeyEl.value.trim();
       const primaryKey = rawKeyInput.split(",")[0].trim();
       if (targetKeys && !targetKeys.includes(primaryKey)) return null;
-      const val = row.querySelector(".f-val").value;
+      const val = fValEl.value;
       if (val === "") return null;
-      const label = row.querySelector(".f-label").value.trim();
+      const label = fLabelEl.value.trim();
       const targets = rawKeyInput.split(",").map((x2) => x2.trim()).filter(Boolean);
       if (label && !targets.includes(label)) targets.push(label);
       return { targets, val };
@@ -35909,9 +35917,12 @@ ${b2.name}?`)) {
       if (AppState.fieldsContainer) {
         const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
         rows.forEach((row) => {
-          const rawKey = row.querySelector(".f-key").value.trim();
+          const fKeyEl = row.querySelector(".f-key");
+          const fValEl = row.querySelector(".f-val");
+          if (!fKeyEl || !fValEl) return;
+          const rawKey = fKeyEl.value.trim();
           const k2 = rawKey.split(",")[0].trim();
-          const v2 = row.querySelector(".f-val").value.trim();
+          const v2 = fValEl.value.trim();
           if (k2 === "tenToChuc") tenToChuc = v2;
         });
       }
@@ -35956,9 +35967,12 @@ ${b2.name}?`)) {
       const dataToFill = {};
       const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
       rows.forEach((row) => {
-        const rawKey = row.querySelector(".f-key").value.trim();
+        const fKeyEl = row.querySelector(".f-key");
+        const fValEl = row.querySelector(".f-val");
+        if (!fKeyEl || !fValEl) return;
+        const rawKey = fKeyEl.value.trim();
         const k2 = rawKey.split(",")[0].trim();
-        const v2 = row.querySelector(".f-val").value;
+        const v2 = fValEl.value;
         if (k2) dataToFill[k2] = v2;
       });
       if (Object.keys(dataToFill).length === 0) {
@@ -36006,9 +36020,12 @@ Ban co chac chan muon tiep tuc xuat file khong?`;
         const dataToFill = {};
         const rows = AppState.fieldsContainer.querySelectorAll(".vnpt-field-row");
         rows.forEach((row) => {
-          const rawKey = row.querySelector(".f-key").value.trim();
+          const fKeyEl = row.querySelector(".f-key");
+          const fValEl = row.querySelector(".f-val");
+          if (!fKeyEl || !fValEl) return;
+          const rawKey = fKeyEl.value.trim();
           const k2 = rawKey.split(",")[0].trim();
-          const v2 = row.querySelector(".f-val").value;
+          const v2 = fValEl.value;
           if (k2) dataToFill[k2] = v2;
         });
         if (Object.keys(dataToFill).length === 0) {

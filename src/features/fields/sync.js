@@ -18,14 +18,20 @@ export async function syncAllFields(targetKeys = null) {
         const currentDir = btnSync ? btnSync.getAttribute('data-dir') : 'both';
         if (currentDir === 'up') return null;
 
-        const rawKeyInput = row.querySelector('.f-key').value.trim();
+        const fKeyEl = row.querySelector('.f-key');
+        const fValEl = row.querySelector('.f-val');
+        const fLabelEl = row.querySelector('.f-label');
+
+        if (!fKeyEl || !fValEl || !fLabelEl) return null; // Skip invalid rows
+
+        const rawKeyInput = fKeyEl.value.trim();
         const primaryKey = rawKeyInput.split(',')[0].trim();
         if (targetKeys && !targetKeys.includes(primaryKey)) return null;
 
-        const val = row.querySelector('.f-val').value;
+        const val = fValEl.value;
         if (val === '') return null;
 
-        const label = row.querySelector('.f-label').value.trim();
+        const label = fLabelEl.value.trim();
         const targets = rawKeyInput.split(',').map(x => x.trim()).filter(Boolean);
         if (label && !targets.includes(label)) targets.push(label);
 
