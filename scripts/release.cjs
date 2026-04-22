@@ -47,11 +47,30 @@ pkg.version = newVersion;
 fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 console.log(`Bumped version to: ${newVersion}`);
 
-// 2. Build code
+// 2. Cập nhật version.json
+const versionJsonPath = path.join(__dirname, '../version.json');
+const versionJson = JSON.parse(fs.readFileSync(versionJsonPath, 'utf8'));
+versionJson.version = newVersion;
+fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 2));
+console.log(`Updated version.json to: ${newVersion}`);
+
+// 3. Build code
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 run(`${npmCmd} run build`);
 
-// 3. Commit message - hỏi nếu không truyền argument
+// 4. Cập nhật @version trong dist/myscript.user.js
+const userScriptPath = path.join(__dirname, '../dist/myscript.user.js');
+if (fs.existsSync(userScriptPath)) {
+    let userScriptContent = fs.readFileSync(userScriptPath, 'utf8');
+    userScriptContent = userScriptContent.replace(
+        /@version\s+[\d.]+/,
+        `@version      ${newVersion}`
+    );
+    fs.writeFileSync(userScriptPath, userScriptContent);
+    console.log(`Updated @version in myscript.user.js to: ${newVersion}`);
+}
+
+// 5. Commit message - hỏi nếu không truyền argument
 let userMsg = process.argv[2];
 if (!userMsg) {
     userMsg = await askQuestion(`\nNhap mo ta release v${newVersion}: `);
@@ -61,14 +80,19 @@ if (!userMsg) {
 }
 const commitMsg = `v${newVersion} - ${userMsg}`;
 
-// 4. Git actions
+// 6. Cập nhật message trong version.json
+versionJson.message = commitMsg;
+fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 2));
+console.log(`Updated version.json message: ${commitMsg}`);
+
+// 7. Git actions
 run('git add .');
 run(`git commit -m "${commitMsg}"`);
 // Pull rebase trước để tránh lỗi non-fast-forward (do GitHub Action tạo commit trên remote)
 run('git pull --rebase origin main');
 run('git push');
 
-// 5. Tạo tag và push tag lên GitHub
+// 8. Tạo tag và push tag lên GitHub
 run(`git tag -a v${newVersion} -m "Release v${newVersion} - ${userMsg}"`);
 run('git push --tags');
 
