@@ -69,9 +69,13 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             const currentDir = btnSyncDir ? btnSyncDir.getAttribute('data-dir') : 'both';
 
             // Không cập nhật value nếu đây là cập nhật từ form web mà chiều sync bị chặn 'down'
+            // Chỉ cập nhật nếu có giá trị mới (không rỗng) hoặc đang ở chế độ ghi đè hoàn toàn
             if (valueText !== null && valueInput.value !== valueText && document.activeElement !== valueInput) {
                 if (!(isFromWebForm && currentDir === 'down')) {
-                    valueInput.value = valueText;
+                    // Chỉ cập nhật nếu valueText không rỗng HOẶC đang có giá trị cũ rỗng
+                    if (valueText !== '' || valueInput.value === '') {
+                        valueInput.value = valueText;
+                    }
                 }
             }
             if (labelText !== null && labelText !== '' && labelInput.value !== labelText && document.activeElement !== labelInput) {
