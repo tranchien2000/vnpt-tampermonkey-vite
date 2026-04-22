@@ -18,7 +18,7 @@ export function updateUIForDefaultMode(isDefault) {
 
     if (isDefault) {
         btn.classList.add('active');
-        btn.innerHTML = '✅ Chế độ: Dữ liệu mặc định';
+        btn.innerHTML = '✅ Mặc định';
         document.getElementById('vnpt-fields-container').classList.add('vnpt-mode-default');
         showToast("📌 Chế độ Dữ liệu mặc định (Có thể sửa)", "#ea4335");
 
@@ -51,7 +51,7 @@ export function updateUIForDefaultMode(isDefault) {
         // renderCalcMappingInBanner(); // Xóa dòng này ở cuối
     } else {
         btn.classList.remove('active');
-        btn.innerHTML = '🛠 Dữ liệu mặc định VNPT';
+        btn.innerHTML = '🛠 Mặc định';
         document.getElementById('vnpt-fields-container').classList.remove('vnpt-mode-default');
         showToast("📋 Đã quay lại Dữ liệu cá nhân");
         loadSavedData();
