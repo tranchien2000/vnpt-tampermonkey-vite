@@ -18319,6 +18319,17 @@ ${b2.name}?`)) {
         }
       };
     }
+    const fieldsContainer = document.getElementById("vnpt-fields-list");
+    if (fieldsContainer) {
+      fieldsContainer.addEventListener("wheel", (e) => {
+        if (e.shiftKey) {
+          e.preventDefault();
+          AppState.isDefaultMode = !AppState.isDefaultMode;
+          const modeName = AppState.isDefaultMode ? "Dữ liệu mặc định" : "Dữ liệu cá nhân";
+          showToast(`🔄 Đã chuyển sang: ${modeName}`, "#1a73e8");
+        }
+      }, { passive: false });
+    }
   }
   let boundHandleEvents = null;
   const debouncedReverseSync = debounce((target, val) => {

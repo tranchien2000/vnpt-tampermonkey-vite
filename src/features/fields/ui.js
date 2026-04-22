@@ -329,7 +329,7 @@ export function initFieldsManager() {
     if (btnFillBack) {
         btnFillBack.onclick = async () => {
             if (btnFillBack.classList.contains('loading')) return;
-            
+
             btnFillBack.classList.add('loading');
             btnFillBack.disabled = true;
             try {
@@ -339,5 +339,22 @@ export function initFieldsManager() {
                 btnFillBack.disabled = false;
             }
         };
+    }
+
+    // Shift+Scroll to toggle between Default Data and Personal Data
+    const fieldsContainer = document.getElementById('vnpt-fields-list');
+    if (fieldsContainer) {
+        fieldsContainer.addEventListener('wheel', (e) => {
+            if (e.shiftKey) {
+                e.preventDefault();
+
+                // Toggle mode
+                AppState.isDefaultMode = !AppState.isDefaultMode;
+
+                // Show toast
+                const modeName = AppState.isDefaultMode ? 'Dữ liệu mặc định' : 'Dữ liệu cá nhân';
+                showToast(`🔄 Đã chuyển sang: ${modeName}`, '#1a73e8');
+            }
+        }, { passive: false });
     }
 }
