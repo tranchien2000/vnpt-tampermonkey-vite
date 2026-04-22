@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         VNPT Word Automation v1.8.7
+// @name         VNPT Word Automation v1.8.1
 // @namespace    http://tampermonkey.net/
-// @version      1.8.7
+// @version      1.8.1
 // @description  Tool tự động lấy dữ liệu trên portal VNPT
 // @author       You
 // @match        *://hopdong.vnpt.vn/*
