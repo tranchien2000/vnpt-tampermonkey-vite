@@ -113,24 +113,32 @@ export function buildFullDOMMap(force = false) {
 }
 
 export function triggerCustom(el) {
-    if (!el) return;
+    if (!el || !el.dispatchEvent) return;
 
     // 1. Gửi các sự kiện Native chuẩn (Bao gồm cả Bubbles)
     const eventOptions = { bubbles: true, cancelable: true, composed: true };
-    el.dispatchEvent(new Event('focus', eventOptions));
-    el.dispatchEvent(new Event('input', eventOptions));
-    el.dispatchEvent(new Event('change', eventOptions));
+    try {
+        el.dispatchEvent(new Event('focus', eventOptions));
+        el.dispatchEvent(new Event('input', eventOptions));
+        el.dispatchEvent(new Event('change', eventOptions));
+    } catch (e) {
+        console.warn("[DOM] Failed to dispatch native events:", e);
+    }
 
     // 2. Xử lý đặc thù cho thẻ SELECT (Select2 / ng-select2)
     if (el.tagName === 'SELECT') {
-        // Gửi event đặc thù của thư viện Select2
-        el.dispatchEvent(new CustomEvent('select2:select', { ...eventOptions, detail: { data: { id: el.value } } }));
+        try {
+            // Gửi event đặc thù của thư viện Select2
+            el.dispatchEvent(new CustomEvent('select2:select', { ...eventOptions, detail: { data: { id: el.value } } }));
+        } catch (e) {}
 
         // Tìm và báo hiệu cho component cha (Angular ng-select2)
         let parentComp = el.closest('ng-select2, .select2-container, .form-group');
-        if (parentComp) {
-            parentComp.dispatchEvent(new Event('change', eventOptions));
-            parentComp.dispatchEvent(new Event('input', eventOptions));
+        if (parentComp && parentComp.dispatchEvent) {
+            try {
+                parentComp.dispatchEvent(new Event('change', eventOptions));
+                parentComp.dispatchEvent(new Event('input', eventOptions));
+            } catch (e) {}
         }
 
         // 3. jQuery Fallback (Nếu trang web dùng jQuery, Select2 cần jQuery để trigger phụ thuộc)
@@ -145,7 +153,9 @@ export function triggerCustom(el) {
         }
     }
 
-    el.dispatchEvent(new Event('blur', eventOptions));
+    try {
+        el.dispatchEvent(new Event('blur', eventOptions));
+    } catch (e) {}
 }
 
 /**
@@ -353,15 +363,15 @@ export function findPageInput(name, labelText = null) {
         }
     }
 
-    // 3. Fuzzy Match trên Label (Tốn kém hơn)
-    const targetLabel = labelText || name;
+    // 3. Fuzzy Match trên Label (Tốn kém hơn) - CHỈ DÀNH CHO LABEL
+    const targetLabel = labelText || (name && name.length > 3 ? name : null);
     if (targetLabel && targetLabel.length > 2) {
         const labelTexts = Array.from(FullDOMMap.byLabel.keys());
         if (labelTexts.length === 0 && LabelCache.length > 0) {
             labelTexts.push(...LabelCache.map(l => l.innerText.trim()).filter(t => t.length > 0));
         }
 
-        const bestText = findBestMatch(targetLabel, labelTexts, 0.82);
+        const bestText = findBestMatch(targetLabel, labelTexts, 0.95);
         if (bestText) {
             return resolveToInput(FullDOMMap.byLabel.get(bestText));
         }

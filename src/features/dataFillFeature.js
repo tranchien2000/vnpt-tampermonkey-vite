@@ -179,6 +179,21 @@ export function renderDataFillTabs(widget, mkSecHeader, clamp, collapsedSections
     tabDefault.onclick = () => { currentDataTab = 'default'; Storage.set(SK_DATATAB, 'default'); applyTabStyles(); renderDataFields(); };
     tabSync.onclick = () => { currentDataTab = 'sync'; Storage.set(SK_DATATAB, 'sync'); applyTabStyles(); renderDataFields(); };
 
+    // Scroll để đổi tab nhanh giữa Custom / Default / Sync
+    dataBody.onwheel = (e) => {
+        if (e.deltaY === 0) return;
+        e.preventDefault();
+        const tabs = ['custom', 'default', 'sync'];
+        let idx = tabs.indexOf(currentDataTab);
+        if (e.deltaY > 0) idx = (idx + 1) % tabs.length; // Cuộn xuống -> Tab tiếp theo
+        else idx = (idx - 1 + tabs.length) % tabs.length; // Cuộn lên -> Tab trước đó
+        
+        currentDataTab = tabs[idx];
+        Storage.set(SK_DATATAB, currentDataTab);
+        applyTabStyles();
+        renderDataFields();
+    };
+
     exportBtn.onclick = () => {
         const dataToExport = { defaultData, customData, syncData };
         const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });

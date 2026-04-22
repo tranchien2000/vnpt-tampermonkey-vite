@@ -31,7 +31,7 @@ export const DEFAULT_DATA = {
     dienThoaiB: { label: "Điện thoại B", value: "02436686868", syncDir: "both" },
     diaChiTaiKhoanB: { label: "Địa chỉ tài khoản B", value: "NH TMCP Đầu tư & phát triển Việt Nam - Chi nhánh SGD 3 ", syncDir: "both" },
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
-    emailB: { label: "Email B", value: "", syncDir: "both" },
+    emailB: { label: "Email B", value: " ", syncDir: "both" },
     dvtGoi: { label: "Đơn vị gói", value: "Gói", syncDir: "both" },
     soLuongGoi: { label: "Số Lượng Gói", value: "1", syncDir: "both" },
     noiKy: { label: "Nơi ký", value: "Hà Nội", syncDir: "both" },
