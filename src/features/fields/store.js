@@ -68,7 +68,8 @@ export function loadSavedData() {
             const primaryKey = keyString.split(',')[0].trim();
             const saved = savedFields[primaryKey];
             if (saved && typeof saved === 'object') {
-                addOrUpdateFieldRow(keyString, saved.value, saved.label || label, saved.sync || '', saved.syncDir || 'both');
+                // KHÔNG truyền saved.sync vì keyString đã chứa tất cả IDs rồi
+                addOrUpdateFieldRow(keyString, saved.value, saved.label || label, '', saved.syncDir || 'both');
             } else if (saved) {
                 addOrUpdateFieldRow(keyString, saved, label, '', 'both');
             } else {

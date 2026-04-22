@@ -17513,7 +17513,7 @@ ${this.customData.serverResponse}`;
         const primaryKey = keyString.split(",")[0].trim();
         const saved = savedFields[primaryKey];
         if (saved && typeof saved === "object") {
-          addOrUpdateFieldRow(keyString, saved.value, saved.label || label, saved.sync || "", saved.syncDir || "both");
+          addOrUpdateFieldRow(keyString, saved.value, saved.label || label, "", saved.syncDir || "both");
         } else if (saved) {
           addOrUpdateFieldRow(keyString, saved, label, "", "both");
         } else {
