@@ -1043,9 +1043,9 @@
   };
   const DEFAULT_LABELS = {
     "tenDaiDienn, tenNguoiNhanCTS, ten": "Tên Đại Diện",
-    "chucVu ": "Chức Vụ",
+    "chucVu": "Chức Vụ",
     "ngaySinhCustomer": "Ngày Sinh KH",
-    "diaChi ": "Địa chỉ (Full)",
+    "diaChi": "Địa chỉ (Full)",
     "cmnd, cccd": "CMND/CCCD",
     "ngayCapCustomer": "Ngày Cấp CMND",
     "noiCap, noiCapId": "Nơi Cấp",
@@ -17269,11 +17269,13 @@ ${this.customData.serverResponse}`;
   function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncText = "", syncDir = null, isFromWebForm = false, sourceContext = null) {
     const hint = AppState.fieldsContainer.querySelector(".text-hint");
     if (hint) hint.remove();
+    const normalizedKeyText = keyText.split(",").map((s) => s.trim()).join(", ");
+    const incomingPK = normalizedKeyText.split(",")[0];
     const existingInputs = AppState.fieldsContainer.querySelectorAll(".f-key");
     let isDuplicate = false;
-    const incomingPK = keyText.split(",")[0].trim();
     for (let input of existingInputs) {
-      const currentPK = input.value.split(",")[0].trim();
+      const currentKey = input.value.split(",").map((s) => s.trim()).join(", ");
+      const currentPK = currentKey.split(",")[0];
       if (currentPK === incomingPK) {
         const row = input.closest(".vnpt-field-row");
         const valueInput = row.querySelector(".f-val");
@@ -17290,8 +17292,8 @@ ${this.customData.serverResponse}`;
         if (labelText !== null && labelText !== "" && labelInput.value !== labelText && document.activeElement !== labelInput) {
           labelInput.value = labelText;
         }
-        if (syncText !== "" && input.value !== keyText + ", " + syncText && document.activeElement !== input) {
-          input.value = keyText + ", " + syncText;
+        if (syncText !== "" && input.value !== normalizedKeyText + ", " + syncText && document.activeElement !== input) {
+          input.value = normalizedKeyText + ", " + syncText;
         }
         if (syncDir && btnSyncDir && btnSyncDir.getAttribute("data-dir") !== syncDir) {
           updateSyncDirIcon(btnSyncDir, syncDir);
@@ -17307,12 +17309,12 @@ ${this.customData.serverResponse}`;
     }
     if (!isDuplicate) {
       if (labelText === null || labelText === "") {
-        labelText = DEFAULT_LABELS[keyText] || "";
+        labelText = DEFAULT_LABELS[normalizedKeyText] || DEFAULT_LABELS[keyText] || "";
       }
       const row = document.createElement("div");
       row.className = "vnpt-field-row row-item";
       row.setAttribute("draggable", "false");
-      let displayKey = keyText;
+      let displayKey = normalizedKeyText;
       if (syncText) displayKey += ", " + syncText;
       const primaryKey = incomingPK;
       row.innerHTML = `

@@ -8,9 +8,9 @@
  */
 export const DEFAULT_LABELS = {
     'tenDaiDienn, tenNguoiNhanCTS, ten': 'Tên Đại Diện',
-    'chucVu ': 'Chức Vụ',
+    'chucVu': 'Chức Vụ',
     'ngaySinhCustomer': 'Ngày Sinh KH',
-    'diaChi ': 'Địa chỉ (Full)',
+    'diaChi': 'Địa chỉ (Full)',
     'cmnd, cccd': 'CMND/CCCD',
     'ngayCapCustomer': 'Ngày Cấp CMND',
     'noiCap, noiCapId': 'Nơi Cấp',

@@ -54,13 +54,18 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
     const hint = AppState.fieldsContainer.querySelector('.text-hint');
     if (hint) hint.remove();
 
+    // Normalize keyText by trimming all parts to avoid trailing space issues
+    const normalizedKeyText = keyText.split(',').map(s => s.trim()).join(', ');
+    const incomingPK = normalizedKeyText.split(',')[0];
+
     const existingInputs = AppState.fieldsContainer.querySelectorAll('.f-key');
     let isDuplicate = false;
 
-    const incomingPK = keyText.split(',')[0].trim();
-
     for (let input of existingInputs) {
-        const currentPK = input.value.split(',')[0].trim();
+        // Normalize existing key as well
+        const currentKey = input.value.split(',').map(s => s.trim()).join(', ');
+        const currentPK = currentKey.split(',')[0];
+
         if (currentPK === incomingPK) {
             const row = input.closest('.vnpt-field-row');
             const valueInput = row.querySelector('.f-val');
@@ -81,8 +86,8 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
             if (labelText !== null && labelText !== '' && labelInput.value !== labelText && document.activeElement !== labelInput) {
                 labelInput.value = labelText;
             }
-            if (syncText !== '' && input.value !== (keyText + ', ' + syncText) && document.activeElement !== input) {
-                input.value = keyText + ', ' + syncText;
+            if (syncText !== '' && input.value !== (normalizedKeyText + ', ' + syncText) && document.activeElement !== input) {
+                input.value = normalizedKeyText + ', ' + syncText;
             }
             if (syncDir && btnSyncDir && btnSyncDir.getAttribute('data-dir') !== syncDir) {
                 updateSyncDirIcon(btnSyncDir, syncDir);
@@ -104,14 +109,14 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
     if (!isDuplicate) {
         if (labelText === null || labelText === '') {
-            labelText = DEFAULT_LABELS[keyText] || '';
+            labelText = DEFAULT_LABELS[normalizedKeyText] || DEFAULT_LABELS[keyText] || '';
         }
 
         const row = document.createElement('div');
         row.className = 'vnpt-field-row row-item';
         row.setAttribute('draggable', 'false');
 
-        let displayKey = keyText;
+        let displayKey = normalizedKeyText;
         if (syncText) displayKey += ', ' + syncText;
 
         const primaryKey = incomingPK;
