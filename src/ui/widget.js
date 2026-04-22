@@ -86,13 +86,10 @@ export function initWidget() {
                                             <button data-size="Full">MAX</button>
                                         </div>
                                     </div>
-                                    <div class="util-row-compact" style="margin-top: 6px; flex-direction: column; align-items: flex-start; gap: 6px;">
-                                        <label style="font-size: 10px; display: flex; align-items: center; gap: 4px; cursor: pointer; color: #3c4043; font-weight: 500;">
-                                            <input type="checkbox" id="vnpt-chk-show-tools" style="margin: 0; cursor: pointer;"> Hiện phím chức năng & Checkbox
-                                        </label>
-                                        <label style="font-size: 10px; display: flex; align-items: center; gap: 4px; cursor: pointer; color: #3c4043; font-weight: 500;">
-                                            <input type="checkbox" id="vnpt-chk-show-ids" style="margin: 0; cursor: pointer;"> Hiện cột Key ID (docx)
-                                        </label>
+                                    <div class="util-row-compact" style="margin-top: 6px;">
+                                        <button id="vnpt-btn-toggle-advanced" class="util-btn-tiny" style="flex: 1; font-size: 10px; padding: 4px 8px;">
+                                            🔧 Chế độ nâng cao
+                                        </button>
                                     </div>
                                 </div>
 

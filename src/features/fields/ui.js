@@ -163,38 +163,34 @@ function renderBackupHistory(container) {
 export function initFieldsManager() {
     const container = document.getElementById('vnpt-fields-container');
 
-    // Toggle Hiện cột IDs
-    const chkShowIds = document.getElementById('vnpt-chk-show-ids');
-    if (chkShowIds && container) {
-        const isShowIds = Storage.get('vnpt_show_ids') === 'true';
-        chkShowIds.checked = isShowIds;
-        if (isShowIds) container.classList.add('show-ids');
-
-        chkShowIds.addEventListener('change', (e) => {
-            const checked = e.target.checked;
-            Storage.set('vnpt_show_ids', checked ? 'true' : 'false');
-            if (checked) container.classList.add('show-ids');
-            else container.classList.remove('show-ids');
-        });
-    }
-
-    // Toggle Hiện phím chức năng
-    const chkShowTools = document.getElementById('vnpt-chk-show-tools');
-    if (chkShowTools && container) {
+    // Toggle Chế độ nâng cao (gộp cả show-ids và show-row-tools)
+    const btnToggleAdvanced = document.getElementById('vnpt-btn-toggle-advanced');
+    if (btnToggleAdvanced && container) {
         // Load state
-        const isShowTools = Storage.get('vnpt_show_row_tools') === 'true';
-        chkShowTools.checked = isShowTools;
-        if (isShowTools) container.classList.add('show-row-tools');
+        const isAdvanced = Storage.get('vnpt_advanced_mode') === 'true';
 
-        // Toggle state
-        chkShowTools.addEventListener('change', (e) => {
-            const checked = e.target.checked;
-            Storage.set('vnpt_show_row_tools', checked ? 'true' : 'false');
-            if (checked) {
-                container.classList.add('show-row-tools');
+        const updateAdvancedMode = (enabled) => {
+            if (enabled) {
+                container.classList.add('show-ids', 'show-row-tools');
+                btnToggleAdvanced.style.background = 'var(--vnpt-primary)';
+                btnToggleAdvanced.style.color = '#fff';
+                btnToggleAdvanced.innerHTML = '✅ Chế độ nâng cao';
             } else {
-                container.classList.remove('show-row-tools');
+                container.classList.remove('show-ids', 'show-row-tools');
+                btnToggleAdvanced.style.background = '';
+                btnToggleAdvanced.style.color = '';
+                btnToggleAdvanced.innerHTML = '🔧 Chế độ nâng cao';
             }
+            Storage.set('vnpt_advanced_mode', enabled ? 'true' : 'false');
+        };
+
+        // Init state
+        updateAdvancedMode(isAdvanced);
+
+        // Toggle on click
+        btnToggleAdvanced.addEventListener('click', () => {
+            const currentState = Storage.get('vnpt_advanced_mode') === 'true';
+            updateAdvancedMode(!currentState);
         });
     }
 

@@ -191,20 +191,35 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
 
         if (primaryKey === 'soDkdn') {
             const btnLookup = row.querySelector('.btn-mst-lookup');
+            if (!btnLookup) {
+                console.warn('[MST] btn-mst-lookup not found in row');
+                return;
+            }
+
+            // Đảm bảo không gán listener trùng lặp
+            if (btnLookup.dataset.listenerBound === 'true') {
+                return;
+            }
+            btnLookup.dataset.listenerBound = 'true';
+
             const handleLookup = async (e) => {
                 if (e) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-                
+
                 const mst = fVal.value.trim();
                 if (!mst) {
                     showToast("⚠️ Vui lòng nhập mã số thuế", "#ffc107");
                     return;
                 }
 
-                if (btnLookup.classList.contains('loading')) return;
+                if (btnLookup.classList.contains('loading')) {
+                    console.log('[MST] Already loading, skipping...');
+                    return;
+                }
 
+                console.log('[MST] Starting lookup for:', mst);
                 btnLookup.classList.add('loading');
                 try {
                     const info = await mstService.lookupMST(mst);
@@ -230,10 +245,11 @@ export function addOrUpdateFieldRow(keyText, valueText, labelText = null, syncTe
                     showToast("❌ Lỗi khi tra cứu MST", "#ea4335");
                 } finally {
                     btnLookup.classList.remove('loading');
+                    console.log('[MST] Lookup completed');
                 }
             };
 
-            btnLookup.addEventListener('click', handleLookup);
+            btnLookup.addEventListener('click', handleLookup, { once: false });
             fVal.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     handleLookup(e);
