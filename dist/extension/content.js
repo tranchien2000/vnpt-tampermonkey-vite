@@ -1141,6 +1141,7 @@
     VALIDATION_REGEX
   }, Symbol.toStringTag, { value: "Module" }));
   let toastContainer = null;
+  const activeToasts = /* @__PURE__ */ new Map();
   function showToast(msg, color = "#198754", duration = 2500) {
     if (!toastContainer) {
       toastContainer = document.createElement("div");
@@ -1160,8 +1161,32 @@
       });
       document.body.appendChild(toastContainer);
     }
+    const toastKey = `${msg}|${color}`;
+    if (activeToasts.has(toastKey)) {
+      const existing = activeToasts.get(toastKey);
+      existing.count++;
+      const badge2 = existing.element.querySelector(".toast-badge");
+      if (badge2) {
+        badge2.textContent = `×${existing.count}`;
+        badge2.style.display = "inline-block";
+        badge2.style.transform = "scale(1.3)";
+        setTimeout(() => {
+          badge2.style.transform = "scale(1)";
+        }, 150);
+      }
+      clearTimeout(existing.timer);
+      existing.timer = setTimeout(() => {
+        fadeOutAndRemove(existing.element, toastKey);
+      }, duration);
+      existing.element.style.opacity = "1";
+      existing.element.style.transform = "translateY(0)";
+      return;
+    }
     const t = document.createElement("div");
-    t.innerText = msg;
+    t.innerHTML = `
+        <span class="toast-message">${msg}</span>
+        <span class="toast-badge" style="display: none;">×1</span>
+    `;
     Object.assign(t.style, {
       background: color,
       color: "#fff",
@@ -1175,21 +1200,42 @@
       fontFamily: "'Segoe UI', Roboto, sans-serif",
       boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
       whiteSpace: "nowrap",
-      pointerEvents: "auto"
+      pointerEvents: "auto",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px"
+    });
+    const badge = t.querySelector(".toast-badge");
+    Object.assign(badge.style, {
+      background: "rgba(255,255,255,0.25)",
+      padding: "2px 6px",
+      borderRadius: "12px",
+      fontSize: "11px",
+      fontWeight: "700",
+      transition: "transform 0.15s"
     });
     toastContainer.appendChild(t);
     requestAnimationFrame(() => {
       t.style.opacity = "1";
       t.style.transform = "translateY(0)";
     });
-    setTimeout(() => {
-      t.style.opacity = "0";
-      t.style.transform = "translateY(-10px)";
-      setTimeout(() => {
-        t.remove();
-        if (toastContainer && toastContainer.childNodes.length === 0) ;
-      }, 300);
+    const timer = setTimeout(() => {
+      fadeOutAndRemove(t, toastKey);
     }, duration);
+    activeToasts.set(toastKey, {
+      element: t,
+      count: 1,
+      timer
+    });
+  }
+  function fadeOutAndRemove(element, toastKey) {
+    element.style.opacity = "0";
+    element.style.transform = "translateY(-10px)";
+    setTimeout(() => {
+      element.remove();
+      activeToasts.delete(toastKey);
+      if (toastContainer && toastContainer.childNodes.length === 0) ;
+    }, 300);
   }
   const DB_NAME$2 = "vnpt_templates_db";
   const STORE_NAME$1 = "buffers";
