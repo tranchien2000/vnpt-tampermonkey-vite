@@ -1,5 +1,5 @@
 {
-  "version": "1.8.5",
+  "version": "1.8.6",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "fix: Sua script release - them git tag va hoi message truoc khi commit"
+  "message": "v1.8.6 - Fix linh tinh"
 }
