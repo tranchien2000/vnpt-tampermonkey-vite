@@ -45,5 +45,9 @@ run(`git commit -m "${commitMsg}"`);
 run('git pull --rebase origin main');
 run('git push');
 
+// 5. Tạo tag và push tag lên GitHub
+run(`git tag -a v${newVersion} -m "Release v${newVersion} - ${userMsg}"`);
+run('git push --tags');
+
 console.log(`\n🎉 Đã hoàn tất Release v${newVersion}!`);
 console.log(`🚀 Hệ thống thông báo cập nhật sẽ sớm hiển thị trên máy user.`);
