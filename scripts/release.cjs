@@ -86,11 +86,41 @@ fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 2));
 console.log(`Updated version.json message: ${commitMsg}`);
 
 // 7. Git actions
+console.log('\n=== Git Operations ===');
+
+// Kiểm tra xem có thay đổi chưa commit không
+try {
+    const status = execSync('git status --porcelain', { encoding: 'utf8' });
+    if (!status.trim()) {
+        console.log('No changes to commit. Exiting...');
+        process.exit(0);
+    }
+} catch (e) {
+    console.error('Failed to check git status');
+    process.exit(1);
+}
+
 run('git add .');
 run(`git commit -m "${commitMsg}"`);
-// Pull rebase trước để tránh lỗi non-fast-forward (do GitHub Action tạo commit trên remote)
-run('git pull --rebase origin main');
-run('git push');
+
+// Pull với merge strategy để tránh rebase conflict
+console.log('Syncing with remote...');
+try {
+    execSync('git fetch origin main', { stdio: 'inherit' });
+    const localCommit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+    const remoteCommit = execSync('git rev-parse origin/main', { encoding: 'utf8' }).trim();
+
+    if (localCommit !== remoteCommit) {
+        console.log('Remote has new commits, pulling...');
+        execSync('git pull origin main --no-rebase --no-edit', { stdio: 'inherit' });
+    } else {
+        console.log('Already up to date with remote.');
+    }
+} catch (e) {
+    console.log('Pull failed or no remote updates, continuing...');
+}
+
+run('git push origin main');
 
 // 8. Tạo tag và push tag lên GitHub
 run(`git tag -a v${newVersion} -m "Release v${newVersion} - ${userMsg}"`);

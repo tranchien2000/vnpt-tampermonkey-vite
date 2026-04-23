@@ -4,7 +4,9 @@
       "Bash(npm run *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(rm -f nul)"
+      "Bash(rm -f nul)",
+      "Bash(git push *)",
+      "Bash(git commit -m 'chore: Sync version to 1.8.11 và cải thiện git workflow *)"
     ]
   }
 }
