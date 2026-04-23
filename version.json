@@ -1,5 +1,5 @@
 {
   "version": "1.8.8",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "Merge remote-tracking branch 'origin/main' - keep local v1.8.11"
+  "message": "docs: Thêm Karpathy Coding Guidelines vào CLAUDE.md"
 }
