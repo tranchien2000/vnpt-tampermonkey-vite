@@ -1228,7 +1228,7 @@
       return true;
     }
   });
-  const version$4 = "1.8.14";
+  const version$4 = "1.8.15";
   const pkg = {
     version: version$4
   };

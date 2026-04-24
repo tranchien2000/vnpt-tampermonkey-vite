@@ -1,5 +1,5 @@
 {
-  "version": "1.8.14",
+  "version": "1.8.15",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.8.14 - 1 tính năng mới"
+  "message": "v1.8.15 - Cập nhật tính năng mới"
 }
