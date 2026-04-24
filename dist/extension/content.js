@@ -1257,7 +1257,22 @@
     "xaIdNew, diaChiTruSoXaIdNew": "Quận/Huyện - Xã/Phường",
     "tinhIdNew, tinhId, diaChiTruSoTinhIdNew": "Tỉnh/Thành phố"
   };
-  const REQUIRED_KEYS = ["soHopDong", "tenDaiDienn", "cmnd", "sdt", "diaChi", "tenToChuc", "ngayCapCustomer", "emailDaiDien", "soDkdn", "goiDV"];
+  const REQUIRED_KEYS = [
+    "soHopDong",
+    "tenDaiDienn",
+    "cmnd",
+    "sdt",
+    "diaChi",
+    "tenToChuc",
+    "ngayCapCustomer",
+    "ngayCapSoDkdnCustomer",
+    // Ngày Cấp ĐKKD
+    "noiCapSoDkdn",
+    // Nơi cấp ĐKDN/QĐTL/GPTL
+    "emailDaiDien",
+    "soDkdn",
+    "goiDV"
+  ];
   const LOCAL_KEY_FIELDS = "vnpt_docx_fields";
   const LOCAL_KEY_DEFAULT_FIELDS = "vnpt_docx_default_fields";
   const LOCAL_KEY_POS = "vnpt_docx_position";

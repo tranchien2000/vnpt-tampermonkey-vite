@@ -32,7 +32,20 @@ export const DEFAULT_LABELS = {
     'tinhIdNew, tinhId, diaChiTruSoTinhIdNew': 'Tỉnh/Thành phố',
 };
 
-export const REQUIRED_KEYS = ['soHopDong', 'tenDaiDienn', 'cmnd', 'sdt', 'diaChi', 'tenToChuc', 'ngayCapCustomer', 'emailDaiDien', 'soDkdn', 'goiDV'];
+export const REQUIRED_KEYS = [
+    'soHopDong',
+    'tenDaiDienn',
+    'cmnd',
+    'sdt',
+    'diaChi',
+    'tenToChuc',
+    'ngayCapCustomer',
+    'ngayCapSoDkdnCustomer',  // Ngày Cấp ĐKKD
+    'noiCapSoDkdn',           // Nơi cấp ĐKDN/QĐTL/GPTL
+    'emailDaiDien',
+    'soDkdn',
+    'goiDV'
+];
 
 // VNPT Docx Export Widget Keys
 export const LOCAL_KEY_FIELDS = 'vnpt_docx_fields';
