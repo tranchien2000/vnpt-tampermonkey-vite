@@ -36,6 +36,52 @@ function askQuestion(question) {
 
 async function main() {
 
+console.log('\n=== Pre-flight Check ===');
+
+// 0. Sync với remote TRƯỚC KHI làm bất cứ thứ gì
+console.log('Syncing with remote...');
+try {
+    // Fetch latest từ remote
+    execSync('git fetch origin main', { stdio: 'inherit' });
+
+    // Kiểm tra xem có diverge không
+    const localCommit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+    const remoteCommit = execSync('git rev-parse origin/main', { encoding: 'utf8' }).trim();
+
+    if (localCommit !== remoteCommit) {
+        console.log('⚠️  Local và remote đã diverge!');
+        console.log('Pulling latest changes...');
+
+        // Stash local changes nếu có
+        const hasChanges = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
+        if (hasChanges) {
+            console.log('Stashing local changes...');
+            execSync('git stash', { stdio: 'inherit' });
+        }
+
+        // Pull với merge
+        execSync('git pull origin main --no-rebase --no-edit', { stdio: 'inherit' });
+
+        // Pop stash nếu có
+        if (hasChanges) {
+            console.log('Restoring local changes...');
+            try {
+                execSync('git stash pop', { stdio: 'inherit' });
+            } catch (e) {
+                console.log('⚠️  Có conflict khi restore changes. Vui lòng resolve thủ công.');
+                process.exit(1);
+            }
+        }
+
+        console.log('✅ Synced with remote successfully!');
+    } else {
+        console.log('✅ Already up to date with remote.');
+    }
+} catch (e) {
+    console.error('❌ Failed to sync with remote:', e.message);
+    process.exit(1);
+}
+
 const pkgPath = path.join(__dirname, '../package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
@@ -104,23 +150,51 @@ run('git add .');
 run(`git commit -m "${commitMsg}"`);
 
 // Pull với merge strategy để tránh rebase conflict
-console.log('Syncing with remote...');
+console.log('Final sync before push...');
 try {
     execSync('git fetch origin main', { stdio: 'inherit' });
     const localCommit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
     const remoteCommit = execSync('git rev-parse origin/main', { encoding: 'utf8' }).trim();
 
     if (localCommit !== remoteCommit) {
-        console.log('Remote has new commits, pulling...');
+        console.log('⚠️  Remote has new commits, pulling...');
         execSync('git pull origin main --no-rebase --no-edit', { stdio: 'inherit' });
     } else {
-        console.log('Already up to date with remote.');
+        console.log('✅ Already up to date with remote.');
     }
 } catch (e) {
-    console.log('Pull failed or no remote updates, continuing...');
+    console.log('⚠️  Pull failed, will retry after push fails...');
 }
 
-run('git push origin main');
+// Push với retry logic
+console.log('Pushing to remote...');
+let pushSuccess = false;
+let retries = 3;
+
+while (!pushSuccess && retries > 0) {
+    try {
+        execSync('git push origin main', { stdio: 'inherit' });
+        pushSuccess = true;
+        console.log('✅ Push successful!');
+    } catch (e) {
+        retries--;
+        if (retries > 0) {
+            console.log(`⚠️  Push failed, retrying... (${retries} attempts left)`);
+            console.log('Syncing with remote...');
+            try {
+                execSync('git pull origin main --no-rebase --no-edit', { stdio: 'inherit' });
+            } catch (pullError) {
+                console.error('❌ Pull failed:', pullError.message);
+                console.log('Please resolve conflicts manually and run: git push origin main');
+                process.exit(1);
+            }
+        } else {
+            console.error('❌ Push failed after 3 attempts');
+            console.log('Please check your network and try: git push origin main');
+            process.exit(1);
+        }
+    }
+}
 
 // 8. Tạo tag và push tag lên GitHub
 run(`git tag -a v${newVersion} -m "Release v${newVersion} - ${userMsg}"`);
