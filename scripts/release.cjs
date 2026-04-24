@@ -34,6 +34,68 @@ function askQuestion(question) {
     });
 }
 
+function generateChangelog() {
+    try {
+        // Lấy tag gần nhất
+        let lastTag;
+        try {
+            lastTag = execSync('git describe --tags --abbrev=0', { encoding: 'utf8' }).trim();
+        } catch (e) {
+            // Nếu chưa có tag nào, lấy từ commit đầu tiên
+            lastTag = execSync('git rev-list --max-parents=0 HEAD', { encoding: 'utf8' }).trim();
+        }
+
+        // Lấy commits từ tag gần nhất đến HEAD
+        const commits = execSync(`git log ${lastTag}..HEAD --pretty=format:"%s" --no-merges`, { encoding: 'utf8' })
+            .split('\n')
+            .filter(line => line.trim() && !line.includes('[skip ci]'));
+
+        if (commits.length === 0) {
+            return null;
+        }
+
+        // Phân loại commits theo type
+        const changelog = {
+            feat: [],
+            fix: [],
+            refactor: [],
+            chore: [],
+            docs: [],
+            style: [],
+            other: []
+        };
+
+        commits.forEach(commit => {
+            const match = commit.match(/^(\w+)(?:\([\w-]+\))?: (.+)$/);
+            if (match) {
+                const [, type, message] = match;
+                if (changelog[type]) {
+                    changelog[type].push(message);
+                } else {
+                    changelog.other.push(commit);
+                }
+            } else {
+                changelog.other.push(commit);
+            }
+        });
+
+        // Tạo summary
+        let summary = [];
+        if (changelog.feat.length > 0) summary.push(`${changelog.feat.length} tính năng mới`);
+        if (changelog.fix.length > 0) summary.push(`${changelog.fix.length} lỗi đã sửa`);
+        if (changelog.refactor.length > 0) summary.push(`${changelog.refactor.length} cải tiến`);
+
+        return {
+            summary: summary.join(', ') || 'Cập nhật',
+            details: changelog,
+            commits: commits
+        };
+    } catch (e) {
+        console.log('Could not generate changelog:', e.message);
+        return null;
+    }
+}
+
 async function main() {
 
 console.log('\n=== Pre-flight Check ===');
@@ -116,15 +178,84 @@ if (fs.existsSync(userScriptPath)) {
     console.log(`Updated @version in myscript.user.js to: ${newVersion}`);
 }
 
-// 5. Commit message - hỏi nếu không truyền argument
+// 5. Tạo changelog tự động
+console.log('\n=== Generating Changelog ===');
+const changelog = generateChangelog();
+
 let userMsg = process.argv[2];
-if (!userMsg) {
-    userMsg = await askQuestion(`\nNhap mo ta release v${newVersion}: `);
+let commitMsg;
+let releaseNotes = '';
+
+if (changelog) {
+    console.log('\n📝 Các thay đổi từ lần release trước:');
+    console.log(`   ${changelog.summary}`);
+    console.log('\nChi tiết:');
+
+    if (changelog.details.feat.length > 0) {
+        console.log(`  ✨ Tính năng mới (${changelog.details.feat.length}):`);
+        changelog.details.feat.forEach(msg => console.log(`     - ${msg}`));
+    }
+    if (changelog.details.fix.length > 0) {
+        console.log(`  🐛 Sửa lỗi (${changelog.details.fix.length}):`);
+        changelog.details.fix.forEach(msg => console.log(`     - ${msg}`));
+    }
+    if (changelog.details.refactor.length > 0) {
+        console.log(`  ♻️  Cải tiến (${changelog.details.refactor.length}):`);
+        changelog.details.refactor.forEach(msg => console.log(`     - ${msg}`));
+    }
+    if (changelog.details.chore.length > 0) {
+        console.log(`  🔧 Bảo trì (${changelog.details.chore.length}):`);
+        changelog.details.chore.forEach(msg => console.log(`     - ${msg}`));
+    }
+    if (changelog.details.docs.length > 0) {
+        console.log(`  📚 Tài liệu (${changelog.details.docs.length}):`);
+        changelog.details.docs.forEach(msg => console.log(`     - ${msg}`));
+    }
+
+    // Tạo release notes cho GitHub
+    releaseNotes = '## 📝 Changelog\n\n';
+    if (changelog.details.feat.length > 0) {
+        releaseNotes += '### ✨ Tính năng mới\n';
+        changelog.details.feat.forEach(msg => releaseNotes += `- ${msg}\n`);
+        releaseNotes += '\n';
+    }
+    if (changelog.details.fix.length > 0) {
+        releaseNotes += '### 🐛 Sửa lỗi\n';
+        changelog.details.fix.forEach(msg => releaseNotes += `- ${msg}\n`);
+        releaseNotes += '\n';
+    }
+    if (changelog.details.refactor.length > 0) {
+        releaseNotes += '### ♻️ Cải tiến\n';
+        changelog.details.refactor.forEach(msg => releaseNotes += `- ${msg}\n`);
+        releaseNotes += '\n';
+    }
+
+    // Đề xuất message
+    if (!userMsg) {
+        console.log(`\n💡 Đề xuất: "${changelog.summary}"`);
+        userMsg = await askQuestion(`\nNhập mô tả release v${newVersion} (Enter để dùng đề xuất): `);
+        if (!userMsg) {
+            userMsg = changelog.summary;
+        }
+    }
+} else {
+    if (!userMsg) {
+        userMsg = await askQuestion(`\nNhập mô tả release v${newVersion}: `);
+    }
 }
+
 if (!userMsg) {
-    userMsg = 'Cap nhat tinh nang moi';
+    userMsg = 'Cập nhật tính năng mới';
 }
-const commitMsg = `v${newVersion} - ${userMsg}`;
+
+commitMsg = `v${newVersion} - ${userMsg}`;
+
+// Lưu release notes vào file tạm
+if (releaseNotes) {
+    const releaseNotesPath = path.join(__dirname, '../.release-notes.md');
+    fs.writeFileSync(releaseNotesPath, releaseNotes);
+    console.log(`\n✅ Release notes saved to .release-notes.md`);
+}
 
 // 6. Cập nhật message trong version.json
 versionJson.message = commitMsg;
