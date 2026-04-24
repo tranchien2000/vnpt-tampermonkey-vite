@@ -1,5 +1,5 @@
 {
-  "version": "1.8.12",
+  "version": "1.8.13",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "fix: Triệt để fix lỗi non-fast-forward trong release script"
+  "message": "v1.8.13 - 1 tính năng mới"
 }
