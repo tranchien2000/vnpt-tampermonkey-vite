@@ -195,26 +195,50 @@ export function initWidget() {
         <div id="vnpt-tips-modal" class="vnpt-tips-modal" style="display: none;">
             <div class="vnpt-tips-content">
                 <div class="vnpt-tips-header">
-                    <h2>💡 Hướng Dẫn Sử Dụng</h2>
+                    <h2>💡 Hướng Dẫn Sử Dụng VNPT PRO v${APP_VERSION}</h2>
                     <button class="vnpt-tips-close" id="vnpt-tips-close">✕</button>
                 </div>
                 <div class="vnpt-tips-body">
                     <div class="tips-section">
                         <h3>🚀 Bắt Đầu Nhanh</h3>
                         <ul>
-                            <li><strong>📊 Quét (F1):</strong> Lấy dữ liệu từ form web vào bảng</li>
-                            <li><strong>📝 Điền (F2):</strong> Điền dữ liệu từ bảng lên form web</li>
-                            <li><strong>📤 Export (F3):</strong> Xuất file DOCX</li>
-                            <li><strong>🤖 AI (F4):</strong> Quét PDF/Ảnh/Email bằng AI</li>
+                            <li><strong>📊 Quét:</strong> Lấy dữ liệu từ form web vào bảng</li>
+                            <li><strong>📝 Điền:</strong> Điền dữ liệu từ bảng lên form web</li>
+                            <li><strong>📄 Export:</strong> Xuất file DOCX theo template</li>
+                            <li><strong>🤖 AI:</strong> Quét PDF/Ảnh/Email bằng Gemini AI</li>
                         </ul>
                     </div>
 
                     <div class="tips-section">
-                        <h3>⏪ Khôi Phục Dữ Liệu</h3>
+                        <h3>🔐 Tài Khoản Cloud</h3>
                         <ul>
-                            <li><strong>Click trái:</strong> Xem 20 bản sao lưu gần nhất</li>
-                            <li><strong>Click phải:</strong> Khôi phục nhanh bản gần nhất</li>
-                            <li>Hệ thống tự động lưu khi Quét/Dọn dẹp</li>
+                            <li><strong>Đăng nhập:</strong> Click ☁️ → Nhập email/password</li>
+                            <li><strong>Quên mật khẩu:</strong> Click "Quên mật khẩu?" → Nhận email reset</li>
+                            <li><strong>Đổi avatar:</strong> Click vào avatar → Chọn ảnh (auto resize 200x200)</li>
+                            <li><strong>📤 Push:</strong> Đẩy data lên cloud</li>
+                            <li><strong>📥 Pull:</strong> Kéo data từ cloud về</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>🧮 Calc Widget (Tính Thuế)</h3>
+                        <ul>
+                            <li>Nhập <strong>Trước thuế</strong> hoặc <strong>Sau thuế</strong></li>
+                            <li>Điều chỉnh thuế suất (%) nếu cần</li>
+                            <li>Kết quả tự động: Trước thuế, Tiền thuế, Sau thuế, Bằng chữ</li>
+                            <li>Click <strong>🔄</strong> để đồng bộ lên form</li>
+                            <li><em>Lưu ý: Đã bỏ click-to-copy, giờ click để edit</em></li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>⏪ Khôi Phục & Backup</h3>
+                        <ul>
+                            <li><strong>⏪:</strong> Khôi phục bản gần nhất</li>
+                            <li><strong>Dropdown:</strong> Chọn từ 20 bản lưu gần nhất</li>
+                            <li><strong>📤 Export JSON:</strong> Backup toàn bộ ra file</li>
+                            <li><strong>📥 Import JSON:</strong> Khôi phục từ file backup</li>
+                            <li>Tự động lưu khi click 🗑 Dọn dẹp</li>
                         </ul>
                     </div>
 
@@ -222,18 +246,19 @@ export function initWidget() {
                         <h3>✅ Chế Độ Nâng Cao</h3>
                         <ul>
                             <li><strong>Checkbox:</strong> Chọn nhiều trường để xử lý hàng loạt</li>
-                            <li><strong>↔ ↓ ↑:</strong> Điều khiển chiều đồng bộ</li>
-                            <li><strong>🔗:</strong> Liên kết thủ công với element (Esc để hủy)</li>
-                            <li><strong>Cột Key:</strong> Hiển thị biến DOCX và ID</li>
+                            <li><strong>↔ ↓ ↑:</strong> Điều khiển chiều đồng bộ (2-way, Widget→Form, Form→Widget)</li>
+                            <li><strong>🔗 Linking Mode:</strong> Highlight các field đang sync</li>
+                            <li><strong>Cột Key:</strong> Hiển thị biến DOCX (@key) và ID element</li>
                         </ul>
                     </div>
 
                     <div class="tips-section">
                         <h3>🔍 Tra Cứu MST</h3>
                         <ul>
-                            <li>Nhập mã số thuế vào trường <strong>Số ĐKDN</strong></li>
+                            <li>Nhập mã số thuế vào trường <strong>Mã số thuế | GPKD</strong></li>
                             <li>Click nút <strong>🔍</strong> bên phải</li>
-                            <li>Thông tin doanh nghiệp tự động điền</li>
+                            <li>Thông tin doanh nghiệp tự động điền (Tên, Địa chỉ, Người đại diện)</li>
+                            <li>Nguồn: Xinvoice API</li>
                         </ul>
                     </div>
 
@@ -241,29 +266,63 @@ export function initWidget() {
                         <h3>🧹 Dọn Dẹp</h3>
                         <ul>
                             <li><strong>Click thường:</strong> Xóa giá trị (giữ hàng)</li>
-                            <li><strong>Shift + Click:</strong> Xóa hẳn các hàng</li>
-                            <li>Tự động tạo bản sao lưu trước khi xóa</li>
+                            <li><strong>Shift + Click:</strong> Xóa hẳn các hàng đã chọn</li>
+                            <li>Tự động tạo bản backup trước khi xóa</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>📌 Widget Controls</h3>
+                        <ul>
+                            <li><strong>📌 Ghim:</strong> Thu gọn widget, tự động mở khi hover</li>
+                            <li><strong>Resize:</strong> Kéo 4 góc để thay đổi kích thước</li>
+                            <li><strong>Drag:</strong> Kéo header để di chuyển</li>
+                            <li><strong>Size presets:</strong> S / M / L / MAX</li>
+                            <li><em>Fix: Ghim widget không bị đóng khi chọn datalist</em></li>
                         </ul>
                     </div>
 
                     <div class="tips-section">
                         <h3>⌨️ Phím Tắt</h3>
                         <ul>
-                            <li><strong>F1:</strong> Quét dữ liệu</li>
-                            <li><strong>F2:</strong> Điền dữ liệu</li>
-                            <li><strong>F3:</strong> Export DOCX</li>
-                            <li><strong>F4:</strong> AI Scanner</li>
-                            <li><strong>Shift + Scroll:</strong> Toggle Default ↔ Personal</li>
+                            <li><strong>Ctrl+Shift+S:</strong> Quét dữ liệu</li>
+                            <li><strong>Ctrl+Shift+F:</strong> Điền dữ liệu</li>
+                            <li><strong>Ctrl+Shift+E:</strong> Export DOCX</li>
+                            <li><strong>Ctrl+Shift+C:</strong> Dọn dẹp & backup</li>
+                            <li><em>Có thể tùy chỉnh trong ⚙️ Settings</em></li>
                         </ul>
                     </div>
 
                     <div class="tips-section">
-                        <h3>💡 Mẹo Hay</h3>
+                        <h3>💡 Tips & Tricks</h3>
                         <ul>
-                            <li>Dùng <strong>🎨 Default</strong> để quản lý template mặc định</li>
-                            <li>Dữ liệu Default và Personal lưu riêng biệt</li>
-                            <li>AI Scanner hỗ trợ PDF, ảnh, email</li>
-                            <li>Cloud Sync để đồng bộ nhiều thiết bị</li>
+                            <li><strong>Profiles:</strong> Tạo profile riêng cho từng chi nhánh</li>
+                            <li><strong>Template:</strong> Upload template DOCX với placeholder @key</li>
+                            <li><strong>AI Scanner:</strong> Hỗ trợ PDF, ảnh, Gmail, Outlook</li>
+                            <li><strong>Cloud Sync:</strong> Đồng bộ cross-device qua Firebase</li>
+                            <li><strong>History:</strong> Datalist tự động lưu giá trị đã nhập</li>
+                            <li><strong>Validation:</strong> Tự động kiểm tra trường bắt buộc</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>🆕 Tính Năng Mới (v1.8.18)</h3>
+                        <ul>
+                            <li>✅ Reset password qua email</li>
+                            <li>✅ Upload avatar (auto resize 200x200px)</li>
+                            <li>✅ Data sync localStorage (userscript ↔ extension)</li>
+                            <li>✅ Mutual exclusion (chỉ 1 bản chạy)</li>
+                            <li>✅ Fix pinned panel datalist issue</li>
+                            <li>✅ Bỏ click-to-copy ở calculator</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3>📚 Tài Liệu & Hỗ Trợ</h3>
+                        <ul>
+                            <li><strong>README:</strong> <a href="https://github.com/tranchien2000/vnpt-tampermonkey-vite#readme" target="_blank">Hướng dẫn chi tiết</a></li>
+                            <li><strong>Issues:</strong> <a href="https://github.com/tranchien2000/vnpt-tampermonkey-vite/issues" target="_blank">Báo lỗi</a></li>
+                            <li><strong>Update:</strong> Script tự động kiểm tra phiên bản mới</li>
                         </ul>
                     </div>
                 </div>
