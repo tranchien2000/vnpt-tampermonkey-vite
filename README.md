@@ -1,6 +1,6 @@
 # VNPT Automation Tool — Tampermonkey Userscript (Vite)
 
-> **Phiên bản:** 1.6.17 &nbsp;|&nbsp; **Build Tool:** Vite 5 &nbsp;|&nbsp; **Môi trường:** Tampermonkey / hopdong.vnpt.vn
+> **Phiên bản:** 1.8.17 &nbsp;|&nbsp; **Build Tool:** Vite 5 &nbsp;|&nbsp; **Môi trường:** Tampermonkey / hopdong.vnpt.vn
 
 Userscript tối ưu hóa và tự động hóa toàn bộ luồng quy trình nghiệp vụ trên hệ thống VNPT:
 - **AI Multi-source Scanner**: Bóc tách dữ liệu thông minh từ PDF, Ảnh, Gmail, Outlook và Screen Capture thông qua Gemini AI.
@@ -8,11 +8,13 @@ Userscript tối ưu hóa và tự động hóa toàn bộ luồng quy trình ng
 - **Xuất file DOCX**: Render tài liệu theo template chuyên nghiệp hỗ trợ cả Cloud (Google Drive) và Local.
 - **Tính thuế & Phí**: Bộ công cụ Calc Widget thông minh, tự động điền kết quả vào các trường tương ứng trên trang.
 - **Quản lý Lịch sử & Cloud Sync**: Lưu trữ an toàn 20 phiên làm việc gần nhất và đồng bộ dữ liệu qua Firebase.
+- **Account Management**: Đăng nhập/đăng ký, reset password, upload avatar, đồng bộ dữ liệu cross-device.
 
 ---
 
 ## 📖 Mục lục
 
+- [Hướng dẫn sử dụng](#-hướng-dẫn-sử-dụng)
 - [Tổng quan kiến trúc](#-tổng-quan-kiến-trúc)
 - [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
 - [Module Map chi tiết](#-module-map-chi-tiết)
@@ -21,6 +23,273 @@ Userscript tối ưu hóa và tự động hóa toàn bộ luồng quy trình ng
 - [Tính năng chi tiết](#-tính-năng-chi-tiết)
 - [Cấu hình & LocalStorage Keys](#-cấu-hình--localstorage-keys)
 - [Quy tắc dành cho AI Agent](#-quy-tắc-dành-cho-ai-agent)
+
+---
+
+## 📘 Hướng dẫn sử dụng
+
+### 🚀 Cài đặt
+
+#### **Phương án 1: Userscript (Khuyến nghị)**
+
+1. **Cài đặt Tampermonkey:**
+   - Chrome: [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+   - Firefox: [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
+   - Edge: [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
+
+2. **Cài đặt Script:**
+   - Click vào link: [VNPT Automation Tool](https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js)
+   - Tampermonkey sẽ tự động mở tab cài đặt
+   - Click "Install" để hoàn tất
+
+3. **Tự động cập nhật:**
+   - Script sẽ tự động kiểm tra và thông báo khi có phiên bản mới
+   - Click vào badge "NEW" để cập nhật
+
+#### **Phương án 2: Chrome Extension (Local)**
+
+1. Build extension:
+   ```bash
+   npm run build:ext
+   ```
+
+2. Load unpacked extension:
+   - Mở `chrome://extensions/`
+   - Bật "Developer mode"
+   - Click "Load unpacked"
+   - Chọn thư mục `dist/extension/`
+
+---
+
+### 🎯 Tính năng chính
+
+#### **1. Quét dữ liệu (AI Scanner)**
+
+**Quét từ PDF/Ảnh:**
+1. Click nút **"🤖 AI"** trên header
+2. Chọn file PDF hoặc ảnh (JPG, PNG)
+3. Chọn loại tài liệu: Hợp đồng, CMND/CCCD, ĐKKD
+4. Click **"Quét ngay"**
+5. Đợi AI xử lý (5-15 giây)
+6. Dữ liệu tự động điền vào bảng
+
+**Quét từ Gmail/Outlook:**
+1. Mở email chứa thông tin khách hàng
+2. Script tự động phát hiện và hiện nút **"📧 Quét Email"**
+3. Click để bóc tách thông tin
+4. Dữ liệu được lưu vào localStorage
+5. Mở trang hopdong.vnpt.vn → dữ liệu tự động sync
+
+**Quét từ Web Form:**
+1. Điền thông tin vào form trên hopdong.vnpt.vn
+2. Click nút **"📊 Quét"**
+3. Dữ liệu từ form được lấy về widget
+4. Chỉnh sửa và lưu lại
+
+---
+
+#### **2. Tính thuế & Phí (Calc Widget)**
+
+**Vị trí:** Inline trong form hoặc floating widget
+
+**Cách dùng:**
+1. Nhập giá trị **Trước thuế** hoặc **Sau thuế**
+2. Điều chỉnh thuế suất (%) nếu cần
+3. Kết quả tự động tính:
+   - Trước thuế
+   - Tiền thuế
+   - Sau thuế
+   - Bằng chữ (tiếng Việt)
+4. Click **🔄** để đồng bộ lên form web
+
+**Lưu ý:**
+- Giá trị được lưu vào history (datalist)
+- Không còn tính năng click-to-copy (đã bỏ từ v1.8.16)
+
+---
+
+#### **3. Đồng bộ dữ liệu (Real-time Sync)**
+
+**Chế độ đồng bộ:**
+- **Cả hai chiều:** Widget ↔ Form (mặc định)
+- **Chỉ Widget → Form:** Chỉ điền từ widget lên form
+- **Chỉ Form → Widget:** Chỉ lấy dữ liệu từ form về widget
+
+**Cách bật/tắt:**
+1. Click nút **"🔧 Chế độ nâng cao"**
+2. Chọn hướng đồng bộ
+3. Bật/tắt "Linking Mode" để highlight các field đang sync
+
+**Tính năng nâng cao:**
+- Auto-fill địa chỉ theo thứ tự: Tỉnh → Huyện → Xã
+- Debounce 400ms để tránh ghi đè AJAX
+- Validation tự động cho các trường bắt buộc
+
+---
+
+#### **4. Xuất file DOCX**
+
+**Chuẩn bị:**
+1. Upload template DOCX (chứa placeholder `@key`)
+2. Hoặc dùng template có sẵn từ Google Drive
+
+**Xuất file:**
+1. Điền đầy đủ thông tin vào bảng
+2. Click nút **"📄 Xuất DOCX"**
+3. File tự động download với tên: `HopDong_[SoHD]_[NgayKy].docx`
+
+**Template syntax:**
+```
+Tên khách hàng: @tenDaiDienn
+Số CMND: @cmnd
+Địa chỉ: @diaChi
+```
+
+---
+
+#### **5. Cloud Sync (Firebase)**
+
+**Đăng nhập/Đăng ký:**
+1. Click **"☁️ Tài khoản Cloud"** → **"Đăng nhập / Đăng ký"**
+2. Nhập email và mật khẩu
+3. Click **"Đăng nhập"** hoặc **"Đăng ký"**
+
+**Quên mật khẩu:**
+1. Click **"Quên mật khẩu?"**
+2. Nhập email
+3. Check hộp thư để nhận link reset
+
+**Upload Avatar:**
+1. Đăng nhập thành công → thấy avatar/initial
+2. Click vào avatar
+3. Chọn ảnh (tự động resize 200x200px)
+4. Click **"Cập nhật"**
+
+**Đồng bộ dữ liệu:**
+- **📤 Đẩy dữ liệu:** Upload profiles, settings, API keys lên cloud
+- **📥 Kéo dữ liệu:** Download dữ liệu từ cloud về máy này
+
+**Lợi ích:**
+- Sync data giữa nhiều máy tính
+- Backup an toàn trên cloud
+- Chia sẻ profiles giữa các thành viên team
+
+---
+
+#### **6. Quản lý Profiles (Chi nhánh)**
+
+**Tạo profile mới:**
+1. Điền thông tin mặc định cho chi nhánh (Bên B)
+2. Click **"💾 Lưu Profile"**
+3. Đặt tên: VD "VNPT Đà Nẵng"
+
+**Chuyển đổi profile:**
+1. Click dropdown profile
+2. Chọn profile cần dùng
+3. Dữ liệu mặc định tự động thay đổi
+
+**Xóa profile:**
+- Click **"🗑"** bên cạnh tên profile
+- Không thể xóa profile mặc định "VNPT Hà Nội"
+
+---
+
+#### **7. Lịch sử & Backup**
+
+**Tự động backup:**
+- Mỗi lần click **"🗑 Dọn dẹp"**, dữ liệu hiện tại được lưu vào history
+- Lưu tối đa 20 bản ghi gần nhất
+
+**Khôi phục:**
+1. Click **"⏪"** để khôi phục bản gần nhất
+2. Hoặc click dropdown để chọn bản cụ thể
+3. Dữ liệu được restore ngay lập tức
+
+**Export/Import JSON:**
+- **📤 Xuất JSON:** Backup toàn bộ dữ liệu ra file
+- **📥 Nhập JSON:** Import dữ liệu từ file backup
+
+---
+
+#### **8. Hotkeys (Phím tắt)**
+
+| Phím tắt | Chức năng |
+|----------|-----------|
+| `Ctrl+Shift+S` | Quét dữ liệu từ form |
+| `Ctrl+Shift+E` | Xuất file DOCX |
+| `Ctrl+Shift+F` | Điền dữ liệu lên form |
+| `Ctrl+Shift+C` | Dọn dẹp & backup |
+
+**Tùy chỉnh hotkeys:**
+1. Click **"⚙️"** → **"Hotkeys"**
+2. Click vào ô phím tắt cần đổi
+3. Nhấn tổ hợp phím mới
+4. Tự động lưu
+
+---
+
+### 🔧 Cài đặt nâng cao
+
+#### **Gemini API Key**
+
+1. Lấy API key miễn phí tại: [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Paste vào ô **"Gemini Key"** trong widget
+3. Chọn model: Flash 2.0 (nhanh) hoặc Pro 2.0 (chính xác)
+4. Click **"Test"** để kiểm tra kết nối
+
+#### **Firebase Config**
+
+Nếu muốn tự host Firebase:
+1. Tạo project tại [Firebase Console](https://console.firebase.google.com/)
+2. Enable Authentication (Email/Password)
+3. Enable Firestore Database
+4. Copy config vào `src/api/firebaseConfig.js`
+
+#### **Remote Config**
+
+Admin có thể cập nhật selectors từ xa:
+1. Vào Firestore → collection `settings` → document `remote_configs`
+2. Update field `selectors` với mapping mới
+3. User sẽ tự động nhận cập nhật khi reload
+
+---
+
+### 🐛 Xử lý sự cố
+
+#### **Script không chạy**
+- Kiểm tra Tampermonkey đã bật chưa
+- Refresh trang (F5)
+- Xóa cache browser
+
+#### **AI Scanner không hoạt động**
+- Kiểm tra Gemini API key đã nhập chưa
+- Test connection bằng nút "Test"
+- Kiểm tra quota API (giới hạn 15 requests/phút)
+
+#### **Cloud Sync lỗi**
+- Kiểm tra kết nối internet
+- Đăng xuất và đăng nhập lại
+- Xóa cache: `localStorage.clear()`
+
+#### **Dữ liệu bị mất**
+- Khôi phục từ history (⏪)
+- Hoặc kéo dữ liệu từ cloud (📥)
+- Hoặc import từ file JSON backup
+
+#### **Widget bị đóng khi chọn datalist**
+- Đã fix từ v1.8.16
+- Update lên phiên bản mới nhất
+
+---
+
+### 💡 Tips & Tricks
+
+1. **Ghim widget:** Click 📌 để thu gọn widget, tự động mở khi hover
+2. **Resize widget:** Kéo 4 góc để thay đổi kích thước
+3. **Drag widget:** Kéo header để di chuyển vị trí
+4. **Advanced mode:** Bật để thấy thêm các tùy chọn nâng cao
+5. **Linking mode:** Bật để highlight các field đang sync
+6. **History datalist:** Gõ vào input để thấy lịch sử giá trị đã nhập
 
 ---
 
