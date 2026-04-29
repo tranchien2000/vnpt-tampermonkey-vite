@@ -1,10 +1,12 @@
 import { auth, db } from './firebaseConfig.js';
 import { encrypt, decrypt } from '../utils/crypto.js';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged 
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  updateProfile
 } from "firebase/auth";
 import { 
   doc, 
@@ -44,6 +46,53 @@ export const FirebaseService = {
    */
   onAuthChange(callback) {
     return onAuthStateChanged(auth, callback);
+  },
+
+  /**
+   * Gửi email reset password
+   */
+  async sendPasswordReset(email) {
+    return await sendPasswordResetEmail(auth, email);
+  },
+
+  /**
+   * Cập nhật profile (displayName, photoURL)
+   */
+  async updateUserProfile(updates) {
+    const user = auth.currentUser;
+    if (!user) throw new Error("Chưa đăng nhập");
+    return await updateProfile(user, updates);
+  },
+
+  /**
+   * Upload avatar lên Firestore (base64)
+   */
+  async uploadAvatar(base64Image) {
+    const user = auth.currentUser;
+    if (!user) throw new Error("Chưa đăng nhập");
+
+    // Lưu avatar vào Firestore (hoặc có thể dùng Firebase Storage)
+    const userRef = doc(db, `users/${user.uid}/settings`, "profile");
+    await setDoc(userRef, {
+      photoURL: base64Image,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+
+    // Cập nhật photoURL trong auth profile
+    await updateProfile(user, { photoURL: base64Image });
+    return base64Image;
+  },
+
+  /**
+   * Lấy avatar từ Firestore
+   */
+  async getAvatar() {
+    const user = auth.currentUser;
+    if (!user) return null;
+
+    const userRef = doc(db, `users/${user.uid}/settings`, "profile");
+    const snap = await getDoc(userRef);
+    return snap.exists() ? snap.data().photoURL : null;
   },
 
   /**

@@ -8,12 +8,19 @@ export function initCloudSyncUI(container) {
   
   const updateUI = (user) => {
     if (user) {
+      const photoURL = user.photoURL || '';
+      const avatarHTML = photoURL
+        ? `<img src="${photoURL}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid #34a853;">`
+        : `<div style="width: 24px; height: 24px; background: #1a73e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 700;">${user.email.charAt(0).toUpperCase()}</div>`;
+
       cloudSection.innerHTML = `
         <div class="util-submenu-title">☁️ Tài khoản Cloud</div>
         <div class="cloud-user-info" style="padding: 6px 12px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; background: rgba(26, 115, 232, 0.02);">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 8px; height: 8px; background: #34a853; border-radius: 50%; box-shadow: 0 0 8px #34a853;"></div>
-            <span style="font-weight: 700; color: #3c4043; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${user.email}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div id="vnpt-user-avatar" style="cursor: pointer;" title="Click để đổi avatar">
+              ${avatarHTML}
+            </div>
+            <span style="font-weight: 700; color: #3c4043; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${user.email}</span>
           </div>
           <button class="util-btn-logout-mini" id="vnpt-btn-cloud-logout" title="Đăng xuất">Đăng xuất</button>
         </div>
@@ -122,6 +129,14 @@ export function initCloudSyncUI(container) {
         await FirebaseService.logout();
         showToast("👋 Đã đăng xuất!");
       };
+
+      // Avatar click handler
+      const avatarEl = document.getElementById('vnpt-user-avatar');
+      if (avatarEl) {
+        avatarEl.onclick = () => {
+          showAvatarUploadModal();
+        };
+      }
       
       document.getElementById('vnpt-btn-cloud-push').onclick = async () => {
         try {
@@ -262,6 +277,7 @@ function showLoginModal() {
       <div class="vnpt-pdf-actions" style="flex-direction: column; gap: 8px;">
         <button id="btn-do-login" class="vnpt-btn-confirm" style="width: 100%;">Đăng nhập</button>
         <button id="btn-do-signup" class="util-item-small" style="width: 100%; border: none; font-size: 11px;">Chưa có tài khoản? Đăng ký ngay</button>
+        <button id="btn-forgot-password" class="util-item-small" style="width: 100%; border: none; font-size: 10px; color: #1a73e8;">Quên mật khẩu?</button>
         <button id="btn-close-cloud" class="pdf-btn-cancel" style="width: 100%;">Đóng</button>
       </div>
     </div>
@@ -298,12 +314,109 @@ function showLoginModal() {
       }
     } catch (err) {
       console.error("[CloudSync] Signup Error:", err);
-      const msg = err.code === 'auth/operation-not-allowed' 
-        ? "Lỗi: Bạn chưa bật Email/Password trong Firebase Console!" 
+      const msg = err.code === 'auth/operation-not-allowed'
+        ? "Lỗi: Bạn chưa bật Email/Password trong Firebase Console!"
         : err.message;
       showToast("❌ " + msg, "#ea4335");
     }
   };
 
+  overlay.querySelector('#btn-forgot-password').onclick = async () => {
+    const email = emailInp.value.trim();
+    if (!email) {
+      showToast("⚠️ Vui lòng nhập Email trước", "#ffc107");
+      return;
+    }
+    if (confirm(`Gửi email reset password đến ${email}?`)) {
+      try {
+        await FirebaseService.sendPasswordReset(email);
+        showToast("✅ Đã gửi email reset password! Kiểm tra hộp thư của bạn.", "#34a853");
+      } catch (err) {
+        console.error("[CloudSync] Reset Password Error:", err);
+        showToast("❌ " + err.message, "#ea4335");
+      }
+    }
+  };
+
   overlay.querySelector('#btn-close-cloud').onclick = () => overlay.remove();
+}
+
+function showAvatarUploadModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'vnpt-pdf-overlay';
+  overlay.innerHTML = `
+    <div class="vnpt-pdf-dialog-box" style="width: 320px;">
+      <div class="pdf-dlg-header">
+        <h3 style="text-align: center;">📸 Đổi Avatar</h3>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; align-items: center;">
+        <div id="avatar-preview" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #1a73e8; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f1f3f4;">
+          <span style="font-size: 48px; color: #5f6368;">👤</span>
+        </div>
+        <input type="file" id="avatar-file-input" accept="image/*" style="display: none;">
+        <button id="btn-select-avatar" class="vnpt-btn-confirm" style="width: 100%;">Chọn ảnh</button>
+        <p style="font-size: 10px; color: #666; text-align: center; margin: 0;">Ảnh sẽ được resize về 200x200px</p>
+      </div>
+      <div class="vnpt-pdf-actions" style="flex-direction: column; gap: 8px;">
+        <button id="btn-upload-avatar" class="vnpt-btn-confirm" style="width: 100%;" disabled>Cập nhật</button>
+        <button id="btn-close-avatar" class="pdf-btn-cancel" style="width: 100%;">Đóng</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const fileInput = overlay.querySelector('#avatar-file-input');
+  const preview = overlay.querySelector('#avatar-preview');
+  const uploadBtn = overlay.querySelector('#btn-upload-avatar');
+  let selectedImage = null;
+
+  overlay.querySelector('#btn-select-avatar').onclick = () => {
+    fileInput.click();
+  };
+
+  fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Resize to 200x200
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+
+        // Draw image centered and cropped
+        const size = Math.min(img.width, img.height);
+        const x = (img.width - size) / 2;
+        const y = (img.height - size) / 2;
+        ctx.drawImage(img, x, y, size, size, 0, 0, 200, 200);
+
+        selectedImage = canvas.toDataURL('image/jpeg', 0.8);
+        preview.innerHTML = `<img src="${selectedImage}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        uploadBtn.disabled = false;
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  uploadBtn.onclick = async () => {
+    if (!selectedImage) return;
+    try {
+      showToast("⏳ Đang upload avatar...");
+      await FirebaseService.uploadAvatar(selectedImage);
+      showToast("✅ Đã cập nhật avatar!");
+      overlay.remove();
+      // Trigger UI refresh
+      window.location.reload();
+    } catch (err) {
+      console.error("[Avatar] Upload Error:", err);
+      showToast("❌ " + err.message, "#ea4335");
+    }
+  };
+
+  overlay.querySelector('#btn-close-avatar').onclick = () => overlay.remove();
 }
