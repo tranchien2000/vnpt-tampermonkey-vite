@@ -1503,33 +1503,25 @@
   const debounceTimers = /* @__PURE__ */ new Map();
   const Storage = {
     /**
-     * Kiểm tra xem môi trường có hỗ trợ GM_setValue/getValue không
+     * Force dùng localStorage cho cả userscript và extension để sync data
+     * (GM storage không share được giữa 2 bản)
      */
-    isGM: typeof GM_setValue !== "undefined" && typeof GM_getValue !== "undefined",
+    isGM: false,
     /**
      * Lấy dữ liệu từ storage (có cache)
-     * @param {string} key 
-     * @param {*} defaultValue 
+     * @param {string} key
+     * @param {*} defaultValue
      * @returns {*}
      */
     get(key2, defaultValue = null) {
       if (cache.has(key2)) return cache.get(key2);
       try {
-        let data;
-        if (this.isGM) {
-          data = GM_getValue(key2, null);
-        } else {
-          data = localStorage.getItem(key2);
-        }
+        const data = localStorage.getItem(key2);
         if (data === null || data === void 0) return defaultValue;
         let parsed;
-        if (typeof data === "string") {
-          try {
-            parsed = JSON.parse(data);
-          } catch (e) {
-            parsed = data;
-          }
-        } else {
+        try {
+          parsed = JSON.parse(data);
+        } catch (e) {
           parsed = data;
         }
         cache.set(key2, parsed);
@@ -1541,18 +1533,14 @@
     },
     /**
      * Lưu dữ liệu vào storage ngay lập tức
-     * @param {string} key 
-     * @param {*} value 
+     * @param {string} key
+     * @param {*} value
      */
     set(key2, value) {
       cache.set(key2, value);
       try {
         const stringified = JSON.stringify(value);
-        if (this.isGM) {
-          GM_setValue(key2, stringified);
-        } else {
-          localStorage.setItem(key2, stringified);
-        }
+        localStorage.setItem(key2, stringified);
         return true;
       } catch (e) {
         console.error(`[Storage] Không thể ghi key "${key2}":`, e);
@@ -1578,16 +1566,12 @@
     },
     /**
      * Xóa key khỏi storage
-     * @param {string} key 
+     * @param {string} key
      */
     remove(key2) {
       cache.delete(key2);
       try {
-        if (this.isGM) {
-          GM_deleteValue(key2);
-        } else {
-          localStorage.removeItem(key2);
-        }
+        localStorage.removeItem(key2);
       } catch (e) {
         console.error(`[Storage] Không thể xóa key "${key2}":`, e);
       }

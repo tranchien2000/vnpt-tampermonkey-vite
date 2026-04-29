@@ -9,38 +9,31 @@ const debounceTimers = new Map();
 
 export const Storage = {
     /**
-     * Kiểm tra xem môi trường có hỗ trợ GM_setValue/getValue không
+     * Force dùng localStorage cho cả userscript và extension để sync data
+     * (GM storage không share được giữa 2 bản)
      */
-    isGM: typeof GM_setValue !== 'undefined' && typeof GM_getValue !== 'undefined',
+    isGM: false,
 
     /**
      * Lấy dữ liệu từ storage (có cache)
-     * @param {string} key 
-     * @param {*} defaultValue 
+     * @param {string} key
+     * @param {*} defaultValue
      * @returns {*}
      */
     get(key, defaultValue = null) {
         if (cache.has(key)) return cache.get(key);
 
         try {
-            let data;
-            if (this.isGM) {
-                data = GM_getValue(key, null);
-            } else {
-                data = localStorage.getItem(key);
-            }
+            // Always use localStorage for data sync between userscript and extension
+            const data = localStorage.getItem(key);
 
             if (data === null || data === undefined) return defaultValue;
-            
+
             let parsed;
-            if (typeof data === 'string') {
-                try {
-                    parsed = JSON.parse(data);
-                } catch (e) {
-                    // Nếu không phải JSON (VD: string thuần túy từ bản cũ), trả về chính nó
-                    parsed = data;
-                }
-            } else {
+            try {
+                parsed = JSON.parse(data);
+            } catch (e) {
+                // Nếu không phải JSON (VD: string thuần túy từ bản cũ), trả về chính nó
                 parsed = data;
             }
 
@@ -54,18 +47,15 @@ export const Storage = {
 
     /**
      * Lưu dữ liệu vào storage ngay lập tức
-     * @param {string} key 
-     * @param {*} value 
+     * @param {string} key
+     * @param {*} value
      */
     set(key, value) {
         cache.set(key, value);
         try {
             const stringified = JSON.stringify(value);
-            if (this.isGM) {
-                GM_setValue(key, stringified);
-            } else {
-                localStorage.setItem(key, stringified);
-            }
+            // Always use localStorage for data sync between userscript and extension
+            localStorage.setItem(key, stringified);
             return true;
         } catch (e) {
             console.error(`[Storage] Không thể ghi key "${key}":`, e);
@@ -96,16 +86,13 @@ export const Storage = {
 
     /**
      * Xóa key khỏi storage
-     * @param {string} key 
+     * @param {string} key
      */
     remove(key) {
         cache.delete(key);
         try {
-            if (this.isGM) {
-                GM_deleteValue(key);
-            } else {
-                localStorage.removeItem(key);
-            }
+            // Always use localStorage for data sync between userscript and extension
+            localStorage.removeItem(key);
         } catch (e) {
             console.error(`[Storage] Không thể xóa key "${key}":`, e);
         }
