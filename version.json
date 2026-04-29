@@ -1,5 +1,5 @@
 {
   "version": "1.8.18",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
+  "message": "refactor: Đơn giản hóa tutorial - bỏ overlay đen, thêm arrow pointer"
 }
