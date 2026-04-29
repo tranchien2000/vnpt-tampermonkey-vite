@@ -5,3 +5,6 @@ original_script.js
 .env
 .DS_Store
 .release-notes.md
+
+# Extension build files (không push lên GitHub)
+dist/extension/
