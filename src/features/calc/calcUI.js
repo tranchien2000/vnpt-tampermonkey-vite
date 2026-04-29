@@ -162,15 +162,7 @@ export function createCalcUI(widget, container, SK_POS_CALC) {
         };
     }
 
-    // Copy on click/focus
-    [els.before, els.tax, els.after, els.text].forEach(el => {
-        ['click', 'focus'].forEach(evt => el.addEventListener(evt, () => {
-            if (!el.value) return;
-            navigator.clipboard.writeText(el.value);
-            const old = el.style.backgroundColor; el.style.backgroundColor = '#d1e7dd';
-            setTimeout(() => el.style.backgroundColor = old, 300);
-        }));
-    });
+    // Removed click-to-copy feature for easier editing
 
     // ─── Drag & Dock (Only if NOT embedded) ───
     if (!container) {
