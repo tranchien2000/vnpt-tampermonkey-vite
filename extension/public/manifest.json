@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VNPT Automation Tool (Local)",
-  "version": "1.8.16",
+  "version": "1.8.17",
   "description": "Local build - VNPT automation content scripts",
   "permissions": [
     "storage"
