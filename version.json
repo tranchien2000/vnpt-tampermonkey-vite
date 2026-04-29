@@ -1,5 +1,5 @@
 {
   "version": "1.8.18",
   "updateUrl": "https://raw.githubusercontent.com/tranchien2000/vnpt-tampermonkey-vite/main/dist/myscript.user.js",
-  "message": "v1.8.18 - Thêm reset password, avatar, và cập nhật hướng dẫn sử dụng chi tiết"
+  "message": "Merge branch 'main' of https://github.com/tranchien2000/vnpt-tampermonkey-vite"
 }
