@@ -110,19 +110,20 @@ export const panelStyles = `
         transition: none !important;
     }
 
-    #vnpt-export-panel.vnpt-pinned:not(:hover) {
+    #vnpt-export-panel.vnpt-pinned:not(:hover):not(.vnpt-pinned-expanded) {
         min-height: unset !important;
         height: 64px !important;
         width: 460px;
         overflow: hidden;
         padding-bottom: 0 !important;
     }
-    
-    #vnpt-export-panel.vnpt-pinned:not(:hover) #vnpt-panel-body {
+
+    #vnpt-export-panel.vnpt-pinned:not(:hover):not(.vnpt-pinned-expanded) #vnpt-panel-body {
         display: none !important;
     }
 
-    #vnpt-export-panel.vnpt-pinned:hover #vnpt-panel-body {
+    #vnpt-export-panel.vnpt-pinned:hover #vnpt-panel-body,
+    #vnpt-export-panel.vnpt-pinned.vnpt-pinned-expanded #vnpt-panel-body {
         display: flex !important;
     }
 `;

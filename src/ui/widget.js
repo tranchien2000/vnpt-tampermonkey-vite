@@ -347,15 +347,37 @@ export function initWidget() {
         }
     });
 
-    // Pin/Unpin Logic
+    // Pin/Unpin Logic with focus-aware expansion
     const pinBtn = document.getElementById('vnpt-btn-pin');
     if (isPinned) AppState.panel.classList.add('vnpt-pinned');
-    
+
+    // Giữ panel mở khi đang focus vào input (để chọn datalist không bị đóng)
+    let isPanelFocused = false;
+
+    AppState.panel.addEventListener('focusin', () => {
+        isPanelFocused = true;
+        if (AppState.panel.classList.contains('vnpt-pinned')) {
+            AppState.panel.classList.add('vnpt-pinned-expanded');
+        }
+    });
+
+    AppState.panel.addEventListener('focusout', (e) => {
+        // Delay để cho phép click vào datalist option
+        setTimeout(() => {
+            // Kiểm tra xem focus có còn trong panel không
+            if (!AppState.panel.contains(document.activeElement)) {
+                isPanelFocused = false;
+                AppState.panel.classList.remove('vnpt-pinned-expanded');
+            }
+        }, 200);
+    });
+
     pinBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const currentlyPinned = AppState.panel.classList.contains('vnpt-pinned');
         if (currentlyPinned) {
             AppState.panel.classList.remove('vnpt-pinned');
+            AppState.panel.classList.remove('vnpt-pinned-expanded');
             Storage.set(LOCAL_KEY_PINNED, false);
             pinBtn.innerHTML = '📎';
             pinBtn.title = 'Ghim thu gọn UI (Tự mở khi di chuột)';
