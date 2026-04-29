@@ -1531,10 +1531,21 @@ Khôi phục toàn bộ Dữ liệu Mặc định VNPT về ban đầu?`:"Dữ l
                 </div>
                 <div class="vnpt-tips-body">
                     <div class="tips-section">
+                        <h3>🎓 Tutorial Tương Tác</h3>
+                        <ul>
+                            <li><strong>Lần đầu sử dụng:</strong> Tutorial tự động hiện với hướng dẫn từng bước</li>
+                            <li><strong>Highlight nhẹ:</strong> Vòng sáng xung quanh nút, không che khuất UI</li>
+                            <li><strong>Arrow pointer:</strong> Mũi tên chỉ rõ vị trí cần click</li>
+                            <li><strong>Xem lại:</strong> Click nút "🎓 Xem lại Tutorial" bên dưới</li>
+                            <li><strong>Bỏ qua:</strong> Click nút ✕ hoặc click ra ngoài</li>
+                        </ul>
+                    </div>
+
+                    <div class="tips-section">
                         <h3>🚀 Bắt Đầu Nhanh</h3>
                         <ul>
-                            <li><strong>📊 Quét:</strong> Lấy dữ liệu từ form web vào bảng</li>
-                            <li><strong>📝 Điền:</strong> Điền dữ liệu từ bảng lên form web</li>
+                            <li><strong>📊 Quét (Ctrl+Shift+S):</strong> Lấy dữ liệu từ form web vào bảng</li>
+                            <li><strong>📝 Điền (Ctrl+Shift+F):</strong> Điền dữ liệu từ bảng lên form web</li>
                             <li><strong>📄 Export:</strong> Xuất file DOCX theo template</li>
                             <li><strong>🤖 AI:</strong> Quét PDF/Ảnh/Email bằng Gemini AI</li>
                         </ul>
