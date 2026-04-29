@@ -555,6 +555,25 @@ export function initWidget() {
             }
         };
 
+        // Add "Show Tutorial Again" button
+        const tipsBody = tipsModal.querySelector('.vnpt-tips-body');
+        if (tipsBody) {
+            const tutorialBtn = document.createElement('div');
+            tutorialBtn.style.cssText = 'text-align: center; padding: 16px; border-top: 1px solid #e0e0e0; margin-top: 16px;';
+            tutorialBtn.innerHTML = '<button id="vnpt-btn-restart-tutorial" style="padding: 10px 24px; background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">🎓 Xem lại Tutorial</button>';
+            tipsBody.appendChild(tutorialBtn);
+
+            const restartBtn = document.getElementById('vnpt-btn-restart-tutorial');
+            if (restartBtn) {
+                restartBtn.onclick = async () => {
+                    tipsModal.style.display = 'none';
+                    const { Tutorial } = await import('../features/tutorial.js');
+                    const tutorial = new Tutorial();
+                    tutorial.start();
+                };
+            }
+        }
+
         // Close on Esc key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && tipsModal.style.display === 'flex') {

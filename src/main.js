@@ -30,6 +30,7 @@ import { APP_VERSION } from './core/constants.js';
 import { Storage } from './utils/storage.js';
 import { showToast } from './ui/toast.js';
 import { checkMutualExclusion } from './utils/envDetect.js';
+import { Tutorial } from './features/tutorial.js';
 
 /** Danh sách domain của các dịch vụ mail được hỗ trợ */
 const MAIL_DOMAINS = [
@@ -79,6 +80,14 @@ async function init() {
       showToast(`🚀 Hợp đồng VNPT đã cập nhật lên v${APP_VERSION}!`, "#1a73e8");
     }
     Storage.set('vnpt_last_run_version', APP_VERSION);
+
+    // ─── Onboarding Tutorial for First-time Users ───
+    setTimeout(() => {
+      if (Tutorial.shouldShow()) {
+        const tutorial = new Tutorial();
+        tutorial.start();
+      }
+    }, 1000); // Đợi 1s để UI render xong
 
     // ─── Pre-Update Prompt (F5 Check) ───
     setTimeout(async () => {
