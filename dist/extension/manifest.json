@@ -1,9 +1,11 @@
 {
   "manifest_version": 3,
   "name": "VNPT Automation Tool (Local)",
-  "version": "1.8.15",
+  "version": "1.8.16",
   "description": "Local build - VNPT automation content scripts",
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": [
     "*://hopdong.vnpt.vn/*",
     "*://mail.google.com/*",
@@ -30,7 +32,9 @@
         "*://outlook.office.com/*",
         "*://outlook.office365.com/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ]

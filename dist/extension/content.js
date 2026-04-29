@@ -1229,7 +1229,7 @@
       return true;
     }
   });
-  const version$4 = "1.8.15";
+  const version$4 = "1.8.16";
   const pkg = {
     version: version$4
   };
