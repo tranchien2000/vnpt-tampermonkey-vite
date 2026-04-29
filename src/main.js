@@ -29,6 +29,7 @@ import { injectMailBridge } from './features/mailScan/mailScanner.js';
 import { APP_VERSION } from './core/constants.js';
 import { Storage } from './utils/storage.js';
 import { showToast } from './ui/toast.js';
+import { checkMutualExclusion } from './utils/envDetect.js';
 
 /** Danh sách domain của các dịch vụ mail được hỗ trợ */
 const MAIL_DOMAINS = [
@@ -43,9 +44,11 @@ const isMailDomain = MAIL_DOMAINS.some(d => window.location.hostname.includes(d)
 let cacheObserver = null;
 
 async function init() {
-  // Chống chạy 2 lần
-  if (window.__vnptInited) return;
-  window.__vnptInited = true;
+  // Kiểm tra mutual exclusion: chỉ cho phép 1 phiên bản chạy
+  if (!checkMutualExclusion()) {
+    logger.info('[VNPT] Đã có phiên bản khác đang chạy, bỏ qua init');
+    return;
+  }
 
   logger.info('Initializing VNPT Userscript...');
 

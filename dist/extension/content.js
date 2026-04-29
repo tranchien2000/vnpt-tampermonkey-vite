@@ -1311,12 +1311,18 @@
     // CMND 9 số hoặc CCCD 12 số
   };
   const APP_VERSION = pkg.version;
+  const ENV_USERSCRIPT = "userscript";
+  const ENV_EXTENSION = "extension";
+  const INIT_FLAG_KEY = "__vnptInited";
   const constants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     APP_VERSION,
     COL_RATIO_MAX,
     COL_RATIO_MIN,
     DEFAULT_LABELS,
+    ENV_EXTENSION,
+    ENV_USERSCRIPT,
+    INIT_FLAG_KEY,
     LOCAL_KEY_ACTIVE_PROFILE_ID,
     LOCAL_KEY_AUTO_BACKUP,
     LOCAL_KEY_DEFAULT_FIELDS,
@@ -48121,6 +48127,23 @@ ${rawText}`;
       }
     }
   }
+  function detectEnvironment() {
+    const hasGMInfo = typeof GM_info !== "undefined";
+    const hasChromeRuntime = typeof chrome !== "undefined" && chrome.runtime?.id;
+    if (hasGMInfo) return ENV_USERSCRIPT;
+    if (hasChromeRuntime) return ENV_EXTENSION;
+    return null;
+  }
+  function checkMutualExclusion() {
+    const currentEnv = detectEnvironment();
+    const existingEnv = window[INIT_FLAG_KEY];
+    if (existingEnv && existingEnv !== currentEnv) {
+      console.warn(`[VNPT] Phát hiện ${existingEnv} đã chạy, bỏ qua ${currentEnv}`);
+      return false;
+    }
+    window[INIT_FLAG_KEY] = currentEnv;
+    return true;
+  }
   const MAIL_DOMAINS = [
     "mail.google.com",
     "outlook.live.com",
@@ -48130,8 +48153,10 @@ ${rawText}`;
   const isMailDomain = MAIL_DOMAINS.some((d2) => window.location.hostname.includes(d2));
   let cacheObserver = null;
   async function init() {
-    if (window.__vnptInited) return;
-    window.__vnptInited = true;
+    if (!checkMutualExclusion()) {
+      logger$1.info("[VNPT] Đã có phiên bản khác đang chạy, bỏ qua init");
+      return;
+    }
     logger$1.info("Initializing VNPT Userscript...");
     initStorageMerge();
     try {

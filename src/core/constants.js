@@ -89,3 +89,8 @@ export const VALIDATION_REGEX = {
 };
 
 export const APP_VERSION = pkg.version;
+
+// Environment detection constants
+export const ENV_USERSCRIPT = 'userscript';
+export const ENV_EXTENSION = 'extension';
+export const INIT_FLAG_KEY = '__vnptInited';

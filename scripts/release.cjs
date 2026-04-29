@@ -162,6 +162,15 @@ versionJson.version = newVersion;
 fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 2));
 console.log(`Updated version.json to: ${newVersion}`);
 
+// 2.1. Cập nhật manifest.json cho extension
+const manifestPath = path.join(__dirname, '../extension/public/manifest.json');
+if (fs.existsSync(manifestPath)) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.version = newVersion;
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+    console.log(`Updated manifest.json to: ${newVersion}`);
+}
+
 // 3. Build code
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 run(`${npmCmd} run build`);
