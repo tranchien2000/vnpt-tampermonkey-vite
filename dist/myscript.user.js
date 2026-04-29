@@ -1833,54 +1833,59 @@ ${S}`:r.value=S,N.set(Fe,r.value)}else{const P=r.value.trim();C=await Iv(P,w,_),
           📚 Đọc <a href="https://github.com/tranchien2000/vnpt-tampermonkey-vite#readme" target="_blank" style="color: #1a73e8;">README</a> để biết thêm
         </p>
       </div>
-    `,position:"center"}],Ai=class Ai{constructor(){this.currentStep=0,this.overlay=null,this.spotlight=null,this.tooltip=null,this.isActive=!1}static shouldShow(){const t=N.get(ac);return!t||t!==gp}static markCompleted(){N.set(ac,gp)}static reset(){N.remove(ac)}start(){this.isActive||(this.isActive=!0,this.currentStep=0,this.createOverlay(),this.showStep(0))}createOverlay(){this.overlay=document.createElement("div"),this.overlay.className="vnpt-tutorial-overlay",this.overlay.style.cssText=`
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 9999998;
-      transition: opacity 0.3s;
-    `,this.spotlight=document.createElement("div"),this.spotlight.className="vnpt-tutorial-spotlight",this.spotlight.style.cssText=`
+    `,position:"center"}],Ai=class Ai{constructor(){this.currentStep=0,this.overlay=null,this.spotlight=null,this.tooltip=null,this.isActive=!1}static shouldShow(){const t=N.get(ac);return!t||t!==gp}static markCompleted(){N.set(ac,gp)}static reset(){N.remove(ac)}start(){this.isActive||(this.isActive=!0,this.currentStep=0,this.createOverlay(),this.showStep(0))}createOverlay(){if(this.spotlight=document.createElement("div"),this.spotlight.className="vnpt-tutorial-spotlight",this.spotlight.style.cssText=`
       position: fixed;
       border: 3px solid #1a73e8;
       border-radius: 8px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 20px rgba(26, 115, 232, 0.5);
+      box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 9999999;
       pointer-events: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: vnpt-pulse 2s ease-in-out infinite;
     `,this.tooltip=document.createElement("div"),this.tooltip.className="vnpt-tutorial-tooltip",this.tooltip.style.cssText=`
       position: fixed;
       background: white;
       border-radius: 12px;
-      padding: 20px;
-      max-width: 360px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      padding: 16px;
+      max-width: 320px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
       z-index: 10000000;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    `,document.body.appendChild(this.overlay),document.body.appendChild(this.spotlight),document.body.appendChild(this.tooltip),this.overlay.onclick=()=>this.skip()}showStep(t){if(t>=cc.length){this.complete();return}const e=cc[t];if(this.currentStep=t,!e.target){this.spotlight.style.display="none",this.showCenterTooltip(e);return}const i=document.querySelector(e.target);if(!i){setTimeout(()=>this.showStep(t),500);return}if(this.highlightElement(i),this.showTooltip(i,e),e.action==="click"){const r=o(()=>{i.removeEventListener("click",r),setTimeout(()=>this.next(),300)},"handler");i.addEventListener("click",r)}}highlightElement(t){const e=t.getBoundingClientRect(),i=8;this.spotlight.style.display="block",this.spotlight.style.top=e.top-i+"px",this.spotlight.style.left=e.left-i+"px",this.spotlight.style.width=e.width+i*2+"px",this.spotlight.style.height=e.height+i*2+"px",t.scrollIntoView({behavior:"smooth",block:"center"})}showTooltip(t,e){const i=t.getBoundingClientRect(),r=`${this.currentStep+1}/${cc.length}`;this.tooltip.innerHTML=`
+    `,this.arrow=document.createElement("div"),this.arrow.className="vnpt-tutorial-arrow",this.arrow.style.cssText=`
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: white;
+      transform: rotate(45deg);
+      box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.05);
+      z-index: -1;
+    `,this.tooltip.appendChild(this.arrow),!document.getElementById("vnpt-tutorial-styles")){const t=document.createElement("style");t.id="vnpt-tutorial-styles",t.textContent=`
+        @keyframes vnpt-pulse {
+          0%, 100% { box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15); }
+          50% { box-shadow: 0 0 0 8px rgba(26, 115, 232, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15); }
+        }
+      `,document.head.appendChild(t)}document.body.appendChild(this.spotlight),document.body.appendChild(this.tooltip)}showStep(t){if(t>=cc.length){this.complete();return}const e=cc[t];if(this.currentStep=t,!e.target){this.spotlight.style.display="none",this.showCenterTooltip(e);return}const i=document.querySelector(e.target);if(!i){setTimeout(()=>this.showStep(t),500);return}if(this.highlightElement(i),this.showTooltip(i,e),e.action==="click"){const r=o(()=>{i.removeEventListener("click",r),setTimeout(()=>this.next(),300)},"handler");i.addEventListener("click",r)}}highlightElement(t){const e=t.getBoundingClientRect(),i=8;this.spotlight.style.display="block",this.spotlight.style.top=e.top-i+"px",this.spotlight.style.left=e.left-i+"px",this.spotlight.style.width=e.width+i*2+"px",this.spotlight.style.height=e.height+i*2+"px",t.scrollIntoView({behavior:"smooth",block:"center"})}showTooltip(t,e){const i=t.getBoundingClientRect(),r=`${this.currentStep+1}/${cc.length}`,s=this.arrow;this.tooltip.innerHTML=`
       <div style="margin-bottom: 12px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 11px; color: #1a73e8; font-weight: 700;">${r}</span>
-          <button id="tutorial-skip" style="background: none; border: none; color: #666; cursor: pointer; font-size: 18px; padding: 0; width: 24px; height: 24px;">✕</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 10px; color: #1a73e8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${r}</span>
+          <button id="tutorial-skip" style="background: none; border: none; color: #999; cursor: pointer; font-size: 16px; padding: 0; width: 20px; height: 20px; line-height: 1;">✕</button>
         </div>
-        <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #202124;">${e.title}</h3>
-        <p style="margin: 0; font-size: 13px; color: #5f6368; line-height: 1.5;">${e.content}</p>
+        <h3 style="margin: 0 0 6px 0; font-size: 14px; color: #202124; font-weight: 600;">${e.title}</h3>
+        <p style="margin: 0; font-size: 12px; color: #5f6368; line-height: 1.4;">${e.content}</p>
       </div>
-      <div style="display: flex; gap: 8px; justify-content: flex-end;">
-        ${this.currentStep>0?'<button id="tutorial-prev" style="padding: 8px 16px; border: 1px solid #dadce0; background: white; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; color: #5f6368;">← Trước</button>':""}
-        <button id="tutorial-next" style="padding: 8px 16px; border: none; background: #1a73e8; color: white; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">Tiếp →</button>
+      <div style="display: flex; gap: 6px; justify-content: flex-end;">
+        ${this.currentStep>0?'<button id="tutorial-prev" style="padding: 6px 12px; border: 1px solid #dadce0; background: white; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; color: #5f6368;">← Trước</button>':""}
+        <button id="tutorial-next" style="padding: 6px 12px; border: none; background: #1a73e8; color: white; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;">Tiếp →</button>
       </div>
-    `,this.positionTooltip(i,e.position);const s=this.tooltip.querySelector("#tutorial-skip"),a=this.tooltip.querySelector("#tutorial-prev"),c=this.tooltip.querySelector("#tutorial-next");s&&(s.onclick=()=>this.skip()),a&&(a.onclick=()=>this.prev()),c&&(c.onclick=()=>this.next())}showCenterTooltip(t){this.tooltip.innerHTML=`
+    `,this.tooltip.appendChild(s),this.positionTooltip(i,e.position);const a=this.tooltip.querySelector("#tutorial-skip"),c=this.tooltip.querySelector("#tutorial-prev"),l=this.tooltip.querySelector("#tutorial-next");a&&(a.onclick=()=>this.skip()),c&&(c.onclick=()=>this.prev()),l&&(l.onclick=()=>this.next())}showCenterTooltip(t){const e=this.arrow;this.tooltip.innerHTML=`
       <div style="text-align: center;">
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; color: #202124;">${t.title}</h3>
-        <div style="margin-bottom: 20px; font-size: 13px; color: #5f6368; line-height: 1.6;">
+        <h3 style="margin: 0 0 12px 0; font-size: 18px; color: #202124; font-weight: 600;">${t.title}</h3>
+        <div style="margin-bottom: 16px; font-size: 12px; color: #5f6368; line-height: 1.5;">
           ${t.content}
         </div>
-        <button id="tutorial-finish" style="padding: 12px 32px; border: none; background: #1a73e8; color: white; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Bắt đầu sử dụng! 🚀</button>
+        <button id="tutorial-finish" style="padding: 10px 28px; border: none; background: #1a73e8; color: white; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">Bắt đầu sử dụng! 🚀</button>
       </div>
-    `,this.tooltip.style.top="50%",this.tooltip.style.left="50%",this.tooltip.style.transform="translate(-50%, -50%)";const e=this.tooltip.querySelector("#tutorial-finish");e&&(e.onclick=()=>this.complete())}positionTooltip(t,e){let r,s;switch(e){case"bottom":r=t.bottom+16,s=t.left+t.width/2,this.tooltip.style.transform="translateX(-50%)";break;case"top":r=t.top-this.tooltip.offsetHeight-16,s=t.left+t.width/2,this.tooltip.style.transform="translateX(-50%)";break;case"left":r=t.top+t.height/2,s=t.left-this.tooltip.offsetWidth-16,this.tooltip.style.transform="translateY(-50%)";break;case"right":r=t.top+t.height/2,s=t.right+16,this.tooltip.style.transform="translateY(-50%)";break;default:r=t.bottom+16,s=t.left,this.tooltip.style.transform="none"}this.tooltip.style.top=r+"px",this.tooltip.style.left=s+"px"}next(){this.showStep(this.currentStep+1)}prev(){this.currentStep>0&&this.showStep(this.currentStep-1)}skip(){confirm("Bỏ qua hướng dẫn? Bạn có thể xem lại bằng cách click nút 💡 Tips")&&(this.cleanup(),Ai.markCompleted())}complete(){this.cleanup(),Ai.markCompleted(),D("🎉 Chúc bạn làm việc hiệu quả với VNPT PRO!","#34a853",3e3)}cleanup(){this.overlay&&this.overlay.remove(),this.spotlight&&this.spotlight.remove(),this.tooltip&&this.tooltip.remove(),this.isActive=!1}};o(Ai,"Tutorial");let mi=Ai;const jv=Object.freeze(Object.defineProperty({__proto__:null,Tutorial:mi},Symbol.toStringTag,{value:"Module"})),mp=["mail.google.com","outlook.live.com","outlook.office.com","outlook.office365.com"].some(n=>window.location.hostname.includes(n));let yi=null;async function lc(){if(!Kv()){Yt.info("[VNPT] Đã có phiên bản khác đang chạy, bỏ qua init");return}Yt.info("Initializing VNPT Userscript..."),zv();try{ct.init(),Ep(),hv(),Hv(),pv(),jb(),Wb(),ln(),fv(),bv(),xv(),Ov(),$b(),Yb();const n=N.get("vnpt_last_run_version");n&&n!==Mt&&D(`🚀 Hợp đồng VNPT đã cập nhật lên v${Mt}!`,"#1a73e8"),N.set("vnpt_last_run_version",Mt),setTimeout(()=>{mi.shouldShow()&&new mi().start()},1e3),setTimeout(async()=>{sessionStorage.getItem("vnpt_update_skipped")||ct.hasUpdate()&&(confirm(`[VNPT PRO] Đã có phiên bản mới v${ct.info.latestVersion}.
+    `,this.tooltip.appendChild(e),this.arrow.style.display="none",this.tooltip.style.top="50%",this.tooltip.style.left="50%",this.tooltip.style.transform="translate(-50%, -50%)";const i=this.tooltip.querySelector("#tutorial-finish");i&&(i.onclick=()=>this.complete())}positionTooltip(t,e){let s,a,c,l,u;switch(this.tooltip.style.transform="none",e){case"bottom":s=t.bottom+16,a=t.left+t.width/2-this.tooltip.offsetWidth/2,c=-12/2,l=this.tooltip.offsetWidth/2-12/2,u="45deg";break;case"top":s=t.top-this.tooltip.offsetHeight-16,a=t.left+t.width/2-this.tooltip.offsetWidth/2,c=this.tooltip.offsetHeight-12/2,l=this.tooltip.offsetWidth/2-12/2,u="225deg";break;case"left":s=t.top+t.height/2-this.tooltip.offsetHeight/2,a=t.left-this.tooltip.offsetWidth-16,c=this.tooltip.offsetHeight/2-12/2,l=this.tooltip.offsetWidth-12/2,u="135deg";break;case"right":s=t.top+t.height/2-this.tooltip.offsetHeight/2,a=t.right+16,c=this.tooltip.offsetHeight/2-12/2,l=-12/2,u="315deg";break;default:s=t.bottom+16,a=t.left,c=-12/2,l=20,u="45deg"}const d=window.innerWidth,y=window.innerHeight;a<10&&(a=10),a+this.tooltip.offsetWidth>d-10&&(a=d-this.tooltip.offsetWidth-10),s<10&&(s=10),s+this.tooltip.offsetHeight>y-10&&(s=y-this.tooltip.offsetHeight-10),this.tooltip.style.top=s+"px",this.tooltip.style.left=a+"px",this.arrow.style.top=c+"px",this.arrow.style.left=l+"px",this.arrow.style.transform=`rotate(${u})`}next(){this.showStep(this.currentStep+1)}prev(){this.currentStep>0&&this.showStep(this.currentStep-1)}skip(){confirm("Bỏ qua hướng dẫn? Bạn có thể xem lại bằng cách click nút 💡 Tips")&&(this.cleanup(),Ai.markCompleted())}complete(){this.cleanup(),Ai.markCompleted(),D("🎉 Chúc bạn làm việc hiệu quả với VNPT PRO!","#34a853",3e3)}cleanup(){this.spotlight&&this.spotlight.remove(),this.tooltip&&this.tooltip.remove();const t=document.getElementById("vnpt-tutorial-styles");t&&t.remove(),this.isActive=!1}};o(Ai,"Tutorial");let mi=Ai;const jv=Object.freeze(Object.defineProperty({__proto__:null,Tutorial:mi},Symbol.toStringTag,{value:"Module"})),mp=["mail.google.com","outlook.live.com","outlook.office.com","outlook.office365.com"].some(n=>window.location.hostname.includes(n));let yi=null;async function lc(){if(!Kv()){Yt.info("[VNPT] Đã có phiên bản khác đang chạy, bỏ qua init");return}Yt.info("Initializing VNPT Userscript..."),zv();try{ct.init(),Ep(),hv(),Hv(),pv(),jb(),Wb(),ln(),fv(),bv(),xv(),Ov(),$b(),Yb();const n=N.get("vnpt_last_run_version");n&&n!==Mt&&D(`🚀 Hợp đồng VNPT đã cập nhật lên v${Mt}!`,"#1a73e8"),N.set("vnpt_last_run_version",Mt),setTimeout(()=>{mi.shouldShow()&&new mi().start()},1e3),setTimeout(async()=>{sessionStorage.getItem("vnpt_update_skipped")||ct.hasUpdate()&&(confirm(`[VNPT PRO] Đã có phiên bản mới v${ct.info.latestVersion}.
 
 Lời nhắn: ${ct.info.message||"Không có mô tả."}
 

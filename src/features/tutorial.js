@@ -120,56 +120,66 @@ export class Tutorial {
   }
 
   /**
-   * Tạo overlay và spotlight
+   * Tạo tooltip và highlight ring
    */
   createOverlay() {
-    // Overlay
-    this.overlay = document.createElement('div');
-    this.overlay.className = 'vnpt-tutorial-overlay';
-    this.overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 9999998;
-      transition: opacity 0.3s;
-    `;
-
-    // Spotlight
+    // Highlight ring (thay vì overlay đen)
     this.spotlight = document.createElement('div');
     this.spotlight.className = 'vnpt-tutorial-spotlight';
     this.spotlight.style.cssText = `
       position: fixed;
       border: 3px solid #1a73e8;
       border-radius: 8px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 20px rgba(26, 115, 232, 0.5);
+      box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 9999999;
       pointer-events: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: vnpt-pulse 2s ease-in-out infinite;
     `;
 
-    // Tooltip
+    // Tooltip với arrow
     this.tooltip = document.createElement('div');
     this.tooltip.className = 'vnpt-tutorial-tooltip';
     this.tooltip.style.cssText = `
       position: fixed;
       background: white;
       border-radius: 12px;
-      padding: 20px;
-      max-width: 360px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      padding: 16px;
+      max-width: 320px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
       z-index: 10000000;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     `;
 
-    document.body.appendChild(this.overlay);
+    // Arrow element
+    this.arrow = document.createElement('div');
+    this.arrow.className = 'vnpt-tutorial-arrow';
+    this.arrow.style.cssText = `
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: white;
+      transform: rotate(45deg);
+      box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.05);
+      z-index: -1;
+    `;
+    this.tooltip.appendChild(this.arrow);
+
+    // Inject animation keyframes
+    if (!document.getElementById('vnpt-tutorial-styles')) {
+      const style = document.createElement('style');
+      style.id = 'vnpt-tutorial-styles';
+      style.textContent = `
+        @keyframes vnpt-pulse {
+          0%, 100% { box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15); }
+          50% { box-shadow: 0 0 0 8px rgba(26, 115, 232, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     document.body.appendChild(this.spotlight);
     document.body.appendChild(this.tooltip);
-
-    // Click overlay để skip
-    this.overlay.onclick = () => this.skip();
   }
 
   /**
@@ -233,28 +243,34 @@ export class Tutorial {
   }
 
   /**
-   * Hiển thị tooltip
+   * Hiển thị tooltip với arrow
    */
   showTooltip(target, step) {
     const rect = target.getBoundingClientRect();
     const progress = `${this.currentStep + 1}/${TUTORIAL_STEPS.length}`;
 
+    // Re-append arrow (bị xóa khi innerHTML)
+    const arrowBackup = this.arrow;
+
     this.tooltip.innerHTML = `
       <div style="margin-bottom: 12px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 11px; color: #1a73e8; font-weight: 700;">${progress}</span>
-          <button id="tutorial-skip" style="background: none; border: none; color: #666; cursor: pointer; font-size: 18px; padding: 0; width: 24px; height: 24px;">✕</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 10px; color: #1a73e8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${progress}</span>
+          <button id="tutorial-skip" style="background: none; border: none; color: #999; cursor: pointer; font-size: 16px; padding: 0; width: 20px; height: 20px; line-height: 1;">✕</button>
         </div>
-        <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #202124;">${step.title}</h3>
-        <p style="margin: 0; font-size: 13px; color: #5f6368; line-height: 1.5;">${step.content}</p>
+        <h3 style="margin: 0 0 6px 0; font-size: 14px; color: #202124; font-weight: 600;">${step.title}</h3>
+        <p style="margin: 0; font-size: 12px; color: #5f6368; line-height: 1.4;">${step.content}</p>
       </div>
-      <div style="display: flex; gap: 8px; justify-content: flex-end;">
-        ${this.currentStep > 0 ? '<button id="tutorial-prev" style="padding: 8px 16px; border: 1px solid #dadce0; background: white; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; color: #5f6368;">← Trước</button>' : ''}
-        <button id="tutorial-next" style="padding: 8px 16px; border: none; background: #1a73e8; color: white; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">Tiếp →</button>
+      <div style="display: flex; gap: 6px; justify-content: flex-end;">
+        ${this.currentStep > 0 ? '<button id="tutorial-prev" style="padding: 6px 12px; border: 1px solid #dadce0; background: white; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; color: #5f6368;">← Trước</button>' : ''}
+        <button id="tutorial-next" style="padding: 6px 12px; border: none; background: #1a73e8; color: white; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;">Tiếp →</button>
       </div>
     `;
 
-    // Position tooltip
+    // Restore arrow
+    this.tooltip.appendChild(arrowBackup);
+
+    // Position tooltip with arrow
     this.positionTooltip(rect, step.position);
 
     // Event listeners
@@ -271,15 +287,22 @@ export class Tutorial {
    * Hiển thị center tooltip (final step)
    */
   showCenterTooltip(step) {
+    // Re-append arrow
+    const arrowBackup = this.arrow;
+
     this.tooltip.innerHTML = `
       <div style="text-align: center;">
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; color: #202124;">${step.title}</h3>
-        <div style="margin-bottom: 20px; font-size: 13px; color: #5f6368; line-height: 1.6;">
+        <h3 style="margin: 0 0 12px 0; font-size: 18px; color: #202124; font-weight: 600;">${step.title}</h3>
+        <div style="margin-bottom: 16px; font-size: 12px; color: #5f6368; line-height: 1.5;">
           ${step.content}
         </div>
-        <button id="tutorial-finish" style="padding: 12px 32px; border: none; background: #1a73e8; color: white; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Bắt đầu sử dụng! 🚀</button>
+        <button id="tutorial-finish" style="padding: 10px 28px; border: none; background: #1a73e8; color: white; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">Bắt đầu sử dụng! 🚀</button>
       </div>
     `;
+
+    // Restore arrow (hidden for center)
+    this.tooltip.appendChild(arrowBackup);
+    this.arrow.style.display = 'none';
 
     // Center position
     this.tooltip.style.top = '50%';
@@ -291,41 +314,71 @@ export class Tutorial {
   }
 
   /**
-   * Position tooltip relative to target
+   * Position tooltip relative to target với arrow
    */
   positionTooltip(rect, position) {
     const padding = 16;
-    let top, left;
+    const arrowSize = 12;
+    let top, left, arrowTop, arrowLeft, arrowRotate;
+
+    // Reset transform
+    this.tooltip.style.transform = 'none';
 
     switch (position) {
       case 'bottom':
         top = rect.bottom + padding;
-        left = rect.left + rect.width / 2;
-        this.tooltip.style.transform = 'translateX(-50%)';
+        left = rect.left + rect.width / 2 - this.tooltip.offsetWidth / 2;
+        arrowTop = -arrowSize / 2;
+        arrowLeft = this.tooltip.offsetWidth / 2 - arrowSize / 2;
+        arrowRotate = '45deg';
         break;
       case 'top':
         top = rect.top - this.tooltip.offsetHeight - padding;
-        left = rect.left + rect.width / 2;
-        this.tooltip.style.transform = 'translateX(-50%)';
+        left = rect.left + rect.width / 2 - this.tooltip.offsetWidth / 2;
+        arrowTop = this.tooltip.offsetHeight - arrowSize / 2;
+        arrowLeft = this.tooltip.offsetWidth / 2 - arrowSize / 2;
+        arrowRotate = '225deg';
         break;
       case 'left':
-        top = rect.top + rect.height / 2;
+        top = rect.top + rect.height / 2 - this.tooltip.offsetHeight / 2;
         left = rect.left - this.tooltip.offsetWidth - padding;
-        this.tooltip.style.transform = 'translateY(-50%)';
+        arrowTop = this.tooltip.offsetHeight / 2 - arrowSize / 2;
+        arrowLeft = this.tooltip.offsetWidth - arrowSize / 2;
+        arrowRotate = '135deg';
         break;
       case 'right':
-        top = rect.top + rect.height / 2;
+        top = rect.top + rect.height / 2 - this.tooltip.offsetHeight / 2;
         left = rect.right + padding;
-        this.tooltip.style.transform = 'translateY(-50%)';
+        arrowTop = this.tooltip.offsetHeight / 2 - arrowSize / 2;
+        arrowLeft = -arrowSize / 2;
+        arrowRotate = '315deg';
         break;
       default:
         top = rect.bottom + padding;
         left = rect.left;
-        this.tooltip.style.transform = 'none';
+        arrowTop = -arrowSize / 2;
+        arrowLeft = 20;
+        arrowRotate = '45deg';
+    }
+
+    // Ensure tooltip stays in viewport
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    if (left < 10) left = 10;
+    if (left + this.tooltip.offsetWidth > viewportWidth - 10) {
+      left = viewportWidth - this.tooltip.offsetWidth - 10;
+    }
+    if (top < 10) top = 10;
+    if (top + this.tooltip.offsetHeight > viewportHeight - 10) {
+      top = viewportHeight - this.tooltip.offsetHeight - 10;
     }
 
     this.tooltip.style.top = top + 'px';
     this.tooltip.style.left = left + 'px';
+    this.arrow.style.top = arrowTop + 'px';
+    this.arrow.style.left = arrowLeft + 'px';
+    this.arrow.style.transform = `rotate(${arrowRotate})`;
   }
 
   /**
@@ -367,9 +420,10 @@ export class Tutorial {
    * Cleanup
    */
   cleanup() {
-    if (this.overlay) this.overlay.remove();
     if (this.spotlight) this.spotlight.remove();
     if (this.tooltip) this.tooltip.remove();
+    const styles = document.getElementById('vnpt-tutorial-styles');
+    if (styles) styles.remove();
     this.isActive = false;
   }
 }
